@@ -55,7 +55,7 @@ public class ThreadLocalSimpleDateFormatTest extends TestCase {
 		SimpleDateFormat mainThreadFormat = tlsdf.get();
 		SimpleDateFormat testFormat = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
 		testFormat.setTimeZone(TimeZone.getTimeZone("MST")); //$NON-NLS-1$
-		Date testDate = new Date();
+		Date testDate = java.time.LocalDateTime.now();
 		
 		assertEquals(testFormat.format(testDate), mainThreadFormat.format(testDate));
 		

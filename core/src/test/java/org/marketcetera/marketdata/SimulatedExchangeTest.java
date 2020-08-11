@@ -539,7 +539,7 @@ public class SimulatedExchangeTest
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.optionAskEvent();
         askBuilder.withExchange(exchange.getCode())
                   .withExpirationType(ExpirationType.AMERICAN)
-                  .withQuoteDate(new Date())
+                  .withQuoteDate(java.time.LocalDateTime.now())
                   .withUnderlyingInstrument(metc);
         askBuilder.withInstrument(metc1Put);
         // create an ask that is more than the bid to prevent a trade occurring (keeps the top populated)
@@ -669,7 +669,7 @@ public class SimulatedExchangeTest
         // add an ask for just one instrument - make sure the bid and the ask don't match
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.currencyAskEvent();
         askBuilder.withExchange(exchange.getCode())
-                  .withQuoteDate(new Date())
+                  .withQuoteDate(java.time.LocalDateTime.now())
                   .withInstrument(testCCY)
                   .withExchange(exchange.getCode());
         askBuilder.withInstrument(bid2.getInstrument());
@@ -724,7 +724,7 @@ public class SimulatedExchangeTest
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.optionAskEvent();
         askBuilder.withExchange(exchange.getCode())
                   .withExpirationType(ExpirationType.AMERICAN)
-                  .withQuoteDate(new Date())
+                  .withQuoteDate(java.time.LocalDateTime.now())
                   .withUnderlyingInstrument(metc);
         askBuilder.withInstrument(bid2.getInstrument());
         // create an ask that is more than the bid to prevent a trade occurring (keeps the top populated)
@@ -1873,7 +1873,7 @@ public class SimulatedExchangeTest
                          currentDividend.getCurrency());
             assertEquals(inEquity,
                          currentDividend.getEquity());
-            Date today = new Date();
+            Date today = java.time.LocalDateTime.now();
             assertNotNull(currentDividend.getDeclareDate());
             assertTrue(today.after(DateUtils.stringToDate(currentDividend.getDeclareDate())));
             assertNotNull(currentDividend.getExecutionDate());

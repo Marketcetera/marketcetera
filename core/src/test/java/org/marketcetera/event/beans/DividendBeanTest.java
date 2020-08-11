@@ -115,7 +115,7 @@ public class DividendBeanTest
         bean.setDeclareDate("");
         assertEquals("",
                      bean.getDeclareDate());
-        String declareDate = DateUtils.dateToString(new Date());
+        String declareDate = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setDeclareDate(declareDate);
         assertEquals(declareDate,
                      bean.getDeclareDate());
@@ -136,7 +136,7 @@ public class DividendBeanTest
         bean.setExecutionDate("");
         assertEquals("",
                      bean.getExecutionDate());
-        String ExecutionDate = DateUtils.dateToString(new Date());
+        String ExecutionDate = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setExecutionDate(ExecutionDate);
         assertEquals(ExecutionDate,
                      bean.getExecutionDate());
@@ -157,7 +157,7 @@ public class DividendBeanTest
         bean.setPaymentDate("");
         assertEquals("",
                      bean.getPaymentDate());
-        String PaymentDate = DateUtils.dateToString(new Date());
+        String PaymentDate = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setPaymentDate(PaymentDate);
         assertEquals(PaymentDate,
                      bean.getPaymentDate());
@@ -178,7 +178,7 @@ public class DividendBeanTest
         bean.setRecordDate("");
         assertEquals("",
                      bean.getRecordDate());
-        String recordDate = DateUtils.dateToString(new Date());
+        String recordDate = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setRecordDate(recordDate);
         assertEquals(recordDate,
                      bean.getRecordDate());
@@ -309,7 +309,7 @@ public class DividendBeanTest
                 inBean.validate();
             }
         };
-        inBean.setExecutionDate(DateUtils.dateToString(new Date()));
+        inBean.setExecutionDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         // null frequency
         assertNull(inBean.getFrequency());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_FREQUENCY.getText()) {
@@ -428,7 +428,7 @@ public class DividendBeanTest
         // test declareDate
         // set bean3 to non-null
         assertNull(bean1.getDeclareDate());
-        bean3.setDeclareDate(DateUtils.dateToString(new Date()));
+        bean3.setDeclareDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -444,7 +444,7 @@ public class DividendBeanTest
         // test executionDate
         // set bean3 to non-null
         assertNull(bean1.getExecutionDate());
-        bean3.setExecutionDate(DateUtils.dateToString(new Date()));
+        bean3.setExecutionDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -460,7 +460,7 @@ public class DividendBeanTest
         // test paymentDate
         // set bean3 to non-null
         assertNull(bean1.getPaymentDate());
-        bean3.setPaymentDate(DateUtils.dateToString(new Date()));
+        bean3.setPaymentDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -468,7 +468,7 @@ public class DividendBeanTest
         // test recordDate
         // set bean3 to non-null
         assertNull(bean1.getRecordDate());
-        bean3.setRecordDate(DateUtils.dateToString(new Date()));
+        bean3.setRecordDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);

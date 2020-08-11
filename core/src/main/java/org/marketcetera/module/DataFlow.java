@@ -188,7 +188,7 @@ class DataFlow {
             coupler.cancelRequest();
         }
         mStopRequesterURN = inStopRequester;
-        mStopped = new Date();
+        mStopped = java.time.LocalDateTime.now();
     }
 
     /**
@@ -251,7 +251,7 @@ class DataFlow {
     private final DataFlowID mFlowID;
     private final DataRequest[] mRequests;
     private final AbstractDataCoupler[] mCouplers;
-    private final Date mCreated = new Date();
+    private final Date mCreated = java.time.LocalDateTime.now();
     private boolean mCancelling = false;
     /**
      * ID factory for generating data flow IDs.

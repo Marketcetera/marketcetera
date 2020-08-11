@@ -56,7 +56,7 @@ public class QuoteBeanTest
             throws Exception
     {
         Instrument equity = new Equity("METC");
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         long receivedTimestamp = timestamp.getTime()+1;
         long processedTimestamp = receivedTimestamp+1;
         BigDecimal size = BigDecimal.ONE;
@@ -67,7 +67,7 @@ public class QuoteBeanTest
                         .withSize(BigDecimal.TEN)
                         .withProcessedTimestamp(processedTimestamp)
                         .withReceivedTimestamp(receivedTimestamp)
-                        .withQuoteDate(new Date());
+                        .withQuoteDate(java.time.LocalDateTime.now());
         // signature 1
         new ExpectedFailure<NullPointerException>(){
             @Override
@@ -75,7 +75,7 @@ public class QuoteBeanTest
                     throws Exception
             {
                 QuoteBean.getQuoteBeanFromEvent(null,
-                                                new Date(),
+                                                java.time.LocalDateTime.now(),
                                                 BigDecimal.ZERO,
                                                 QuoteAction.ADD);
             }
@@ -99,7 +99,7 @@ public class QuoteBeanTest
             {
                 AskEvent ask = equityAskBuilder.create();
                 QuoteBean.getQuoteBeanFromEvent(ask,
-                                                new Date(),
+                                                java.time.LocalDateTime.now(),
                                                 null,
                                                 QuoteAction.ADD);
             }
@@ -111,7 +111,7 @@ public class QuoteBeanTest
             {
                 AskEvent ask = equityAskBuilder.create();
                 QuoteBean.getQuoteBeanFromEvent(ask,
-                                                new Date(),
+                                                java.time.LocalDateTime.now(),
                                                 BigDecimal.ZERO,
                                                 null);
             }
@@ -189,7 +189,7 @@ public class QuoteBeanTest
                             size,
                             action,
                             ask.getEventType());
-        timestamp = new Date();
+        timestamp = java.time.LocalDateTime.now();
         // use negative size
         size = new BigDecimal("-10");
         assertTrue(size.intValue() < 0);
@@ -315,7 +315,7 @@ public class QuoteBeanTest
                 equityAskBuilder.create();
             }
         };
-        equityAskBuilder.withQuoteDate(new Date());
+        equityAskBuilder.withQuoteDate(java.time.LocalDateTime.now());
         // now test valid cases
         // event price
         equityAskBuilder.withPrice(new BigDecimal("-10"));
@@ -442,7 +442,7 @@ public class QuoteBeanTest
         optionBidBuilder.withAction(QuoteAction.DELETE)
                         .withExchange("exchange")
                         .withPrice(BigDecimal.ONE)
-                        .withQuoteDate(new Date())
+                        .withQuoteDate(java.time.LocalDateTime.now())
                         .withSize(BigDecimal.TEN);
         BidEvent bid = optionBidBuilder.create();
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(bid,

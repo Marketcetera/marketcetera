@@ -73,14 +73,14 @@ public abstract class CEPTestBase extends ModuleTestBase {
         trade2 = EventTestBase.generateEquityTradeEvent(1, 2, new Equity("FIGA"), "nyse", new BigDecimal("23"), new BigDecimal("23"));
         log1 = LogEventBuilder.debug().withMessage(Messages.PROVIDER_DESCRIPTION).create();
         log2 = LogEventBuilder.error().withMessage(Messages.PROVIDER_DESCRIPTION).create();
-        mStat1 = EventTestBase.generateEquityMarketstatEvent(new Equity("ABC"),new Date(),
+        mStat1 = EventTestBase.generateEquityMarketstatEvent(new Equity("ABC"),java.time.LocalDateTime.now(),
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE, new Date(), new Date(),
-                new Date(), new Date(), "OYSE", "HYSE", "LYSE","CYSE");
-        mStat2 = EventTestBase.generateEquityMarketstatEvent(new Equity("BIDU"),new Date(), 
+                BigDecimal.ONE, BigDecimal.ONE, java.time.LocalDateTime.now(), java.time.LocalDateTime.now(),
+                java.time.LocalDateTime.now(), java.time.LocalDateTime.now(), "OYSE", "HYSE", "LYSE","CYSE");
+        mStat2 = EventTestBase.generateEquityMarketstatEvent(new Equity("BIDU"),java.time.LocalDateTime.now(), 
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE, new Date(), new Date(),
-                new Date(), new Date(), "OYSE", "HYSE", "LYSE","CYSE");
+                BigDecimal.ONE, BigDecimal.ONE, java.time.LocalDateTime.now(), java.time.LocalDateTime.now(),
+                java.time.LocalDateTime.now(), java.time.LocalDateTime.now(), "OYSE", "HYSE", "LYSE","CYSE");
         sug1 = Factory.getInstance().createOrderSingleSuggestion();
         sug1.setIdentifier("acura");
         sug2 = Factory.getInstance().createOrderSingleSuggestion();

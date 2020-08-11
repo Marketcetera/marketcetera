@@ -7,7 +7,7 @@ import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -206,10 +206,10 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * Sets the timestamp value to use with the new event.
      *
-     * @param inTimestamp a <code>Date</code> value or <code>null</code>
+     * @param inTimestamp a <code>LocalDateTime</code> value or <code>null</code>
      * @return a <code>TradeEventBuilder</code> value
      */
-    public TradeEventBuilder<E> withTimestamp(Date inTimestamp)
+    public TradeEventBuilder<E> withTimestamp(LocalDateTime inTimestamp)
     {
         tradeData.setTimestamp(inTimestamp);
         return this;
@@ -331,10 +331,10 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * Sets the tradeDate value.
      *
-     * @param inTradeDate a <code>Date</code> value or <code>null</code>
+     * @param inTradeDate a <code>LocalDateTime</code> value or <code>null</code>
      * @return a <code>TradeEventBuilder</code> value
      */
-    public TradeEventBuilder<E> withTradeDate(Date inTradeDate)
+    public TradeEventBuilder<E> withTradeDate(LocalDateTime inTradeDate)
     {
         tradeData.setExchangeTimestamp(inTradeDate);
         return this;

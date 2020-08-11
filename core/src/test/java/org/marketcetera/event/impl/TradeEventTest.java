@@ -415,7 +415,7 @@ public class TradeEventTest
         builder.withTradeDate(date);
         assertEquals(date,
                      builder.getTradeData().getExchangeTimestamp());
-        date = new Date();
+        date = java.time.LocalDateTime.now();
         builder.withTradeDate(date);
         assertEquals(date,
                      builder.getTradeData().getExchangeTimestamp());
@@ -485,7 +485,7 @@ public class TradeEventTest
         assertEquals(null,
                      builder.getTradeData().getTimestamp());
         // regular timestamp
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getTradeData().getTimestamp());
@@ -664,7 +664,7 @@ public class TradeEventTest
         inBuilder.withPrice(BigDecimal.ONE);
         inBuilder.withTradeDate(new Date(millis + (millisInADay * counter++)));
         inBuilder.withSize(BigDecimal.TEN);
-        inBuilder.withTimestamp(new Date());
+        inBuilder.withTimestamp(java.time.LocalDateTime.now());
         inBuilder.withUnderlyingInstrument(instrument);
         inBuilder.withContractSize(3600);
         return inBuilder;

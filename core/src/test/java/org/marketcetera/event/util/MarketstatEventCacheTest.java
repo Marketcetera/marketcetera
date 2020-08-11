@@ -460,7 +460,7 @@ public class MarketstatEventCacheTest
      * test option
      */
     private final Option option = new Option(equity.getSymbol(),
-                                             DateUtils.dateToString(new Date()),
+                                             DateUtils.dateToString(java.time.LocalDateTime.now()),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);
     /**

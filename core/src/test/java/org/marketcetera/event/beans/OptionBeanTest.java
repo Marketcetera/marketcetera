@@ -78,7 +78,7 @@ public class OptionBeanTest
                .withInstrument(option)
                .withMultiplier(multiplier)
                .withPrice(BigDecimal.ONE)
-               .withQuoteDate(new Date())
+               .withQuoteDate(java.time.LocalDateTime.now())
                .withSize(BigDecimal.TEN)
                .withUnderlyingInstrument(underlyingInstrument);
         BidEvent bid = builder.create();

@@ -78,7 +78,7 @@ public class SinkModuleTest extends ModuleTestBase {
                 3423.43f,
                 34324239849l,
                 4323422.342343,
-                new Date(),
+                java.time.LocalDateTime.now(),
                 new BigInteger("34234234234234"),
                 new BigDecimal("23423423432690809.234890734"),
                 "This is a test string",

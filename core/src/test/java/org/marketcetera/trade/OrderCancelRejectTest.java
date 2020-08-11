@@ -1,18 +1,26 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertNull;
-import quickfix.Message;
-import quickfix.field.*;
-import quickfix.field.converter.UtcTimestampConverter;
+import static org.junit.Assert.assertSame;
 
-import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Date;
+import java.util.Map;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.Message;
+import quickfix.field.ClOrdID;
+import quickfix.field.CxlRejResponseTo;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.SendingTime;
+import quickfix.field.Text;
+import quickfix.field.TransactTime;
+import quickfix.field.converter.UtcTimestampConverter;
 
 /* $License$ */
 /**
@@ -81,8 +89,8 @@ public class OrderCancelRejectTest extends TypesTestBase {
         OrderID origOrderID = new OrderID("ord2");
         OrderStatus orderStatus = OrderStatus.Rejected;
         String text = "Cancel it please.";
-        Date sendingTime = new Date();
-        Date transactTime = new Date();
+        LocalDateTime sendingTime = LocalDateTime.now();
+        LocalDateTime transactTime = LocalDateTime.now();
         UserID actorID = new UserID(2);
         UserID viewerID = new UserID(3);
         msg = getSystemMessageFactory().newOrderCancelReject(
@@ -109,9 +117,9 @@ public class OrderCancelRejectTest extends TypesTestBase {
                 String.valueOf(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
         expected.put(OrigClOrdID.FIELD, origOrderID.getValue());
         expected.put(ClOrdID.FIELD, orderID.getValue());
-        expected.put(TransactTime.FIELD, UtcTimestampConverter.convert(
-                transactTime, true));
-
+        expected.put(TransactTime.FIELD,
+                     UtcTimestampConverter.convert(transactTime,
+                                                   quickfix.UtcTimestampPrecision.MILLIS));
         final Map<Integer, String> actual = ((FIXMessageSupport) report).getFields();
         assertEquals(expected, actual);
         //Verify that the map is not modifiable

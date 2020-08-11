@@ -130,7 +130,7 @@ public class ExchangeRequestTest
      * test option
      */
     private final Option option = new Option(equity.getSymbol(),
-                                             DateUtils.dateToString(new Date(),
+                                             DateUtils.dateToString(java.time.LocalDateTime.now(),
                                                                     DateUtils.DAYS),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);

@@ -1,6 +1,6 @@
 package org.marketcetera.core.notifications;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.core.ClassVersion;
 
@@ -33,7 +33,7 @@ public class Notification
     {
         return new Notification(inSubject,
                                 inBody,
-                                new Date(),
+                                java.time.LocalDateTime.now(),
                                 Severity.DEBUG,
                                 inOriginator);
     }
@@ -51,7 +51,7 @@ public class Notification
     {
         return new Notification(inSubject,
                                 inBody,
-                                new Date(),
+                                java.time.LocalDateTime.now(),
                                 Severity.INFO,
                                 inOriginator);
     }
@@ -69,7 +69,7 @@ public class Notification
     {
         return new Notification(inSubject,
                                 inBody,
-                                new Date(),
+                                java.time.LocalDateTime.now(),
                                 Severity.WARN,
                                 inOriginator);
     }
@@ -87,7 +87,7 @@ public class Notification
     {
         return new Notification(inSubject,
                                 inBody,
-                                new Date(),
+                                java.time.LocalDateTime.now(),
                                 Severity.ERROR,
                                 inOriginator);
     }
@@ -103,7 +103,7 @@ public class Notification
      * @see org.marketcetera.core.notifications.INotification#getDate()
      */
     @Override
-    public Date getTimestamp()
+    public LocalDateTime getTimestamp()
     {
         return timestamp;
     }
@@ -164,9 +164,9 @@ public class Notification
     /**
      * Sets the timestamp value.
      *
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      */
-    public void setTimestamp(Date inTimestamp)
+    public void setTimestamp(LocalDateTime inTimestamp)
     {
         timestamp = inTimestamp;
     }
@@ -193,13 +193,13 @@ public class Notification
      *
      * @param inSubject a <code>String</code> value
      * @param inBody a <code>String</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inSeverity a <code>Severity</code> value
      * @param inOriginator a <cod>String</code> value
      */
     public Notification(String inSubject,
                         String inBody,
-                        Date inTimestamp,
+                        LocalDateTime inTimestamp,
                         Severity inSeverity,
                         String inOriginator)
     {
@@ -224,7 +224,7 @@ public class Notification
     /**
      * the timestamp of the notification
      */
-    private Date timestamp = new Date();
+    private LocalDateTime timestamp = java.time.LocalDateTime.now();
     /**
      * the severity of the notification
      */

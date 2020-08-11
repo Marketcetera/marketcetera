@@ -128,7 +128,7 @@ public class BasicCSVFeedEventTranslatorTest
                                      0);
             }
         };
-        final Date date = new Date();
+        final Date date = java.time.LocalDateTime.now();
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_DATE,
                                            date.toString()) {
@@ -466,7 +466,7 @@ public class BasicCSVFeedEventTranslatorTest
                                                                      request, 1.0));
             }
         };
-        final Date date = new Date();
+        final Date date = java.time.LocalDateTime.now();
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_DATE,
                                            date.toString()) {
@@ -871,7 +871,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","this-is-not-a-date" },
                                                                                request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateUtils.dateToString(java.time.LocalDateTime.now());
         assertEquals(dateString,
                      translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten",dateString },
                                                                                request, 1.0)));
@@ -891,7 +891,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","this-is-not-a-date" },
                                                                                  request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateUtils.dateToString(java.time.LocalDateTime.now());
         assertEquals(dateString,
                      translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven",dateString },
                                                                                  request, 1.0)));
@@ -963,7 +963,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","this-is-not-a-date" },
                                                                                request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateUtils.dateToString(java.time.LocalDateTime.now());
         assertEquals(dateString,
                      translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine",dateString },
                                                                                request, 1.0)));
@@ -983,7 +983,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight","nine","this-is-not-a-date" },
                                                                                request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateUtils.dateToString(java.time.LocalDateTime.now());
         assertEquals(dateString,
                      translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight","nine",dateString },
                                                                                request, 1.0)));

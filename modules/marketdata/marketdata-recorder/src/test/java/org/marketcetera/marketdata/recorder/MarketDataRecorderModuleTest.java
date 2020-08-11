@@ -737,7 +737,7 @@ public class MarketDataRecorderModuleTest
         return builder.withExchange(inExchange)
                       .withPrice(EventTestBase.generateDecimalValue())
                       .withSize(EventTestBase.generateDecimalValue())
-                      .withQuoteDate(new Date()).create();
+                      .withQuoteDate(java.time.LocalDateTime.now()).create();
     }
     /**
      * Verifies that no files exist in the test directory.

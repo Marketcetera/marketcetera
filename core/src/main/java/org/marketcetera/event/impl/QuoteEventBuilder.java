@@ -7,6 +7,7 @@ import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -199,7 +200,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * @param inEvent a <code>QuoteEvent</code> value
      * @param inNewPrice a <code>BigDecimal</code> value
      * @param inNewSize a <code>BigDecimal</code> value
-     * @param inNewQuoteDate a <code>Date</code> value
+     * @param inNewQuoteDate a <code>LocalDateTime</code> value
      * @return a <code>QuoteEvent</code> value
      * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
      *  an unsupported asset class
@@ -208,7 +209,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public static <E extends QuoteEvent> E change(E inEvent,
                                                   BigDecimal inNewPrice,
                                                   BigDecimal inNewSize,
-                                                  Date inNewQuoteDate)
+                                                  LocalDateTime inNewQuoteDate)
     {
         QuoteBean quote = QuoteBean.getQuoteBeanFromEvent(inEvent,
                                                           QuoteAction.CHANGE);
@@ -773,10 +774,10 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     /**
      * Sets the quoteDate value.
      *
-     * @param inQuoteDate a <code>Date</code> value or <code>null</code>
+     * @param inQuoteDate a <code>LocalDateTime</code> value or <code>null</code>
      * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
-    public QuoteEventBuilder<E> withQuoteDate(Date inQuoteDate)
+    public QuoteEventBuilder<E> withQuoteDate(LocalDateTime inQuoteDate)
     {
         quote.setExchangeTimestamp(inQuoteDate);
         return this;

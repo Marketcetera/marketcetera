@@ -66,7 +66,7 @@ public class DividendEventTest
         assertEquals(null,
                      builder.getDividend().getTimestamp());
         // regular timestamp
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getDividend().getTimestamp());
@@ -213,7 +213,7 @@ public class DividendEventTest
         assertEquals("this-is-not-a-date",
                      builder.getDividend().getDeclareDate());
         // non-null (valid date)
-        String date = DateUtils.dateToString(new Date());
+        String date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withDeclareDate(date);
         assertEquals(date,
                      builder.getDividend().getDeclareDate());
@@ -243,7 +243,7 @@ public class DividendEventTest
         assertEquals("this-is-not-a-date",
                      builder.getDividend().getExecutionDate());
         // non-null (valid date)
-        String date = DateUtils.dateToString(new Date());
+        String date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withExecutionDate(date);
         assertEquals(date,
                      builder.getDividend().getExecutionDate());
@@ -273,7 +273,7 @@ public class DividendEventTest
         assertEquals("this-is-not-a-date",
                      builder.getDividend().getPaymentDate());
         // non-null (valid date)
-        String date = DateUtils.dateToString(new Date());
+        String date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withPaymentDate(date);
         assertEquals(date,
                      builder.getDividend().getPaymentDate());
@@ -303,7 +303,7 @@ public class DividendEventTest
         assertEquals("this-is-not-a-date",
                      builder.getDividend().getRecordDate());
         // non-null (valid date)
-        String date = DateUtils.dateToString(new Date());
+        String date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withRecordDate(date);
         assertEquals(date,
                      builder.getDividend().getRecordDate());
@@ -414,7 +414,7 @@ public class DividendEventTest
         setDefaults(builder).withTimestamp(null);
         verify(builder);
         // normal timestamp
-        setDefaults(builder).withTimestamp(new Date());
+        setDefaults(builder).withTimestamp(java.time.LocalDateTime.now());
         verify(builder);
         // add validation for other attributes
         setDefaults(builder).withEquity(null);
@@ -456,7 +456,7 @@ public class DividendEventTest
         // this value is ok
         setDefaults(builder).withDeclareDate("not-a-date");
         verify(builder);
-        setDefaults(builder).withDeclareDate(DateUtils.dateToString(new Date()));
+        setDefaults(builder).withDeclareDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         verify(builder);
         setDefaults(builder).withExecutionDate(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXECUTION_DATE.getText()) {
@@ -479,12 +479,12 @@ public class DividendEventTest
         // this value is ok
         setDefaults(builder).withExecutionDate("not-a-date");
         verify(builder);
-        setDefaults(builder).withExecutionDate(DateUtils.dateToString(new Date()));
+        setDefaults(builder).withExecutionDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         verify(builder);
         // this value is ok
         setDefaults(builder).withPaymentDate("not-a-date");
         verify(builder);
-        setDefaults(builder).withPaymentDate(DateUtils.dateToString(new Date()));
+        setDefaults(builder).withPaymentDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         verify(builder);
         setDefaults(builder).withRecordDate(null);
         verify(builder);
@@ -493,7 +493,7 @@ public class DividendEventTest
         // this value is ok
         setDefaults(builder).withRecordDate("not-a-date");
         verify(builder);
-        setDefaults(builder).withRecordDate(DateUtils.dateToString(new Date()));
+        setDefaults(builder).withRecordDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         verify(builder);
         setDefaults(builder).withFrequency(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_FREQUENCY.getText()) {

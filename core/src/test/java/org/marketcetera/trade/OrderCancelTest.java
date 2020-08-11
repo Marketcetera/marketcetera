@@ -14,6 +14,7 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -177,13 +178,13 @@ public class OrderCancelTest extends TypesTestBase {
         //Check custom fields
         //Set fields of every type.
         Map<String,String> expectedMap = new HashMap<String, String>();
-        Date date = new Date();
+        Date date = java.time.LocalDateTime.now();
         BigDecimal bigDecimal = new BigDecimal("35234.35989");
         char charValue = '0';
         int intValue = 1;
         boolean boolValue = false;
 
-        msg.setField(new ExpireTime(date));
+        msg.setField(new ExpireTime(DateService.toLocalDateTime(date)));
         expectedMap.put(String.valueOf(ExpireTime.FIELD),
                 UtcTimestampConverter.convert(date, true));
 
@@ -310,7 +311,7 @@ public class OrderCancelTest extends TypesTestBase {
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
                 "accountName", null); //$NON-NLS-1$
         erMsg.setString(OrigClOrdID.FIELD, "12222");
-        erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE);
+        erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION);
         ExecutionReport er = Factory.getInstance().createExecutionReport(erMsg, new BrokerID("broker"), Originator.Server, new UserID(7600L), new UserID(7500L));
         assertEquals("12222", er.getOriginalOrderID().getValue());
         assertEquals("12222", ((HasFIXMessage) er).getMessage().getString(OrigClOrdID.FIELD));

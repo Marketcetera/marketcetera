@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -15,6 +16,7 @@ import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -66,12 +68,12 @@ public abstract class AbstractEventBuilderTestBase<E extends Event,B extends Abs
         assertEquals(null,
                      builder.getEvent().getTimestamp());
         // regular timestamp
-        Date timestamp = new Date();
+        LocalDateTime timestamp = LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getEvent().getTimestamp());
         // make a weird timestamp
-        timestamp = new Date(-1);
+        timestamp = DateService.toLocalDateTime(-1);
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.create().getTimestamp());
@@ -155,16 +157,16 @@ public abstract class AbstractEventBuilderTestBase<E extends Event,B extends Abs
         verify(builder);
         // timestamp
         // negative timestamp ok (not even sure what this means, maybe 1ms before epoch?)
-        builder.withTimestamp(new Date(-1));
+        builder.withTimestamp(DateService.toLocalDateTime(-1));
         verify(builder);
        // 0 timestamp
-        setDefaults(builder).withTimestamp(new Date(0));
+        setDefaults(builder).withTimestamp(DateService.toLocalDateTime(0));
         verify(builder);
         // null timestamp (requests a new timestamp)
         setDefaults(builder).withTimestamp(null);
         verify(builder);
         // normal timestamp
-        setDefaults(builder).withTimestamp(new Date());
+        setDefaults(builder).withTimestamp(java.time.LocalDateTime.now());
         verify(builder);
     }
     /**
@@ -181,7 +183,7 @@ public abstract class AbstractEventBuilderTestBase<E extends Event,B extends Abs
             throws Exception
     {
         inBuilder.withMessageId(counter.incrementAndGet());
-        inBuilder.withTimestamp(new Date());
+        inBuilder.withTimestamp(java.time.LocalDateTime.now());
         inBuilder.withSource(this);
         return inBuilder;
     }
@@ -235,12 +237,12 @@ public abstract class AbstractEventBuilderTestBase<E extends Event,B extends Abs
         // there's a special case for timestamp, too
         if(inBuilder.getEvent().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
-            assertEquals(event.getTimestamp().getTime(),
+            assertEquals(DateService.toEpochMillis(event.getTimestamp()),
                          event.getTimeMillis());
         } else {
             assertEquals(inBuilder.getEvent().getTimestamp(),
                          event.getTimestamp());
-            assertEquals(inBuilder.getEvent().getTimestamp().getTime(),
+            assertEquals(DateService.toEpochMillis(inBuilder.getEvent().getTimestamp()),
                          event.getTimeMillis());
         }
         assertEquals(inBuilder.getEvent().getSource(),

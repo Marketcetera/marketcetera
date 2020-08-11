@@ -245,7 +245,7 @@ public class QuoteEventTest
                          sourceEvent.getSize(),
                          sourceEvent.getTimestamp());
         // repeat the tests generating CHANGE events
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         BigDecimal size = new BigDecimal(100);
         instrument = option; useAsk = false;
         sourceEvent = generateQuote(QuoteAction.ADD);
@@ -741,7 +741,7 @@ public class QuoteEventTest
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
-        date = new Date();
+        date = java.time.LocalDateTime.now();
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
@@ -811,7 +811,7 @@ public class QuoteEventTest
         assertEquals(null,
                      builder.getQuote().getTimestamp());
         // regular timestamp
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getQuote().getTimestamp());
@@ -920,7 +920,7 @@ public class QuoteEventTest
         setDefaults(builder).withTimestamp(null);
         verify(builder);
         // normal timestamp
-        setDefaults(builder).withTimestamp(new Date());
+        setDefaults(builder).withTimestamp(java.time.LocalDateTime.now());
         verify(builder);
         // add validation for other attributes
         setDefaults(builder).withAction(null); // this is ok - a default is supplied
@@ -957,7 +957,7 @@ public class QuoteEventTest
         // this value is ok
         setDefaults(builder).withQuoteDate(new Date(0));
         verify(builder);
-        setDefaults(builder).withQuoteDate(new Date());
+        setDefaults(builder).withQuoteDate(java.time.LocalDateTime.now());
         verify(builder);
         // instrument
         setDefaults(builder).withInstrument(null);
@@ -1214,7 +1214,7 @@ public class QuoteEventTest
         inBuilder.withPrice(BigDecimal.ONE);
         inBuilder.withQuoteDate(new Date(millis + (millisInADay * counter++)));
         inBuilder.withSize(BigDecimal.TEN);
-        inBuilder.withTimestamp(new Date());
+        inBuilder.withTimestamp(java.time.LocalDateTime.now());
         inBuilder.withUnderlyingInstrument(instrument);
         inBuilder.withContractSize(3600);
         inBuilder.withLevel(5);

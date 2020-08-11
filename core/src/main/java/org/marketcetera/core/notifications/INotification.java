@@ -1,7 +1,7 @@
 package org.marketcetera.core.notifications;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.core.ClassVersion;
 
@@ -54,9 +54,9 @@ public interface INotification
     /**
      * Gets the time that the <code>INotification</code> occurred.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public Date getTimestamp();
+    public LocalDateTime getTimestamp();
     /**
      * Gets a description of the originator of the <code>INotification</code>.
      *

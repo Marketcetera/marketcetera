@@ -1,23 +1,33 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import quickfix.Message;
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
+
 import quickfix.FieldNotFound;
-import quickfix.fix44.NewOrderSingle;
-import quickfix.field.*;
-import quickfix.field.converter.UtcTimestampConverter;
+import quickfix.Message;
+import quickfix.field.AllocAccount;
+import quickfix.field.AllocQty;
+import quickfix.field.BeginString;
+import quickfix.field.ExpireTime;
+import quickfix.field.Product;
+import quickfix.field.SettlType;
+import quickfix.field.SolicitedFlag;
 import quickfix.field.converter.BooleanConverter;
+import quickfix.field.converter.UtcTimestampConverter;
+import quickfix.fix44.NewOrderSingle;
 
 /* $License$ */
 /**
@@ -129,13 +139,13 @@ public class OrderSingleTest extends TypesTestBase {
         //Check custom fields
         //Set fields of every type.
         Map<String,String> expectedMap = new HashMap<String, String>();
-        Date date = new Date();
+        Date date = java.time.LocalDateTime.now();
         BigDecimal bigDecimal = new BigDecimal("35234.35989");
         char charValue = '0';
         int intValue = 1;
         boolean boolValue = false;
 
-        msg.setField(new ExpireTime(date));
+        msg.setField(new ExpireTime(DateService.toLocalDateTime(date)));
         expectedMap.put(String.valueOf(ExpireTime.FIELD),
                 UtcTimestampConverter.convert(date, true));
 

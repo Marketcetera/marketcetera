@@ -1,20 +1,42 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertNull;
-import quickfix.Message;
-import quickfix.field.*;
-import quickfix.field.converter.DecimalConverter;
-import quickfix.field.converter.UtcTimestampConverter;
+import static org.junit.Assert.assertSame;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
+
+import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.SendingTime;
+import quickfix.field.Symbol;
+import quickfix.field.Text;
+import quickfix.field.TransactTime;
+import quickfix.field.converter.DecimalConverter;
+import quickfix.field.converter.UtcTimestampConverter;
 
 /* $License$ */
 /**
@@ -110,18 +132,18 @@ public class ExecutionReportTest extends TypesTestBase {
         String lastMarket = "XDES";
         BigDecimal leavesQty = new BigDecimal("343.53");
         OrderType orderType = OrderType.Limit;
-        Date sendingTime = new Date();
+        Date sendingTime = java.time.LocalDateTime.now();
         TimeInForce timeInForce = TimeInForce.Day;
-        Date transactTime = new Date();
+        Date transactTime = java.time.LocalDateTime.now();
         text = "show me the money";
         msg.setField(new OrigClOrdID(origOrderID.getValue()));
         msg.setField(new ExecType(execType.getFIXValue()));
         msg.setField(new LastMkt(lastMarket));
         msg.setField(new LeavesQty(leavesQty));
         msg.setField(new OrdType(orderType.getFIXValue()));
-        msg.getHeader().setField(new SendingTime(sendingTime));
+        msg.getHeader().setField(new SendingTime(DateService.toLocalDateTime(sendingTime)));
         msg.setField(new quickfix.field.TimeInForce(timeInForce.getFIXValue()));
-        msg.setField(new TransactTime(transactTime));
+        msg.setField(new TransactTime(DateService.toLocalDateTime(transactTime)));
         msg.setField(new Text(text));
         msg.setField(new quickfix.field.OrderCapacity(
                 quickfix.field.OrderCapacity.PROPRIETARY));

@@ -136,7 +136,7 @@ public class NotificationManagerTest
             mSubject = inSubject;
             mBody = inBody;
             mSeverity = inSeverity;
-            mDate = new Date();
+            mDate = java.time.LocalDateTime.now();
             mOriginator = inOriginator;
         }
         @Override

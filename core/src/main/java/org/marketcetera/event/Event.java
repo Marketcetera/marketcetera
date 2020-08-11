@@ -1,7 +1,7 @@
 package org.marketcetera.event;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -44,9 +44,9 @@ public interface Event
     /**
      * Returns the time the event took place expressed as a <code>Date</code>.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public Date getTimestamp();
+    public LocalDateTime getTimestamp();
     /**
      * Get the source value.
      *

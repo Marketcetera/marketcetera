@@ -212,7 +212,7 @@ public class MarketstatBeanTest
         bean.setCloseDate("");
         assertEquals("",
                      bean.getCloseDate());
-        String closeDate = DateUtils.dateToString(new Date());
+        String closeDate = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setCloseDate(closeDate);
         assertEquals(closeDate,
                      bean.getCloseDate());
@@ -233,7 +233,7 @@ public class MarketstatBeanTest
         bean.setPreviousCloseDate("");
         assertEquals("",
                      bean.getPreviousCloseDate());
-        String previousCloseDate = DateUtils.dateToString(new Date());
+        String previousCloseDate = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setPreviousCloseDate(previousCloseDate);
         assertEquals(previousCloseDate,
                      bean.getPreviousCloseDate());
@@ -254,7 +254,7 @@ public class MarketstatBeanTest
         bean.setTradeHighTime("");
         assertEquals("",
                      bean.getTradeHighTime());
-        String tradeHighTime = DateUtils.dateToString(new Date());
+        String tradeHighTime = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setTradeHighTime(tradeHighTime);
         assertEquals(tradeHighTime,
                      bean.getTradeHighTime());
@@ -275,7 +275,7 @@ public class MarketstatBeanTest
         bean.setTradeLowTime("");
         assertEquals("",
                      bean.getTradeLowTime());
-        String tradeLowTime = DateUtils.dateToString(new Date());
+        String tradeLowTime = DateUtils.dateToString(java.time.LocalDateTime.now());
         bean.setTradeLowTime(tradeLowTime);
         assertEquals(tradeLowTime,
                      bean.getTradeLowTime());
@@ -462,7 +462,7 @@ public class MarketstatBeanTest
         // test closeDate
         // set bean3 to non-null
         assertNull(bean1.getCloseDate());
-        bean3.setCloseDate(DateUtils.dateToString(new Date()));
+        bean3.setCloseDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -542,7 +542,7 @@ public class MarketstatBeanTest
         // test previousCloseDate
         // set bean3 to non-null
         assertNull(bean1.getPreviousCloseDate());
-        bean3.setPreviousCloseDate(DateUtils.dateToString(new Date()));
+        bean3.setPreviousCloseDate(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -558,7 +558,7 @@ public class MarketstatBeanTest
         // test tradeHighTime
         // set bean3 to non-null
         assertNull(bean1.getTradeHighTime());
-        bean3.setTradeHighTime(DateUtils.dateToString(new Date()));
+        bean3.setTradeHighTime(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -566,7 +566,7 @@ public class MarketstatBeanTest
         // test tradeLowTime
         // set bean3 to non-null
         assertNull(bean1.getTradeLowTime());
-        bean3.setTradeLowTime(DateUtils.dateToString(new Date()));
+        bean3.setTradeLowTime(DateUtils.dateToString(java.time.LocalDateTime.now()));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);

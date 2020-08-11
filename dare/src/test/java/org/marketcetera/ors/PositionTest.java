@@ -157,7 +157,7 @@ public class PositionTest
                               inInstrument,
                               inFixVersion);
         setupSession(inFixVersion);
-        Date positionDate = new Date();
+        Date positionDate = java.time.LocalDateTime.now();
         BigDecimal expectedPosition = BigDecimal.ZERO;
         verifyPositionFromAllPositions(inInstrument,
                                        expectedPosition,
@@ -167,7 +167,7 @@ public class PositionTest
         generatePosition(inInstrument,
                          orderQty,
                          fillQty);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         expectedPosition = fillQty;
         verifyPositionFromAllPositions(inInstrument,
                                        expectedPosition,
@@ -176,7 +176,7 @@ public class PositionTest
         generatePosition(inInstrument,
                          orderQty,
                          BigDecimal.ZERO);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         verifyPositionFromAllPositions(inInstrument,
                                        expectedPosition,
                                        positionDate);
@@ -185,7 +185,7 @@ public class PositionTest
                          orderQty,
                          fillQty);
         expectedPosition = fillQty.add(fillQty);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         verifyPositionFromAllPositions(inInstrument,
                                        expectedPosition,
                                        positionDate);
@@ -193,7 +193,7 @@ public class PositionTest
         generatePosition(otherInstrument,
                          orderQty,
                          fillQty);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         verifyPositionFromAllPositions(inInstrument,
                                        expectedPosition,
                                        positionDate);
@@ -226,7 +226,7 @@ public class PositionTest
                               inInstrument,
                               inFixVersion);
         setupSession(inFixVersion);
-        Date positionDate = new Date();
+        Date positionDate = java.time.LocalDateTime.now();
         BigDecimal expectedPosition = BigDecimal.ZERO;
         verifySinglePosition(inInstrument,
                              expectedPosition,
@@ -236,7 +236,7 @@ public class PositionTest
         generatePosition(inInstrument,
                          orderQty,
                          fillQty);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         expectedPosition = fillQty;
         verifySinglePosition(inInstrument,
                              expectedPosition,
@@ -245,7 +245,7 @@ public class PositionTest
         generatePosition(inInstrument,
                          orderQty,
                          BigDecimal.ZERO);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         verifySinglePosition(inInstrument,
                              expectedPosition,
                              positionDate);
@@ -254,7 +254,7 @@ public class PositionTest
                          orderQty,
                          fillQty);
         expectedPosition = fillQty.add(fillQty);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         verifySinglePosition(inInstrument,
                              expectedPosition,
                              positionDate);
@@ -262,7 +262,7 @@ public class PositionTest
         generatePosition(otherInstrument,
                          orderQty,
                          fillQty);
-        positionDate = new Date();
+        positionDate = java.time.LocalDateTime.now();
         verifySinglePosition(inInstrument,
                              expectedPosition,
                              positionDate);

@@ -38,7 +38,7 @@ public class TransactionTimeInsertMessageModifier
             fixVersion = FIXVersion.getFIXVersion(inOrder);
             FIXMessageAugmentor augmentor = fixVersion.getMessageFactory().getMsgAugmentor();
             if(augmentor.needsTransactTime(inOrder)) {
-                inOrder.setField(new TransactTime(new Date()));
+                inOrder.setField(new TransactTime(java.time.LocalDateTime.now()));
                 return true;
             }
             return false;

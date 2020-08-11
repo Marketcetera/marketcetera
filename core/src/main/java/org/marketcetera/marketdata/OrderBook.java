@@ -137,7 +137,7 @@ public class OrderBook
         return TopOfBookEventBuilder.topOfBookEvent().withBid(bidBook.isEmpty() ? null : bidBook.get(0))
                                                      .withAsk(askBook.isEmpty() ? null : askBook.get(0))
                                                      .withInstrument(getInstrument())
-                                                     .withTimestamp(new Date()).create();
+                                                     .withTimestamp(java.time.LocalDateTime.now()).create();
     }
     /**
      * Returns the {@link DepthOfBookEvent} view of the order book. 

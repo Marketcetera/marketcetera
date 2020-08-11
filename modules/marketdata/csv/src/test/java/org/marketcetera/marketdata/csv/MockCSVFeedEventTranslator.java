@@ -53,7 +53,7 @@ public class MockCSVFeedEventTranslator
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
-                       .withTradeDate(new Date());
+                       .withTradeDate(java.time.LocalDateTime.now());
                 events.add(builder.create());
             }
         } else if(type.equals("BID")) {
@@ -64,7 +64,7 @@ public class MockCSVFeedEventTranslator
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
-                       .withQuoteDate(new Date());
+                       .withQuoteDate(java.time.LocalDateTime.now());
                 events.add(builder.create());
             }
         } else if(type.equals("ASK")) {
@@ -75,7 +75,7 @@ public class MockCSVFeedEventTranslator
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
-                       .withQuoteDate(new Date());
+                       .withQuoteDate(java.time.LocalDateTime.now());
                 events.add(builder.create());
             }
         } else {

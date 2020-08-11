@@ -66,7 +66,7 @@ public abstract class AbstractEventBeanTestBase<E extends EventBean>
             }
         };
         bean.setMessageId(Long.MIN_VALUE);
-        bean.setTimestamp(new Date());
+        bean.setTimestamp(java.time.LocalDateTime.now());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_INVALID_MESSAGEID.getText(Long.MIN_VALUE)) {
             @Override
             protected void run()
@@ -131,7 +131,7 @@ public abstract class AbstractEventBeanTestBase<E extends EventBean>
                      bean.getTimestamp());
         assertEquals(timestamp.getTime(),
                      bean.getTimeMillis());
-        timestamp = new Date();
+        timestamp = java.time.LocalDateTime.now();
         bean.setTimestamp(timestamp);
         assertEquals(timestamp,
                      bean.getTimestamp());

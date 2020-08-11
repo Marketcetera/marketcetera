@@ -1,5 +1,6 @@
 package org.marketcetera.event;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -30,7 +32,7 @@ public class MockAggregateEvent
                               Instrument inInstrument)
     {
         event.setMessageId(System.nanoTime());
-        event.setTimestamp(new Date());
+        event.setTimestamp(java.time.LocalDateTime.now());
         instrument = inInstrument;
     }
     /**
@@ -64,7 +66,7 @@ public class MockAggregateEvent
      * @see org.marketcetera.event.Event#getTimestamp()
      */
     @Override
-    public Date getTimestamp()
+    public LocalDateTime getTimestamp()
     {
         return event.getTimestamp();
     }
@@ -114,7 +116,7 @@ public class MockAggregateEvent
     @Override
     public long getTimeMillis()
     {
-        return getTimestamp().getTime();
+        return DateService.toEpochMillis(getTimestamp());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.AggregateEvent#decompose()

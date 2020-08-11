@@ -1,7 +1,9 @@
 package org.marketcetera.marketdata.exsim;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.List;
@@ -26,11 +28,11 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.CapabilityCollection;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.OrderBook;
@@ -349,7 +351,7 @@ public class ExsimFeedModule
                                                                                  requestedInstruments,
                                                                                  inPayload.getExchange(),
                                                                                  Lists.newArrayList(inPayload.getContent()),
-                                                                                 quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
+                                                                                 quickfix.field.SubscriptionRequestType.SNAPSHOT_UPDATES);
         SLF4JLoggerProxy.debug(this,
                                "Built {} for {} from {}", //$NON-NLS-1$
                                marketDataRequest,
@@ -386,7 +388,7 @@ public class ExsimFeedModule
                                                                                 inMarketDataRequestData.requestedInstruments,
                                                                                 inMarketDataRequestData.marketDataRequest.getExchange(),
                                                                                 Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
-                                                                                quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
+                                                                                quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_UPDATE_REQUEST);
         if(!quickfix.Session.sendToTarget(marketDataCancel,
                                           sessionId)) {
             throw new CoreException(new I18NBoundMessage2P(Messages.CANNOT_CANCEL_DATA,
@@ -528,9 +530,10 @@ public class ExsimFeedModule
                                                                        updateAction));
                 }
             }
-            Date date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
-            Date time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
-            Date eventDate = new Date(date.getTime()+time.getTime());
+            LocalDate date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
+            LocalTime time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
+            LocalDateTime eventDate = LocalDateTime.of(date,
+                                                       time);
             switch(entryType) {
                 case quickfix.field.MDEntryType.BID:
                     QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(instrument);

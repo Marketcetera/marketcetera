@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -476,7 +477,7 @@ public class TypesTestBase {
                                                  OrderID inOrderID,
                                                  OrderStatus inOrderStatus,
                                                  OrderID inOrigOrderID,
-                                                 Date inSendingTime,
+                                                 LocalDateTime inSendingTime,
                                                  String inText,
                                                  String inBrokerOrderID,
                                                  Originator inOriginator,

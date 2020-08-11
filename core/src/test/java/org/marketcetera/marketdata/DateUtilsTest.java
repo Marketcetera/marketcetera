@@ -178,12 +178,12 @@ public class DateUtilsTest
             protected void run()
                 throws Exception
             {
-                DateUtils.dateToString(new Date(),
+                DateUtils.dateToString(java.time.LocalDateTime.now(),
                                        null);
             }
         };
         // take a date and make sure it comes out correctly when asking for a specific format
-        Date testDate = new Date();
+        Date testDate = java.time.LocalDateTime.now();
         for(DateTimeFormatter format : formats) {
             assertEquals(format.print(new DateTime(testDate)),
                          DateUtils.dateToString(testDate,

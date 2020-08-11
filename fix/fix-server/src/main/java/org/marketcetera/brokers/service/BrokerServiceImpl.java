@@ -687,7 +687,7 @@ public class BrokerServiceImpl
                     SLF4JLoggerProxy.debug(this,
                                            "Unable to calculate start of session for {}, using now",
                                            inSessionId);
-                    startOfSession = new Date();
+                    startOfSession = java.time.LocalDateTime.now();
                 }
                 DateTime now = new DateTime(startOfSession);
                 int today = now.getDayOfWeek();

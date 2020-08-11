@@ -88,6 +88,7 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -2166,7 +2167,7 @@ public class DareTestBase
             StringBuilder body = new StringBuilder();
             body.append(quickfix.field.Account.FIELD).append('=').append(account).append(',');
             body.append(quickfix.field.ClOrdID.FIELD).append('=').append(clOrdId).append(',');
-            body.append(quickfix.field.HandlInst.FIELD).append('=').append(quickfix.field.HandlInst.MANUAL_ORDER).append(',');
+            body.append(quickfix.field.HandlInst.FIELD).append('=').append(quickfix.field.HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION).append(',');
             body.append(quickfix.field.OrderQty.FIELD).append('=').append(orderQuantity.toPlainString()).append(',');
             if(orderType != null) {
                 body.append(quickfix.field.OrdType.FIELD).append('=').append(orderType.getFIXValue()).append(',');
@@ -2179,7 +2180,7 @@ public class DareTestBase
                                          body.toString(),
                                          MsgType.ORDER_SINGLE,
                                          factory);
-            order.setField(new quickfix.field.TransactTime(new Date()));
+            order.setField(new quickfix.field.TransactTime(DateService.toLocalDateTime(java.time.LocalDateTime.now())));
             InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
             DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(inSenderSessionId);
             if(!instrumentFunction.isSupported(fixDictionary,

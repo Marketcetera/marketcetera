@@ -6,9 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -804,7 +804,7 @@ public class OrderHistoryManagerTest
         msg.getHeader().setField(new MsgSeqNum(counter.incrementAndGet()));
         msg.getHeader().setField(new SenderCompID("sender"));
         msg.getHeader().setField(new TargetCompID("target"));
-        msg.getHeader().setField(new SendingTime(new Date()));
+        msg.getHeader().setField(new SendingTime(LocalDateTime.now()));
         msg.setField(new ExecID(String.valueOf(counter.incrementAndGet())));
         if(orderType != null) {
             switch(orderType) {
@@ -831,7 +831,7 @@ public class OrderHistoryManagerTest
         msg.setField(new OrderQty(EventTestBase.generateDecimalValue()));
         msg.setField(new LastPx(EventTestBase.generateDecimalValue()));
         msg.setField(new LastQty(EventTestBase.generateDecimalValue()));
-        msg.setField(new TransactTime(new Date()));
+        msg.setField(new TransactTime(LocalDateTime.now()));
         if(inOriginalOrderID != null) {
             msg.setField(new OrigClOrdID(inOriginalOrderID));
         }
@@ -857,11 +857,11 @@ public class OrderHistoryManagerTest
         msg.getHeader().setField(new MsgSeqNum(counter.incrementAndGet()));
         msg.getHeader().setField(new SenderCompID("sender"));
         msg.getHeader().setField(new TargetCompID("target"));
-        msg.getHeader().setField(new SendingTime(new Date()));
+        msg.getHeader().setField(new SendingTime(LocalDateTime.now()));
         msg.setField(new OrdStatus(OrderStatus.Rejected.getFIXValue()));
         msg.setField(new quickfix.field.OrderID(inOrderID));
         msg.setField(new ClOrdID(inOrderID));
-        msg.setField(new TransactTime(new Date()));
+        msg.setField(new TransactTime(LocalDateTime.now()));
         msg.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
         msg.setField(new OrigClOrdID(inOriginalOrderID));
         msg.toString();

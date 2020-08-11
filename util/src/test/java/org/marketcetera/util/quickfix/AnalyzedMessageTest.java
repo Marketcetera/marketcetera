@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.Message;
 import quickfix.field.Account;
@@ -72,11 +73,11 @@ public class AnalyzedMessageTest
         msg.getHeader().setField(new SenderCompID("me"));
         msg.getHeader().setField(new TargetCompID("you"));
         msg.getHeader().setField(new MsgSeqNum(1));
-        msg.getHeader().setField(new SendingTime(new Date(2)));
+        msg.getHeader().setField(new SendingTime(DateService.toLocalDateTime(new Date(2))));
         // Required body fields.
         msg.set(new ClOrdID("a"));
-        msg.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
-        msg.set(new TransactTime(new Date(3)));
+        msg.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
+        msg.set(new TransactTime(DateService.toLocalDateTime(new Date(3))));
         msg.set(new OrdType(OrdType.LIMIT));
         msg.set(new Symbol("METC"));
         // A required enumeration.
@@ -113,7 +114,7 @@ public class AnalyzedMessageTest
              " ClOrdID [11R] = a"+
              SystemUtils.LINE_SEPARATOR+
              " HandlInst [21R] = "+
-             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION [1]"+
+             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION_NO_BROKER_INTERVENTION [1]"+
              SystemUtils.LINE_SEPARATOR+
              " OrdType [40R] = LIMIT [2]"+
              SystemUtils.LINE_SEPARATOR+

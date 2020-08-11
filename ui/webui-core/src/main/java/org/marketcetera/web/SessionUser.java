@@ -206,5 +206,5 @@ public class SessionUser
     /**
      * indicates when the user was logged in
      */
-    private final Date loggedIn = new Date();
+    private final Date loggedIn = java.time.LocalDateTime.now();
 }

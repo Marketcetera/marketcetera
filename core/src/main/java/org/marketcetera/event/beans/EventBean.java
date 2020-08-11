@@ -1,6 +1,8 @@
 package org.marketcetera.event.beans;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -84,9 +86,9 @@ public class EventBean
     /**
      * Get the timestamp value.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public final Date getTimestamp()
+    public final LocalDateTime getTimestamp()
     {
         return timestamp;
     }
@@ -99,14 +101,14 @@ public class EventBean
      */
     public final long getTimeMillis()
     {
-        return getTimestamp().getTime();
+        return getTimestamp().toEpochSecond(ZoneOffset.UTC);
     }
     /**
      * Sets the timestamp value.
      *
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      */
-    public final void setTimestamp(Date inTimestamp)
+    public final void setTimestamp(LocalDateTime inTimestamp)
     {
         timestamp = inTimestamp;
     }
@@ -176,7 +178,7 @@ public class EventBean
             messageId = counter.incrementAndGet();
         }
         if(timestamp == null) {
-            timestamp = new Date();
+            timestamp = LocalDateTime.now();
         }
     }
     /**
@@ -259,7 +261,7 @@ public class EventBean
      * the event timestamp
      */
     @XmlAttribute
-    private Date timestamp = null;
+    private LocalDateTime timestamp = null;
     /**
      * the event source
      */

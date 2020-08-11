@@ -4,7 +4,6 @@ import static org.marketcetera.core.PlatformServices.divisionContext;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -393,7 +392,7 @@ public class OrderData
         executionReport.setField(new quickfix.field.OrdStatus(orderStatus.getFIXValue()));
         executionReport.setField(new quickfix.field.ExecID(PlatformServices.generateId()));
         executionReport.setField(new quickfix.field.OrderID(getOrderId()));
-        executionReport.setField(new quickfix.field.TransactTime(new Date()));
+        executionReport.setField(new quickfix.field.TransactTime(java.time.LocalDateTime.now()));
         return executionReport;
     }
     /**

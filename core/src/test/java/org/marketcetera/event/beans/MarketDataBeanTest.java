@@ -118,7 +118,7 @@ public class MarketDataBeanTest
         // test exchangeTimestamp
         // set bean3 to non-null
         assertNull(bean1.getExchangeTimestamp());
-        bean3.setExchangeTimestamp(new Date());
+        bean3.setExchangeTimestamp(java.time.LocalDateTime.now());
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -246,7 +246,7 @@ public class MarketDataBeanTest
                 inBean.validate();
             }
         };
-        inBean.setExchangeTimestamp(new Date());
+        inBean.setExchangeTimestamp(java.time.LocalDateTime.now());
         inBean.setEventType(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_META_TYPE.getText()) {
             @Override
@@ -295,7 +295,7 @@ public class MarketDataBeanTest
                              null,
                              EventType.UNKNOWN);
         String exchange = "test exchange";
-        Date exchangeTimestamp = new Date();
+        Date exchangeTimestamp = java.time.LocalDateTime.now();
         Instrument instrument = new Equity("GOOG");
         BigDecimal price = BigDecimal.ONE;
         BigDecimal size = BigDecimal.TEN;

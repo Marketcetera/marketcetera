@@ -87,8 +87,8 @@ public class PriceComparatorsTest
         throws Exception
     {
         final E quote1 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                            .withTimestamp(new Date())
-                                            .withQuoteDate(new Date())
+                                            .withTimestamp(java.time.LocalDateTime.now())
+                                            .withQuoteDate(java.time.LocalDateTime.now())
                                             .withInstrument(inInstrument)
                                             .withExchange("Q")
                                             .withPrice(ONE)
@@ -118,8 +118,8 @@ public class PriceComparatorsTest
                                                              null));
         // comparator works on price then size
         E quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                      .withTimestamp(new Date())
-                                      .withQuoteDate(new Date())
+                                      .withTimestamp(java.time.LocalDateTime.now())
+                                      .withQuoteDate(java.time.LocalDateTime.now())
                                       .withInstrument(inInstrument)
                                       .withExchange("Q")
                                       .withPrice(quote1.getPrice().add(ONE))
@@ -135,8 +135,8 @@ public class PriceComparatorsTest
                                                              quote1));
         // e1 price == e2 price (and size)
         quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                    .withTimestamp(new Date())
-                                    .withQuoteDate(new Date())
+                                    .withTimestamp(java.time.LocalDateTime.now())
+                                    .withQuoteDate(java.time.LocalDateTime.now())
                                     .withInstrument(inInstrument)
                                     .withExchange("Q")
                                     .withPrice(quote1.getPrice())
@@ -154,8 +154,8 @@ public class PriceComparatorsTest
                                                              quote1));
         // e1 size < e2 size
         quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                    .withTimestamp(new Date())
-                                    .withQuoteDate(new Date())
+                                    .withTimestamp(java.time.LocalDateTime.now())
+                                    .withQuoteDate(java.time.LocalDateTime.now())
                                     .withInstrument(inInstrument)
                                     .withExchange("Q")
                                     .withPrice(quote1.getPrice())
@@ -183,8 +183,8 @@ public class PriceComparatorsTest
             throws Exception
     {
         final E quote1 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                            .withTimestamp(new Date())
-                                            .withQuoteDate(new Date())
+                                            .withTimestamp(java.time.LocalDateTime.now())
+                                            .withQuoteDate(java.time.LocalDateTime.now())
                                             .withInstrument(inInstrument)
                                             .withExchange("Q")
                                             .withPrice(ONE)
@@ -235,8 +235,8 @@ public class PriceComparatorsTest
                                            null));
         // comparator works on price then timestamp
         E quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                      .withTimestamp(new Date())
-                                      .withQuoteDate(new Date())
+                                      .withTimestamp(java.time.LocalDateTime.now())
+                                      .withQuoteDate(java.time.LocalDateTime.now())
                                       .withInstrument(inInstrument)
                                       .withExchange("Q")
                                       .withPrice(quote1.getPrice().add(ONE))
@@ -260,7 +260,7 @@ public class PriceComparatorsTest
         // e1 price == e2 price (and timestamp)
         quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
                                     .withTimestamp(quote1.getTimestamp())
-                                    .withQuoteDate(new Date())
+                                    .withQuoteDate(java.time.LocalDateTime.now())
                                     .withInstrument(inInstrument)
                                     .withExchange("Q")
                                     .withPrice(quote1.getPrice())
@@ -283,7 +283,7 @@ public class PriceComparatorsTest
         // e1 timestamp < e2 timestamp
         quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
                                     .withTimestamp(new Date(quote1.getTimeMillis() + 1000))
-                                    .withQuoteDate(new Date())
+                                    .withQuoteDate(java.time.LocalDateTime.now())
                                     .withInstrument(inInstrument)
                                     .withExchange("Q")
                                     .withPrice(quote1.getPrice())

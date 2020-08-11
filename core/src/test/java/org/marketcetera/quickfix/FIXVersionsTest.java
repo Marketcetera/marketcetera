@@ -1,17 +1,21 @@
 package org.marketcetera.quickfix;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.trade.Equity;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.*;
-
-import java.math.BigDecimal;
-import java.util.Date;
+import quickfix.field.Account;
+import quickfix.field.HandlInst;
+import quickfix.field.Side;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 
 /**
  * @author toli
@@ -57,8 +61,8 @@ public class FIXVersionsTest extends TestCase {
         // Add fields that are not added for system fix messages as they
         // are not added by the clients, they are only added by ORS. 
         if(version == FIXVersion.FIX_SYSTEM) {
-            newSingle.setField(new TransactTime(new Date()));
-            newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+            newSingle.setField(new TransactTime(LocalDateTime.now()));
+            newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
         }
         return newSingle;
     }

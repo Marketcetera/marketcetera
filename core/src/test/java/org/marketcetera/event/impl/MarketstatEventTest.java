@@ -176,7 +176,7 @@ public class MarketstatEventTest
         assertEquals(null,
                      builder.getMarketstat().getTimestamp());
         // regular timestamp
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getMarketstat().getTimestamp());
@@ -257,7 +257,7 @@ public class MarketstatEventTest
         builder.withCloseDate(date);
         assertEquals(date,
                      builder.getMarketstat().getCloseDate());
-        date = DateUtils.dateToString(new Date());
+        date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withCloseDate(date);
         assertEquals(date,
                      builder.getMarketstat().getCloseDate());
@@ -360,7 +360,7 @@ public class MarketstatEventTest
         builder.withTradeHighTime(date);
         assertEquals(date,
                      builder.getMarketstat().getTradeHighTime());
-        date = DateUtils.dateToString(new Date());
+        date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withTradeHighTime(date);
         assertEquals(date,
                      builder.getMarketstat().getTradeHighTime());
@@ -388,7 +388,7 @@ public class MarketstatEventTest
         builder.withTradeLowTime(date);
         assertEquals(date,
                      builder.getMarketstat().getTradeLowTime());
-        date = DateUtils.dateToString(new Date());
+        date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withTradeLowTime(date);
         assertEquals(date,
                      builder.getMarketstat().getTradeLowTime());
@@ -576,7 +576,7 @@ public class MarketstatEventTest
         builder.withPreviousCloseDate(date);
         assertEquals(date,
                      builder.getMarketstat().getPreviousCloseDate());
-        date = DateUtils.dateToString(new Date());
+        date = DateUtils.dateToString(java.time.LocalDateTime.now());
         builder.withPreviousCloseDate(date);
         assertEquals(date,
                      builder.getMarketstat().getPreviousCloseDate());
@@ -898,7 +898,7 @@ public class MarketstatEventTest
         setDefaults(builder).withTimestamp(null);
         verify(builder);
         // normal timestamp
-        setDefaults(builder).withTimestamp(new Date());
+        setDefaults(builder).withTimestamp(java.time.LocalDateTime.now());
         verify(builder);
         // instrument
         setDefaults(builder).withInstrument(null);
@@ -1129,7 +1129,7 @@ public class MarketstatEventTest
         inBuilder.withPreviousCloseDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withPreviousClosePrice(new BigDecimal(counter++));
         inBuilder.withSource(this);
-        inBuilder.withTimestamp(new Date());
+        inBuilder.withTimestamp(java.time.LocalDateTime.now());
         inBuilder.withTradeHighTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withTradeLowTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withUnderlyingInstrument(instrument);

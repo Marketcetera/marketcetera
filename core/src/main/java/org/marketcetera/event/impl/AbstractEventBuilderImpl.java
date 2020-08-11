@@ -1,6 +1,6 @@
 package org.marketcetera.event.impl;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -36,10 +36,10 @@ abstract class AbstractEventBuilderImpl<E extends Event>
     /**
      * Sets the timestamp value to use with the new event.
      *
-     * @param inTimestamp a <code>Date</code> value or <code>null</code>
+     * @param inTimestamp a <code>LocalDateTime</code> value or <code>null</code>
      * @return an <code>AbstractEventBuilderImpl</code> value
      */
-    public AbstractEventBuilderImpl<E> withTimestamp(Date inTimestamp)
+    public AbstractEventBuilderImpl<E> withTimestamp(LocalDateTime inTimestamp)
     {
         event.setTimestamp(inTimestamp);
         return this;

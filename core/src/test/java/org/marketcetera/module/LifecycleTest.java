@@ -296,7 +296,7 @@ public class LifecycleTest extends ModuleTestBase {
             protected void run() throws Exception {
                 sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                         instanceName, new File("yellow"),
-                        new URL("http://what?"), new Date());
+                        new URL("http://what?"), java.time.LocalDateTime.now());
             }
         };
         //test incorrect url error
@@ -305,7 +305,7 @@ public class LifecycleTest extends ModuleTestBase {
             protected void run() throws Exception {
                 sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                         instanceName, File.listRoots()[0],
-                        new URL("ftp://what?"), new Date());
+                        new URL("ftp://what?"), java.time.LocalDateTime.now());
             }
         };
         //test date not supplied error.
@@ -319,7 +319,7 @@ public class LifecycleTest extends ModuleTestBase {
         };
         ModuleURN urn = sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                 instanceName, File.listRoots()[0],
-                new URL("http://what?"), new Date());
+                new URL("http://what?"), java.time.LocalDateTime.now());
         assertEquals(instanceName, urn.instanceName());
         assertContains(sManager.getModuleInstances(
                 ComplexModuleFactory.PROVIDER_URN),new ModuleURN[]{urn});
@@ -461,7 +461,7 @@ public class LifecycleTest extends ModuleTestBase {
         //create that module and then attempt starting it
         sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                 urn3.instanceName(), File.listRoots()[0],
-                new URL("http://what?"), new Date());
+                new URL("http://what?"), java.time.LocalDateTime.now());
         assertModuleInfo(urn3, ModuleState.CREATED,
                 null, null, false, false, false, false, false);
         assertModuleBase(urn3, false, false, false, false);
@@ -492,7 +492,7 @@ public class LifecycleTest extends ModuleTestBase {
         final ModuleURN urn = new ModuleURN(ComplexModuleFactory.PROVIDER_URN, "startFail");
         sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                 urn.instanceName(), File.listRoots()[0],
-                new URL("http://what?"), new Date());
+                new URL("http://what?"), java.time.LocalDateTime.now());
         ModuleInfo info = assertModuleInfo(urn, ModuleState.CREATED,
                 null, null, false, false, false, false, false);
         //verify that there's no start failure message
@@ -557,7 +557,7 @@ public class LifecycleTest extends ModuleTestBase {
                 ComplexModuleFactory.PROVIDER_URN,"stopTesting");
         sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                 urn3.instanceName(), File.listRoots()[0],
-                new URL("http://what?"), new Date());
+                new URL("http://what?"), java.time.LocalDateTime.now());
         assertModuleInfo(urn3, ModuleState.CREATED,
                 null, null, false, false, false, false, false);
         assertModuleBase(urn3, false, false, false, false);
@@ -601,7 +601,7 @@ public class LifecycleTest extends ModuleTestBase {
         final ModuleURN urn = new ModuleURN(ComplexModuleFactory.PROVIDER_URN,"stopFail");
         sManager.createModule(ComplexModuleFactory.PROVIDER_URN,
                 urn.instanceName(), File.listRoots()[0],
-                new URL("http://what?"), new Date());
+                new URL("http://what?"), java.time.LocalDateTime.now());
         ModuleInfo info = assertModuleInfo(urn, ModuleState.CREATED,
                 null, null, false, false, false, false, false);
         //verify that there's no stop failure message

@@ -219,7 +219,7 @@ public class MarketdataCacheElementTest
                 .withExchange("Q")
                 .withPrice(EventTestBase.generateDecimalValue())
                 .withSize(EventTestBase.generateDecimalValue())
-                .withQuoteDate(new Date());
+                .withQuoteDate(java.time.LocalDateTime.now());
         return builder.create();
     }
     /**
@@ -235,7 +235,7 @@ public class MarketdataCacheElementTest
                 .withExchange("Q")
                 .withPrice(EventTestBase.generateDecimalValue())
                 .withSize(EventTestBase.generateDecimalValue())
-                .withQuoteDate(new Date());
+                .withQuoteDate(java.time.LocalDateTime.now());
         return builder.create();
     }
     /**

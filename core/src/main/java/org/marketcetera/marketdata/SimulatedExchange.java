@@ -901,7 +901,7 @@ public class SimulatedExchange
                                "{} beginning tick {} at {}", //$NON-NLS-1$
                                this,
                                iterationCounter.incrementAndGet(),
-                               DateUtils.dateToString(new Date()));
+                               DateUtils.dateToString(java.time.LocalDateTime.now()));
         // if the previous tick hasn't completed yet, skip this tick and wait for the next one
         if(readyForTick.getAndSet(false)) {
             // the previous tick has completed, so we can begin this one
@@ -1472,7 +1472,7 @@ public class SimulatedExchange
                 }
             }
             // take the modified value and add a bid and an ask based on it
-            Date timestamp = new Date();
+            Date timestamp = java.time.LocalDateTime.now();
             Instrument marketInstrument = getBook().getInstrument();
             // create an ask event builder
             QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(marketInstrument);

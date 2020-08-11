@@ -215,10 +215,10 @@ public abstract class Module {
         mState = inState;
         switch (inState) {
             case STARTED:
-                mStarted = new Date();
+                mStarted = java.time.LocalDateTime.now();
                 break;
             case STOPPED:
-                mStopped = new Date();
+                mStopped = java.time.LocalDateTime.now();
                 break;
             default:
                 //do nothing
@@ -288,7 +288,7 @@ public abstract class Module {
     private volatile String mLastStopFailure;
     private volatile Date mStarted = null;
     private volatile Date mStopped = null;
-    private final Date mCreated = new Date();
+    private final Date mCreated = java.time.LocalDateTime.now();
     private final ModuleURN mURN;
     private final boolean mAutoStart;
 }

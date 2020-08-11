@@ -73,7 +73,7 @@ public class EventBeanTest
         // test timestamp
         // set bean3 to non-null
         assertNull(bean1.getTimestamp());
-        bean3.setTimestamp(new Date());
+        bean3.setTimestamp(java.time.LocalDateTime.now());
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -105,7 +105,7 @@ public class EventBeanTest
                         null,
                         null);
         long messageId = System.nanoTime();
-        Date timestamp = new Date();
+        Date timestamp = java.time.LocalDateTime.now();
         Object source = EventBeanTest.class;
         inBean.setMessageId(messageId);
         inBean.setTimestamp(timestamp);

@@ -204,7 +204,7 @@ public class OrderHistoryManager
     {
         synchronized(orders) {
             StringBuffer output = new StringBuffer();
-            output.append(nl).append("Order History as of ").append(new Date()).append(nl); //$NON-NLS-1$
+            output.append(nl).append("Order History as of ").append(java.time.LocalDateTime.now()).append(nl); //$NON-NLS-1$
             Table latestReportTable = new Table(10,
                                                 BorderStyle.CLASSIC_COMPATIBLE_WIDE,
                                                 ShownBorders.ALL,

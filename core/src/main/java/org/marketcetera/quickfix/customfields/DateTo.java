@@ -16,7 +16,7 @@ public class DateTo extends UtcTimeStampField {
     public static final int FIELD = 9884;
 
     public DateTo() {
-        super(FIELD, new Date()); //non-i18n
+        super(FIELD, java.time.LocalDateTime.now()); //non-i18n
     }
 
     public DateTo(Date data) {

@@ -48,7 +48,7 @@ public enum OrderType {
     Pegged(quickfix.field.OrdType.PEGGED),
     PreviouslyIndicated(quickfix.field.OrdType.PREVIOUSLY_INDICATED),
     PreviouslyQuoted(quickfix.field.OrdType.PREVIOUSLY_QUOTED),
-    Stop(quickfix.field.OrdType.STOP),
+    Stop(quickfix.field.OrdType.STOP_STOP_LOSS),
     StopLimit(quickfix.field.OrdType.STOP_LIMIT),
     WithOrWithout(quickfix.field.OrdType.WITH_OR_WITHOUT);
 
