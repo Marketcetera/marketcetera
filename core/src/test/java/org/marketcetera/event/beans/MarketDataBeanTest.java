@@ -295,7 +295,7 @@ public class MarketDataBeanTest
                              null,
                              EventType.UNKNOWN);
         String exchange = "test exchange";
-        Date exchangeTimestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime exchangeTimestamp = java.time.LocalDateTime.now();
         Instrument instrument = new Equity("GOOG");
         BigDecimal price = BigDecimal.ONE;
         BigDecimal size = BigDecimal.TEN;
@@ -345,7 +345,7 @@ public class MarketDataBeanTest
      */
     static void verifyMarketDataBean(MarketDataBean inBean,
                                      String inExpectedExchange,
-                                     Date inExpectedExchangeTimestamp,
+                                     java.time.LocalDateTime inExpectedExchangeTimestamp,
                                      long inExpectedProcessedTimestamp,
                                      long inExpectedReceivedTimestamp,
                                      Instrument inExpectedInstrument,

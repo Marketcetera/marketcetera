@@ -1,8 +1,6 @@
 package org.marketcetera.event;
 
-import org.joda.time.DateTime;
-import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TradeEvent;
+import java.time.LocalDateTime;
 
 /* $License$ */
 
@@ -21,19 +19,19 @@ public interface TimestampGenerator
      * @param inTrade a <code>TradeEvent</code> value
      * @return a <code>DateTime</code> value
      */
-    DateTime generateTimestamp(TradeEvent inTrade);
+    LocalDateTime generateTimestamp(TradeEvent inTrade);
     /**
      * Generates a timestamp value from the given quote.
      *
      * @param inQuote a <code>QuoteEvent</code> value
      * @return a <code>DateTime</code> value
      */
-    DateTime generateTimestamp(QuoteEvent inQuote);
+    LocalDateTime generateTimestamp(QuoteEvent inQuote);
     /**
      * Generates a timestamp value from the given specific string representation.
      *
      * @param inTimestamp a <code>String</code> value
      * @return a <code>DateTime</code> value
      */
-    DateTime generateTimestamp(String inTimestamp);
+    LocalDateTime generateTimestamp(String inTimestamp);
 }

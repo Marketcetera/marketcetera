@@ -74,7 +74,7 @@ public final class DataFlowInfo implements Serializable {
      *
      * @return the timestamp when the data flow was created. 
      */
-    public Date getCreated() {
+    public java.time.LocalDateTime getCreated() {
         return mCreated;
     }
 
@@ -84,7 +84,7 @@ public final class DataFlowInfo implements Serializable {
      *
      * @return the timestamp when the data flow was stopped. 
      */
-    public Date getStopped() {
+    public java.time.LocalDateTime getStopped() {
         return mStopped;
     }
 
@@ -111,8 +111,8 @@ public final class DataFlowInfo implements Serializable {
                         DataFlowID inFlowID,
                         ModuleURN inRequesterURN,
                         ModuleURN inStopperURN,
-                        Date inCreated,
-                        Date inStopped) {
+                        java.time.LocalDateTime inCreated,
+                        java.time.LocalDateTime inStopped) {
         mFlowSteps = inFlowSteps;
         mFlowID = inFlowID;
         mRequesterURN = inRequesterURN;
@@ -125,7 +125,7 @@ public final class DataFlowInfo implements Serializable {
     private final DataFlowID mFlowID;
     private final ModuleURN mRequesterURN;
     private final ModuleURN mStopperURN;
-    private final Date mCreated;
-    private final Date mStopped;
+    private final java.time.LocalDateTime mCreated;
+    private final java.time.LocalDateTime mStopped;
     private static final long serialVersionUID = 5755115729366822314L;
 }

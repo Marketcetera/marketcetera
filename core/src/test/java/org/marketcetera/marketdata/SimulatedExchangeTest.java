@@ -1873,7 +1873,7 @@ public class SimulatedExchangeTest
                          currentDividend.getCurrency());
             assertEquals(inEquity,
                          currentDividend.getEquity());
-            Date today = java.time.LocalDateTime.now();
+            java.time.LocalDateTime today = java.time.LocalDateTime.now();
             assertNotNull(currentDividend.getDeclareDate());
             assertTrue(today.after(DateUtils.stringToDate(currentDividend.getDeclareDate())));
             assertNotNull(currentDividend.getExecutionDate());

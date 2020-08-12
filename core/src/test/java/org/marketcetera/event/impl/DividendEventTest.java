@@ -66,7 +66,7 @@ public class DividendEventTest
         assertEquals(null,
                      builder.getDividend().getTimestamp());
         // regular timestamp
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getDividend().getTimestamp());

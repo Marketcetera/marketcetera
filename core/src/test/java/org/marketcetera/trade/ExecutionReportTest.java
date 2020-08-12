@@ -132,9 +132,9 @@ public class ExecutionReportTest extends TypesTestBase {
         String lastMarket = "XDES";
         BigDecimal leavesQty = new BigDecimal("343.53");
         OrderType orderType = OrderType.Limit;
-        Date sendingTime = java.time.LocalDateTime.now();
+        java.time.LocalDateTime sendingTime = java.time.LocalDateTime.now();
         TimeInForce timeInForce = TimeInForce.Day;
-        Date transactTime = java.time.LocalDateTime.now();
+        java.time.LocalDateTime transactTime = java.time.LocalDateTime.now();
         text = "show me the money";
         msg.setField(new OrigClOrdID(origOrderID.getValue()));
         msg.setField(new ExecType(execType.getFIXValue()));

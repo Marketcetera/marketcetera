@@ -183,7 +183,7 @@ public class DateUtilsTest
             }
         };
         // take a date and make sure it comes out correctly when asking for a specific format
-        Date testDate = java.time.LocalDateTime.now();
+        java.time.LocalDateTime testDate = java.time.LocalDateTime.now();
         for(DateTimeFormatter format : formats) {
             assertEquals(format.print(new DateTime(testDate)),
                          DateUtils.dateToString(testDate,
@@ -206,7 +206,7 @@ public class DateUtilsTest
                                    String inExpectedEasternDate)
         throws Exception
     {
-        Date date = DateUtils.stringToDate(inDateToTest);
+        java.time.LocalDateTime date = DateUtils.stringToDate(inDateToTest);
         assertEquals(inExpectedUTCDate,
                      DateUtils.dateToString(date));
         assertEquals(testDateFormat.parse(inExpectedEasternDate),

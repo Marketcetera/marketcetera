@@ -65,7 +65,7 @@ public final class ModuleInfo implements Serializable {
      *
      * @return the time stamp when the module was created
      */
-    public Date getCreated() {
+    public java.time.LocalDateTime getCreated() {
         return mCreated;
     }
 
@@ -74,7 +74,7 @@ public final class ModuleInfo implements Serializable {
      *
      * @return the time stamp when the module was last started.
      */
-    public Date getStarted() {
+    public java.time.LocalDateTime getStarted() {
         return mStarted;
     }
 
@@ -83,7 +83,7 @@ public final class ModuleInfo implements Serializable {
      *
      * @return the timestamp when the module was last stopped.
      */
-    public Date getStopped() {
+    public java.time.LocalDateTime getStopped() {
         return mStopped;
     }
 
@@ -236,9 +236,9 @@ public final class ModuleInfo implements Serializable {
                       ModuleState inState,
                       DataFlowID[] inInitiatedDataFlows,
                       DataFlowID[] inParticipatingDataFlows,
-                      Date inCreated,
-                      Date inStarted,
-                      Date inStopped,
+                      java.time.LocalDateTime inCreated,
+                      java.time.LocalDateTime inStarted,
+                      java.time.LocalDateTime inStopped,
                       boolean inAutostart,
                       boolean inAutocreated,
                       boolean inReceiver,
@@ -305,9 +305,9 @@ public final class ModuleInfo implements Serializable {
     private final ModuleState mState;
     private final DataFlowID[] mInitiatedDataFlows;
     private final DataFlowID[] mParticipatingDataFlows;
-    private final Date mCreated;
-    private final Date mStarted;
-    private final Date mStopped;
+    private final java.time.LocalDateTime mCreated;
+    private final java.time.LocalDateTime mStarted;
+    private final java.time.LocalDateTime mStopped;
     private final boolean mAutostart;
     private final boolean mAutocreated;
     private final boolean mReceiver;

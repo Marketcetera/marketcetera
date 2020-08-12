@@ -148,7 +148,7 @@ public class DateUtils
      * @return a <code>Date</code> value 
      * @throws MarketDataRequestException if the given <code>String</code> could not be parsed 
      */
-    public static Date stringToDate(String inDateString)
+    public static java.time.LocalDateTime stringToDate(String inDateString)
         throws MarketDataRequestException
     {
         if(inDateString == null ||

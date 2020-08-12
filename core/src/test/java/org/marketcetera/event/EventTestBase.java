@@ -111,7 +111,7 @@ public class EventTestBase
      * @return an <code>AskEvent</code> value
      */
     public static AskEvent generateAskEvent(Instrument inInstrument,
-                                            Date inQuoteDate)
+                                            java.time.LocalDateTime inQuoteDate)
     {
         return QuoteEventBuilder.askEvent(inInstrument)
                 .withExchange(generateExchange())
@@ -157,7 +157,7 @@ public class EventTestBase
      * @return a <code>BidEvent</code> value
      */
     public static BidEvent generateBidEvent(Instrument inInstrument,
-                                            Date inQuoteDate)
+                                            java.time.LocalDateTime inQuoteDate)
     {
         return QuoteEventBuilder.bidEvent(inInstrument)
                 .withExchange(generateExchange())
@@ -211,12 +211,12 @@ public class EventTestBase
      * @return an <code>AskEvent</code> value
      */
     public static AskEvent generateEquityAskEvent(long inMessageId,
-                                                  Date inTimestamp,
+                                                  java.time.LocalDateTime inTimestamp,
                                                   Equity inInstrument,
                                                   String inExchange,
                                                   BigDecimal inPrice,
                                                   BigDecimal inSize,
-                                                  Date inExchangeTimestamp)
+                                                  java.time.LocalDateTime inExchangeTimestamp)
     {
         return QuoteEventBuilder.equityAskEvent().withMessageId(inMessageId)
                                                  .withTimestamp(inTimestamp)
@@ -558,12 +558,12 @@ public class EventTestBase
      * @return a <code>BidEvent</code> value
      */
     public static BidEvent generateEquityBidEvent(long inMessageId,
-                                                  Date inTimestamp,
+                                                  java.time.LocalDateTime inTimestamp,
                                                   Equity inInstrument,
                                                   String inExchange,
                                                   BigDecimal inPrice,
                                                   BigDecimal inSize,
-                                                  Date inExchangeTimestamp)
+                                                  java.time.LocalDateTime inExchangeTimestamp)
     {
         return QuoteEventBuilder.equityBidEvent().withMessageId(inMessageId)
                                                  .withTimestamp(inTimestamp)
@@ -948,12 +948,12 @@ public class EventTestBase
      * @return a <code>TradeEvent</code> value
      */
     public static TradeEvent generateEquityTradeEvent(long inMessageId,
-                                                      Date inTimestamp,
+                                                      java.time.LocalDateTime inTimestamp,
                                                       Equity inInstrument,
                                                       String inExchange,
                                                       BigDecimal inPrice,
                                                       BigDecimal inSize,
-                                                      Date inExchangeTimestamp)
+                                                      java.time.LocalDateTime inExchangeTimestamp)
     {
         return TradeEventBuilder.equityTradeEvent().withMessageId(inMessageId)
                                                    .withTimestamp(inTimestamp)
@@ -1011,17 +1011,17 @@ public class EventTestBase
      * @return a <code>MarketstatEvent</code> value
      */
     public static MarketstatEvent generateEquityMarketstatEvent(Equity inInstrument,
-                                                                Date inTimestamp,
+                                                                java.time.LocalDateTime inTimestamp,
                                                                 BigDecimal inOpenPrice,
                                                                 BigDecimal inHighPrice,
                                                                 BigDecimal inLowPrice,
                                                                 BigDecimal inClosePrice,
                                                                 BigDecimal inPreviousClosePrice,
                                                                 BigDecimal inVolume,
-                                                                Date inCloseDate,
-                                                                Date inPreviousCloseDate,
-                                                                Date inTradeHighTime,
-                                                                Date inTradeLowTime,
+                                                                java.time.LocalDateTime inCloseDate,
+                                                                java.time.LocalDateTime inPreviousCloseDate,
+                                                                java.time.LocalDateTime inTradeHighTime,
+                                                                java.time.LocalDateTime inTradeLowTime,
                                                                 String inOpenExchange,
                                                                 String inHighExchange,
                                                                 String inLowExchange,
@@ -1262,7 +1262,7 @@ public class EventTestBase
      *
      * @return a <code>Date</code> value
      */
-    public static Date generateQuoteDate()
+    public static java.time.LocalDateTime generateQuoteDate()
     {
         return java.time.LocalDateTime.now();
     }

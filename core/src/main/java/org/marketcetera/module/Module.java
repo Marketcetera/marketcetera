@@ -1,11 +1,11 @@
 package org.marketcetera.module;
 
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -73,7 +73,7 @@ public abstract class Module {
      *
      * @return the timestamp when the module was created.
      */
-    public final Date getCreated() {
+    public final LocalDateTime getCreated() {
         return mCreated;
     }
 
@@ -96,7 +96,7 @@ public abstract class Module {
      *
      * @return the timestamp when the module was started.
      */
-    public final Date getStarted() {
+    public final java.time.LocalDateTime getStarted() {
         return mStarted;
     }
 
@@ -106,7 +106,7 @@ public abstract class Module {
      *
      * @return the timestamp when the module was stopped.
      */
-    public final Date getStopped() {
+    public final java.time.LocalDateTime getStopped() {
         return mStopped;
     }
 
@@ -215,10 +215,10 @@ public abstract class Module {
         mState = inState;
         switch (inState) {
             case STARTED:
-                mStarted = java.time.LocalDateTime.now();
+                mStarted = LocalDateTime.now();
                 break;
             case STOPPED:
-                mStopped = java.time.LocalDateTime.now();
+                mStopped = LocalDateTime.now();
                 break;
             default:
                 //do nothing
@@ -286,9 +286,9 @@ public abstract class Module {
     private volatile ModuleState mState = ModuleState.CREATED;
     private volatile String mLastStartFailure;
     private volatile String mLastStopFailure;
-    private volatile Date mStarted = null;
-    private volatile Date mStopped = null;
-    private final Date mCreated = java.time.LocalDateTime.now();
+    private volatile LocalDateTime mStarted = null;
+    private volatile LocalDateTime mStopped = null;
+    private final LocalDateTime mCreated = java.time.LocalDateTime.now();
     private final ModuleURN mURN;
     private final boolean mAutoStart;
 }

@@ -70,13 +70,13 @@ public interface Report
      *
      * @return a <code>Date</code> value
      */
-    Date getSendingTime();
+    java.time.LocalDateTime getSendingTime();
     /**
      * Get the transactTime value.
      *
      * @return a <code>Date</code> value
      */
-    Date getTransactTime();
+    java.time.LocalDateTime getTransactTime();
     /**
      * Get the reportType value.
      *

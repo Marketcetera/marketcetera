@@ -56,7 +56,7 @@ public class SessionUser
      *
      * @return a <code>Date</code> value
      */
-    public Date getLoggedIn()
+    public java.time.LocalDateTime getLoggedIn()
     {
         return loggedIn;
     }
@@ -206,5 +206,5 @@ public class SessionUser
     /**
      * indicates when the user was logged in
      */
-    private final Date loggedIn = java.time.LocalDateTime.now();
+    private final java.time.LocalDateTime loggedIn = java.time.LocalDateTime.now();
 }

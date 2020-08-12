@@ -108,7 +108,7 @@ public interface ReportService
      * @return a <code>List&lt;ReportBase&gt;</code> value
      */
     List<ReportBase> getReportsSince(User inUser,
-                                     Date inDate);
+                                     java.time.LocalDateTime inDate);
     /**
      * Get the position of the given instrument as of the given date from the point of view of the given user.
      *
@@ -118,7 +118,7 @@ public interface ReportService
      * @return a <code>BigDecimal</code> value
      */
     BigDecimal getPositionAsOf(User inUser,
-                               Date inDate,
+                               java.time.LocalDateTime inDate,
                                Instrument inInstrument);
     /**
      * Gets the position of the given equity as of the given date from the point of view
@@ -130,7 +130,7 @@ public interface ReportService
      * @return a <code>BigDecimal</code> value
      */
     BigDecimal getEquityPositionAsOf(User inUser,
-                                     Date inDate,
+                                     java.time.LocalDateTime inDate,
                                      Equity inEquity);
     /**
      * Gets the open orders visible to the given user.
@@ -147,7 +147,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf(User inUser,
-                                                                  Date inDate);
+                                                                  java.time.LocalDateTime inDate);
     /**
      * Gets the position of the given currency as of the given date visible to the
      * given user.
@@ -158,7 +158,7 @@ public interface ReportService
      * @return a <code>BigDecimal</code> value
      */
     BigDecimal getCurrencyPositionAsOf(User inUser,
-                                       Date inDate,
+                                       java.time.LocalDateTime inDate,
                                        Currency inCurrency);
     /**
      * Get all positions as of the given date visible to the given user.
@@ -168,7 +168,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(User inUser,
-                                                                          Date inDate);
+                                                                          java.time.LocalDateTime inDate);
     /**
      * Gets all currency positions as of the given date visible to the given user.
      *
@@ -177,7 +177,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(User inUser,
-                                                                      Date inDate);
+                                                                      java.time.LocalDateTime inDate);
     /**
      * Gets all convertible bond positions as of the given date visible to the given user.
      *
@@ -186,7 +186,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;ConvertibleBond&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<ConvertibleBond>,BigDecimal> getAllConvertibleBondPositionsAsOf(User inUser,
-                                                                                    Date inDate);
+                                                                                    java.time.LocalDateTime inDate);
     /**
      * Gets all future positions as of the given date visible to the given user.
      *
@@ -195,7 +195,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;Future&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(User inUser,
-                                                                  Date inDate);
+                                                                  java.time.LocalDateTime inDate);
     /**
      * Gets the position of the given future as of the given date visible to the
      * given user.
@@ -206,7 +206,7 @@ public interface ReportService
      * @return a <code>BigDecimal</code> value
      */
     BigDecimal getFuturePositionAsOf(User inUser,
-                                     Date inDate,
+                                     java.time.LocalDateTime inDate,
                                      Future inFuture);
     /**
      * Gets the position of the given convertible bond as of the given date visible to the
@@ -218,7 +218,7 @@ public interface ReportService
      * @return a <code>BigDecimal</code> value
      */
     BigDecimal getConvertibleBondPositionAsOf(User inUser,
-                                              Date inDate,
+                                              java.time.LocalDateTime inDate,
                                               ConvertibleBond inConvertibleBond);
     /**
      * Gets the position of the given option as of the given date visible to the
@@ -230,7 +230,7 @@ public interface ReportService
      * @return a <code>BigDecimal</code> value
      */
     BigDecimal getOptionPositionAsOf(User inUser,
-                                     Date inDate,
+                                     java.time.LocalDateTime inDate,
                                      Option inOption);
     /**
      * Gets all option positions as of the given date visible to the given user.
@@ -240,7 +240,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(User inUser,
-                                                                  Date inDate);
+                                                                  java.time.LocalDateTime inDate);
     /**
      * Gets the positions of the options of the given root symbols as of the given date
      * visible to the given user.
@@ -251,7 +251,7 @@ public interface ReportService
      * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&lt;</code> value
      */
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(User inUser,
-                                                               Date inDate,
+                                                               java.time.LocalDateTime inDate,
                                                                String[] inSymbols);
     /**
      * Saves the given report.
@@ -280,7 +280,7 @@ public interface ReportService
      * @return an <code>int</code> value
      */
     int findLastSequenceNumberFor(quickfix.SessionID inSessionId,
-                                  Date inDate);
+                                  java.time.LocalDateTime inDate);
     /**
      * Finds the ids of the unhandled incoming FIX messages of the given types for the given session since the given date.
      *
@@ -291,7 +291,7 @@ public interface ReportService
      */
     List<Long> findUnhandledIncomingMessageIds(quickfix.SessionID inSessionId,
                                                Set<String> inMessageTypes,
-                                               Date inSince);
+                                               java.time.LocalDateTime inSince);
     /**
      * Finds the incoming messages with the given ids.
      *

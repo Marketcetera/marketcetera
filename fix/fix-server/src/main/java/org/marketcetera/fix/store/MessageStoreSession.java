@@ -27,7 +27,7 @@ public class MessageStoreSession
      *
      * @return a <code>Date</code> value
      */
-    public Date getCreationTime()
+    public java.time.LocalDateTime getCreationTime()
     {
         return creationTime;
     }
@@ -92,7 +92,7 @@ public class MessageStoreSession
      * time session was actually created
      */
     @Column(name="creation_time",nullable=false)
-    private Date creationTime;
+    private java.time.LocalDateTime creationTime;
     /**
      * target sequence number value
      */

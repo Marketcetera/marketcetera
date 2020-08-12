@@ -53,7 +53,7 @@ public interface IncomingMessageDao
      */
     @Query(value="select count(*) from (select distinct clordid,execid from incoming_fix_messages where execid is not null and msg_type='8' and fix_session=?1 and sending_time>=?2) message_count",nativeQuery=true)
     long getExecutionCount(String inSessionId,
-                           Date inSince);
+                           java.time.LocalDateTime inSince);
     /**
      * Delete incoming messages sent before the given time.
      *
@@ -73,5 +73,5 @@ public interface IncomingMessageDao
      */
     PersistentIncomingMessage findBySessionIdAndMsgSeqNumAndSendingTime(String inSessionId,
                                                                         int inMsgSeqNum,
-                                                                        Date inSendingTime);
+                                                                        java.time.LocalDateTime inSendingTime);
 }

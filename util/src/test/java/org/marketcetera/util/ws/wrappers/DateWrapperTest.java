@@ -17,9 +17,9 @@ import static org.marketcetera.util.test.ComparableAssert.*;
 public class DateWrapperTest
     extends WrapperTestBase
 {
-    private static final Date TEST_DATE=
+    private static final java.time.LocalDateTime TEST_DATE=
         new Date(1);
-    private static final Date TEST_DATE_D=
+    private static final java.time.LocalDateTime TEST_DATE_D=
         new Date(2);
 
 

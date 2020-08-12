@@ -654,7 +654,7 @@ public class BasicCSVFeedEventTranslator
      * @return a <code>Date</code> value or <code>null</code>
      * @throws CoreException if an error occurs retrieving the trade date
      */
-    protected Date guessTradeDate(CSVQuantum inData)
+    protected java.time.LocalDateTime guessTradeDate(CSVQuantum inData)
             throws CoreException
     {
         return guessDate(inData,
@@ -744,7 +744,7 @@ public class BasicCSVFeedEventTranslator
      * @return a <code>Date</code> value or <code>null</code>
      * @throws CoreException if an error occurs
      */
-    protected Date guessQuoteDate(CSVQuantum inData)
+    protected java.time.LocalDateTime guessQuoteDate(CSVQuantum inData)
             throws CoreException
     {
         return guessDate(inData,
@@ -905,7 +905,7 @@ public class BasicCSVFeedEventTranslator
      * @return a <code>Date</code> value containing the timestamp for the event or <code>null</code>
      * @throws CoreException if the event could not be parsed
      */
-    protected Date guessEventTimestamp(CSVQuantum inData)
+    protected java.time.LocalDateTime guessEventTimestamp(CSVQuantum inData)
             throws CoreException
     {
         return guessDate(inData,
@@ -1150,7 +1150,7 @@ public class BasicCSVFeedEventTranslator
      * @return a <code>Date</code> value or <code>null</code>
      * @throws CoreException if the value cannot be interpreted as a <code>Date</code>
      */
-    protected Date guessDate(CSVQuantum inData,
+    protected java.time.LocalDateTime guessDate(CSVQuantum inData,
                              int inIndex)
             throws CoreException
     {

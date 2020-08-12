@@ -18,10 +18,10 @@ public class Exchange
     String otherAcronym;
     String city;
     String website;
-    Date dateAdded;
+    java.time.LocalDateTime dateAdded;
 
 
-    public Exchange(String country, String countryCode, String marketIdentifierCode, String institutionName, String otherAcronym, String city, String website, Date dateAdded) {
+    public Exchange(String country, String countryCode, String marketIdentifierCode, String institutionName, String otherAcronym, String city, String website, java.time.LocalDateTime dateAdded) {
         this.country = country;
         this.countryCode = countryCode;
         this.marketIdentifierCode = marketIdentifierCode;
@@ -60,7 +60,7 @@ public class Exchange
         return website;
     }
 
-    public Date getDateAdded() {
+    public java.time.LocalDateTime getDateAdded() {
         return dateAdded;
     }
 

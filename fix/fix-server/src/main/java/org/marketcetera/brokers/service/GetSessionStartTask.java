@@ -22,7 +22,7 @@ public class GetSessionStartTask
      * @see java.util.concurrent.Callable#call()
      */
     @Override
-    public Date call()
+    public java.time.LocalDateTime call()
             throws Exception
     {
         SLF4JLoggerProxy.debug(this,

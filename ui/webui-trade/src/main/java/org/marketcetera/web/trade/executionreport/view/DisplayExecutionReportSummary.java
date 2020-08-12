@@ -71,7 +71,7 @@ public class DisplayExecutionReportSummary
      * @see org.marketcetera.trade.Report#getTransactTime()
      */
     @Override
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return executionReportSummary.getReport().getTransactTime();
     }
@@ -271,7 +271,7 @@ public class DisplayExecutionReportSummary
      * @see org.marketcetera.trade.ExecutionReportSummary#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return executionReportSummary.getSendingTime();
     }

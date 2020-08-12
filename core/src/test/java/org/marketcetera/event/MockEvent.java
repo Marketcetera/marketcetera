@@ -68,7 +68,7 @@ public class MockEvent
      * @see org.marketcetera.event.Event#getTimestamp()
      */
     @Override
-    public Date getTimestamp()
+    public java.time.LocalDateTime getTimestamp()
     {
         return event.getTimestamp();
     }
@@ -102,7 +102,7 @@ public class MockEvent
     @Override
     public long getTimeMillis()
     {
-        Date timestamp = event.getTimestamp();
+        java.time.LocalDateTime timestamp = event.getTimestamp();
         if(timestamp == null) {
             return -1;
         }

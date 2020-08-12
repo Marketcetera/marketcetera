@@ -188,7 +188,7 @@ public class LiveOrderHistoryManager
      *
      * @return a <code>Date</code> value
      */
-    public Date getReportHistoryOrigin()
+    public java.time.LocalDateTime getReportHistoryOrigin()
     {
         return reportHistoryOrigin;
     }
@@ -222,7 +222,7 @@ public class LiveOrderHistoryManager
     /**
      * date from which to gather status
      */
-    private final Date reportHistoryOrigin;
+    private final java.time.LocalDateTime reportHistoryOrigin;
     /**
      * indicates if the object is active
      */

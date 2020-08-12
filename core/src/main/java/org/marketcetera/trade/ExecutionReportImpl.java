@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
 
     @Override
-    public synchronized Date getTransactTime() {
+    public synchronized java.time.LocalDateTime getTransactTime() {
         return FIXUtil.getTransactTime(getMessage());
     }
 

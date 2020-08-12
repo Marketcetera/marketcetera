@@ -128,7 +128,7 @@ public class BasicCSVFeedEventTranslatorTest
                                      0);
             }
         };
-        final Date date = java.time.LocalDateTime.now();
+        final java.time.LocalDateTime date = java.time.LocalDateTime.now();
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_DATE,
                                            date.toString()) {
@@ -466,7 +466,7 @@ public class BasicCSVFeedEventTranslatorTest
                                                                      request, 1.0));
             }
         };
-        final Date date = java.time.LocalDateTime.now();
+        final java.time.LocalDateTime date = java.time.LocalDateTime.now();
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_DATE,
                                            date.toString()) {

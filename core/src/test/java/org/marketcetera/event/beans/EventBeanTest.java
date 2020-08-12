@@ -105,7 +105,7 @@ public class EventBeanTest
                         null,
                         null);
         long messageId = System.nanoTime();
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         Object source = EventBeanTest.class;
         inBean.setMessageId(messageId);
         inBean.setTimestamp(timestamp);
@@ -131,7 +131,7 @@ public class EventBeanTest
      */
     static void verifyEventBean(EventBean inBean,
                                 long inExpectedMessageId,
-                                Date inExpectedTimestamp,
+                                java.time.LocalDateTime inExpectedTimestamp,
                                 Object inExpectedSource)
             throws Exception
     {

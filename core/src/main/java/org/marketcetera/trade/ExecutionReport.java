@@ -31,7 +31,7 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      *
      * @return the time of execution / order creation.
      */
-    public Date getTransactTime();
+    public java.time.LocalDateTime getTransactTime();
 
     /**
      * The status of this execution report.

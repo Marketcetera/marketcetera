@@ -245,13 +245,13 @@ class DataFlow {
      * is carried out at a higher level.
      */
     private volatile ModuleURN mStopRequesterURN;
-    private volatile Date mStopped = null;
+    private volatile java.time.LocalDateTime mStopped = null;
 
     private final ModuleURN mRequesterURN;
     private final DataFlowID mFlowID;
     private final DataRequest[] mRequests;
     private final AbstractDataCoupler[] mCouplers;
-    private final Date mCreated = java.time.LocalDateTime.now();
+    private final java.time.LocalDateTime mCreated = java.time.LocalDateTime.now();
     private boolean mCancelling = false;
     /**
      * ID factory for generating data flow IDs.

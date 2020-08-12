@@ -119,7 +119,7 @@ public abstract class AbstractEventBeanTestBase<E extends EventBean>
                 bean.getTimeMillis();
             }
         };
-        Date timestamp = new Date(-1);
+        java.time.LocalDateTime timestamp = new Date(-1);
         bean.setTimestamp(timestamp);
         assertEquals(timestamp,
                      bean.getTimestamp());

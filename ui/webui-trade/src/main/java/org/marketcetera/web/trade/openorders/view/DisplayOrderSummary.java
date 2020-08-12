@@ -168,7 +168,7 @@ implements FixMessageDisplayType,OrderSummary
      * @see org.marketcetera.trade.OrderSummary#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return orderSummary.getSendingTime();
     }
@@ -176,7 +176,7 @@ implements FixMessageDisplayType,OrderSummary
      * @see org.marketcetera.trade.OrderSummary#getTransactTime()
      */
     @Override
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return orderSummary.getTransactTime();
     }

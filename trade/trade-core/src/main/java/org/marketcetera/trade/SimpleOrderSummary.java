@@ -142,7 +142,7 @@ public class SimpleOrderSummary
      * @see org.marketcetera.trade.OrderSummary#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -150,7 +150,7 @@ public class SimpleOrderSummary
      * @see org.marketcetera.trade.OrderSummary#getTransactTime()
      */
     @Override
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return transactTime;
     }
@@ -403,11 +403,11 @@ public class SimpleOrderSummary
     /**
      * sending time value
      */
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * transact time value
      */
-    private Date transactTime;
+    private java.time.LocalDateTime transactTime;
     /**
      * actor value
      */

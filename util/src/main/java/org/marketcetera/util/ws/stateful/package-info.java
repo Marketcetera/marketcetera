@@ -106,11 +106,11 @@
  * in maps.</p></li>
  *
  * <li><p>Date objects are sometimes treated as calendars, and hence
- * are not marshalled properly. Specifically, Date objects as method
+ * are not marshalled properly. Specifically, java.time.LocalDateTime objects as method
  * arguments/results have problems when used in maps. Worse, even
  * outside maps, JAXB does not marshall dates correctly in certain
  * time zones, including GMT: it adds an hour to the marshalled
- * date. Hence, wrap Date objects by a <code>DateWrapper</code> which
+ * date. Hence, wrap java.time.LocalDateTime objects by a <code>DateWrapper</code> which
  * remedies the above shortcomings.</p></li>
  *
  * <li><p>Collections and maps undergo special handling during

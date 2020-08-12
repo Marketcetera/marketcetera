@@ -409,7 +409,7 @@ public class PersistentExecutionReport
      * @see org.marketcetera.trade.dao.ExecutionReport#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -765,7 +765,7 @@ public class PersistentExecutionReport
      * sending time value
      */
     @Column(name="send_time",nullable=false)
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * viewer value
      */

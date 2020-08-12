@@ -615,9 +615,9 @@ public interface Service
 
     // Date.
 
-    Date dt
+    java.time.LocalDateTime dt
         (StatelessClientContext context,
-         Date arg)
+         java.time.LocalDateTime arg)
         throws RemoteException;
 
     Date[] arrDt

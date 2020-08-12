@@ -56,7 +56,7 @@ public class QuoteBeanTest
             throws Exception
     {
         Instrument equity = new Equity("METC");
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         long receivedTimestamp = timestamp.getTime()+1;
         long processedTimestamp = receivedTimestamp+1;
         BigDecimal size = BigDecimal.ONE;
@@ -610,10 +610,10 @@ public class QuoteBeanTest
      */
     static void verifyQuoteBeanFull(QuoteBean inBean,
                                     long inExpectedMessageId,
-                                    Date inExpectedTimestamp,
+                                    java.time.LocalDateTime inExpectedTimestamp,
                                     Object inExpectedSource,
                                     String inExpectedExchange,
-                                    Date inExpectedExchangeTimestamp,
+                                    java.time.LocalDateTime inExpectedExchangeTimestamp,
                                     long inExpectedProcessedTimestamp,
                                     long inExpectedReceivedTimestamp,
                                     Instrument inExpectedInstrument,

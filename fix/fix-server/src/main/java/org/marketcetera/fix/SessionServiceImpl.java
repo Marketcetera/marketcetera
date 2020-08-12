@@ -162,10 +162,10 @@ public class SessionServiceImpl
      * @see com.marketcetera.fix.SessionService#getSessionStart(quickfix.SessionID)
      */
     @Override
-    public Date getSessionStart(SessionID inSessionId)
+    public java.time.LocalDateTime getSessionStart(SessionID inSessionId)
     {
         FixSession fixSession = findFixSessionBySessionId(inSessionId);
-        Date returnValue = new DateTime().withTimeAtStartOfDay().toDate();
+        java.time.LocalDateTime returnValue = new DateTime().withTimeAtStartOfDay().toDate();
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No fix session for {}, using {} instead",
@@ -215,7 +215,7 @@ public class SessionServiceImpl
                                        "{} has no specified active days",
                                        inSessionId);
             } else {
-                Date startOfSession = getSessionStart(inSessionId);
+                java.time.LocalDateTime startOfSession = getSessionStart(inSessionId);
                 if(startOfSession == null) {
                     SLF4JLoggerProxy.debug(this,
                                            "Unable to calculate start of session for {}, using now",

@@ -44,7 +44,7 @@ public interface MarketDataEvent
      *
      * @return a <code>Date</code> value
      */
-    public Date getExchangeTimestamp();
+    public java.time.LocalDateTime getExchangeTimestamp();
     /**
      * Gets the type of the event.
      *

@@ -69,7 +69,7 @@ public interface PersistentReportDao
     @Query("select count(r) FROM PersistentReport r WHERE r.sessionIdValue=?1 and r.mReportType=?2 and r.sendingTime >= ?3")
     long getExecutionCount(String inSessionId,
                            ReportType inReportType,
-                           Date inSince);
+                           java.time.LocalDateTime inSince);
     /**
      * Finds the ids of the incoming messages that do not have a corresponding report.
      *
@@ -81,5 +81,5 @@ public interface PersistentReportDao
     @Query(value="select i.id from IncomingMessage i where not exists (select r.id from PersistentReport r where i.msgSeqNum=r.msgSeqNum and i.sessionId=r.sessionIdValue and i.sendingTime=r.sendingTime) and i.msgType in (?2) and i.sessionId=?1 and i.sendingTime >= ?3 order by id")
     List<Long> findUnhandledIncomingMessageIds(String inSessionId,
                                                Set<String> inMessageTypes,
-                                               Date inSince);
+                                               java.time.LocalDateTime inSince);
 }

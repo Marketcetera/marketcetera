@@ -77,7 +77,7 @@ public interface SessionService
      * @param inSessionId a <code>SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getSessionStart(SessionID inSessionId);
+    java.time.LocalDateTime getSessionStart(SessionID inSessionId);
     /**
      * Indicate if the session with the given session ID is expected to be active now.
      *

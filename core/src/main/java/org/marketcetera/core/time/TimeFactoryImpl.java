@@ -1,15 +1,16 @@
 package org.marketcetera.core.time;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 import org.springframework.stereotype.Component;
 
 /* $License$ */
@@ -30,35 +31,35 @@ public class TimeFactoryImpl
      * @see org.marketcetera.core.Factory#create()
      */
     @Override
-    public DateTime create()
+    public LocalDateTime create()
     {
-        return DateTime.now();
+        return LocalDateTime.now();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.Factory#create(java.lang.Object)
      */
     @Override
-    public DateTime create(DateTime inObject)
+    public LocalDateTime create(LocalDateTime inObject)
     {
-        return new DateTime(inObject);
+        return LocalDateTime.from(inObject);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ramius.inputs.TimeFactory#create(java.lang.String)
      */
     @Override
-    public DateTime create(String inValue)
+    public LocalDateTime create(String inValue)
     {
         inValue = StringUtils.trimToNull(inValue);
         Validate.notNull(inValue);
-        DateTime value = null;
+        LocalDateTime value = null;
         for(DateTimeFormatter formatter : FORMATTERS) {
             try {
-                value = formatter.parseDateTime(inValue);
+                value = LocalDateTime.parse(inValue,
+                                            formatter);
             } catch (IllegalArgumentException ignored) {}
         }
-        if(value != null &&
-           SECONDS_PATTERN.matcher(inValue).matches()) {
-            value = value.plus(new LocalDate().toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis());
+        if(value != null && SECONDS_PATTERN.matcher(inValue).matches()) {
+            value = value.plusNanos(LocalDate.now().atStartOfDay().atZone(ZONE).getNano());
         }
         Validate.notNull(value);
         return value;
@@ -67,15 +68,15 @@ public class TimeFactoryImpl
      * @see com.marketcetera.ramius.inputs.TimeFactory#create(long)
      */
     @Override
-    public DateTime create(long inValue)
+    public LocalDateTime create(long inValue)
     {
-        return new DateTime(inValue).toDateTime(DateTimeZone.UTC);
+        return DateService.toLocalDateTime(inValue);
     }
     private static final Pattern SECONDS_PATTERN = Pattern.compile("^([0-9]{1,2}){0,1}(:[0-9]{1,2}){0,1}(:[0-9]{1,2}){0,1}$");
-    public static final DateTimeZone ZONE = DateTimeZone.UTC;
-    public static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,4).toFormatter();
-    public static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
-    public static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
+    public static final ZoneId ZONE = ZoneId.of("UTC");
+    public static final DateTimeFormatter YEAR = DateTimeFormatter.ofPattern("yyyy");
+    public static final DateTimeFormatter MONTH = DateTimeFormatter.ofPattern("MM");
+    public static final DateTimeFormatter DAY = DateTimeFormatter.ofPattern("dd");
     public static final DateTimeFormatter DASH = new DateTimeFormatterBuilder().appendLiteral('-').toFormatter();
     public static final DateTimeFormatter SPACE = new DateTimeFormatterBuilder().appendLiteral(' ').toFormatter();
     public static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
@@ -84,12 +85,12 @@ public class TimeFactoryImpl
     public static final DateTimeFormatter COLON = new DateTimeFormatterBuilder().appendLiteral(':').toFormatter();
     public static final DateTimeFormatter PERIOD = new DateTimeFormatterBuilder().appendLiteral('.').toFormatter();
     public static final DateTimeFormatter SLASH = new DateTimeFormatterBuilder().appendLiteral('/').toFormatter();
-    public static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
-    public static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
-    public static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
+    public static final DateTimeFormatter HOUR = DateTimeFormatter.ofPattern("HH");
+    public static final DateTimeFormatter MINUTE = DateTimeFormatter.ofPattern("mm");
+    public static final DateTimeFormatter SECOND = DateTimeFormatter.ofPattern("ss");
     public static final DateTimeFormatter US_DATE = new DateTimeFormatterBuilder().append(DAY).append(SLASH).append(MONTH).append(SLASH).append(YEAR).toFormatter();
     public static final DateTimeFormatter INTL_DATE = new DateTimeFormatterBuilder().append(MONTH).append(SLASH).append(DAY).append(SLASH).append(YEAR).toFormatter();
-    public static final DateTimeFormatter MILLISECOND = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
+    public static final DateTimeFormatter MILLISECOND = DateTimeFormatter.ofPattern("SSS");
     /**
      * ISO9601 with millis
      */

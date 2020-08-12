@@ -135,7 +135,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      */
     @SuppressWarnings("unchecked")
     public static <E extends QuoteEvent> E change(E inEvent,
-                                                  Date inNewTimestamp,
+                                                  java.time.LocalDateTime inNewTimestamp,
                                                   BigDecimal inNewSize)
     {
         QuoteBean quote = QuoteBean.getQuoteBeanFromEvent(inEvent,

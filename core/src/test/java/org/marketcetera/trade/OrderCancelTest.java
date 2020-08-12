@@ -178,7 +178,7 @@ public class OrderCancelTest extends TypesTestBase {
         //Check custom fields
         //Set fields of every type.
         Map<String,String> expectedMap = new HashMap<String, String>();
-        Date date = java.time.LocalDateTime.now();
+        java.time.LocalDateTime date = java.time.LocalDateTime.now();
         BigDecimal bigDecimal = new BigDecimal("35234.35989");
         char charValue = '0';
         int intValue = 1;

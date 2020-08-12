@@ -176,7 +176,7 @@ public class MarketstatEventTest
         assertEquals(null,
                      builder.getMarketstat().getTimestamp());
         // regular timestamp
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getMarketstat().getTimestamp());

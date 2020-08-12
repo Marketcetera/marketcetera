@@ -157,7 +157,7 @@ public class PositionTest
                               inInstrument,
                               inFixVersion);
         setupSession(inFixVersion);
-        Date positionDate = java.time.LocalDateTime.now();
+        java.time.LocalDateTime positionDate = java.time.LocalDateTime.now();
         BigDecimal expectedPosition = BigDecimal.ZERO;
         verifyPositionFromAllPositions(inInstrument,
                                        expectedPosition,
@@ -226,7 +226,7 @@ public class PositionTest
                               inInstrument,
                               inFixVersion);
         setupSession(inFixVersion);
-        Date positionDate = java.time.LocalDateTime.now();
+        java.time.LocalDateTime positionDate = java.time.LocalDateTime.now();
         BigDecimal expectedPosition = BigDecimal.ZERO;
         verifySinglePosition(inInstrument,
                              expectedPosition,
@@ -307,7 +307,7 @@ public class PositionTest
      */
     private void verifySinglePosition(Instrument inInstrument,
                                       BigDecimal inExpectedPosition,
-                                      Date inPositionDate)
+                                      java.time.LocalDateTime inPositionDate)
             throws Exception
     {
         verifySinglePosition(inInstrument,
@@ -334,7 +334,7 @@ public class PositionTest
      */
     private void verifySinglePosition(Instrument inInstrument,
                                       BigDecimal inExpectedPosition,
-                                      Date inPositionDate,
+                                      java.time.LocalDateTime inPositionDate,
                                       User inUser)
             throws Exception
     {
@@ -374,7 +374,7 @@ public class PositionTest
      */
     private void verifyPositionFromAllPositions(Instrument inInstrument,
                                                 BigDecimal inExpectedPosition,
-                                                Date inPositionDate)
+                                                java.time.LocalDateTime inPositionDate)
             throws Exception
     {
         verifyPositionFromAllPositions(inInstrument,
@@ -401,7 +401,7 @@ public class PositionTest
      */
     private void verifyPositionFromAllPositions(Instrument inInstrument,
                                                 BigDecimal inExpectedPosition,
-                                                Date inPositionDate,
+                                                java.time.LocalDateTime inPositionDate,
                                                 User inUser)
             throws Exception
     {
@@ -442,7 +442,7 @@ public class PositionTest
      * @throws Exception if an unexpected error occurs
      */
     private Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositions(User inUser,
-                                                                              Date inPositionDate)
+                                                                              java.time.LocalDateTime inPositionDate)
             throws Exception
     {
         Map<PositionKey<? extends Instrument>,BigDecimal> results = Maps.newHashMap();
@@ -548,7 +548,7 @@ public class PositionTest
      * @throws Exception if an unexpected error occurs
      */
     private BigDecimal getSinglePosition(User inUser,
-                                         Date inPositionDate,
+                                         java.time.LocalDateTime inPositionDate,
                                          Instrument inInstrument)
             throws Exception
     {

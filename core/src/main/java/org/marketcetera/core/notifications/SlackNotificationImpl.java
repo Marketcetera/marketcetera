@@ -26,7 +26,7 @@ public class SlackNotificationImpl
      */
     public SlackNotificationImpl(String inSubject,
                                  String inBody,
-                                 Date inDate,
+                                 java.time.LocalDateTime inDate,
                                  Severity inSeverity,
                                  String inOriginator)
     {

@@ -211,7 +211,7 @@ abstract class AbstractMarketstatEventImpl
      * @see org.marketcetera.event.Event#getTimestamp()
      */
     @Override
-    public Date getTimestamp()
+    public java.time.LocalDateTime getTimestamp()
     {
         return marketstat.getTimestamp();
     }

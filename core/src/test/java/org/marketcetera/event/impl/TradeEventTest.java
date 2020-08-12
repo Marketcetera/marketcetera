@@ -407,7 +407,7 @@ public class TradeEventTest
             throws Exception
     {
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
-        Date date = null;
+        java.time.LocalDateTime date = null;
         builder.withTradeDate(date);
         assertEquals(date,
                      builder.getTradeData().getExchangeTimestamp());
@@ -485,7 +485,7 @@ public class TradeEventTest
         assertEquals(null,
                      builder.getTradeData().getTimestamp());
         // regular timestamp
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getTradeData().getTimestamp());

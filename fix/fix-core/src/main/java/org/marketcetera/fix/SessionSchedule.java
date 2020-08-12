@@ -302,7 +302,7 @@ public class SessionSchedule {
      *
      * @return a <code>Date</code> value
      */
-    public Date getMostRecentStartTime()
+    public java.time.LocalDateTime getMostRecentStartTime()
     {
         Calendar now = SystemTime.getUtcCalendar();
         TimeInterval interval = theMostRecentIntervalBefore(now);
@@ -316,9 +316,9 @@ public class SessionSchedule {
      *
      * @return a <code>Date</code> value
      */
-    public Date getNextStartTime()
+    public java.time.LocalDateTime getNextStartTime()
     {
-        Date returnValue;
+        java.time.LocalDateTime returnValue;
         Calendar now = SystemTime.getUtcCalendar();
         TimeInterval qfInterval = theMostRecentIntervalBefore(now);
         DateTime sessionStart = new DateTime(qfInterval.getStart());

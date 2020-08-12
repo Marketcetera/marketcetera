@@ -27,7 +27,7 @@ public interface QuoteEvent
      *
      * @return a <code>Date</code> value
      */
-    Date getQuoteDate();
+    java.time.LocalDateTime getQuoteDate();
     /**
      * Get the action value indicating how this quote should be processed.
      *

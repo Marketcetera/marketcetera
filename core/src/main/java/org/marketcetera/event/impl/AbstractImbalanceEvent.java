@@ -42,7 +42,7 @@ abstract class AbstractImbalanceEvent
      * @see org.marketcetera.event.Event#getTimestamp()
      */
     @Override
-    public Date getTimestamp()
+    public java.time.LocalDateTime getTimestamp()
     {
         return imbalance.getTimestamp();
     }

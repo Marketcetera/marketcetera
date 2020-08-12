@@ -57,7 +57,7 @@ public final class QuoteBean
      * @return a <code>QuoteBean</code> value
      */
     public static QuoteBean getQuoteBeanFromEvent(QuoteEvent inQuoteEvent,
-                                                  Date inTimestamp,
+                                                  java.time.LocalDateTime inTimestamp,
                                                   BigDecimal inSize,
                                                   QuoteAction inQuoteAction)
     {

@@ -87,7 +87,7 @@ public class DisplayReport
      *
      * @return a <code>Date</code> value
      */
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return report.getSendingTime();
     }
@@ -96,7 +96,7 @@ public class DisplayReport
      *
      * @return a <code>Date</code> value
      */
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return report.getTransactTime();
     }

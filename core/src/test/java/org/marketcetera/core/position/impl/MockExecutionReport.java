@@ -128,7 +128,7 @@ public class MockExecutionReport
 	}
 
 	@Override
-	public Date getTransactTime() {
+	public java.time.LocalDateTime getTransactTime() {
 		return null;
 	}
 
@@ -235,7 +235,7 @@ public class MockExecutionReport
 	}
 
 	@Override
-	public Date getSendingTime() {
+	public java.time.LocalDateTime getSendingTime() {
 		return null;
 	}
 

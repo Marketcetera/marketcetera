@@ -86,7 +86,7 @@ public class SimpleReport
      * @see org.marketcetera.trade.Report#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -230,7 +230,7 @@ public class SimpleReport
      * @see org.marketcetera.trade.Report#getTransactTime()
      */
     @Override
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return transactTime;
     }
@@ -296,11 +296,11 @@ public class SimpleReport
     /**
      * sending time value
      */
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * transact time value
      */
-    private Date transactTime;
+    private java.time.LocalDateTime transactTime;
     /**
      * report type value
      */

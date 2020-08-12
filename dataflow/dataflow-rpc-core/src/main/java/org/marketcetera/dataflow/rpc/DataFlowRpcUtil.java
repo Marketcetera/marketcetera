@@ -255,7 +255,7 @@ public abstract class DataFlowRpcUtil
      */
     public static DataFlowInfo getDataFlowInfo(DataFlowRpc.DataFlowInfo inDataFlowInfo)
     {
-        Date created = null;
+        java.time.LocalDateTime created = null;
         if(inDataFlowInfo.hasCreated()) {
             created = Date.from(Instant.ofEpochSecond(inDataFlowInfo.getCreated().getSeconds(),
                                                       inDataFlowInfo.getCreated().getNanos()));
@@ -269,7 +269,7 @@ public abstract class DataFlowRpcUtil
         if(inDataFlowInfo.hasRequesterUrn()) {
             requesterUrn = getModuleUrn(inDataFlowInfo.getRequesterUrn());
         }
-        Date stopped = null;
+        java.time.LocalDateTime stopped = null;
         if(inDataFlowInfo.hasStopped()) {
             stopped = Date.from(Instant.ofEpochSecond(inDataFlowInfo.getStopped().getSeconds(),
                                                       inDataFlowInfo.getStopped().getNanos()));

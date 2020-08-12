@@ -123,7 +123,7 @@ public interface ExecutionReportSummary
      *
      * @return a <code>Date</code> value
      */
-    Date getSendingTime();
+    java.time.LocalDateTime getSendingTime();
     /**
      * Get the viewer value.
      *

@@ -245,7 +245,7 @@ public class QuoteEventTest
                          sourceEvent.getSize(),
                          sourceEvent.getTimestamp());
         // repeat the tests generating CHANGE events
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         BigDecimal size = new BigDecimal(100);
         instrument = option; useAsk = false;
         sourceEvent = generateQuote(QuoteAction.ADD);
@@ -729,7 +729,7 @@ public class QuoteEventTest
             throws Exception
     {
         QuoteEventBuilder<?> builder = setDefaults(getBuilder());
-        Date date = null;
+        java.time.LocalDateTime date = null;
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
@@ -811,7 +811,7 @@ public class QuoteEventTest
         assertEquals(null,
                      builder.getQuote().getTimestamp());
         // regular timestamp
-        Date timestamp = java.time.LocalDateTime.now();
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.getQuote().getTimestamp());
@@ -1279,7 +1279,7 @@ public class QuoteEventTest
                                   QuoteEvent inGeneratedEvent,
                                   QuoteAction inExpectedAction,
                                   BigDecimal inExpectedSize,
-                                  Date inExpectedTimestamp)
+                                  java.time.LocalDateTime inExpectedTimestamp)
     {
         assertEquals(inExpectedAction,
                      inGeneratedEvent.getAction());

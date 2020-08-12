@@ -52,7 +52,7 @@ public class ReportBaseImpl
     }
 
     @Override
-    public synchronized Date getSendingTime() {
+    public synchronized java.time.LocalDateTime getSendingTime() {
         return FIXUtil.getSendingTime(getMessage());
     }
 

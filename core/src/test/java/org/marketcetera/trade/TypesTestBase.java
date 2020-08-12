@@ -546,7 +546,7 @@ public class TypesTestBase {
                                                  Side inSide,
                                                  Instrument inInstrument,
                                                  TimeInForce inTimeInForce,
-                                                 Date inTransactTime,
+                                                 java.time.LocalDateTime inTransactTime,
                                                  OrderCapacity inOrderCapacity,
                                                  PositionEffect inPositionEffect,
                                                  boolean inIsCancelable) {

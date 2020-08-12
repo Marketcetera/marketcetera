@@ -22,7 +22,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 public class DateHolder
 {
-    private Date mItem;
+    private java.time.LocalDateTime mItem;
     private Date[] mArray;
     private Collection<Date> mCollection;
     private List<Date> mList;
@@ -71,7 +71,7 @@ public class DateHolder
         mItem=item;
     }
 
-    public Date getItem()
+    public java.time.LocalDateTime getItem()
     {
         return mItem;
     }

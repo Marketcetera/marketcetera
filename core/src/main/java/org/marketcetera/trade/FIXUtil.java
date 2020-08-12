@@ -177,7 +177,7 @@ class FIXUtil {
     static Instrument getInstrument(Message inMessage) {
         return InstrumentFromMessage.SELECTOR.forValue(inMessage).extract(inMessage);
     }
-    static Date getTransactTime(Message inMessage) {
+    static java.time.LocalDateTime getTransactTime(Message inMessage) {
         if (inMessage.isSetField(TransactTime.FIELD)) {
             try {
                 return inMessage.getUtcTimeStamp(TransactTime.FIELD);
@@ -186,7 +186,7 @@ class FIXUtil {
         }
         return null;
     }
-    static Date getSendingTime(Message inMessage) {
+    static java.time.LocalDateTime getSendingTime(Message inMessage) {
         if (inMessage.getHeader().isSetField(SendingTime.FIELD)) {
             try {
                 return inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD);

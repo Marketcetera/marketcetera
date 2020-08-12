@@ -98,7 +98,7 @@ public class PersistentIncomingMessage
      * @see com.marketcetera.ors.quickfix.IncomingMessage#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -242,7 +242,7 @@ public class PersistentIncomingMessage
      * sending time value
      */
     @Column(name="sending_time",nullable=false)
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * msg type of the most recent message
      */

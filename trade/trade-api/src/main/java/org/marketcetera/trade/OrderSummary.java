@@ -111,13 +111,13 @@ public interface OrderSummary
      *
      * @return a <code>Date</code> value
      */
-    Date getSendingTime();
+    java.time.LocalDateTime getSendingTime();
     /**
      * Get the transact time value.
      *
      * @return a <code>Date</code> value
      */
-    Date getTransactTime();
+    java.time.LocalDateTime getTransactTime();
     /**
      * Get the order status actor value.
      *

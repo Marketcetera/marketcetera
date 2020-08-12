@@ -45,7 +45,7 @@ public class NullMessageStore
      * @see quickfix.MessageStore#getCreationTime()
      */
     @Override
-    public Date getCreationTime()
+    public java.time.LocalDateTime getCreationTime()
             throws IOException
     {
         return cache.getCreationTime();

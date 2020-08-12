@@ -1472,7 +1472,7 @@ public class SimulatedExchange
                 }
             }
             // take the modified value and add a bid and an ask based on it
-            Date timestamp = java.time.LocalDateTime.now();
+            java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
             Instrument marketInstrument = getBook().getInstrument();
             // create an ask event builder
             QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(marketInstrument);

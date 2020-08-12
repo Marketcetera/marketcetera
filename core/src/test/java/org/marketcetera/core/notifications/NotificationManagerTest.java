@@ -115,7 +115,7 @@ public class NotificationManagerTest
         /**
          * the date of the notification
          */
-        private final Date mDate;
+        private final java.time.LocalDateTime mDate;
         /**
          * the originator of the notification
          */
@@ -145,7 +145,7 @@ public class NotificationManagerTest
             return mBody;
         }
         @Override
-        public Date getTimestamp()
+        public java.time.LocalDateTime getTimestamp()
         {
             return mDate;
         }

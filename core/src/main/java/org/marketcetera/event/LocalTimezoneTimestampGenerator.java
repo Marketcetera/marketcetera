@@ -1,8 +1,10 @@
 package org.marketcetera.event;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.marketcetera.core.time.TimeFactory;
 import org.marketcetera.core.time.TimeFactoryImpl;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -20,23 +22,23 @@ public class LocalTimezoneTimestampGenerator
      * @see org.marketcetera.event.TimestampGenerator#generateTimestamp(org.marketcetera.event.TradeEvent)
      */
     @Override
-    public DateTime generateTimestamp(TradeEvent inTrade)
+    public LocalDateTime generateTimestamp(TradeEvent inTrade)
     {
-        return new DateTime(inTrade.getTradeDate().getTime());
+        return inTrade.getTradeDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampGenerator#generateTimestamp(org.marketcetera.event.QuoteEvent)
      */
     @Override
-    public DateTime generateTimestamp(QuoteEvent inQuote)
+    public LocalDateTime generateTimestamp(QuoteEvent inQuote)
     {
-        return new DateTime(inQuote.getQuoteDate().getTime());
+        return inQuote.getQuoteDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampGenerator#generateTimestamp(java.lang.String)
      */
     @Override
-    public DateTime generateTimestamp(String inTimestamp)
+    public LocalDateTime generateTimestamp(String inTimestamp)
     {
         try {
             return generateTimestampFrom(Long.parseLong(inTimestamp));
@@ -84,9 +86,9 @@ public class LocalTimezoneTimestampGenerator
      * Generates a timestamp from the given millis.
      *
      * @param inStartingTime a <code>long</code> value
-     * @return a <code>DateTime</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    private DateTime generateTimestampFrom(long inStartingTime)
+    private LocalDateTime generateTimestampFrom(long inStartingTime)
     {
         long activMMSS = inStartingTime % millisHour;
         long utcTime = timestampProvider.getTimestamp();
@@ -96,12 +98,11 @@ public class LocalTimezoneTimestampGenerator
         if(utcMMSS < activMMSS) {
             utcTimeStamp = utcTimeStamp - millisHour;
         }
-        // if timestamp is more than 30min old, add an hour back. this is to catch timestamps that were erroneously projected into the past because
-        //  of clock drift of a few more millis
+        // if timestamp is more than 30min old, add an hour back. this is to catch timestamps that were erroneously projected into the past because of clock drift of a few more millis
         if(utcTimeStamp < utcTime - millisHalfHour) {
             utcTimeStamp = utcTimeStamp + millisHour;
         }
-        return new DateTime(utcTimeStamp);
+        return DateService.toLocalDateTime(utcTimeStamp);
     }
     /**
      * Provides the current time.

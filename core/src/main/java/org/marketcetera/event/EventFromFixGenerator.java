@@ -1,9 +1,9 @@
 package org.marketcetera.event;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -23,14 +23,14 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.Message;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+
+import quickfix.FieldNotFound;
+import quickfix.Group;
+import quickfix.Message;
 
 /* $License$ */
 
@@ -141,9 +141,9 @@ public class EventFromFixGenerator
                         throw new UnsupportedOperationException();
                 }
             }
-            Date date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
-            Date time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
-            Date eventDate = new Date(date.getTime()+time.getTime());
+            java.time.LocalDate date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
+            java.time.LocalTime time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
+            java.time.LocalDateTime eventDate = LocalDateTime.of(date,time);
             switch(entryType) {
                 case quickfix.field.MDEntryType.BID:
                     QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(instrument);

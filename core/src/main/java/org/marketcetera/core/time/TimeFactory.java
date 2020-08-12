@@ -1,6 +1,7 @@
 package org.marketcetera.core.time;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
+
 import org.marketcetera.core.Factory;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -15,21 +16,21 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface TimeFactory
-        extends Factory<DateTime>
+        extends Factory<LocalDateTime>
 {
     /**
      * Creates a time value from the given input.
      *
      * @param inValue a <code>String</code> value
-     * @return a <code>DateTime</code> value
+     * @return a <code>LocalDateTime</code> value
      * @throws IllegalArgumentException if the value cannot be parsed
      */
-    public DateTime create(String inValue);
+    public LocalDateTime create(String inValue);
     /**
      * Creates a time value from the given input.
      *
      * @param inValue a <code>long</code> value
-     * @return a <code>DateTime</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public DateTime create(long inValue);
+    public LocalDateTime create(long inValue);
 }

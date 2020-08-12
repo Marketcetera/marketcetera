@@ -28,7 +28,7 @@ public class ComplexModuleFactory extends ModuleFactory {
         ModuleURN u = new ModuleURN(PROVIDER_URN ,(String)parameters[0]);
         File f = (File) parameters[1];
         URL url = (URL) parameters[2];
-        Date date = (Date) parameters[3];
+        java.time.LocalDateTime date = (Date) parameters[3];
         if(!f.isAbsolute()) {
             throw new ModuleCreationException(new I18NBoundMessage1P(
                     TestMessages.INCORRECT_FILE_PATH, f.toString()));

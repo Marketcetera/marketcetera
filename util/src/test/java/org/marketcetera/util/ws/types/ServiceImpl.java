@@ -1615,14 +1615,14 @@ public class ServiceImpl
     // Date.
 
     @Override
-    public Date dt
+    public java.time.LocalDateTime dt
         (StatelessClientContext context,
-         final Date arg)
+         final java.time.LocalDateTime arg)
         throws RemoteException
     {
         return new StatelessRemoteCaller<Date>() {
             @Override
-            protected Date call
+            protected java.time.LocalDateTime call
                 (StatelessClientContext context)
             {
                 return arg;

@@ -314,7 +314,7 @@ public class PersistentReport
      * @see org.marketcetera.trade.dao.Report#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -322,7 +322,7 @@ public class PersistentReport
      * @see org.marketcetera.trade.Report#getTransactTime()
      */
     @Override
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return transactTime;
     }
@@ -514,12 +514,12 @@ public class PersistentReport
      * sending time value
      */
     @Column(name="send_time",nullable=false)
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * transact time value
      */
     @Column(name="transact_time",nullable=false)
-    private Date transactTime;
+    private java.time.LocalDateTime transactTime;
     /**
      * report type value
      */

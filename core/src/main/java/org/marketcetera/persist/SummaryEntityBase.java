@@ -37,5 +37,5 @@ public interface SummaryEntityBase
      * The time last time this object was updated
      * @return  time the object was last modified.
      */
-    Date getLastUpdated();
+    java.time.LocalDateTime getLastUpdated();
 }

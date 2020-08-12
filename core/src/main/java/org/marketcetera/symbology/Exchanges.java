@@ -76,7 +76,7 @@ public class Exchanges {
             String [] row = (String[]) items.get(i);
 
             if (row.length == 8) {
-                Date addedDate;
+                java.time.LocalDateTime addedDate;
                 String dateString = row[DATE_ADDED_COLUMN];
                 addedDate = DATE_FORMAT.parse(dateString); //i18n_date
 

@@ -348,7 +348,7 @@ public enum YahooFeedEventTranslator
         	return;
         }
 
-        Date date = java.time.LocalDateTime.now();
+        java.time.LocalDateTime date = java.time.LocalDateTime.now();
         
         inBuilder.withExchange(exchange)
         		 .withAction(action)
@@ -475,7 +475,7 @@ public enum YahooFeedEventTranslator
             return;
         }
         TradeEventBuilder<? extends TradeEvent> builder = TradeEventBuilder.tradeEvent(instrument);
-        Date date = java.time.LocalDateTime.now();
+        java.time.LocalDateTime date = java.time.LocalDateTime.now();
         // TODO build trade date properly
         builder.withExchange(exchange)
                .withPrice(price)

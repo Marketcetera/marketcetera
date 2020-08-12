@@ -507,7 +507,7 @@ public class TradeRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewPositionAction.name());
                 Instrument instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument()).orElse(null);
-                Date timestamp = null;
+                java.time.LocalDateTime timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
                                                                 inRequest.getTimestamp().getNanos()));
@@ -550,7 +550,7 @@ public class TradeRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewPositionAction.name());
                 TradeRpc.GetAllPositionsAsOfResponse.Builder responseBuilder = TradeRpc.GetAllPositionsAsOfResponse.newBuilder();
-                Date timestamp = null;
+                java.time.LocalDateTime timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
                                                                 inRequest.getTimestamp().getNanos()));
@@ -621,7 +621,7 @@ public class TradeRpcService<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),
                                        TradePermissions.ViewPositionAction.name());
                 TradeRpc.GetAllPositionsByRootAsOfResponse.Builder responseBuilder = TradeRpc.GetAllPositionsByRootAsOfResponse.newBuilder();
-                Date timestamp = null;
+                java.time.LocalDateTime timestamp = null;
                 if(inRequest.hasTimestamp()) {
                     timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
                                                                 inRequest.getTimestamp().getNanos()));

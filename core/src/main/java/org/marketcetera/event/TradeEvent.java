@@ -28,7 +28,7 @@ public interface TradeEvent
      *
      * @return a <code>Date</code> value
      */
-    public Date getTradeDate();
+    public java.time.LocalDateTime getTradeDate();
     /**
      * Gets the trade condition codes, if any.
      *

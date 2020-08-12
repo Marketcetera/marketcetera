@@ -93,7 +93,7 @@ public abstract class EntityBase
      *
      * @return  time the object was last modified.
      */
-    public Date getLastUpdated()
+    public java.time.LocalDateTime getLastUpdated()
     {
         return lastUpdated;
     }
@@ -139,7 +139,7 @@ public abstract class EntityBase
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="last_updated",nullable=false)
-    private Date lastUpdated;
+    private java.time.LocalDateTime lastUpdated;
     /**
      * indicates that a record hasn't been written yet
      */

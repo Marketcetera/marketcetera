@@ -157,7 +157,7 @@ public class SimpleExecutionReportSummary
      * @see org.marketcetera.trade.ExecutionReportSummary#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -598,7 +598,7 @@ public class SimpleExecutionReportSummary
     /**
      * sending time value
      */
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * viewer value
      */

@@ -293,7 +293,7 @@ public class PersistentOrderSummary
      * @see com.marketcetera.ors.history.OrderStatus#getSendingTime()
      */
     @Override
-    public Date getSendingTime()
+    public java.time.LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -301,7 +301,7 @@ public class PersistentOrderSummary
      * @see com.marketcetera.ors.history.OrderStatus#getTransactTime()
      */
     @Override
-    public Date getTransactTime()
+    public java.time.LocalDateTime getTransactTime()
     {
         return transactTime;
     }
@@ -544,12 +544,12 @@ public class PersistentOrderSummary
      * sending time value
      */
     @Column(name="sending_time",nullable=false)
-    private Date sendingTime;
+    private java.time.LocalDateTime sendingTime;
     /**
      * execution time value
      */
     @Column(name="execution_time",nullable=true)
-    private Date transactTime;
+    private java.time.LocalDateTime transactTime;
     /**
      * broker ID value
      */

@@ -38,7 +38,7 @@ public interface IncomingMessage
      *
      * @return a <code>Date</code> value
      */
-    Date getSendingTime();
+    java.time.LocalDateTime getSendingTime();
     /**
      * Gets the msg type value.
      *

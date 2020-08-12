@@ -24,7 +24,7 @@ public class DateConverter
      * @see com.vaadin.data.util.converter.Converter#convertToModel(java.lang.Object, java.lang.Class, java.util.Locale)
      */
     @Override
-    public Date convertToModel(String inValue,
+    public java.time.LocalDateTime convertToModel(String inValue,
                                Class<? extends Date> inTargetType,
                                Locale inLocale)
             throws ConversionException

@@ -145,21 +145,21 @@ public interface BrokerService
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getSessionStart(quickfix.SessionID inSessionId);
+    java.time.LocalDateTime getSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the next scheduled start of the given session.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getNextSessionStart(quickfix.SessionID inSessionId);
+    java.time.LocalDateTime getNextSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the most recent actual start of the given session.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>Date</code> value or <code>null</code>
      */
-    Date getActualSessionStart(quickfix.SessionID inSessionId);
+    java.time.LocalDateTime getActualSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the FIX settings provider for the given affinity.
      *

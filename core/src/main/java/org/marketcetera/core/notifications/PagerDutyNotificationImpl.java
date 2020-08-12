@@ -33,7 +33,7 @@ public class PagerDutyNotificationImpl
     public PagerDutyNotificationImpl(String inSubject,
                                      String inBody,
                                      Severity inSeverity,
-                                     Date inTimestamp,
+                                     java.time.LocalDateTime inTimestamp,
                                      String inOriginator,
                                      PagerDutyEventType inEventType,
                                      String inIncidentKey)

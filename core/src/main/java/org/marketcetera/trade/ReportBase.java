@@ -55,7 +55,7 @@ public interface ReportBase
      *
      * @return the time of message transmission in UTC.
      */
-    Date getSendingTime();
+    java.time.LocalDateTime getSendingTime();
     
     /**
      * The order ID assigned by broker to the original order.
