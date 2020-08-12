@@ -292,7 +292,7 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
             {
                 lock1.lock();
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
