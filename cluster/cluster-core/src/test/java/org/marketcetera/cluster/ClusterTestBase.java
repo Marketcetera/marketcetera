@@ -14,6 +14,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.lang.Validate;
@@ -286,11 +287,13 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
         final Lock lock1 = clusterService.getLock(lock1Name);
         final Lock lock2 = clusterService.getLock(lock2Name);
         lock2.lock();
+        final AtomicBoolean lock1Locked = new AtomicBoolean(false);
         Runnable task1 = new Runnable() {
             @Override
             public void run()
             {
                 lock1.lock();
+                lock1Locked.set(true);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
@@ -306,6 +309,9 @@ public abstract class ClusterTestBase<Clazz extends ClusterService>
             public Boolean call()
                     throws Exception
             {
+                if(!lock1Locked.get()) {
+                    return false;
+                }
                 return !lock1.tryLock();
             }}
         );
