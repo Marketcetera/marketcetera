@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1875,13 +1874,13 @@ public class SimulatedExchangeTest
                          currentDividend.getEquity());
             java.time.LocalDateTime today = java.time.LocalDateTime.now();
             assertNotNull(currentDividend.getDeclareDate());
-            assertTrue(today.after(DateUtils.stringToDate(currentDividend.getDeclareDate())));
+            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getDeclareDate())));
             assertNotNull(currentDividend.getExecutionDate());
-            assertTrue(today.after(DateUtils.stringToDate(currentDividend.getExecutionDate())));
+            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getExecutionDate())));
             assertNotNull(currentDividend.getPaymentDate());
-            assertTrue(today.after(DateUtils.stringToDate(currentDividend.getPaymentDate())));
+            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getPaymentDate())));
             assertNotNull(currentDividend.getRecordDate());
-            assertTrue(today.after(DateUtils.stringToDate(currentDividend.getRecordDate())));
+            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getRecordDate())));
             assertEquals(DividendFrequency.QUARTERLY,
                          currentDividend.getFrequency());
             assertEquals(DividendStatus.OFFICIAL,
@@ -1907,7 +1906,7 @@ public class SimulatedExchangeTest
                 assertNull(futureDividend.getRecordDate());
                 String executionDate = futureDividend.getExecutionDate();
                 assertNotNull(executionDate);
-                assertTrue(today.before(DateUtils.stringToDate(executionDate)));
+                assertTrue(today.isBefore(DateUtils.stringToDate(executionDate)));
             }
         }
     }

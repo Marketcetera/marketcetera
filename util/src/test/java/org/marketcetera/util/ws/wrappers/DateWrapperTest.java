@@ -1,57 +1,53 @@
 package org.marketcetera.util.ws.wrappers;
 
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.marketcetera.util.test.ComparableAssert.assertComparable;
+
+import java.time.LocalDateTime;
+
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.ComparableAssert.*;
-
-/**
- * @author tlerios@marketcetera.com
- * @since 1.5.0
- * @version $Id$
- */
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
+/**
+ * Tests {@link DateWrapper}.
+ *
+ * @author tlerios@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since 1.5.0
+ * @version $Id$
+ */
 public class DateWrapperTest
-    extends WrapperTestBase
+        extends WrapperTestBase
 {
-    private static final java.time.LocalDateTime TEST_DATE=
-        new Date(1);
-    private static final java.time.LocalDateTime TEST_DATE_D=
-        new Date(2);
-
-
     @Test
     public void all()
         throws Exception
     {
-        DateWrapper empty=new DateWrapper();
+        DateWrapper empty = new DateWrapper();
         dual(new DateWrapper(TEST_DATE),
              new DateWrapper(TEST_DATE),
              empty,
-             new DateWrapper(null),
+             new DateWrapper((LocalDateTime)null),
              TEST_DATE.toString(),
-             TEST_DATE,TEST_DATE.getTime());
-
+             TEST_DATE,
+             DateService.toEpochMillis(TEST_DATE));
         assertComparable(TEST_DATE,
-                         new Date(1),
+                         DateService.toLocalDateTime(1),
                          TEST_DATE_D);
-
-        DateWrapper w=new DateWrapper(TEST_DATE);
+        DateWrapper w = new DateWrapper(TEST_DATE);
         assertComparable(w,
                          new DateWrapper(TEST_DATE),
                          new DateWrapper(TEST_DATE_D),
                          "Argument is null");
-
         try {
             empty.compareTo(w);
             fail();
         } catch (NullPointerException ex) {
             assertEquals("Receiver wraps a null value",ex.getMessage());
         }
-
         try {
             w.compareTo(empty);
             fail();
@@ -59,4 +55,12 @@ public class DateWrapperTest
             assertEquals("Argument wraps a null value",ex.getMessage());
         }
     }
+    /**
+     * test value 1ms past epoch, local time
+     */
+    private static final LocalDateTime TEST_DATE = DateService.toLocalDateTime(1);
+    /**
+     * test value 2ms past epoch, local time
+     */
+    private static final LocalDateTime TEST_DATE_D = DateService.toLocalDateTime(2);
 }

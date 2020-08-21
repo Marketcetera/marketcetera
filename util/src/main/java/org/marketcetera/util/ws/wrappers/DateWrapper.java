@@ -1,7 +1,12 @@
 package org.marketcetera.util.ws.wrappers;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
+
+/* $License$ */
 
 /**
  * A dual-form wrapper for marshalling a date. The raw form is {@link
@@ -10,65 +15,52 @@ import org.marketcetera.util.misc.ClassVersion;
  * certain time zones, including GMT.
  * 
  * @author tlerios@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 1.5.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class DateWrapper
-    extends DualWrapper<Date,Long>
-    implements Comparable<DateWrapper>
+        extends DualWrapper<LocalDateTime,Long>
+        implements Comparable<DateWrapper>
 {
-
-    // CLASS DATA.
-
-    private static final long serialVersionUID=1L;
-
-
-    // CONSTRUCTORS.
-
+    /**
+     * Create a new DateWrapper instance.
+     *
+     * @param inDate a <code>Date</code> value
+     */
+    public DateWrapper(Date inDate)
+    {
+        super(DateService.toLocalDateTime(inDate));
+    }
     /**
      * Creates a new wrapper for the given date.
      *
      * @param date The date, which may be null.
      */
-
-    public DateWrapper
-        (Date date)
+    public DateWrapper(LocalDateTime date)
     {
         super(date);
     }
-
     /**
      * Creates a new wrapper. This empty constructor is intended for
      * use by JAXB and Java serialization.
      */
-
     public DateWrapper() {}
-
-
     // DualWrapper.
-
     @Override
     protected void toRaw()
     {
-        setRawOnly(new Date(getMarshalled()));
+        setRawOnly(DateService.toLocalDateTime(getMarshalled()));
     }
-    
     @Override
     protected void toMarshalled()
     {
-        setMarshalledOnly(getRaw().getTime());
+        setMarshalledOnly(DateService.toEpochMillis(getRaw()));
     }
-
-
     // Comparable.
-
     @Override
-    public int compareTo
-        (DateWrapper other)
+    public int compareTo(DateWrapper other)
     {
         if (getRaw()==null) {
             throw new NullPointerException

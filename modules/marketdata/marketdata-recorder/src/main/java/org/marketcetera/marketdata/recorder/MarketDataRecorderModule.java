@@ -14,6 +14,9 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,9 +32,6 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.metrics.MetricService;
 import org.marketcetera.module.AbstractDataReemitterModule;
@@ -225,7 +225,7 @@ public class MarketDataRecorderModule
                          Messages.EVENT_BOUNDARY_CAPABILITY_REQUIRED.getText());
         StringBuilder filename = new StringBuilder();
         String symbolKey = getSymbolKey(inQuote);
-        String timestampValue = timestampFormatter.print(getFileTimestamp());
+        String timestampValue = timestampFormatter.format(getFileTimestamp());
         filename.append(symbolKey).append('-').append(timestampValue).append('-');
         File currentFile = currentFiles.get(symbolKey);
         if(currentFile != null) {
@@ -320,13 +320,13 @@ public class MarketDataRecorderModule
     /**
      * Determine the timestamp to use as part of the current session.
      *
-     * @return a <code>DateTime</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    private DateTime getFileTimestamp()
+    private LocalDateTime getFileTimestamp()
     {
         // there is a "session reset" time. if we're before the session reset, we use today's date.
         //  if we're after the session reset, we use tomorrow's date.
-        DateTime timestamp = new DateTime();
+        LocalDateTime timestamp = LocalDateTime.now();
         if(sessionResetTimestamp == null) {
             return timestamp;
         } else {
@@ -377,7 +377,7 @@ public class MarketDataRecorderModule
     /**
      * timestamp value for the session reset of today
      */
-    private DateTime sessionResetTimestamp;
+    private LocalDateTime sessionResetTimestamp;
     /**
      * counts events
      */

@@ -1,13 +1,7 @@
 package org.marketcetera.core.time;
 
-import static org.marketcetera.core.time.TimeFactoryImpl.COLON;
-import static org.marketcetera.core.time.TimeFactoryImpl.HOUR;
-import static org.marketcetera.core.time.TimeFactoryImpl.MINUTE;
-import static org.marketcetera.core.time.TimeFactoryImpl.SECOND;
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
+import java.time.LocalTime;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
@@ -70,11 +64,10 @@ public class Interval
      */
     public boolean contains(LocalDateTime inTime)
     {
-        LocalDateTime expectedIntervalStart = inTime.withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime(begin).getMillisOfDay());
-        LocalDateTime expectedIntervalEnd = inTime.withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime(end).getMillisOfDay());
-        org.joda.time.Interval interval = new org.joda.time.Interval(expectedIntervalStart,
-                                                                     expectedIntervalEnd);
-        boolean result = interval.contains(inTime);
+        LocalDateTime expectedIntervalStart = inTime.toLocalDate().atStartOfDay().plusSeconds(beginTime.toSecondOfDay());
+        LocalDateTime expectedIntervalEnd = inTime.toLocalDate().atStartOfDay().plusSeconds(endTime.toSecondOfDay());
+        // open at the beginning, closed at the end
+        boolean result = !expectedIntervalStart.isAfter(inTime) && expectedIntervalEnd.isAfter(inTime);
         SLF4JLoggerProxy.debug(this,
                                "{} contains {}: {}",
                                this,
@@ -92,6 +85,10 @@ public class Interval
                         "Begin must be of pattern 00:00:00");
         Validate.isTrue(wallclockPattern.matcher(end).matches(),
                         "End must be of pattern 00:00:00");
+        beginTime = LocalTime.parse(begin,
+                                    TimeFactoryImpl.WALLCLOCK_SECONDS_LOCAL);
+        endTime = LocalTime.parse(end,
+                                  TimeFactoryImpl.WALLCLOCK_SECONDS_LOCAL);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -104,6 +101,14 @@ public class Interval
         return builder.toString();
     }
     /**
+     * parsed begin time value
+     */
+    private LocalTime beginTime;
+    /**
+     * parsed end time value
+     */
+    private LocalTime endTime;
+    /**
      * interval begin pattern
      */
     private String begin;
@@ -111,11 +116,6 @@ public class Interval
      * interval end pattern
      */
     private String end;
-    /**
-     * parses offline start and end intervals
-     */
-    private final DateTimeFormatter WALLCLOCK_SECONDS_LOCAL = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
-            .append(COLON).append(SECOND).toFormatter();
     /**
      * regex for validating wallclock begin and end points
      */

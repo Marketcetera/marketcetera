@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 /* $License$ */
@@ -69,6 +68,6 @@ public abstract class DateService
      */
     public static long toEpochMillis(LocalDateTime inTimestamp)
     {
-        return inTimestamp.toEpochSecond(ZoneOffset.UTC);
+        return inTimestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }
