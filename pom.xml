@@ -191,7 +191,7 @@
       <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
-        <version>5.2.1</version>
+        <version>6.5.3</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -971,7 +971,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>5.2.1</version>
+          <version>6.5.3</version>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
