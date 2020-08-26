@@ -5,12 +5,12 @@ import static org.marketcetera.core.time.TimeFactoryImpl.MONTH;
 import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.IllegalFieldValueException;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -144,7 +144,7 @@ public class OptionFromMessage
                                 if(YYYYMMDD.matcher(valueWithDay).matches()) {
                                     try {
                                         // test this value, if it works, use it. if it doesn't, skip it and just return the value w/o the day
-                                        EXPIRY_WITH_DAY.parseDateTime(valueWithDay);
+                                        EXPIRY_WITH_DAY.parse(valueWithDay);
                                         return valueWithDay;
                                     } catch (IllegalFieldValueException e) {
                                         Messages.INVALID_MATURITY_DAY.warn(OptionFromMessage.class,
@@ -179,7 +179,7 @@ public class OptionFromMessage
      */
     private static final Pattern YYYYMMDD = Pattern.compile("^[0-9]{8}$"); //$NON-NLS-1$
     /**
-     * validates experies of the pattern YYYYMMDD as valid dates
+     * validates expiries of the pattern YYYYMMDD as valid dates
      */
     private static final DateTimeFormatter EXPIRY_WITH_DAY = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter();
 }

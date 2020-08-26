@@ -1,11 +1,21 @@
 package org.marketcetera.persist;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 /**
@@ -93,7 +103,7 @@ public abstract class EntityBase
      *
      * @return  time the object was last modified.
      */
-    public java.time.LocalDateTime getLastUpdated()
+    public LocalDateTime getLastUpdated()
     {
         return lastUpdated;
     }
@@ -101,8 +111,19 @@ public abstract class EntityBase
      * Sets the lastUpdated value.
      *
      * @param inLastUpdated a <code>Date</code> value
+     * @deprecated use {@link #setLastUpdated(LocalDateTime)}
      */
+    @Deprecated
     public void setLastUpdated(Date inLastUpdated)
+    {
+        lastUpdated = DateService.toLocalDateTime(inLastUpdated);
+    }
+    /**
+     * Sets the lastUpdated value.
+     *
+     * @param inLastUpdated a <code>LocalDateTime</code> value
+     */
+    public void setLastUpdated(LocalDateTime inLastUpdated)
     {
         lastUpdated = inLastUpdated;
     }
@@ -139,10 +160,10 @@ public abstract class EntityBase
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="last_updated",nullable=false)
-    private java.time.LocalDateTime lastUpdated;
+    private LocalDateTime lastUpdated;
     /**
      * indicates that a record hasn't been written yet
      */
     protected static final int UNINITIALIZED = -1;
-    private static final long serialVersionUID = -7445081112376896281L;
+    private static final long serialVersionUID = 92846421418828379L;
 }

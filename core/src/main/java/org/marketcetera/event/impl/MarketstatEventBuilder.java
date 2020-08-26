@@ -1,22 +1,37 @@
 package org.marketcetera.event.impl;
 
+import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
-import static org.marketcetera.event.Messages.VALIDATION_BOND_REQUIRED;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.beans.*;
+import org.marketcetera.event.beans.ConvertibleBondBean;
+import org.marketcetera.event.beans.CurrencyBean;
+import org.marketcetera.event.beans.FutureBean;
+import org.marketcetera.event.beans.MarketstatBean;
+import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.DeliveryType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureType;
+import org.marketcetera.trade.FutureUnderlyingAssetType;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -191,8 +206,21 @@ public abstract class MarketstatEventBuilder
      *
      * @param inTimestamp a <code>Date</code> value or <code>null</code>
      * @return a <code>MarketstatEventBuilder</code> value
+     * @deprecated use {@link #withTimestamp(LocalDateTime)}
      */
+    @Deprecated
     public final MarketstatEventBuilder withTimestamp(Date inTimestamp)
+    {
+        marketstat.setTimestamp(DateService.toLocalDateTime(inTimestamp));
+        return this;
+    }
+    /**
+     * Sets the timestamp value to use with the new event.
+     *
+     * @param inTimestamp a <code>LocalDateTime</code> value or <code>null</code>
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withTimestamp(LocalDateTime inTimestamp)
     {
         marketstat.setTimestamp(inTimestamp);
         return this;

@@ -3,6 +3,7 @@ package org.marketcetera.marketdata;
 import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -11,6 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
 /**
  * Offers date translation utilities for {@link MarketDataRequest} objects.
@@ -101,10 +103,26 @@ public class DateUtils
      *
      * @param inDate a <code>Date</code> value
      * @return a <code>String</code> value
+     * @deprecated use {@link #dateToString(LocalDateTime)}
      */
+    @Deprecated
     public static String dateToString(Date inDate)
     {
-        return dateToString(inDate,
+        return dateToString(DateService.toLocalDateTime(inDate));
+    }
+    /**
+     * Converts the given <code>LocalDateTime</code> value to a <code>String</code> representation usable with {@link MarketDataRequest} objects.
+     *
+     * <p>The format of the returned value is ISO 8601 basic format to millisecond precision with
+     * time zone offset.  This format can be expressed as: <code>yyyyMMdd'T'HHmmssSSSZ</code> in terms of the format expected
+     * by {@link SimpleDateFormat}.
+     *
+     * @param inDateTime a <code>LocalDateTime</code> value
+     * @return a <code>String</code> value
+     */
+    public static String dateToString(LocalDateTime inDateTime)
+    {
+        return dateToString(inDateTime,
                             DEFAULT_FORMAT);
     }
     /**
@@ -114,11 +132,27 @@ public class DateUtils
      * @param inDate a <code>Date</code> value
      * @param inFormat a <code>DateTimeFormatter</code> value
      * @return a <code>String</code> value
+     * @deprecated use {@link #dateToString(LocalDateTime, DateTimeFormatter)}
      */
+    @Deprecated
     public static String dateToString(Date inDate,
                                       DateTimeFormatter inFormat)
     {
-        return inFormat.print(new DateTime(inDate));
+        return dateToString(DateService.toLocalDateTime(inDate),
+                            inFormat);
+    }
+    /**
+     * Converts the given <code>Date</code> value to a <code>String</code> representation in the given format usable with
+     * {@link MarketDataRequest} objects.
+     * 
+     * @param inDateTime a <code>Date</code> value
+     * @param inFormat a <code>DateTimeFormatter</code> value
+     * @return a <code>String</code> value
+     */
+    public static String dateToString(LocalDateTime inDateTime,
+                                      DateTimeFormatter inFormat)
+    {
+        return inFormat.print(new DateTime(inDateTime));
     }
     /**
      * Parses the given <code>String</code> to a <code>Date</code> value.
@@ -145,10 +179,10 @@ public class DateUtils
      *
      * @param inDateString a <code>String</code> value a <code>String</code> containing a date value to be
      *  parsed.
-     * @return a <code>Date</code> value 
+     * @return a <code>LocalDateTime</code> value 
      * @throws MarketDataRequestException if the given <code>String</code> could not be parsed 
      */
-    public static java.time.LocalDateTime stringToDate(String inDateString)
+    public static LocalDateTime stringToDate(String inDateString)
         throws MarketDataRequestException
     {
         if(inDateString == null ||
@@ -158,7 +192,7 @@ public class DateUtils
         }
         for(int formatCounter=0;formatCounter<DATE_FORMATS.length;formatCounter++) {
             try {
-                return new Date(DATE_FORMATS[formatCounter].parseDateTime(inDateString).getMillis());
+                return DateService.toLocalDateTime(new Date(DATE_FORMATS[formatCounter].parseDateTime(inDateString).getMillis()));
             } catch (IllegalArgumentException e) {
                 // this format didn't work, try a less specific one
             }

@@ -1,8 +1,8 @@
 package org.marketcetera.core.time;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
-import org.joda.time.DateTime;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Sets;
@@ -39,10 +39,10 @@ public class CompositeInterval
     /**
      * Indicate if the composite interval contains the given point in time.
      *
-     * @param inTime a <code>DateTime</code> value
+     * @param inTime a <code>LocalDateTime</code> value
      * @return a <code>boolean</code> value
      */
-    public boolean contains(DateTime inTime)
+    public boolean contains(LocalDateTime inTime)
     {
         for(Interval interval : intervals) {
             SLF4JLoggerProxy.debug(this,

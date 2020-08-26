@@ -1,16 +1,20 @@
 package org.marketcetera.symbology;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.marketcetera.core.ClassVersion;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
-
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.util.*;
 
 /**
  * @author Graham Miller
@@ -21,7 +25,8 @@ public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();
     private static EnumMap<SymbolScheme, ExchangeMap> schemeMap = new EnumMap<SymbolScheme, ExchangeMap>(SymbolScheme.class);
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM yyyy",Locale.US); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MMMM yyyy", //$NON-NLS-1$
+                                                                                     Locale.US);
 
     static {
         try {
@@ -78,7 +83,8 @@ public class Exchanges {
             if (row.length == 8) {
                 java.time.LocalDateTime addedDate;
                 String dateString = row[DATE_ADDED_COLUMN];
-                addedDate = DATE_FORMAT.parse(dateString); //i18n_date
+                addedDate = LocalDateTime.parse(dateString,
+                                                DATE_FORMAT);
 
                 Exchange anExchange = new Exchange(
                         row[COUNTRY_COLUMN],

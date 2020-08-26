@@ -2,6 +2,7 @@ package org.marketcetera.util.ws.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -1615,15 +1616,13 @@ public class ServiceImpl
     // Date.
 
     @Override
-    public java.time.LocalDateTime dt
-        (StatelessClientContext context,
-         final java.time.LocalDateTime arg)
-        throws RemoteException
+    public LocalDateTime dt(StatelessClientContext context,
+                            final LocalDateTime arg)
+            throws RemoteException
     {
-        return new StatelessRemoteCaller<Date>() {
+        return new StatelessRemoteCaller<LocalDateTime>() {
             @Override
-            protected java.time.LocalDateTime call
-                (StatelessClientContext context)
+            protected LocalDateTime call(StatelessClientContext context)
             {
                 return arg;
             }

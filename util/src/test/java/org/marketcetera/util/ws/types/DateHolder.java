@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.types;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,7 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.marketcetera.util.time.DateService;
 
 /**
  * @author tlerios@marketcetera.com
@@ -22,7 +25,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 public class DateHolder
 {
-    private java.time.LocalDateTime mItem;
+    private LocalDateTime mItem;
     private Date[] mArray;
     private Collection<Date> mCollection;
     private List<Date> mList;
@@ -63,15 +66,27 @@ public class DateHolder
         setHashMap(hashMap);
         setTreeMap(treeMap);
     }
-
-
-    public void setItem
-        (Date item)
+    /**
+     * Sets the item value.
+     *
+     * @param inItem a <code>LocalDateTime</code> value
+     */
+    public void setItem(LocalDateTime inItem)
     {
-        mItem=item;
+        mItem = inItem;
     }
-
-    public java.time.LocalDateTime getItem()
+    /**
+     * Sets the item value.
+     *
+     * @param inItem a <code>Date</code> value
+     * @deprecated use {@link #setItem(LocalDateTime)}
+     */
+    @Deprecated
+    public void setItem(Date item)
+    {
+        setItem(DateService.toLocalDateTime(item));
+    }
+    public LocalDateTime getItem()
     {
         return mItem;
     }
