@@ -67,7 +67,7 @@ import com.vaadin.ui.Window;
 /* $License$ */
 
 /**
- * Provides a view for system Fix Sessions.
+ * Provides a view for Order Tickets.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
