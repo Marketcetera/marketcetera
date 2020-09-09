@@ -36,6 +36,8 @@ import quickfix.fix42.MassQuote;
 import quickfix.fix42.NewOrderSingle;
 
 /**
+ * Tests message analyzation.
+ * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id$
@@ -44,7 +46,7 @@ import quickfix.fix42.NewOrderSingle;
 /* $License$ */
 
 public class AnalyzedMessageTest
-    extends AnalyzerTestBase
+        extends AnalyzerTestBase
 {
     @Ignore@Test
     public void empty()
@@ -73,11 +75,11 @@ public class AnalyzedMessageTest
         msg.getHeader().setField(new SenderCompID("me"));
         msg.getHeader().setField(new TargetCompID("you"));
         msg.getHeader().setField(new MsgSeqNum(1));
-        msg.getHeader().setField(new SendingTime(DateService.toLocalDateTime(new Date(2))));
+        msg.getHeader().setField(new SendingTime(DateService.toUtcDateTime(new Date(2))));
         // Required body fields.
         msg.set(new ClOrdID("a"));
         msg.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
-        msg.set(new TransactTime(DateService.toLocalDateTime(new Date(3))));
+        msg.set(new TransactTime(DateService.toUtcDateTime(new Date(3))));
         msg.set(new OrdType(OrdType.LIMIT));
         msg.set(new Symbol("METC"));
         // A required enumeration.
@@ -95,7 +97,7 @@ public class AnalyzedMessageTest
              SystemUtils.LINE_SEPARATOR+
              " BeginString [8R] = FIX.4.2"+
              SystemUtils.LINE_SEPARATOR+
-             " BodyLength [9R] = 108"+
+             " BodyLength [9R] = 100"+
              SystemUtils.LINE_SEPARATOR+
              " MsgSeqNum [34R] = 1"+
              SystemUtils.LINE_SEPARATOR+
@@ -114,7 +116,7 @@ public class AnalyzedMessageTest
              " ClOrdID [11R] = a"+
              SystemUtils.LINE_SEPARATOR+
              " HandlInst [21R] = "+
-             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION_NO_BROKER_INTERVENTION [1]"+
+             "AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION [1]"+
              SystemUtils.LINE_SEPARATOR+
              " OrdType [40R] = LIMIT [2]"+
              SystemUtils.LINE_SEPARATOR+
@@ -123,7 +125,7 @@ public class AnalyzedMessageTest
              " Symbol [55R] = METC"+
              SystemUtils.LINE_SEPARATOR+
              " TransactTime [60R] = 19700101-00:00:00.003"+
-             TEST_FOOTER+"076",msgA.toString());
+             TEST_FOOTER+"000",msgA.toString());
     }
 
     @Ignore@Test

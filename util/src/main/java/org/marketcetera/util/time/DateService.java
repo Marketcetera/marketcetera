@@ -31,6 +31,17 @@ public abstract class DateService
                                        ZoneId.systemDefault());
     }
     /**
+     * Converts from {@link Date} types to {@link LocalDateTime} types.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
+     */
+    public static LocalDateTime toUtcDateTime(Date inDate)
+    {
+        return LocalDateTime.ofInstant(inDate.toInstant(),
+                                       ZoneId.of("UTC"));
+    }
+    /**
      * Converts from {@link Date} types to {@link LocalDate} types.
      *
      * @param inDate a <code>Date</code> value
