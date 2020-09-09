@@ -20,14 +20,15 @@ import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
-import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.GroupingList;
+import quickfix.Message;
 
 /* $License$ */
 /**
@@ -207,8 +208,7 @@ public class TradeReportsHistory {
                 }
             }
             if(SLF4JLoggerProxy.isDebugEnabled(this) && inReport.getSendingTime() != null) {
-                long sendingTime =0;
-                sendingTime = inReport.getSendingTime().getTime();
+                long sendingTime = DateService.toEpochMillis(inReport.getSendingTime());
                 long systemTime = System.currentTimeMillis();
                 double diff = (sendingTime-systemTime)/1000.0;
                 if(Math.abs(diff) > 1) {

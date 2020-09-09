@@ -1,7 +1,7 @@
 package org.marketcetera.event.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -104,10 +104,10 @@ public abstract class DepthOfBookEventBuilder
         return this;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.EventBuilderImpl#withTimestamp(java.util.Date)
+     * @see org.marketcetera.event.EventBuilderImpl#withTimestamp(java.time.LocalDateTime)
      */
     @Override
-    public final DepthOfBookEventBuilder withTimestamp(Date inTimestamp)
+    public final DepthOfBookEventBuilder withTimestamp(LocalDateTime inTimestamp)
     {
         super.withTimestamp(inTimestamp);
         return this;

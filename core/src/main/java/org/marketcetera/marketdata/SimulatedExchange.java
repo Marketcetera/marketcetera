@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -34,8 +33,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.DividendEvent;
@@ -66,6 +65,7 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.StandardType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -308,10 +308,10 @@ public class SimulatedExchange
                        .withPreviousClosePrice(previousClosePrice)
                        .withVolume(randomInteger(100000))
                        .withValue(randomInteger(100000))
-                       .withCloseDate(DateUtils.dateToString(new Date(startingTime-(HOURms*8))))
-                       .withPreviousCloseDate(DateUtils.dateToString(new Date(startingTime-(DAYms))))
-                       .withTradeHighTime(DateUtils.dateToString(new Date(startingTime-(HOURms*4))))
-                       .withTradeLowTime(DateUtils.dateToString(new Date(startingTime-(HOURms*4))))
+                       .withCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startingTime-(HOURms*8))))
+                       .withPreviousCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startingTime-(DAYms))))
+                       .withTradeHighTime(DateUtils.dateToString(DateService.toLocalDateTime(startingTime-(HOURms*4))))
+                       .withTradeLowTime(DateUtils.dateToString(DateService.toLocalDateTime(startingTime-(HOURms*4))))
                        .withOpenExchange(getCode())
                        .withHighExchange(getCode())
                        .withLowExchange(getCode())
@@ -1118,7 +1118,7 @@ public class SimulatedExchange
                                                                                                                       .withExchange(bid.getExchange())
                                                                                                                       .withPrice(tradePrice)
                                                                                                                       .withSize(tradeSize)
-                                                                                                                      .withTradeDate(new Date(tradeTime));
+                                                                                                                      .withTradeDate(DateService.toLocalDateTime(tradeTime));
                         if(bid.getInstrument() instanceof Option) {
                             tradeBuilder.withExpirationType(getExpirationType((Option)bid.getInstrument()));
                             tradeBuilder.withUnderlyingInstrument(inBook.getUnderlyingInstrument());
@@ -1135,7 +1135,7 @@ public class SimulatedExchange
                         if(tradeSize.compareTo(bidSize) == -1) {
                             // trade is smaller than the bid, this is a partial fill
                             bidCorrection = QuoteEventBuilder.change(bid,
-                                                                     new Date(tradeTime),
+                                                                     DateService.toLocalDateTime(tradeTime),
                                                                      bidSize.subtract(tradeSize));
                             bidCorrection.setEventType(EventType.UPDATE_FINAL);
                             askCorrection = QuoteEventBuilder.delete(ask); 
@@ -1146,7 +1146,7 @@ public class SimulatedExchange
                             bidCorrection.setEventType(EventType.UPDATE_FINAL);
                             askCorrection = tradeSize.equals(askSize) ? QuoteEventBuilder.delete(ask) :
                                                                         QuoteEventBuilder.change(ask,
-                                                                                                 new Date(tradeTime),
+                                                                                                 DateService.toLocalDateTime(tradeTime),
                                                                                                  askSize.subtract(tradeSize));
                             askCorrection.setEventType(EventType.UPDATE_FINAL); 
                         }
@@ -1629,14 +1629,14 @@ public class SimulatedExchange
                 tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
                                   .withEventType(EventType.UPDATE_FINAL)
                                   .withCurrency("USD") //$NON-NLS-1$
-                                  .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                  .withDeclareDate(DateUtils.dateToString(DateService.toLocalDateTime(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                           DateUtils.DAYS))
-                                  .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                  .withExecutionDate(DateUtils.dateToString(DateService.toLocalDateTime(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                             DateUtils.DAYS))
                                   .withFrequency(DividendFrequency.QUARTERLY)
-                                  .withPaymentDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                  .withPaymentDate(DateUtils.dateToString(DateService.toLocalDateTime(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                           DateUtils.DAYS))
-                                  .withRecordDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                  .withRecordDate(DateUtils.dateToString(DateService.toLocalDateTime(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
                                                                          DateUtils.DAYS))
                                   .withStatus(DividendStatus.OFFICIAL)
                                   .withType(DividendType.CURRENT).create());
@@ -1647,7 +1647,7 @@ public class SimulatedExchange
                                       .withEventType(EventType.UPDATE_FINAL)
                                       .withPaymentDate(null)
                                       .withRecordDate(null)
-                                      .withExecutionDate(DateUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
+                                      .withExecutionDate(DateUtils.dateToString(DateService.toLocalDateTime(timestamp + oneQuarter * quarterCounter),
                                                                                 DateUtils.DAYS))
                                       .withStatus(DividendStatus.UNOFFICIAL)
                                       .withType(DividendType.FUTURE).create());

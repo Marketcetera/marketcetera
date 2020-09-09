@@ -1,6 +1,6 @@
 package org.marketcetera.client.utils;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
@@ -49,9 +49,9 @@ public class AutoOrderHistoryManager
     /**
      * Create a new AutoOrderHistoryManager instance.
      *
-     * @param inReportHistoryOrigin a <code>Date</code> value indicating the point from which to gather order history or <code>null</code>
+     * @param inReportHistoryOrigin a <code>LocalDateTime</code> value indicating the point from which to gather order history or <code>null</code>
      */
-    public AutoOrderHistoryManager(Date inReportHistoryOrigin)
+    public AutoOrderHistoryManager(LocalDateTime inReportHistoryOrigin)
     {
         super(inReportHistoryOrigin);
     }

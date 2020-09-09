@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.csv;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
@@ -15,11 +14,12 @@ import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
 /**
- *
+ * Provides a test {@link CSVFeedEventTranslator} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -50,7 +50,7 @@ public class MockCSVFeedEventTranslator
                 TradeEventBuilder<? extends TradeEvent> builder = TradeEventBuilder.equityTradeEvent();
                 builder.withExchange(exchange)
                        .withInstrument(new Equity(symbol))
-                       .withTimestamp(new Date(timeMillis))
+                       .withTimestamp(DateService.toLocalDateTime(timeMillis))
                        .withPrice(price)
                        .withSize(size)
                        .withTradeDate(java.time.LocalDateTime.now());
@@ -61,7 +61,7 @@ public class MockCSVFeedEventTranslator
                 QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(new Equity(symbol));
                 builder.withExchange(exchange)
                        .withInstrument(new Equity(symbol))
-                       .withTimestamp(new Date(timeMillis))
+                       .withTimestamp(DateService.toLocalDateTime(timeMillis))
                        .withPrice(price)
                        .withSize(size)
                        .withQuoteDate(java.time.LocalDateTime.now());
@@ -72,7 +72,7 @@ public class MockCSVFeedEventTranslator
                 QuoteEventBuilder<AskEvent> builder = QuoteEventBuilder.askEvent(new Equity(symbol));
                 builder.withExchange(exchange)
                        .withInstrument(new Equity(symbol))
-                       .withTimestamp(new Date(timeMillis))
+                       .withTimestamp(DateService.toLocalDateTime(timeMillis))
                        .withPrice(price)
                        .withSize(size)
                        .withQuoteDate(java.time.LocalDateTime.now());

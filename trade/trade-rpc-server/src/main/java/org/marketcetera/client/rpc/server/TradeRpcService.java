@@ -88,6 +88,7 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.trading.rpc.TradeRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -509,8 +510,8 @@ public class TradeRpcService<SessionClazz>
                 Instrument instrument = TradeRpcUtil.getInstrument(inRequest.getInstrument()).orElse(null);
                 java.time.LocalDateTime timestamp = null;
                 if(inRequest.hasTimestamp()) {
-                    timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
-                                                                inRequest.getTimestamp().getNanos()));
+                    timestamp = DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
+                                                                                            inRequest.getTimestamp().getNanos())));
                 }
                 User user = userService.findByName(sessionHolder.getUser());
                 BigDecimal result = reportService.getPositionAsOf(user,
@@ -552,8 +553,8 @@ public class TradeRpcService<SessionClazz>
                 TradeRpc.GetAllPositionsAsOfResponse.Builder responseBuilder = TradeRpc.GetAllPositionsAsOfResponse.newBuilder();
                 java.time.LocalDateTime timestamp = null;
                 if(inRequest.hasTimestamp()) {
-                    timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
-                                                                inRequest.getTimestamp().getNanos()));
+                    timestamp = DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
+                                                                                            inRequest.getTimestamp().getNanos())));
                 }
                 User user = userService.findByName(sessionHolder.getUser());
                 Map<PositionKey<? extends Instrument>,BigDecimal> result = reportService.getAllPositionsAsOf(user,
@@ -623,8 +624,8 @@ public class TradeRpcService<SessionClazz>
                 TradeRpc.GetAllPositionsByRootAsOfResponse.Builder responseBuilder = TradeRpc.GetAllPositionsByRootAsOfResponse.newBuilder();
                 java.time.LocalDateTime timestamp = null;
                 if(inRequest.hasTimestamp()) {
-                    timestamp = Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
-                                                                inRequest.getTimestamp().getNanos()));
+                    timestamp = DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inRequest.getTimestamp().getSeconds(),
+                                                                                            inRequest.getTimestamp().getNanos())));
                 }
                 User user = userService.findByName(sessionHolder.getUser());
                 Map<PositionKey<Option>,BigDecimal> result = reportService.getOptionPositionsAsOf(user,

@@ -5,12 +5,15 @@ import static org.marketcetera.core.time.TimeFactoryImpl.HOUR;
 import static org.marketcetera.core.time.TimeFactoryImpl.MINUTE;
 import static org.marketcetera.core.time.TimeFactoryImpl.SECOND;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.event.TimestampGenerator;
 
 /* $License$ */
@@ -60,15 +63,16 @@ public class MarketDataRecorderModuleConfiguration
     /**
      * Get the sessionResetTimestamp value.
      *
-     * @return a <code>DateTime</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public DateTime getSessionResetTimestamp()
+    public LocalDateTime getSessionResetTimestamp()
     {
         if(sessionReset == null) {
             return null;
         }
-        DateTime tempValue = sessionResetFormatter.parseDateTime(sessionReset);
-        DateTime sessionResetTimestamp = new DateTime().withTimeAtStartOfDay().plusMillis(tempValue.getMillisOfDay());
+        LocalDateTime tempValue = LocalDateTime.parse(sessionReset,
+                                                      sessionResetFormatter);
+        LocalDateTime sessionResetTimestamp = LocalDate.now().atStartOfDay().plusSeconds(tempValue.get(ChronoField.SECOND_OF_DAY));
         return sessionResetTimestamp;
     }
     /**

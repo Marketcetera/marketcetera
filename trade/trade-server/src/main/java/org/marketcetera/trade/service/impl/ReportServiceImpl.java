@@ -1,6 +1,8 @@
 package org.marketcetera.trade.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -18,7 +20,6 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.joda.time.DateTime;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
@@ -86,6 +87,7 @@ import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -263,7 +265,7 @@ public class ReportServiceImpl
      */
     @Override
     public int findLastSequenceNumberFor(SessionID inSessionId,
-                                         java.time.LocalDateTime inDate)
+                                         LocalDateTime inDate)
     {
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentIncomingMessage.persistentIncomingMessage.sessionId.eq(inSessionId.toString()));
@@ -295,14 +297,14 @@ public class ReportServiceImpl
     @Override
     public List<Long> findUnhandledIncomingMessageIds(SessionID inSessionId,
                                                       Set<String> inMessageTypes,
-                                                      java.time.LocalDateTime inSince)
+                                                      LocalDateTime inSince)
     {
         // this method searches for reports that have been received that have not yet been converted into executions
         if(SLF4JLoggerProxy.isDebugEnabled(this)) {
             SLF4JLoggerProxy.debug(this,
                                    "Searching for unhandled incoming messages for {} before {}",
                                    inSessionId,
-                                   new DateTime(inSince.getTime()));
+                                   inSince);
         }
         return persistentReportDao.findUnhandledIncomingMessageIds(inSessionId.toString(),
                                                                   inMessageTypes,
@@ -451,7 +453,7 @@ public class ReportServiceImpl
      */
     @Override
     public List<ReportBase> getReportsSince(User inUser,
-                                            java.time.LocalDateTime inDate)
+                                            LocalDateTime inDate)
     {
         QPersistentReport r = QPersistentReport.persistentReport;
         BooleanExpression where = r.sendingTime.goe(inDate);
@@ -542,7 +544,7 @@ public class ReportServiceImpl
      */
     @Override
     public BigDecimal getPositionAsOf(User inUser,
-                                      java.time.LocalDateTime inDate,
+                                      LocalDateTime inDate,
                                       Instrument inInstrument)
     {
         switch(inInstrument.getSecurityType()) {
@@ -576,7 +578,7 @@ public class ReportServiceImpl
      */
     @Override
     public BigDecimal getEquityPositionAsOf(User inUser,
-                                            java.time.LocalDateTime inDate,
+                                            LocalDateTime inDate,
                                             Equity inEquity)
     {
         return getPositionAsOf(inUser,
@@ -611,7 +613,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(User inUser,
-                                                                                 java.time.LocalDateTime inDate)
+                                                                                 LocalDateTime inDate)
     {
         Map<PositionKey<? extends Instrument>,BigDecimal> results = Maps.newHashMap();
         results.putAll(getAllEquityPositionsAsOf(inUser,
@@ -631,7 +633,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf(User inUser,
-                                                                         java.time.LocalDateTime inDate)
+                                                                         LocalDateTime inDate)
     {
         return getAllPositionsAsOf(inDate,
                                    inUser,
@@ -656,7 +658,7 @@ public class ReportServiceImpl
      */
     @Override
     public BigDecimal getCurrencyPositionAsOf(User inUser,
-                                              java.time.LocalDateTime inDate,
+                                              LocalDateTime inDate,
                                               Currency inCurrency)
     {
         return getPositionAsOf(inUser,
@@ -676,7 +678,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(User inUser,
-                                                                             java.time.LocalDateTime inDate)
+                                                                             LocalDateTime inDate)
     {
         return getAllPositionsAsOf(inDate,
                                    inUser,
@@ -701,7 +703,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(User inUser,
-                                                                         java.time.LocalDateTime inDate)
+                                                                         LocalDateTime inDate)
     {
         return getAllPositionsAsOf(inDate,
                                    inUser,
@@ -727,7 +729,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<ConvertibleBond>,BigDecimal> getAllConvertibleBondPositionsAsOf(User inUser,
-                                                                                           java.time.LocalDateTime inDate)
+                                                                                           LocalDateTime inDate)
     {
         return getAllPositionsAsOf(inDate,
                                    inUser,
@@ -752,7 +754,7 @@ public class ReportServiceImpl
      */
     @Override
     public BigDecimal getConvertibleBondPositionAsOf(User inUser,
-                                                     java.time.LocalDateTime inDate,
+                                                     LocalDateTime inDate,
                                                      ConvertibleBond inConvertibleBond)
     {
         return getPositionAsOf(inUser,
@@ -772,7 +774,7 @@ public class ReportServiceImpl
      */
     @Override
     public BigDecimal getFuturePositionAsOf(User inUser,
-                                            java.time.LocalDateTime inDate,
+                                            LocalDateTime inDate,
                                             Future inFuture)
     {
         return getPositionAsOf(inUser,
@@ -792,7 +794,7 @@ public class ReportServiceImpl
      */
     @Override
     public BigDecimal getOptionPositionAsOf(User inUser,
-                                            java.time.LocalDateTime inDate,
+                                            LocalDateTime inDate,
                                             Option inOption)
     {
         return getPositionAsOf(inUser,
@@ -815,7 +817,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(User inUser,
-                                                                         java.time.LocalDateTime inDate)
+                                                                         LocalDateTime inDate)
     {
         return getAllPositionsAsOf(inDate,
                                    inUser,
@@ -842,7 +844,7 @@ public class ReportServiceImpl
      */
     @Override
     public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(User inUser,
-                                                                      java.time.LocalDateTime inDate,
+                                                                      LocalDateTime inDate,
                                                                       String[] inSymbols)
     {
         return getAllPositionsAsOf(inDate,
@@ -884,9 +886,9 @@ public class ReportServiceImpl
         if(newReport.getSessionId() != null) {
             where = where.and(QPersistentReport.persistentReport.sessionIdValue.eq(newReport.getSessionId().toString()));
         }
-        java.time.LocalDateTime sessionStart = getSessionStart(newReport.getSessionId());
+        LocalDateTime sessionStart = getSessionStart(newReport.getSessionId());
         if(sessionStart == null) {
-            sessionStart = new Date(0);
+            sessionStart = DateService.toLocalDateTime(0);
         }
         where = where.and(QPersistentReport.persistentReport.sendingTime.goe(getSessionStart(newReport.getSessionId())));
         Optional<PersistentReport> reportOption = persistentReportDao.findOne(where);
@@ -1209,9 +1211,9 @@ public class ReportServiceImpl
      * @param inSessionId a <code>SessionID</code> value
      * @return a <code>Date</code> value
      */
-    private java.time.LocalDateTime getSessionStart(final SessionID inSessionId)
+    private LocalDateTime getSessionStart(final SessionID inSessionId)
     {
-        java.time.LocalDateTime sessionStart = null;
+        LocalDateTime sessionStart = null;
         try {
             sessionStart = cachedSessionStart.getIfPresent(inSessionId);
             if(sessionStart == null) {
@@ -1219,8 +1221,9 @@ public class ReportServiceImpl
                 if(sessionStart != null) {
                     cachedSessionStart.put(inSessionId,
                                            sessionStart);
-                    java.time.LocalDateTime nextSessionStart = brokerService.getNextSessionStart(inSessionId);
+                    LocalDateTime nextSessionStart = brokerService.getNextSessionStart(inSessionId);
                     if(nextSessionStart != null) {
+                        long offsetMillis = DateService.toEpochMillis(nextSessionStart)-DateService.toEpochMillis(LocalDateTime.now());
                         timerService.schedule(new TimerTask() {
                             @Override
                             public void run()
@@ -1239,7 +1242,7 @@ public class ReportServiceImpl
                                     }
                                 }
                             }
-                        },nextSessionStart);
+                        },offsetMillis);
                     }
                 }
             }
@@ -1255,7 +1258,7 @@ public class ReportServiceImpl
             }
         }
         if(sessionStart == null) {
-            sessionStart = new DateTime().withTimeAtStartOfDay().toDate();
+            sessionStart = LocalDate.now().atStartOfDay();
             SLF4JLoggerProxy.debug(this,
                                    "No session start for {}, using start of day: {}",
                                    inSessionId,
@@ -1266,14 +1269,14 @@ public class ReportServiceImpl
     /**
      * Executes an all positions query by instrument type.
      *
-     * @param inAsOfDate a <code>Date</code> value
+     * @param inAsOfDate a <code>LocalDateTime</code> value
      * @param inViewer a <code>SimpleUser</code> value
      * @param inSecurityType a <code>SecurityType</code> value
      * @param inTupleTransformer a <code>PositionTransformer&lt;I&gt;</code> value
      * @param inSymbols a <code>String[]</code> value
      * @return a <code>Map&lt;PositionKey&lt;I&gt;,BigDecimal&gt;</code> value
      */
-    private <I extends Instrument> Map<PositionKey<I>,BigDecimal> getAllPositionsAsOf(Date inAsOfDate,
+    private <I extends Instrument> Map<PositionKey<I>,BigDecimal> getAllPositionsAsOf(LocalDateTime inAsOfDate,
                                                                                       User inViewer,
                                                                                       SecurityType inSecurityType,
                                                                                       PositionTransformer<I> inTupleTransformer,
@@ -1332,7 +1335,7 @@ public class ReportServiceImpl
      * @return a <code>BigDecimal</code> value
      */
     private <I extends Instrument> BigDecimal getPositionAsOf(User inUser,
-                                                              java.time.LocalDateTime inDate,
+                                                              LocalDateTime inDate,
                                                               I inInstrument,
                                                               SymbolMatcher<I> inSymbolMatcher)
     {
@@ -1412,7 +1415,7 @@ public class ReportServiceImpl
     /**
      * caches session start for a session
      */
-    private Cache<SessionID,Date> cachedSessionStart;
+    private Cache<SessionID,LocalDateTime> cachedSessionStart;
     /**
      * number of order principals to cache
      */

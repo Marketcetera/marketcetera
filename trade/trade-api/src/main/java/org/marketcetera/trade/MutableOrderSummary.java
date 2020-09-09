@@ -1,14 +1,14 @@
 package org.marketcetera.trade;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.admin.User;
 
 /* $License$ */
 
 /**
- *
+ * Provides a mutable {@link OrderSummary} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -110,15 +110,15 @@ public interface MutableOrderSummary
     /**
      * Set the sending time value.
      *
-     * @param inSendingTime a <code>Date</code> value
+     * @param inSendingTime a <code>LocalDateTime</code> value
      */
-    void setSendingTime(Date inSendingTime);
+    void setSendingTime(LocalDateTime inSendingTime);
     /**
      * Set the transact time value.
      *
-     * @param inTransactTime a <code>Date</code> value
+     * @param inTransactTime a <code>LocalDateTime</code> value
      */
-    void setTransactTime(Date inTransactTime);
+    void setTransactTime(LocalDateTime inTransactTime);
     /**
      * Set the order status actor value.
      *

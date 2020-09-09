@@ -10,11 +10,17 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.marketcetera.event.*;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.Messages;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -71,7 +77,7 @@ public class DividendEventTest
         assertEquals(timestamp,
                      builder.getDividend().getTimestamp());
         // make a weird timestamp
-        timestamp = new Date(-1);
+        timestamp = DateService.toLocalDateTime(-1);
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.create().getTimestamp());
@@ -405,10 +411,10 @@ public class DividendEventTest
         verify(builder);
         // timestamp
         // negative timestamp ok (not even sure what this means, maybe 1ms before epoch?)
-        builder.withTimestamp(new Date(-1));
+        builder.withTimestamp(DateService.toLocalDateTime(-1));
         verify(builder);
        // 0 timestamp
-        setDefaults(builder).withTimestamp(new Date(0));
+        setDefaults(builder).withTimestamp(DateService.toLocalDateTime(0));
         verify(builder);
         // null timestamp (requests a new timestamp)
         setDefaults(builder).withTimestamp(null);
@@ -584,7 +590,7 @@ public class DividendEventTest
         // there's a special case for timestamp, too
         if(inBuilder.getDividend().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
-            assertEquals(event.getTimestamp().getTime(),
+            assertEquals(DateService.toEpochMillis(event.getTimestamp()),
                          event.getTimeMillis());
         } else {
             assertEquals(inBuilder.getDividend().getTimestamp(),
@@ -613,17 +619,17 @@ public class DividendEventTest
         long timestampMillis = System.currentTimeMillis();
         inBuilder.withAmount(BigDecimal.ONE);
         inBuilder.withCurrency("US Dollars");
-        inBuilder.withDeclareDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*1)));
+        inBuilder.withDeclareDate(DateUtils.dateToString(DateService.toLocalDateTime(timestampMillis + (1000 * 60 * 60 * 24)*1)));
         inBuilder.withEquity(equity);
         inBuilder.withEventType(EventType.UPDATE_FINAL);
-        inBuilder.withExecutionDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*2)));
+        inBuilder.withExecutionDate(DateUtils.dateToString(DateService.toLocalDateTime(timestampMillis + (1000 * 60 * 60 * 24)*2)));
         inBuilder.withFrequency(DividendFrequency.ANNUALLY);
         inBuilder.withMessageId(idCounter.incrementAndGet());
-        inBuilder.withPaymentDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*3)));
-        inBuilder.withRecordDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*4)));
+        inBuilder.withPaymentDate(DateUtils.dateToString(DateService.toLocalDateTime(timestampMillis + (1000 * 60 * 60 * 24)*3)));
+        inBuilder.withRecordDate(DateUtils.dateToString(DateService.toLocalDateTime(timestampMillis + (1000 * 60 * 60 * 24)*4)));
         inBuilder.withSource(this);
         inBuilder.withStatus(DividendStatus.OFFICIAL);
-        inBuilder.withTimestamp(new Date(timestampMillis + (1000 * 60 * 60 * 24)*5));
+        inBuilder.withTimestamp(DateService.toLocalDateTime(timestampMillis + (1000 * 60 * 60 * 24)*5));
         inBuilder.withType(DividendType.CURRENT);
         return inBuilder;
     }

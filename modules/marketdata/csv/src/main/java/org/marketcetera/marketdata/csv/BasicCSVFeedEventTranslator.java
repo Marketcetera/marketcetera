@@ -18,9 +18,9 @@ import static org.marketcetera.marketdata.csv.Messages.UNKNOWN_SYMBOL_FORMAT;
 import static org.marketcetera.marketdata.csv.Messages.UNSUPPORTED_CFI_CODE;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +56,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -651,7 +652,7 @@ public class BasicCSVFeedEventTranslator
      * <p>The trade date is assumed to be the fourth element in the line.
      *
      * @param inData a <code>CSVQuantum</code> value
-     * @return a <code>Date</code> value or <code>null</code>
+     * @return a <code>LocalDateTime</code> value or <code>null</code>
      * @throws CoreException if an error occurs retrieving the trade date
      */
     protected java.time.LocalDateTime guessTradeDate(CSVQuantum inData)
@@ -741,7 +742,7 @@ public class BasicCSVFeedEventTranslator
      * <p>The quote date is assumed to be the fourth element in the line.
      *
      * @param inData a <code>CSVQuantum</code> value
-     * @return a <code>Date</code> value or <code>null</code>
+     * @return a <code>LocalDateTime</code> value or <code>null</code>
      * @throws CoreException if an error occurs
      */
     protected java.time.LocalDateTime guessQuoteDate(CSVQuantum inData)
@@ -902,7 +903,7 @@ public class BasicCSVFeedEventTranslator
      * <p>The event timestamp is assumed to be the second element in the line.
      *
      * @param inData a <code>CSVQuantum</code> value
-     * @return a <code>Date</code> value containing the timestamp for the event or <code>null</code>
+     * @return a <code>LocalDateTime</code> value containing the timestamp for the event or <code>null</code>
      * @throws CoreException if the event could not be parsed
      */
     protected java.time.LocalDateTime guessEventTimestamp(CSVQuantum inData)
@@ -1140,18 +1141,18 @@ public class BasicCSVFeedEventTranslator
         return StringUtils.trimToNull(inData.getLine()[inIndex]);
     }
     /**
-     * Interprets the given <code>String</code> as a <code>Date</code> value.
+     * Interprets the given <code>String</code> as a <code>LocalDateTime</code> value.
      * 
-     * <p>Note that this value is not interpreted exactly as a <code>Date</code>.  The value is interpreted
-     * as a long, and then transformed to a <code>Date</code>.
+     * <p>Note that this value is not interpreted exactly as a <code>LocalDateTime</code>.  The value is interpreted
+     * as a long, and then transformed to a <code>LocalDateTime</code>.
      *
      * @param inData a <code>CSVQuantum</code> value
      * @param inIndex an <code>int</code> value
-     * @return a <code>Date</code> value or <code>null</code>
-     * @throws CoreException if the value cannot be interpreted as a <code>Date</code>
+     * @return a <code>LocalDateTime</code> value or <code>null</code>
+     * @throws CoreException if the value cannot be interpreted as a <code>LocalDateTime</code>
      */
-    protected java.time.LocalDateTime guessDate(CSVQuantum inData,
-                             int inIndex)
+    protected LocalDateTime guessDate(CSVQuantum inData,
+                                      int inIndex)
             throws CoreException
     {
         String dataChunk = guessString(inData,
@@ -1160,7 +1161,7 @@ public class BasicCSVFeedEventTranslator
             return null;
         }
         try {
-            return new Date(Long.parseLong(dataChunk));
+            return DateService.toLocalDateTime(Long.parseLong(dataChunk));
         } catch (Exception e) {
             throw new CoreException(e,
                                     new I18NBoundMessage1P(CANNOT_GUESS_DATE,

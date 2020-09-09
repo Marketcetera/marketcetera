@@ -8,7 +8,6 @@ import static org.marketcetera.event.util.BookPriceComparator.askComparator;
 import static org.marketcetera.event.util.BookPriceComparator.bidComparator;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +19,7 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -282,7 +282,7 @@ public class PriceComparatorsTest
                                            quote1));
         // e1 timestamp < e2 timestamp
         quote2 = doOption(inBuilder).withMessageId(System.nanoTime())
-                                    .withTimestamp(new Date(quote1.getTimeMillis() + 1000))
+                                    .withTimestamp(DateService.toLocalDateTime((quote1.getTimeMillis() + 1000)))
                                     .withQuoteDate(java.time.LocalDateTime.now())
                                     .withInstrument(inInstrument)
                                     .withExchange("Q")

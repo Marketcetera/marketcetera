@@ -8,7 +8,7 @@ import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -351,10 +351,10 @@ public abstract class ImbalanceEventBuilder
     /**
      * Sets the timestamp value to use with the new event.
      *
-     * @param inTimestamp a <code>Date</code> value or <code>null</code>
+     * @param inTimestamp a <code>LocalDateTime</code> value or <code>null</code>
      * @return a <code>ImbalanceEventBuilder</code> value
      */
-    public final ImbalanceEventBuilder withTimestamp(Date inTimestamp)
+    public final ImbalanceEventBuilder withTimestamp(LocalDateTime inTimestamp)
     {
         imbalance.setTimestamp(inTimestamp);
         return this;

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.ByteString;
@@ -34,15 +36,15 @@ public abstract class BaseRpcUtil
     /**
      * Get the timestamp value from the given date.
      *
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @return an <code>Optional&lt;com.google.protobuf.Timestamp&gt;</code> value
      */
-    public static Optional<com.google.protobuf.Timestamp> getTimestampValue(Date inTimestamp)
+    public static Optional<com.google.protobuf.Timestamp> getTimestampValue(LocalDateTime inTimestamp)
     {
         if(inTimestamp == null) {
             return Optional.empty();
         }
-        Instant time = inTimestamp.toInstant();
+        Instant time = DateService.toDate(inTimestamp).toInstant();
         Timestamp timestamp = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build();
         return Optional.of(timestamp);
     }
@@ -50,15 +52,15 @@ public abstract class BaseRpcUtil
      * Get the date from from the given timestamp.
      *
      * @param inTimestamp a <code>com.google.protobuf.Timestamp</code> value
-     * @return an <code>Optional&lt;Date&gt;</code> value
+     * @return an <code>Optional&lt;LocalDateTime&gt;</code> value
      */
-    public static Optional<Date> getDateValue(com.google.protobuf.Timestamp inTimestamp)
+    public static Optional<LocalDateTime> getDateValue(com.google.protobuf.Timestamp inTimestamp)
     {
         if(inTimestamp == null) {
             return Optional.empty();
         }
-        return Optional.of(Date.from(Instant.ofEpochSecond(inTimestamp.getSeconds(),
-                                                           inTimestamp.getNanos())));
+        return Optional.of(DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inTimestamp.getSeconds(),
+                                                                                       inTimestamp.getNanos()))));
     }
     /**
      * Get the string value from the given string.

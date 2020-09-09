@@ -2,7 +2,7 @@ package org.marketcetera.core;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -55,7 +55,7 @@ public class ThreadLocalSimpleDateFormatTest extends TestCase {
 		SimpleDateFormat mainThreadFormat = tlsdf.get();
 		SimpleDateFormat testFormat = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
 		testFormat.setTimeZone(TimeZone.getTimeZone("MST")); //$NON-NLS-1$
-		Date testDate = java.time.LocalDateTime.now();
+		LocalDateTime testDate = LocalDateTime.now();
 		
 		assertEquals(testFormat.format(testDate), mainThreadFormat.format(testDate));
 		

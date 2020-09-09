@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,13 +14,33 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.AllocAccount;
+import quickfix.field.AllocQty;
+import quickfix.field.AvgPx;
+import quickfix.field.BeginString;
+import quickfix.field.CumQty;
+import quickfix.field.ExpireTime;
+import quickfix.field.HandlInst;
+import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.Product;
+import quickfix.field.SecurityExchange;
+import quickfix.field.SettlType;
+import quickfix.field.SolicitedFlag;
 import quickfix.field.converter.BooleanConverter;
 import quickfix.field.converter.UtcTimestampConverter;
 import quickfix.fix44.OrderCancelReplaceRequest;
@@ -214,9 +233,10 @@ public class OrderReplaceTest extends TypesTestBase {
         int intValue = 1;
         boolean boolValue = false;
 
-        msg.setField(new ExpireTime(DateService.toLocalDateTime(date)));
+        msg.setField(new ExpireTime(date));
         expectedMap.put(String.valueOf(ExpireTime.FIELD),
-                UtcTimestampConverter.convert(date, true));
+                        UtcTimestampConverter.convert(DateService.toDate(date),
+                                                      true));
 
         msg.setField(new AllocQty(bigDecimal));
         expectedMap.put(String.valueOf(AllocQty.FIELD), bigDecimal.toString());

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -145,9 +144,10 @@ public class OrderSingleTest extends TypesTestBase {
         int intValue = 1;
         boolean boolValue = false;
 
-        msg.setField(new ExpireTime(DateService.toLocalDateTime(date)));
+        msg.setField(new ExpireTime(date));
         expectedMap.put(String.valueOf(ExpireTime.FIELD),
-                UtcTimestampConverter.convert(date, true));
+                        UtcTimestampConverter.convert(DateService.toDate(date),
+                                                      true));
 
         msg.setField(new AllocQty(bigDecimal));
         expectedMap.put(String.valueOf(AllocQty.FIELD), bigDecimal.toString());

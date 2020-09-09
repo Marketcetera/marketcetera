@@ -1,8 +1,8 @@
 package org.marketcetera.trade.client;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -192,10 +192,10 @@ public class DirectTradeClient
         return response;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradeClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
+     * @see org.marketcetera.trade.client.TradeClient#getPositionAsOf(java.time.LocalDateTime, org.marketcetera.trade.Instrument)
      */
     @Override
-    public BigDecimal getPositionAsOf(Date inDate,
+    public BigDecimal getPositionAsOf(LocalDateTime inDate,
                                       Instrument inInstrument)
     {
         return reportService.getPositionAsOf(user,
@@ -203,19 +203,19 @@ public class DirectTradeClient
                                              inInstrument);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradeClient#getAllPositionsAsOf(java.util.Date)
+     * @see org.marketcetera.trade.client.TradeClient#getAllPositionsAsOf(java.time.LocalDateTime)
      */
     @Override
-    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(LocalDateTime inDate)
     {
         return reportService.getAllPositionsAsOf(user,
                                                  inDate);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.client.TradeClient#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
+     * @see org.marketcetera.trade.client.TradeClient#getOptionPositionsAsOf(java.time.LocalDateTime, java.lang.String[])
      */
     @Override
-    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(LocalDateTime inDate,
                                                                       String... inRootSymbols)
     {
         return reportService.getOptionPositionsAsOf(user,

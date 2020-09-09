@@ -1,6 +1,6 @@
 package org.marketcetera.client.utils;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,6 +15,7 @@ import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 import org.springframework.context.Lifecycle;
 
 /* $License$ */
@@ -55,12 +56,12 @@ public class LiveOrderHistoryManager
     /**
      * Create a new LiveOrderHistoryManager instance.
      * 
-     * @param inReportHistoryOrigin a <code>Date</code> value indicating the point from which to gather order history or <code>null</code>
+     * @param inReportHistoryOrigin a <code>LocalDateTime</code> value indicating the point from which to gather order history or <code>null</code>
      */
-    public LiveOrderHistoryManager(Date inReportHistoryOrigin)
+    public LiveOrderHistoryManager(LocalDateTime inReportHistoryOrigin)
     {
         if(inReportHistoryOrigin == null) {
-            reportHistoryOrigin = new Date(0);
+            reportHistoryOrigin = DateService.toLocalDateTime(0);
         } else {
             reportHistoryOrigin = inReportHistoryOrigin;
         }
@@ -186,9 +187,9 @@ public class LiveOrderHistoryManager
     /**
      * Gets the report history origin date used by this order history manager.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public java.time.LocalDateTime getReportHistoryOrigin()
+    public LocalDateTime getReportHistoryOrigin()
     {
         return reportHistoryOrigin;
     }
@@ -222,7 +223,7 @@ public class LiveOrderHistoryManager
     /**
      * date from which to gather status
      */
-    private final java.time.LocalDateTime reportHistoryOrigin;
+    private final LocalDateTime reportHistoryOrigin;
     /**
      * indicates if the object is active
      */

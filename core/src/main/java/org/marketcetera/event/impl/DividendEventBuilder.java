@@ -1,11 +1,15 @@
 package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.*;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.beans.DividendBean;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -58,10 +62,10 @@ public abstract class DividendEventBuilder
     /**
      * Sets the timestamp value to use with the new event.
      *
-     * @param inTimestamp a <code>Date</code> value or <code>null</code>
+     * @param inTimestamp a <code>LocalDateTime</code> value or <code>null</code>
      * @return a <code>DividendEventBuilder</code> value
      */
-    public final DividendEventBuilder withTimestamp(Date inTimestamp)
+    public final DividendEventBuilder withTimestamp(LocalDateTime inTimestamp)
     {
         dividend.setTimestamp(inTimestamp);
         return this;

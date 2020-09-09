@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.core.BigDecimalUtil;
@@ -142,7 +142,7 @@ public class SimpleOrderSummary
      * @see org.marketcetera.trade.OrderSummary#getSendingTime()
      */
     @Override
-    public java.time.LocalDateTime getSendingTime()
+    public LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -150,7 +150,7 @@ public class SimpleOrderSummary
      * @see org.marketcetera.trade.OrderSummary#getTransactTime()
      */
     @Override
-    public java.time.LocalDateTime getTransactTime()
+    public LocalDateTime getTransactTime()
     {
         return transactTime;
     }
@@ -291,18 +291,18 @@ public class SimpleOrderSummary
         orderPrice = inOrderPrice;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.MutableOrderSummary#setSendingTime(java.util.Date)
+     * @see org.marketcetera.trade.MutableOrderSummary#setSendingTime(java.time.LocalDateTime)
      */
     @Override
-    public void setSendingTime(Date inSendingTime)
+    public void setSendingTime(LocalDateTime inSendingTime)
     {
         sendingTime = inSendingTime;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.MutableOrderSummary#setTransactTime(java.util.Date)
+     * @see org.marketcetera.trade.MutableOrderSummary#setTransactTime(java.time.LocalDateTime)
      */
     @Override
-    public void setTransactTime(Date inTransactTime)
+    public void setTransactTime(LocalDateTime inTransactTime)
     {
         transactTime = inTransactTime;
     }
@@ -403,11 +403,11 @@ public class SimpleOrderSummary
     /**
      * sending time value
      */
-    private java.time.LocalDateTime sendingTime;
+    private LocalDateTime sendingTime;
     /**
      * transact time value
      */
-    private java.time.LocalDateTime transactTime;
+    private LocalDateTime transactTime;
     /**
      * actor value
      */

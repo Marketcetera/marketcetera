@@ -1,9 +1,8 @@
 package org.marketcetera.event;
 
-import java.util.Date;
-
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -28,19 +27,19 @@ public class MockEvent
     /**
      * Create a new MockEvent instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>long</code> value
      */
     public MockEvent(long inMessageId,
                      long inTimestamp)
     {
         event.setMessageId(inMessageId);
-        event.setTimestamp(new Date(inTimestamp));
+        event.setTimestamp(DateService.toLocalDateTime(inTimestamp));
     }
     /**
      * Create a new MockEvent instance.
      *
-     * @param inRequest
+     * @param inRequest a <code>MarketDataRequest</code> value
      */
     public MockEvent(MarketDataRequest inRequest)
     {
@@ -106,7 +105,7 @@ public class MockEvent
         if(timestamp == null) {
             return -1;
         }
-        return event.getTimestamp().getTime();
+        return DateService.toEpochMillis(event.getTimestamp());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.MarketDataEvent#getRequestId()
@@ -128,5 +127,5 @@ public class MockEvent
      * holds event attributes
      */
     private final EventBean event = new EventBean();
-    private static final long serialVersionUID = -1725629179784791105L;
+    private static final long serialVersionUID = 6846991271868272293L;
 }

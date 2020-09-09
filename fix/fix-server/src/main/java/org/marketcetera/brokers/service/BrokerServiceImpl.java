@@ -3,9 +3,10 @@ package org.marketcetera.brokers.service;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -315,10 +316,10 @@ public class BrokerServiceImpl
      * @see org.marketcetera.brokers.service.BrokerService#getSessionStart(quickfix.SessionID)
      */
     @Override
-    public java.time.LocalDateTime getSessionStart(SessionID inSessionId)
+    public LocalDateTime getSessionStart(SessionID inSessionId)
     {
         FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inSessionId);
-        java.time.LocalDateTime returnValue = new DateTime().withTimeAtStartOfDay().toDate();
+        LocalDateTime returnValue = LocalDate.now().atStartOfDay();
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No fix session for {}, using {} instead",
@@ -350,10 +351,10 @@ public class BrokerServiceImpl
      * @see org.marketcetera.brokers.service.BrokerService#getNextSessionStart(quickfix.SessionID)
      */
     @Override
-    public java.time.LocalDateTime getNextSessionStart(SessionID inSessionId)
+    public LocalDateTime getNextSessionStart(SessionID inSessionId)
     {
         FixSession fixSession = fixSessionProvider.findFixSessionBySessionId(inSessionId);
-        java.time.LocalDateTime returnValue = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
+        LocalDateTime returnValue = LocalDate.now().atStartOfDay().plusDays(1);
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No fix session for {}, using {} instead",
@@ -534,14 +535,14 @@ public class BrokerServiceImpl
      * @see org.marketcetera.brokers.service.BrokerService#getActualSessionStart(quickfix.SessionID)
      */
     @Override
-    public java.time.LocalDateTime getActualSessionStart(SessionID inSessionId)
+    public LocalDateTime getActualSessionStart(SessionID inSessionId)
     {
         try {
             GetSessionStartTask getSessionStartTask = new GetSessionStartTask(inSessionId);
-            Map<Object,Future<Date>> results = clusterService.execute(getSessionStartTask);
-            java.time.LocalDateTime value = null;
-            for(Map.Entry<Object,Future<Date>> entry : results.entrySet()) {
-                java.time.LocalDateTime returnedValue = entry.getValue().get();
+            Map<Object,Future<LocalDateTime>> results = clusterService.execute(getSessionStartTask);
+            LocalDateTime value = null;
+            for(Map.Entry<Object,Future<LocalDateTime>> entry : results.entrySet()) {
+                LocalDateTime returnedValue = entry.getValue().get();
                 if(returnedValue != null) {
                     value = returnedValue;
                 }
@@ -682,12 +683,12 @@ public class BrokerServiceImpl
                                        "{} has no specified active days",
                                        inSessionId);
             } else {
-                java.time.LocalDateTime startOfSession = getSessionStart(inSessionId);
+                LocalDateTime startOfSession = getSessionStart(inSessionId);
                 if(startOfSession == null) {
                     SLF4JLoggerProxy.debug(this,
                                            "Unable to calculate start of session for {}, using now",
                                            inSessionId);
-                    startOfSession = java.time.LocalDateTime.now();
+                    startOfSession = LocalDateTime.now();
                 }
                 DateTime now = new DateTime(startOfSession);
                 int today = now.getDayOfWeek();

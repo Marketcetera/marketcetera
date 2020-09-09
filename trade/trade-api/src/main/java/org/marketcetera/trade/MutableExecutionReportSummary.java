@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.admin.User;
 
@@ -122,9 +122,9 @@ public interface MutableExecutionReportSummary
     /**
      * Set the sendingTime value.
      *
-     * @param inSendingTime a <code>Date</code> value
+     * @param inSendingTime a <code>LocalDateTime</code> value
      */
-    void setSendingTime(Date inSendingTime);
+    void setSendingTime(LocalDateTime inSendingTime);
     /**
      * Set the viewer value.
      *

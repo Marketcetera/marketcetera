@@ -1,7 +1,7 @@
 package org.marketcetera.brokers.service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerStatusPublisher;
@@ -143,23 +143,23 @@ public interface BrokerService
      * Get the most recent scheduled start of the given session.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
-     * @return a <code>Date</code> value or <code>null</code>
+     * @return a <code>LocalDateTime</code> value or <code>null</code>
      */
-    java.time.LocalDateTime getSessionStart(quickfix.SessionID inSessionId);
+    LocalDateTime getSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the next scheduled start of the given session.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
-     * @return a <code>Date</code> value or <code>null</code>
+     * @return a <code>LocalDateTime</code> value or <code>null</code>
      */
-    java.time.LocalDateTime getNextSessionStart(quickfix.SessionID inSessionId);
+    LocalDateTime getNextSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the most recent actual start of the given session.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
-     * @return a <code>Date</code> value or <code>null</code>
+     * @return a <code>LocalDateTime</code> value or <code>null</code>
      */
-    java.time.LocalDateTime getActualSessionStart(quickfix.SessionID inSessionId);
+    LocalDateTime getActualSessionStart(quickfix.SessionID inSessionId);
     /**
      * Get the FIX settings provider for the given affinity.
      *

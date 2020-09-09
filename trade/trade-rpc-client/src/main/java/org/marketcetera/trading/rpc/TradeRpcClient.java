@@ -2,9 +2,9 @@ package org.marketcetera.trading.rpc;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,6 +73,7 @@ import org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceBlockingStu
 import org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceStub;
 import org.marketcetera.trade.rpc.TradeTypesRpc;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.marketcetera.util.ws.tags.AppId;
 
 import com.google.common.cache.Cache;
@@ -220,7 +221,7 @@ public class TradeRpcClient
      * @see org.marketcetera.trade.client.TradingClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
      */
     @Override
-    public BigDecimal getPositionAsOf(Date inDate,
+    public BigDecimal getPositionAsOf(LocalDateTime inDate,
                                       Instrument inInstrument)
     {
         return executeCall(new Callable<BigDecimal>() {
@@ -236,7 +237,7 @@ public class TradeRpcClient
                 TradeRpc.GetPositionAsOfRequest.Builder requestBuilder = TradeRpc.GetPositionAsOfRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 TradeRpcUtil.getRpcInstrument(inInstrument).ifPresent(instrument->requestBuilder.setInstrument(instrument));
-                Instant time = inDate.toInstant();
+                Instant time = DateService.toDate(inDate).toInstant();
                 requestBuilder.setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
                 TradeRpc.GetPositionAsOfResponse response = getBlockingStub().getPositionAsOf(requestBuilder.build());
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
@@ -256,7 +257,7 @@ public class TradeRpcClient
      * @see org.marketcetera.trade.client.TradingClient#getAllPositionsAsOf(java.util.Date)
      */
     @Override
-    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
+    public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(LocalDateTime inDate)
     {
         return executeCall(new Callable<Map<PositionKey<? extends Instrument>,BigDecimal>>() {
             @Override
@@ -269,7 +270,7 @@ public class TradeRpcClient
                                        inDate);
                 TradeRpc.GetAllPositionsAsOfRequest.Builder requestBuilder = TradeRpc.GetAllPositionsAsOfRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                Instant time = inDate.toInstant();
+                Instant time = DateService.toDate(inDate).toInstant();
                 requestBuilder.setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
                 TradeRpc.GetAllPositionsAsOfResponse response = getBlockingStub().getAllPositionsAsOf(requestBuilder.build());
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
@@ -300,7 +301,7 @@ public class TradeRpcClient
      * @see org.marketcetera.trade.client.TradingClient#getOptionPositionsAsOf(java.util.Date, java.lang.String[])
      */
     @Override
-    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(LocalDateTime inDate,
                                                                       String... inRootSymbols)
     {
         return executeCall(new Callable<Map<PositionKey<Option>,BigDecimal>>() {
@@ -315,7 +316,7 @@ public class TradeRpcClient
                                        inDate);
                 TradeRpc.GetAllPositionsByRootAsOfRequest.Builder requestBuilder = TradeRpc.GetAllPositionsByRootAsOfRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                Instant time = inDate.toInstant();
+                Instant time = DateService.toDate(inDate).toInstant();
                 requestBuilder.setTimestamp(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
                 TradeRpc.GetAllPositionsByRootAsOfResponse response = getBlockingStub().getAllPositionsByRootAsOf(requestBuilder.build());
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,

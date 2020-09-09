@@ -14,6 +14,7 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -43,6 +44,7 @@ import org.marketcetera.module.ReceiveDataException;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.Histogram;
@@ -188,6 +190,7 @@ public class MarketDataRecorderModule
                         builder);
         FileUtils.write(outputFile,
                         builder.toString(),
+                        Charset.defaultCharset(),
                         true);
         builder.setLength(0);
         eventCounterMetric.update(1);
@@ -208,9 +211,9 @@ public class MarketDataRecorderModule
         inBuffer.append(inQuote.getPrice().toPlainString()).append(',');
         inBuffer.append(inQuote.getSize().toPlainString()).append(',');
         inBuffer.append(inQuote.getExchange()).append(',');
-        inBuffer.append(marketDataTimestampFormatter.print(inQuote.getExchangeTimestamp().getTime())).append(',');
-        inBuffer.append(marketDataTimestampFormatter.print(inQuote.getProcessedTimestamp())).append(',');
-        inBuffer.append(marketDataTimestampFormatter.print(inQuote.getReceivedTimestamp())).append(',');
+        inBuffer.append(inQuote.getExchangeTimestamp().format(marketDataTimestampFormatter)).append(',');
+        inBuffer.append(DateService.toLocalDateTime(inQuote.getProcessedTimestamp()).format(marketDataTimestampFormatter)).append(',');
+        inBuffer.append(DateService.toLocalDateTime(inQuote.getReceivedTimestamp()).format(marketDataTimestampFormatter)).append(',');
         inBuffer.append(System.lineSeparator());
     }
     /**

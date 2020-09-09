@@ -1,7 +1,7 @@
 package org.marketcetera.event;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -23,38 +23,38 @@ public interface MarketDataEvent
      *
      * @return a <code>String</code> value
      */
-    public String getExchange();
+    String getExchange();
     /**
      * Gets the price of the market data event. 
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getPrice();
+    BigDecimal getPrice();
     /**
      * Gets the size of the market data event.
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getSize();
+    BigDecimal getSize();
     /**
      * Gets the time the event occurred. 
      *
      * <p>The format of the returned value is dependent on the
      * originating market data provider.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public java.time.LocalDateTime getExchangeTimestamp();
+    LocalDateTime getExchangeTimestamp();
     /**
      * Gets the type of the event.
      *
      * @return an <code>EventMetaType</code> value
      */
-    public EventType getEventType();
+    EventType getEventType();
     /**
      * Sets the type of the event.
      *
      * @param inEventType an <code>EventMetaType</code> value
      */
-    public void setEventType(EventType inEventType);
+    void setEventType(EventType inEventType);
 }

@@ -20,14 +20,14 @@
 package org.marketcetera.fix;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTime;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -300,35 +300,35 @@ public class SessionSchedule {
     /**
      * Get the most recent scheduled start time.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public java.time.LocalDateTime getMostRecentStartTime()
+    public LocalDateTime getMostRecentStartTime()
     {
         Calendar now = SystemTime.getUtcCalendar();
         TimeInterval interval = theMostRecentIntervalBefore(now);
         SLF4JLoggerProxy.debug(this,
                                "Interval is {}",
                                interval);
-        return interval.getStart().getTime();
+        return DateService.toLocalDateTime(interval.getStart().getTime());
     }
     /**
      * Get the next scheduled start time.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public java.time.LocalDateTime getNextStartTime()
+    public LocalDateTime getNextStartTime()
     {
-        java.time.LocalDateTime returnValue;
+        LocalDateTime returnValue;
         Calendar now = SystemTime.getUtcCalendar();
         TimeInterval qfInterval = theMostRecentIntervalBefore(now);
-        DateTime sessionStart = new DateTime(qfInterval.getStart());
+        LocalDateTime sessionStart = DateService.toLocalDateTime(qfInterval.getStart());
         if(isDailySession()) {
-            returnValue = sessionStart.plusDays(1).toDate();
+            returnValue = sessionStart.plusDays(1);
         } else if(isNonStopSession()) {
-            returnValue = sessionStart.toDate();
+            returnValue = sessionStart;
         } else {
             // weekly session
-            returnValue = sessionStart.plusWeeks(1).toDate();
+            returnValue = sessionStart.plusWeeks(1);
         }
         SLF4JLoggerProxy.debug(this,
                                "Returning {} from {}",

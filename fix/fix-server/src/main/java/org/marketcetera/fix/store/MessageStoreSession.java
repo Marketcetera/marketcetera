@@ -1,12 +1,10 @@
 package org.marketcetera.fix.store;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import org.joda.time.DateTime;
 
 /* $License$ */
 
@@ -25,7 +23,7 @@ public class MessageStoreSession
     /**
      * Get the creationTime value.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
     public java.time.LocalDateTime getCreationTime()
     {
@@ -34,9 +32,9 @@ public class MessageStoreSession
     /**
      * Sets the creationTime value.
      *
-     * @param inCreationTime a <code>Date</code> value
+     * @param inCreationTime a <code>LocalDateTime</code> value
      */
-    public void setCreationTime(Date inCreationTime)
+    public void setCreationTime(LocalDateTime inCreationTime)
     {
         creationTime = inCreationTime;
     }
@@ -85,7 +83,7 @@ public class MessageStoreSession
         StringBuilder builder = new StringBuilder();
         builder.append("MessageStoreSession [").append(getSessionId()).append(" targetSeqNum=")
                 .append(targetSeqNum).append(", senderSeqNum=").append(senderSeqNum).append(", creationTime")
-                .append(new DateTime(getCreationTime())).append("]");
+                .append(getCreationTime()).append("]");
         return builder.toString();
     }
     /**

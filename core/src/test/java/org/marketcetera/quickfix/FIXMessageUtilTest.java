@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Lists;
 
@@ -206,7 +204,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         newSingle.setField(new ClOrdID("123-"+(++nosSuffixCounter)+"-"+suffix)); //$NON-NLS-1$ //$NON-NLS-2$
         newSingle.setField(new Symbol(symbol));
         newSingle.setField(new Side(side));
-        newSingle.setField(new TransactTime(DateService.toLocalDateTime(java.time.LocalDateTime.now())));
+        newSingle.setField(new TransactTime(java.time.LocalDateTime.now()));
         newSingle.setField(ordType);
         // technically, the OrderID is set by the exchange but for tests we'll set it too b/c OrderProgress expects it
         newSingle.setField(new OrderID("456"+suffix)); //$NON-NLS-1$

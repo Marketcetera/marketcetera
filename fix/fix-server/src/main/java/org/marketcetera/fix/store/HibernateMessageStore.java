@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.marketcetera.core.BatchQueueProcessor;
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -167,7 +168,7 @@ public class HibernateMessageStore
      * @see quickfix.MessageStore#getCreationTime()
      */
     @Override
-    public java.time.LocalDateTime getCreationTime()
+    public Date getCreationTime()
             throws IOException
     {
         return cache.getCreationTime();
@@ -194,7 +195,7 @@ public class HibernateMessageStore
                 cache.reset();
                 messageDao.deleteBySessionId(sessionId.toString());
                 MessageStoreSession session = getSession();
-                session.setCreationTime(cache.getCreationTime());
+                session.setCreationTime(DateService.toLocalDateTime(cache.getCreationTime()));
                 session.setTargetSeqNum(cache.getNextTargetMsgSeqNum());
                 session.setSenderSeqNum(cache.getNextSenderMsgSeqNum());
                 sessionDao.save(session);
@@ -244,7 +245,7 @@ public class HibernateMessageStore
         if(persistentSession == null) {
             persistentSession = new MessageStoreSession();
             persistentSession.setSessionId(sessionId.toString());
-            persistentSession.setCreationTime(cache.getCreationTime());
+            persistentSession.setCreationTime(DateService.toLocalDateTime(cache.getCreationTime()));
             persistentSession.setTargetSeqNum(cache.getNextTargetMsgSeqNum());
             persistentSession.setSenderSeqNum(cache.getNextSenderMsgSeqNum());
             persistentSession = sessionDao.save(persistentSession);
@@ -279,7 +280,7 @@ public class HibernateMessageStore
                                                                java.util.Calendar.class);
             method.setAccessible(true);
             method.invoke(cache,
-                          SystemTime.getUtcCalendar(persistentSession.getCreationTime()));
+                          SystemTime.getUtcCalendar(DateService.toDate(persistentSession.getCreationTime())));
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             SLF4JLoggerProxy.warn(this,
                                   e);

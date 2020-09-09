@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.junit.Test;
 import org.marketcetera.event.AskEvent;
@@ -20,6 +19,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -57,7 +57,7 @@ public class QuoteBeanTest
     {
         Instrument equity = new Equity("METC");
         java.time.LocalDateTime timestamp = java.time.LocalDateTime.now();
-        long receivedTimestamp = timestamp.getTime()+1;
+        long receivedTimestamp = DateService.toEpochMillis(timestamp)+1;
         long processedTimestamp = receivedTimestamp+1;
         BigDecimal size = BigDecimal.ONE;
         QuoteAction action = QuoteAction.CHANGE;
@@ -171,8 +171,8 @@ public class QuoteBeanTest
                             action,
                             ask.getEventType());
         // use odd timestamp
-        timestamp = new Date(-1);
-        assertTrue(timestamp.getTime() < 0);
+        timestamp = DateService.toLocalDateTime(-1);
+        assertTrue(DateService.toEpochMillis(timestamp) < 0);
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
                                                             timestamp,
                                                             size,
@@ -380,7 +380,7 @@ public class QuoteBeanTest
                             ask.getSize(),
                             action,
                             ask.getEventType());
-        equityAskBuilder.withQuoteDate(new Date(0));
+        equityAskBuilder.withQuoteDate(DateService.toLocalDateTime(0));
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
                                                             action),
                             ask.getMessageId(),

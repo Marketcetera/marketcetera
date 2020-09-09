@@ -1,6 +1,6 @@
 package org.marketcetera.event.impl;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -57,10 +57,10 @@ public abstract class TopOfBookEventBuilder
         return this;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.AbstractEventBuilder#withTimestamp(java.util.Date)
+     * @see org.marketcetera.event.AbstractEventBuilder#withTimestamp(java.time.LocalDateTime)
      */
     @Override
-    public final TopOfBookEventBuilder withTimestamp(Date inTimestamp)
+    public final TopOfBookEventBuilder withTimestamp(LocalDateTime inTimestamp)
     {
         super.withTimestamp(inTimestamp);
         return this;

@@ -8,7 +8,6 @@ import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -638,10 +637,10 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     /**
      * Sets the timestamp value to use with the new event.
      *
-     * @param inTimestamp a <code>Date</code> value or <code>null</code>
+     * @param inTimestamp a <code>LocalDateTime</code> value or <code>null</code>
      * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
      */
-    public QuoteEventBuilder<E> withTimestamp(Date inTimestamp)
+    public QuoteEventBuilder<E> withTimestamp(LocalDateTime inTimestamp)
     {
         quote.setTimestamp(inTimestamp);
         return this;

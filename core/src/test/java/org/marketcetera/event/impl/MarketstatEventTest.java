@@ -1,20 +1,36 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.*;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.EventType;
+import org.marketcetera.event.FutureEvent;
+import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.Messages;
+import org.marketcetera.event.OptionMarketstatEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -172,7 +188,7 @@ public class MarketstatEventTest
         MarketstatEventBuilder builder = getBuilder();
         setDefaults(builder);
         // null timestamp
-        builder.withTimestamp(null);
+        builder.withTimestamp((LocalDateTime)null);
         assertEquals(null,
                      builder.getMarketstat().getTimestamp());
         // regular timestamp
@@ -181,7 +197,7 @@ public class MarketstatEventTest
         assertEquals(timestamp,
                      builder.getMarketstat().getTimestamp());
         // make a weird timestamp
-        timestamp = new Date(-1);
+        timestamp = DateService.toLocalDateTime(-1);
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.create().getTimestamp());
@@ -889,13 +905,13 @@ public class MarketstatEventTest
         verify(builder);
         // timestamp
         // negative timestamp ok (not even sure what this means, maybe 1ms before epoch?)
-        builder.withTimestamp(new Date(-1));
+        builder.withTimestamp(DateService.toLocalDateTime(-1));
         verify(builder);
        // 0 timestamp
-        setDefaults(builder).withTimestamp(new Date(0));
+        setDefaults(builder).withTimestamp(DateService.toLocalDateTime(0));
         verify(builder);
         // null timestamp (requests a new timestamp)
-        setDefaults(builder).withTimestamp(null);
+        setDefaults(builder).withTimestamp((LocalDateTime)null);
         verify(builder);
         // normal timestamp
         setDefaults(builder).withTimestamp(java.time.LocalDateTime.now());
@@ -1050,7 +1066,7 @@ public class MarketstatEventTest
         // there's a special case for timestamp, too
         if(inBuilder.getMarketstat().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
-            assertEquals(event.getTimestamp().getTime(),
+            assertEquals(DateService.toEpochMillis(event.getTimestamp()),
                          event.getTimeMillis());
         } else {
             assertEquals(inBuilder.getMarketstat().getTimestamp(),
@@ -1110,7 +1126,7 @@ public class MarketstatEventTest
         long millisInADay = 1000 * 60 * 60 * 24;
         int counter = 0;
         inBuilder.hasDeliverable(false);
-        inBuilder.withCloseDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
+        inBuilder.withCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(millis + (millisInADay * counter++))));
         inBuilder.withCloseExchange("close exchange");
         inBuilder.withClosePrice(new BigDecimal(counter++));
         inBuilder.withExpirationType(ExpirationType.AMERICAN);
@@ -1126,12 +1142,12 @@ public class MarketstatEventTest
         inBuilder.withProviderSymbol("MSQ/K/X");
         inBuilder.withEventType(EventType.UNKNOWN);
         inBuilder.withContractSize(1200);
-        inBuilder.withPreviousCloseDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
+        inBuilder.withPreviousCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(millis + (millisInADay * counter++))));
         inBuilder.withPreviousClosePrice(new BigDecimal(counter++));
         inBuilder.withSource(this);
         inBuilder.withTimestamp(java.time.LocalDateTime.now());
-        inBuilder.withTradeHighTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
-        inBuilder.withTradeLowTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
+        inBuilder.withTradeHighTime(DateUtils.dateToString(DateService.toLocalDateTime(millis + (millisInADay * counter++))));
+        inBuilder.withTradeLowTime(DateUtils.dateToString(DateService.toLocalDateTime(millis + (millisInADay * counter++))));
         inBuilder.withUnderlyingInstrument(instrument);
         inBuilder.withVolume(new BigDecimal(counter++));
         inBuilder.withValue(new BigDecimal(counter++));

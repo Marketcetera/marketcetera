@@ -1,7 +1,7 @@
 package org.marketcetera.fix.dao;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.joda.time.DateTime;
 import org.marketcetera.fix.IncomingMessage;
 
 import quickfix.FieldNotFound;
@@ -75,7 +74,7 @@ public class PersistentIncomingMessage
     {
         StringBuilder builder = new StringBuilder();
         builder.append("IncomingMessage ").append(sessionId).append(' ').append(msgSeqNum)
-                .append(' ').append(msgType).append(' ').append(new DateTime(sendingTime));
+                .append(' ').append(msgType).append(' ').append(sendingTime);
         return builder.toString();
     }
     /* (non-Javadoc)
@@ -167,9 +166,9 @@ public class PersistentIncomingMessage
     /**
      * Sets the sendTime value.
      *
-     * @param inSendTime a <code>Date</code> value
+     * @param inSendTime a <code>LocalDateTime</code> value
      */
-    public void setSendingTime(Date inSendTime)
+    public void setSendingTime(LocalDateTime inSendTime)
     {
         sendingTime = inSendTime;
     }

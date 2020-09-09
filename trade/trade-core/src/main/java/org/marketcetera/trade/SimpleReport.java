@@ -1,6 +1,6 @@
 package org.marketcetera.trade;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.admin.User;
 
@@ -179,10 +179,10 @@ public class SimpleReport
         msgSeqNum = inMsgSeqNum;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.MutableReport#setSendingTime(java.util.Date)
+     * @see org.marketcetera.trade.MutableReport#setSendingTime(java.time.LocalDateTime)
      */
     @Override
-    public void setSendingTime(Date inSendingTime)
+    public void setSendingTime(LocalDateTime inSendingTime)
     {
         sendingTime = inSendingTime;
     }
@@ -238,7 +238,7 @@ public class SimpleReport
      * @see org.marketcetera.trade.MutableReport#setTransactTime(java.util.Date)
      */
     @Override
-    public void setTransactTime(Date inTransactTime)
+    public void setTransactTime(LocalDateTime inTransactTime)
     {
         transactTime = inTransactTime;
     }
@@ -296,11 +296,11 @@ public class SimpleReport
     /**
      * sending time value
      */
-    private java.time.LocalDateTime sendingTime;
+    private LocalDateTime sendingTime;
     /**
      * transact time value
      */
-    private java.time.LocalDateTime transactTime;
+    private LocalDateTime transactTime;
     /**
      * report type value
      */

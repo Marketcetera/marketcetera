@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 /* $License$ */
@@ -69,5 +70,25 @@ public abstract class DateService
     public static long toEpochMillis(LocalDateTime inTimestamp)
     {
         return inTimestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+    /**
+     * Convert the given {@link LocalDateTime} to a {@link Date} value.
+     *
+     * @param inTimestamp a <code>LocalDateTime</code> value
+     * @return a <code>Date</code> value
+     */
+    public static Date toDate(LocalDateTime inTimestamp)
+    {
+        return new Date(toEpochMillis(inTimestamp));
+    }
+    /**
+     * Convert the given {@link Calendar} to a {@link LocalDateTime} value.
+     *
+     * @param inTimestamp a <code>Calendar</code> value
+     * @return a <code>LocalDateTime</code> value
+     */
+    public static LocalDateTime toLocalDateTime(Calendar inTimestamp)
+    {
+        return toLocalDateTime(inTimestamp.getTime());
     }
 }

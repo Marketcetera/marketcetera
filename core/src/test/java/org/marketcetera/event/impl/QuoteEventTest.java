@@ -30,6 +30,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -737,7 +738,7 @@ public class QuoteEventTest
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
-        date = new Date(0);
+        date = DateService.toLocalDateTime(0);
         builder.withQuoteDate(date);
         assertEquals(date,
                      builder.getQuote().getExchangeTimestamp());
@@ -816,7 +817,7 @@ public class QuoteEventTest
         assertEquals(timestamp,
                      builder.getQuote().getTimestamp());
         // make a weird timestamp
-        timestamp = new Date(-1);
+        timestamp = DateService.toLocalDateTime(-1);
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.create().getTimestamp());
@@ -911,10 +912,10 @@ public class QuoteEventTest
         verify(builder);
         // timestamp
         // negative timestamp ok (not even sure what this means, maybe 1ms before epoch?)
-        builder.withTimestamp(new Date(-1));
+        builder.withTimestamp(DateService.toLocalDateTime(-1));
         verify(builder);
        // 0 timestamp
-        setDefaults(builder).withTimestamp(new Date(0));
+        setDefaults(builder).withTimestamp(DateService.toLocalDateTime(0));
         verify(builder);
         // null timestamp (requests a new timestamp)
         setDefaults(builder).withTimestamp(null);
@@ -955,7 +956,7 @@ public class QuoteEventTest
             }
         };
         // this value is ok
-        setDefaults(builder).withQuoteDate(new Date(0));
+        setDefaults(builder).withQuoteDate(DateService.toLocalDateTime(0));
         verify(builder);
         setDefaults(builder).withQuoteDate(java.time.LocalDateTime.now());
         verify(builder);
@@ -1151,7 +1152,7 @@ public class QuoteEventTest
         // there's a special case for timestamp, too
         if(inBuilder.getQuote().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
-            assertEquals(event.getTimestamp().getTime(),
+            assertEquals(DateService.toEpochMillis(event.getTimestamp()),
                          event.getTimeMillis());
         } else {
             assertEquals(inBuilder.getQuote().getTimestamp(),
@@ -1212,7 +1213,7 @@ public class QuoteEventTest
         inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withPrice(BigDecimal.ONE);
-        inBuilder.withQuoteDate(new Date(millis + (millisInADay * counter++)));
+        inBuilder.withQuoteDate(DateService.toLocalDateTime(millis + (millisInADay * counter++)));
         inBuilder.withSize(BigDecimal.TEN);
         inBuilder.withTimestamp(java.time.LocalDateTime.now());
         inBuilder.withUnderlyingInstrument(instrument);

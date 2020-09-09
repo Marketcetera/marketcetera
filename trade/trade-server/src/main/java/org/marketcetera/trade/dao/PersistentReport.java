@@ -1,6 +1,6 @@
 package org.marketcetera.trade.dao;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -329,9 +329,9 @@ public class PersistentReport
     /**
      * Sets the sendingTime value.
      *
-     * @param inSendingTime a <code>Date</code> value
+     * @param inSendingTime a <code>LocalDateTime</code> value
      */
-    public void setSendingTime(Date inSendingTime)
+    public void setSendingTime(LocalDateTime inSendingTime)
     {
         sendingTime = inSendingTime;
     }
@@ -465,9 +465,9 @@ public class PersistentReport
     /**
      * Set the transact time value.
      *
-     * @param inTransactTime a <code>Date</code> value
+     * @param inTransactTime a <code>LocalDateTime</code> value
      */
-    public void setTransactTime(Date inTransactTime)
+    public void setTransactTime(LocalDateTime inTransactTime)
     {
         transactTime = inTransactTime;
     }

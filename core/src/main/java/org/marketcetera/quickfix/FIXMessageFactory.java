@@ -2,7 +2,7 @@ package org.marketcetera.quickfix;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
@@ -186,7 +186,7 @@ public class FIXMessageFactory {
     public void addSendingTime(Message inMessage)
     {
         if(!inMessage.getHeader().isSetField(quickfix.field.SendingTime.FIELD)) {
-            inMessage.getHeader().setField(new SendingTime(DateService.toLocalDateTime(java.time.LocalDateTime.now())));
+            inMessage.getHeader().setField(new SendingTime(LocalDateTime.now()));
         }
     }
     protected void fillFieldsFromExistingMessage(Message oldMessage,
@@ -796,7 +796,7 @@ public class FIXMessageFactory {
     public void addTransactionTimeIfNeeded(Message msg)
     {
         if(msgAugmentor.needsTransactTime(msg)) {
-            msg.setField(new TransactTime(DateService.toLocalDateTime(java.time.LocalDateTime.now())));
+            msg.setField(new TransactTime(LocalDateTime.now()));
         }
     }
 

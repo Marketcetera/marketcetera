@@ -5,11 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-
 import org.junit.Test;
 import org.marketcetera.event.Messages;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -119,23 +118,23 @@ public abstract class AbstractEventBeanTestBase<E extends EventBean>
                 bean.getTimeMillis();
             }
         };
-        java.time.LocalDateTime timestamp = new Date(-1);
+        java.time.LocalDateTime timestamp = DateService.toLocalDateTime(-1);
         bean.setTimestamp(timestamp);
         assertEquals(timestamp,
                      bean.getTimestamp());
-        assertEquals(timestamp.getTime(),
+        assertEquals(DateService.toEpochMillis(timestamp),
                      bean.getTimeMillis());
-        timestamp = new Date(0);
+        timestamp = DateService.toLocalDateTime(0);
         bean.setTimestamp(timestamp);
         assertEquals(timestamp,
                      bean.getTimestamp());
-        assertEquals(timestamp.getTime(),
+        assertEquals(DateService.toEpochMillis(timestamp),
                      bean.getTimeMillis());
         timestamp = java.time.LocalDateTime.now();
         bean.setTimestamp(timestamp);
         assertEquals(timestamp,
                      bean.getTimestamp());
-        assertEquals(timestamp.getTime(),
+        assertEquals(DateService.toEpochMillis(timestamp),
                      bean.getTimeMillis());
     }
     /**

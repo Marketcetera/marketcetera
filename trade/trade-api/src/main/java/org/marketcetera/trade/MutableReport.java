@@ -1,6 +1,6 @@
 package org.marketcetera.trade;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.admin.User;
 
@@ -57,15 +57,15 @@ public interface MutableReport
     /**
      * Get the sendingTime value.
      *
-     * @param inSendingTime a <code>Date</code> value
+     * @param inSendingTime a <code>LocalDateTime</code> value
      */
-    void setSendingTime(Date inSendingTime);
+    void setSendingTime(LocalDateTime inSendingTime);
     /**
      * Get the transactTime value.
      *
-     * @param inTransactTime a <code>Date</code> value
+     * @param inTransactTime a <code>LocalDateTime</code> value
      */
-    void setTransactTime(Date inTransactTime);
+    void setTransactTime(LocalDateTime inTransactTime);
     /**
      * Get the reportType value.
      *

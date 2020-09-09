@@ -3,8 +3,8 @@ package org.marketcetera.event;
 import static org.junit.Assert.assertFalse;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -26,6 +26,7 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.SecurityType;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Lists;
 
@@ -107,11 +108,11 @@ public class EventTestBase
      * Generates an <code>AskEvent</code> for the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @param inQuoteDate a <code>Date</code> value
+     * @param inQuoteDate a <code>LocalDateTime</code> value
      * @return an <code>AskEvent</code> value
      */
     public static AskEvent generateAskEvent(Instrument inInstrument,
-                                            java.time.LocalDateTime inQuoteDate)
+                                            LocalDateTime inQuoteDate)
     {
         return QuoteEventBuilder.askEvent(inInstrument)
                 .withExchange(generateExchange())
@@ -153,11 +154,11 @@ public class EventTestBase
      * Generates a <code>BidEvent</code> for the given instrument.
      *
      * @param inInstrument an <code>Instrument</code> value
-     * @param inQuoteDate a <code>Date</code> value
+     * @param inQuoteDate a <code>LocalDateTime</code> value
      * @return a <code>BidEvent</code> value
      */
     public static BidEvent generateBidEvent(Instrument inInstrument,
-                                            java.time.LocalDateTime inQuoteDate)
+                                            LocalDateTime inQuoteDate)
     {
         return QuoteEventBuilder.bidEvent(inInstrument)
                 .withExchange(generateExchange())
@@ -202,21 +203,21 @@ public class EventTestBase
      * Generates an equity <code>AskEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Equity</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
-     * @param inExchangeTimestamp a <code>Date</code> value
+     * @param inExchangeTimestamp a <code>LocalDateTime</code> value
      * @return an <code>AskEvent</code> value
      */
     public static AskEvent generateEquityAskEvent(long inMessageId,
-                                                  java.time.LocalDateTime inTimestamp,
+                                                  LocalDateTime inTimestamp,
                                                   Equity inInstrument,
                                                   String inExchange,
                                                   BigDecimal inPrice,
                                                   BigDecimal inSize,
-                                                  java.time.LocalDateTime inExchangeTimestamp)
+                                                  LocalDateTime inExchangeTimestamp)
     {
         return QuoteEventBuilder.equityAskEvent().withMessageId(inMessageId)
                                                  .withTimestamp(inTimestamp)
@@ -230,7 +231,7 @@ public class EventTestBase
      * Generates an equity <code>AskEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Equity</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
@@ -245,12 +246,12 @@ public class EventTestBase
                                                   BigDecimal inSize)
     {
         return generateEquityAskEvent(inMessageId,
-                                      new Date(inTimestamp),
+                                      DateService.toLocalDateTime(inTimestamp),
                                       inInstrument,
                                       inExchange,
                                       inPrice,
                                       inSize,
-                                      new Date(inTimestamp));
+                                      DateService.toLocalDateTime(inTimestamp));
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -266,7 +267,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -282,7 +283,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -299,7 +300,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an equity <code>AskEvent</code> with the given values.
@@ -317,7 +318,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an option <code>AskEvent</code> with the given values.
@@ -334,7 +335,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withMultiplier(BigDecimal.ZERO)
                                                  .withUnderlyingInstrument(inInstrument).create();
@@ -353,7 +354,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -373,7 +374,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -393,7 +394,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -414,7 +415,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
                                                  .withContractSize(1)
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a currency <code>BidEvent</code> with the given values.
@@ -432,7 +433,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a currency <code>AskEvent</code> with the given values.
@@ -450,7 +451,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a currency <code>AskEvent</code> with the given values.
@@ -468,7 +469,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     
     /**
@@ -487,7 +488,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
                                                  .withContractSize(1)
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a future <code>BidEvent</code> with the given values.
@@ -505,7 +506,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a future <code>AskEvent</code> with the given values.
@@ -523,7 +524,7 @@ public class EventTestBase
                                                  .withPrice(generateDecimalValue())
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a future <code>AskEvent</code> with the given values.
@@ -541,7 +542,7 @@ public class EventTestBase
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     
     
@@ -549,21 +550,21 @@ public class EventTestBase
      * Generates an equity <code>BidEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Equity</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
-     * @param inExchangeTimestamp a <code>Date</code> value
+     * @param inExchangeTimestamp a <code>LocalDateTime</code> value
      * @return a <code>BidEvent</code> value
      */
     public static BidEvent generateEquityBidEvent(long inMessageId,
-                                                  java.time.LocalDateTime inTimestamp,
+                                                  LocalDateTime inTimestamp,
                                                   Equity inInstrument,
                                                   String inExchange,
                                                   BigDecimal inPrice,
                                                   BigDecimal inSize,
-                                                  java.time.LocalDateTime inExchangeTimestamp)
+                                                  LocalDateTime inExchangeTimestamp)
     {
         return QuoteEventBuilder.equityBidEvent().withMessageId(inMessageId)
                                                  .withTimestamp(inTimestamp)
@@ -577,7 +578,7 @@ public class EventTestBase
      * Generates an equity <code>BidEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Equity</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
@@ -592,12 +593,12 @@ public class EventTestBase
                                                   BigDecimal inSize)
     {
         return generateEquityBidEvent(inMessageId,
-                                      new Date(inTimestamp),
+                                      DateService.toLocalDateTime(inTimestamp),
                                       inInstrument,
                                       inExchange,
                                       inPrice,
                                       inSize,
-                                      java.time.LocalDateTime.now());
+                                      LocalDateTime.now());
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
@@ -628,7 +629,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
@@ -646,7 +647,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.
@@ -662,7 +663,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now()).create();
+                                                 .withQuoteDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an option <code>BidEvent</code> with the given values.
@@ -679,7 +680,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withMultiplier(BigDecimal.ZERO)
                                                  .withUnderlyingInstrument(inInstrument).create();
@@ -698,7 +699,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -718,7 +719,7 @@ public class EventTestBase
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -738,7 +739,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
-                                                 .withQuoteDate(java.time.LocalDateTime.now())
+                                                 .withQuoteDate(LocalDateTime.now())
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
@@ -876,7 +877,7 @@ public class EventTestBase
                                                    .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
                                                    .withProviderSymbol(inInstrument.getFullSymbol())
-                                                   .withTradeDate(java.time.LocalDateTime.now()).create();
+                                                   .withTradeDate(LocalDateTime.now()).create();
     }
     /**
      * Generates a future <code>TradeEvent</code> with the given value.
@@ -893,7 +894,7 @@ public class EventTestBase
                                                    .withPrice(inPrice)
                                                    .withContractSize(1)
                                                    .withSize(generateDecimalValue())
-                                                   .withTradeDate(java.time.LocalDateTime.now()).create();
+                                                   .withTradeDate(LocalDateTime.now()).create();
     }
     
     /**
@@ -911,7 +912,7 @@ public class EventTestBase
                                                    .withPrice(inPrice)
                                                    .withContractSize(1)
                                                    .withSize(generateDecimalValue())
-                                                   .withTradeDate(java.time.LocalDateTime.now()).create();
+                                                   .withTradeDate(LocalDateTime.now()).create();
     }
     
     /**
@@ -933,27 +934,27 @@ public class EventTestBase
                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                    .withMultiplier(BigDecimal.ZERO)
                                                    .withUnderlyingInstrument(inUnderlyingInstrument)
-                                                   .withTradeDate(java.time.LocalDateTime.now()).create();
+                                                   .withTradeDate(LocalDateTime.now()).create();
     }
     /**
      * Generates an equity <code>TradeEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Equity</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
-     * @param inExchangeTimestamp a <code>Date</code> value
+     * @param inExchangeTimestamp a <code>LocalDateTime</code> value
      * @return a <code>TradeEvent</code> value
      */
     public static TradeEvent generateEquityTradeEvent(long inMessageId,
-                                                      java.time.LocalDateTime inTimestamp,
+                                                      LocalDateTime inTimestamp,
                                                       Equity inInstrument,
                                                       String inExchange,
                                                       BigDecimal inPrice,
                                                       BigDecimal inSize,
-                                                      java.time.LocalDateTime inExchangeTimestamp)
+                                                      LocalDateTime inExchangeTimestamp)
     {
         return TradeEventBuilder.equityTradeEvent().withMessageId(inMessageId)
                                                    .withTimestamp(inTimestamp)
@@ -967,7 +968,7 @@ public class EventTestBase
      * Generates an equity <code>TradeEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Equity</code> value
      * @param inExchange a <code>String</code> value
      * @param inPrice a <code>BigDecimal</code> value
@@ -982,18 +983,18 @@ public class EventTestBase
                                                       BigDecimal inSize)
     {
         return generateEquityTradeEvent(inMessageId,
-                                        new Date(inTimestamp),
+                                        DateService.toLocalDateTime(inTimestamp),
                                         inInstrument,
                                         inExchange,
                                         inPrice,
                                         inSize,
-                                        new Date(inTimestamp));
+                                        DateService.toLocalDateTime(inTimestamp));
     }
     /**
      * Generates an equity <code>MarketstatEvent</code> value. 
      *
      * @param inInstrument an <code>Equity</code> value
-     * @param inTimestamp a <code>Date</code> value
+     * @param inTimestamp a <code>LocalDateTime</code> value
      * @param inOpenPrice a <code>BigDecimal</code> value
      * @param inHighPrice a <code>BigDecimal</code> value
      * @param inLowPrice a <code>BigDecimal</code> value
@@ -1011,17 +1012,17 @@ public class EventTestBase
      * @return a <code>MarketstatEvent</code> value
      */
     public static MarketstatEvent generateEquityMarketstatEvent(Equity inInstrument,
-                                                                java.time.LocalDateTime inTimestamp,
+                                                                LocalDateTime inTimestamp,
                                                                 BigDecimal inOpenPrice,
                                                                 BigDecimal inHighPrice,
                                                                 BigDecimal inLowPrice,
                                                                 BigDecimal inClosePrice,
                                                                 BigDecimal inPreviousClosePrice,
                                                                 BigDecimal inVolume,
-                                                                java.time.LocalDateTime inCloseDate,
-                                                                java.time.LocalDateTime inPreviousCloseDate,
-                                                                java.time.LocalDateTime inTradeHighTime,
-                                                                java.time.LocalDateTime inTradeLowTime,
+                                                                LocalDateTime inCloseDate,
+                                                                LocalDateTime inPreviousCloseDate,
+                                                                LocalDateTime inTradeHighTime,
+                                                                LocalDateTime inTradeLowTime,
                                                                 String inOpenExchange,
                                                                 String inHighExchange,
                                                                 String inLowExchange,
@@ -1059,10 +1060,10 @@ public class EventTestBase
                                                         .withClosePrice(generateDecimalValue())
                                                         .withPreviousClosePrice(generateDecimalValue())
                                                         .withVolume(generateDecimalValue())
-                                                        .withCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                        .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                        .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                        .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                        .withCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                        .withPreviousCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                        .withTradeHighTime(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                        .withTradeLowTime(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
                                                         .withOpenExchange("O")
                                                         .withHighExchange("H")
                                                         .withLowExchange("L")
@@ -1089,10 +1090,10 @@ public class EventTestBase
                                                               .withClosePrice(generateDecimalValue())
                                                               .withPreviousClosePrice(generateDecimalValue())
                                                               .withVolume(generateDecimalValue())
-                                                              .withCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                              .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                              .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                              .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                              .withPreviousCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                              .withTradeHighTime(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                              .withTradeLowTime(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
                                                               .withValue(generateDecimalValue())
                                                               .withOpenExchange("O")
                                                               .withHighExchange("H")
@@ -1120,10 +1121,10 @@ public class EventTestBase
                                                         .withPreviousClosePrice(generateDecimalValue())
                                                         .withValue(generateDecimalValue())
                                                         .withVolume(generateDecimalValue())
-                                                        .withCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                        .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                        .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                                        .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                        .withCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                        .withPreviousCloseDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                        .withTradeHighTime(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                                        .withTradeLowTime(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
                                                         .withExpirationType(ExpirationType.AMERICAN)
                                                         .withMultiplier(BigDecimal.ZERO)
                                                         .withUnderlyingInstrument(inUnderlyingInstrument)
@@ -1164,7 +1165,7 @@ public class EventTestBase
     public static ImbalanceEvent generateImbalanceEvent(Instrument inInstrument)
     {
         ImbalanceEventBuilder builder = ImbalanceEventBuilder.Imbalance(inInstrument);
-        builder.withTimestamp(java.time.LocalDateTime.now());
+        builder.withTimestamp(LocalDateTime.now());
         builder.withAmountOutstanding(EventTestBase.generateDecimalValue());
         builder.withAuctionType(AuctionType.values()[random.nextInt(AuctionType.values().length)]);
         builder.withExchange(UUID.randomUUID().toString());
@@ -1236,11 +1237,11 @@ public class EventTestBase
         return DividendEventBuilder.dividend().withEquity(inEquity)
                                               .withAmount(generateDecimalValue())
                                               .withCurrency("US Dollars")
-                                              .withDeclareDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                              .withExecutionDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                              .withDeclareDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                              .withExecutionDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
                                               .withFrequency(DividendFrequency.ANNUALLY)
-                                              .withPaymentDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
-                                              .withRecordDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                              .withPaymentDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
+                                              .withRecordDate(DateUtils.dateToString(DateService.toLocalDateTime(startMillis  + (counter++ * oneDay))))
                                               .withStatus(DividendStatus.OFFICIAL)
                                               .withType(DividendType.CURRENT).create();
     }
@@ -1260,11 +1261,11 @@ public class EventTestBase
     /**
      * Generates a quote date value.
      *
-     * @return a <code>Date</code> value
+     * @return a <code>LocalDateTime</code> value
      */
-    public static java.time.LocalDateTime generateQuoteDate()
+    public static LocalDateTime generateQuoteDate()
     {
-        return java.time.LocalDateTime.now();
+        return LocalDateTime.now();
     }
     /**
      * Generates an exchange value.

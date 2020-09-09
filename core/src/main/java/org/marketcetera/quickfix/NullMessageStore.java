@@ -22,8 +22,10 @@ public class NullMessageStore
      * Create a new NullMessageStore instance.
      *
      * @param inSessionId a <code>SessionID</code> value
+     * @throws IOException if the message store cannot be constructed
      */
     public NullMessageStore(SessionID inSessionId)
+            throws IOException
     {
         sessionId = inSessionId;
         cache = new MemoryStore(inSessionId);
@@ -45,7 +47,7 @@ public class NullMessageStore
      * @see quickfix.MessageStore#getCreationTime()
      */
     @Override
-    public java.time.LocalDateTime getCreationTime()
+    public Date getCreationTime()
             throws IOException
     {
         return cache.getCreationTime();

@@ -1,9 +1,9 @@
 package org.marketcetera.web.converters;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Locale;
 
-import org.joda.time.DateTime;
 import org.marketcetera.core.time.TimeFactoryImpl;
 
 import com.vaadin.data.util.converter.Converter;
@@ -18,37 +18,37 @@ import com.vaadin.data.util.converter.Converter;
  * @since $Release$
  */
 public class DateConverter
-        implements Converter<String,Date>
+        implements Converter<String,LocalDateTime>
 {
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#convertToModel(java.lang.Object, java.lang.Class, java.util.Locale)
      */
     @Override
-    public java.time.LocalDateTime convertToModel(String inValue,
-                               Class<? extends Date> inTargetType,
-                               Locale inLocale)
+    public LocalDateTime convertToModel(String inValue,
+                                        Class<? extends LocalDateTime> inTargetType,
+                                        Locale inLocale)
             throws ConversionException
     {
-        return new TimeFactoryImpl().create(inValue).toDate();
+        return new TimeFactoryImpl().create(inValue);
     }
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#convertToPresentation(java.lang.Object, java.lang.Class, java.util.Locale)
      */
     @Override
-    public String convertToPresentation(Date inValue,
+    public String convertToPresentation(LocalDateTime inValue,
                                         Class<? extends String> inTargetType,
                                         Locale inLocale)
             throws ConversionException
     {
-        return TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(new DateTime(inValue.getTime()));
+        return inValue.format(TimeFactoryImpl.FULL_MILLISECONDS_LOCAL);
     }
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#getModelType()
      */
     @Override
-    public Class<Date> getModelType()
+    public Class<LocalDateTime> getModelType()
     {
-        return Date.class;
+        return LocalDateTime.class;
     }
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#getPresentationType()

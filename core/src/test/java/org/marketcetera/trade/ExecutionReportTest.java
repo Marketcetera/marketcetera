@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,30 +12,6 @@ import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.time.DateService;
-
-import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.ClOrdID;
-import quickfix.field.CumQty;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.LastMkt;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.LeavesQty;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
-import quickfix.field.OrderQty;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.Price;
-import quickfix.field.SendingTime;
-import quickfix.field.Symbol;
-import quickfix.field.Text;
-import quickfix.field.TransactTime;
-import quickfix.field.converter.DecimalConverter;
-import quickfix.field.converter.UtcTimestampConverter;
 
 /* $License$ */
 /**
@@ -64,7 +39,7 @@ public class ExecutionReportTest extends TypesTestBase {
              }
          };
         // null originator
-        final Message execReport = createEmptyExecReport();
+        final quickfix.Message execReport = createEmptyExecReport();
         new ExpectedFailure<NullPointerException>(){
              protected void run() throws Exception {
                  sFactory.createExecutionReport
@@ -72,7 +47,7 @@ public class ExecutionReportTest extends TypesTestBase {
              }
          };
         // wrong quickfix message type
-        final Message message = getSystemMessageFactory().newBasicOrder();
+        final quickfix.Message message = getSystemMessageFactory().newBasicOrder();
         new ExpectedFailure<MessageCreationException>(
                 Messages.NOT_EXECUTION_REPORT, message.toString()){
             protected void run() throws Exception {
@@ -90,7 +65,7 @@ public class ExecutionReportTest extends TypesTestBase {
     @Test
     public void getters() throws Exception {
         // report with all empty fields
-        Message msg = createEmptyExecReport();
+        quickfix.Message msg = createEmptyExecReport();
         ExecutionReport report = sFactory.createExecutionReport
             (msg, null, Originator.Server, null, null);
         assertReportBaseValues(report, null, null, null, null, null, null,
@@ -136,15 +111,15 @@ public class ExecutionReportTest extends TypesTestBase {
         TimeInForce timeInForce = TimeInForce.Day;
         java.time.LocalDateTime transactTime = java.time.LocalDateTime.now();
         text = "show me the money";
-        msg.setField(new OrigClOrdID(origOrderID.getValue()));
-        msg.setField(new ExecType(execType.getFIXValue()));
-        msg.setField(new LastMkt(lastMarket));
-        msg.setField(new LeavesQty(leavesQty));
-        msg.setField(new OrdType(orderType.getFIXValue()));
-        msg.getHeader().setField(new SendingTime(DateService.toLocalDateTime(sendingTime)));
+        msg.setField(new quickfix.field.OrigClOrdID(origOrderID.getValue()));
+        msg.setField(new quickfix.field.ExecType(execType.getFIXValue()));
+        msg.setField(new quickfix.field.LastMkt(lastMarket));
+        msg.setField(new quickfix.field.LeavesQty(leavesQty));
+        msg.setField(new quickfix.field.OrdType(orderType.getFIXValue()));
+        msg.getHeader().setField(new quickfix.field.SendingTime(sendingTime));
         msg.setField(new quickfix.field.TimeInForce(timeInForce.getFIXValue()));
-        msg.setField(new TransactTime(DateService.toLocalDateTime(transactTime)));
-        msg.setField(new Text(text));
+        msg.setField(new quickfix.field.TransactTime(transactTime));
+        msg.setField(new quickfix.field.Text(text));
         msg.setField(new quickfix.field.OrderCapacity(
                 quickfix.field.OrderCapacity.PROPRIETARY));
         msg.setField(new quickfix.field.PositionEffect(
@@ -168,34 +143,44 @@ public class ExecutionReportTest extends TypesTestBase {
         assertEquals(orderPrice , report.getPrice());
         //Verify the map
         Map<Integer,String> expected = new HashMap<Integer, String>();
-        expected.put(Account.FIELD, account);
-        expected.put(LastShares.FIELD, DecimalConverter.convert(lastShares));
-        expected.put(OrderQty.FIELD, DecimalConverter.convert(orderQty));
-        expected.put(LastShares.FIELD, DecimalConverter.convert(lastShares));
-        expected.put(OrdStatus.FIELD,
+        expected.put(quickfix.field.Account.FIELD, account);
+        expected.put(quickfix.field.LastShares.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(lastShares));
+        expected.put(quickfix.field.OrderQty.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(orderQty));
+        expected.put(quickfix.field.LastShares.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(lastShares));
+        expected.put(quickfix.field.OrdStatus.FIELD,
                 String.valueOf(orderStatus.getFIXValue()));
-        expected.put(AvgPx.FIELD, DecimalConverter.convert(avgPrice));
+        expected.put(quickfix.field.AvgPx.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(avgPrice));
         expected.put(quickfix.field.OrderID.FIELD, destOrderID);
-        expected.put(OrdType.FIELD, String.valueOf(orderType.getFIXValue()));
-        expected.put(ClOrdID.FIELD, orderID.getValue());
-        expected.put(OrigClOrdID.FIELD, origOrderID.getValue());
+        expected.put(quickfix.field.OrdType.FIELD, String.valueOf(orderType.getFIXValue()));
+        expected.put(quickfix.field.ClOrdID.FIELD, orderID.getValue());
+        expected.put(quickfix.field.OrigClOrdID.FIELD, origOrderID.getValue());
         expected.put(quickfix.field.SecurityType.FIELD,
                 instrument.getSecurityType().getFIXValue());
-        expected.put(Price.FIELD, DecimalConverter.convert(orderPrice));
-        expected.put(CumQty.FIELD, DecimalConverter.convert(cumQty));
-        expected.put(ExecID.FIELD, execID);
-        expected.put(Symbol.FIELD, instrument.getSymbol());
+        expected.put(quickfix.field.Price.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(orderPrice));
+        expected.put(quickfix.field.CumQty.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(cumQty));
+        expected.put(quickfix.field.ExecID.FIELD, execID);
+        expected.put(quickfix.field.Symbol.FIELD, instrument.getSymbol());
         expected.put(quickfix.field.Side.FIELD,
                 String.valueOf(side.getFIXValue()));
         expected.put(quickfix.field.TimeInForce.FIELD,
                 String.valueOf(timeInForce.getFIXValue()));
-        expected.put(Text.FIELD, text);
-        expected.put(ExecType.FIELD, String.valueOf(execType.getFIXValue()));
-        expected.put(LastPx.FIELD, DecimalConverter.convert(lastPrice));
-        expected.put(LeavesQty.FIELD, DecimalConverter.convert(leavesQty));
-        expected.put(TransactTime.FIELD, UtcTimestampConverter.convert(
-                transactTime, true));
-        expected.put(LastMkt.FIELD, lastMarket);
+        expected.put(quickfix.field.Text.FIELD, text);
+        expected.put(quickfix.field.ExecType.FIELD,
+                     String.valueOf(execType.getFIXValue()));
+        expected.put(quickfix.field.LastPx.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(lastPrice));
+        expected.put(quickfix.field.LeavesQty.FIELD,
+                     quickfix.field.converter.DecimalConverter.convert(leavesQty));
+        expected.put(quickfix.field.TransactTime.FIELD,
+                     quickfix.field.converter.UtcTimestampConverter.convert(DateService.toDate(transactTime),
+                                                                            true));
+        expected.put(quickfix.field.LastMkt.FIELD, lastMarket);
         expected.put(quickfix.field.OrderCapacity.FIELD, String.valueOf(
                 quickfix.field.OrderCapacity.PROPRIETARY));
         expected.put(quickfix.field.PositionEffect.FIELD, String.valueOf(
@@ -221,37 +206,46 @@ public class ExecutionReportTest extends TypesTestBase {
      */
     @Test
     public void execTransTypeTranslation() throws Exception {
-        Message msg = createEmptyExecReport();
+        quickfix.Message msg = createEmptyExecReport();
         assertEquals(null, sFactory.createExecutionReport(msg,
                 null, Originator.Server, null, null).getExecutionType());
 
-        msg.setField(new ExecTransType(ExecTransType.NEW));
-        msg.setField(new OrdStatus(OrdStatus.NEW));
+        msg.setField(new quickfix.field.ExecTransType(quickfix.field.ExecTransType.NEW));
+        msg.setField(new quickfix.field.OrdStatus(quickfix.field.OrdStatus.NEW));
         assertEquals(ExecutionType.New,
                 sFactory.createExecutionReport(msg, null,
                         Originator.Server, null, null).getExecutionType());
 
-        msg.setField(new ExecTransType(ExecTransType.CANCEL));
+        msg.setField(new quickfix.field.ExecTransType(quickfix.field.ExecTransType.CANCEL));
         assertEquals(ExecutionType.TradeCancel,
                 sFactory.createExecutionReport(msg, null,
                         Originator.Server, null, null).getExecutionType());
 
-        msg.setField(new ExecTransType(ExecTransType.CORRECT));
+        msg.setField(new quickfix.field.ExecTransType(quickfix.field.ExecTransType.CORRECT));
         assertEquals(ExecutionType.TradeCorrect,
                 sFactory.createExecutionReport(msg, null,
                         Originator.Server, null, null).getExecutionType());
 
-        msg.setField(new ExecTransType(ExecTransType.STATUS));
+        msg.setField(new quickfix.field.ExecTransType(quickfix.field.ExecTransType.STATUS));
         assertEquals(ExecutionType.OrderStatus,
                 sFactory.createExecutionReport(msg, null,
                         Originator.Server, null, null).getExecutionType());
     }
-    
+    /**
+     * Tests the exec type field.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void execTypeTest() throws Exception{
-    	Message msg = createEmptyExecReport();
-    	msg.setField(new ExecTransType(ExecTransType.STATUS));
-        assertNull(sFactory.createExecutionReport(msg, null,
-                        Originator.Broker, null, null).getExecutionType());
+    public void execTypeTest()
+            throws Exception
+    {
+        quickfix.Message msg = createEmptyExecReport();
+        msg.setField(new quickfix.field.ExecTransType(quickfix.field.ExecTransType.STATUS));
+        assertNull(sFactory.createExecutionReport(msg,
+                                                  null,
+                                                  Originator.Broker,
+                                                  null,
+                                                  null).getExecutionType());
     }
 }

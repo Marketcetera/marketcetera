@@ -27,6 +27,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -411,7 +412,7 @@ public class TradeEventTest
         builder.withTradeDate(date);
         assertEquals(date,
                      builder.getTradeData().getExchangeTimestamp());
-        date = new Date(0);
+        date = DateService.toLocalDateTime(0);
         builder.withTradeDate(date);
         assertEquals(date,
                      builder.getTradeData().getExchangeTimestamp());
@@ -490,7 +491,7 @@ public class TradeEventTest
         assertEquals(timestamp,
                      builder.getTradeData().getTimestamp());
         // make a weird timestamp
-        timestamp = new Date(-1);
+        timestamp = DateService.toLocalDateTime(-1);
         builder.withTimestamp(timestamp);
         assertEquals(timestamp,
                      builder.create().getTimestamp());
@@ -602,7 +603,7 @@ public class TradeEventTest
         // there's a special case for timestamp, too
         if(inBuilder.getTradeData().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
-            assertEquals(event.getTimestamp().getTime(),
+            assertEquals(DateService.toEpochMillis(event.getTimestamp()),
                          event.getTimeMillis());
         } else {
             assertEquals(inBuilder.getTradeData().getTimestamp(),
@@ -662,7 +663,7 @@ public class TradeEventTest
         inBuilder.withProviderSymbol("MSQ/K/X");
         inBuilder.withEventType(EventType.UPDATE_FINAL);
         inBuilder.withPrice(BigDecimal.ONE);
-        inBuilder.withTradeDate(new Date(millis + (millisInADay * counter++)));
+        inBuilder.withTradeDate(DateService.toLocalDateTime(millis + (millisInADay * counter++)));
         inBuilder.withSize(BigDecimal.TEN);
         inBuilder.withTimestamp(java.time.LocalDateTime.now());
         inBuilder.withUnderlyingInstrument(instrument);

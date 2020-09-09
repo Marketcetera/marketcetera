@@ -1,8 +1,9 @@
 package org.marketcetera.fix;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,10 +163,10 @@ public class SessionServiceImpl
      * @see com.marketcetera.fix.SessionService#getSessionStart(quickfix.SessionID)
      */
     @Override
-    public java.time.LocalDateTime getSessionStart(SessionID inSessionId)
+    public LocalDateTime getSessionStart(SessionID inSessionId)
     {
         FixSession fixSession = findFixSessionBySessionId(inSessionId);
-        java.time.LocalDateTime returnValue = new DateTime().withTimeAtStartOfDay().toDate();
+        LocalDateTime returnValue = LocalDate.now().atStartOfDay();
         if(fixSession == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No fix session for {}, using {} instead",
@@ -215,12 +216,12 @@ public class SessionServiceImpl
                                        "{} has no specified active days",
                                        inSessionId);
             } else {
-                java.time.LocalDateTime startOfSession = getSessionStart(inSessionId);
+                LocalDateTime startOfSession = getSessionStart(inSessionId);
                 if(startOfSession == null) {
                     SLF4JLoggerProxy.debug(this,
                                            "Unable to calculate start of session for {}, using now",
                                            inSessionId);
-                    startOfSession = java.time.LocalDateTime.now();
+                    startOfSession = LocalDateTime.now();
                 }
                 DateTime now = new DateTime(startOfSession);
                 int today = now.getDayOfWeek();

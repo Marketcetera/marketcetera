@@ -48,6 +48,7 @@ import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -143,7 +144,7 @@ public class BasicCSVFeedEventTranslatorTest
         };
         // valid chunks
         assertEquals(date,
-                     translator.guessDate(CSVQuantum.getQuantum(new String[] { Long.toString(date.getTime()) },
+                     translator.guessDate(CSVQuantum.getQuantum(new String[] { Long.toString(DateService.toEpochMillis(date)) },
                                                                 request, 1.0),
                                           0));
         assertEquals(new Date(0),
@@ -480,7 +481,7 @@ public class BasicCSVFeedEventTranslatorTest
         };
         // valid chunks
         assertEquals(date,
-                     translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(date.getTime()) },
+                     translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(DateService.toEpochMillis(date)) },
                                                                           request, 1.0)));
         assertEquals(new Date(0),
                      translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(0) },

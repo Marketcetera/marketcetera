@@ -10,9 +10,9 @@ import static org.marketcetera.core.PlatformServices.divisionContext;
 import java.io.File;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +88,6 @@ import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.time.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -1869,19 +1868,18 @@ public class DareTestBase
                                        inFactory);
     }
     /**
-     * 
+     * Generates an execution report with the given attributes.
      *
-     *
-     * @param inOrder
-     * @param inPriceQtyInfo
-     * @param inClOrdId
-     * @param inOrigClOrdId
-     * @param inOrderId
-     * @param inOrderStatus
-     * @param inExecutionType
-     * @param inFactory
-     * @return
-     * @throws Exception
+     * @param inOrder a <code>quickfix.Message</code> value
+     * @param inPriceQtyInfo an <code>OrderData</code> value
+     * @param inOrderId a <code>String</code> value
+     * @param inClOrdId a <code>String</code> value
+     * @param inOrigClOrdId a <code>String</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @param inExecutionType an <code>ExecutionType</code> value
+     * @param inFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Messag</code> value
+     * @throws Exception if an error occurs generating the execution report
      */
     protected static quickfix.Message generateExecutionReport(quickfix.Message inOrder,
                                                               OrderData inPriceQtyInfo,
@@ -1925,7 +1923,7 @@ public class DareTestBase
         if(inOrder.isSetField(quickfix.field.TimeInForce.FIELD)) {
             if(commaNeeded) { body.append(','); } body.append(quickfix.field.TimeInForce.FIELD).append('=').append(inOrder.getChar(quickfix.field.TimeInForce.FIELD)); commaNeeded = true;
         }
-        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(TimeFactoryImpl.FULL_MILLISECONDS.print(System.currentTimeMillis())); commaNeeded = true;
+        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(LocalDateTime.now().format(TimeFactoryImpl.FULL_MILLISECONDS)); commaNeeded = true;
         if(commaNeeded) { body.append(','); } body.append(quickfix.field.ExecType.FIELD).append('=').append(inExecutionType.getFIXValue()); commaNeeded = true;
         if(commaNeeded) { body.append(','); } body.append(quickfix.field.LeavesQty.FIELD).append('=').append(inPriceQtyInfo.calculateLeavesQty().toPlainString()); commaNeeded = true;
         return buildMessage(MsgType.FIELD+"="+MsgType.EXECUTION_REPORT,
@@ -1956,7 +1954,7 @@ public class DareTestBase
         if(inMessage.isSetField(quickfix.field.Text.FIELD)) {
             if(commaNeeded) { body.append(','); } body.append(quickfix.field.Text.FIELD).append('=').append(inMessage.getString(quickfix.field.Text.FIELD)); commaNeeded = true;
         }
-        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(TimeFactoryImpl.FULL_MILLISECONDS.print(System.currentTimeMillis())); commaNeeded = true;
+        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(LocalDateTime.now().format(TimeFactoryImpl.FULL_MILLISECONDS)); commaNeeded = true;
         if(commaNeeded) { body.append(','); } body.append(quickfix.field.CxlRejResponseTo.FIELD).append('=').append(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD).equals(quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST)?quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REPLACE_REQUEST:quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REQUEST); commaNeeded = true;
         return buildMessage(MsgType.FIELD+"="+MsgType.ORDER_CANCEL_REJECT,
                             body.toString(),
@@ -2180,7 +2178,7 @@ public class DareTestBase
                                          body.toString(),
                                          MsgType.ORDER_SINGLE,
                                          factory);
-            order.setField(new quickfix.field.TransactTime(DateService.toLocalDateTime(java.time.LocalDateTime.now())));
+            order.setField(new quickfix.field.TransactTime(LocalDateTime.now()));
             InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
             DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(inSenderSessionId);
             if(!instrumentFunction.isSupported(fixDictionary,

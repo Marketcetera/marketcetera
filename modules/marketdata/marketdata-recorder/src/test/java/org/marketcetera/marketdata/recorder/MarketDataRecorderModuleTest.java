@@ -9,10 +9,12 @@ import static org.marketcetera.core.time.TimeFactoryImpl.MINUTE;
 import static org.marketcetera.core.time.TimeFactoryImpl.SECOND;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -20,9 +22,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,7 +98,7 @@ public class MarketDataRecorderModuleTest
         gcInstrument = Future.fromString("GC-201609");
         // try to catch the almost impossible case that the session reset we're using is after right now
         sessionReset = "00:00:00";
-        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
+        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfter(LocalDateTime.now())) {
             Thread.sleep(1000);
         }
     }
@@ -125,7 +124,7 @@ public class MarketDataRecorderModuleTest
             throws Exception
     {
         String sessionReset = "00:00:00";
-        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfterNow()) {
+        while(generateConfig(sessionReset).getSessionResetTimestamp().isAfter(LocalDateTime.now())) {
             Thread.sleep(1000);
         }
         ModuleURN instanceUrn = getRecorderModule(testDirectory.getAbsolutePath(),
@@ -329,7 +328,7 @@ public class MarketDataRecorderModuleTest
             throws Exception
     {
         // pick a session reset that's a few seconds in the future
-        DateTime sessionResetTime = new DateTime().plusSeconds(10);
+        LocalDateTime sessionResetTime = LocalDateTime.now().plusSeconds(10);
         sessionReset = null;
         ModuleURN instanceUrn = getRecorderModule(testDirectory.getAbsolutePath(),
                                                   sessionReset);
@@ -347,7 +346,7 @@ public class MarketDataRecorderModuleTest
         testMarketDataFeed.sendEvents(Lists.newArrayList((Event)ask));
         counter += 1;
         // using only UPDATE types, create events until the session reset time has passed 10s ago (20s or so, total)
-        while(sessionResetTime.plusSeconds(10).isAfterNow()) {
+        while(sessionResetTime.plusSeconds(10).isAfter(LocalDateTime.now())) {
             ask = generateAskEvent(gcInstrument,
                                    "EX");
             ask.setEventType(EventType.UPDATE_FINAL);
@@ -377,8 +376,8 @@ public class MarketDataRecorderModuleTest
             throws Exception
     {
         // pick a session reset that's a few seconds in the future
-        DateTime sessionResetTime = new DateTime().plusSeconds(10);
-        sessionReset = sessionResetFormatter.print(sessionResetTime);
+        LocalDateTime sessionResetTime = LocalDateTime.now().plusSeconds(10);
+        sessionReset = sessionResetTime.format(sessionResetFormatter);
         SLF4JLoggerProxy.debug(this,
                                "Using {} as session reset",
                                sessionReset);
@@ -398,7 +397,7 @@ public class MarketDataRecorderModuleTest
         testMarketDataFeed.sendEvents(Lists.newArrayList((Event)ask));
         counter += 1;
         // using only UPDATE types, create events until the session reset time has passed 10s ago (20s or so, total)
-        while(sessionResetTime.plusSeconds(10).isAfterNow()) {
+        while(sessionResetTime.plusSeconds(10).isAfter(LocalDateTime.now())) {
             ask = generateAskEvent(gcInstrument,
                                    "EX");
             ask.setEventType(EventType.UPDATE_FINAL);

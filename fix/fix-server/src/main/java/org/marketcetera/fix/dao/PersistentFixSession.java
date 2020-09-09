@@ -1,5 +1,6 @@
 package org.marketcetera.fix.dao;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.joda.time.format.DateTimeFormatter;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.MutableFixSession;
@@ -274,12 +274,12 @@ public class PersistentFixSession
         Validate.notNull(endTime,
                          "End time is required");
         try {
-            startEndTimeFormatter.parseDateTime(startTime);
+            startEndTimeFormatter.parse(startTime);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid start time: " + startTime);
         }
         try {
-            startEndTimeFormatter.parseDateTime(endTime);
+            startEndTimeFormatter.parse(endTime);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid end time: " + endTime);
         }

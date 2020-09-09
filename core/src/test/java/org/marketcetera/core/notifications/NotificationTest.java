@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.util.time.DateService;
 
 /* $License$ */
 
@@ -41,7 +42,7 @@ public class NotificationTest
         assertEquals(Severity.DEBUG,
                      debug.getSeverity());
         assertNotNull(debug.getTimestamp());
-        assertTrue(debug.getTimestamp().getTime() > beginTime);
+        assertTrue(DateService.toEpochMillis(debug.getTimestamp()) > beginTime);
         // test info
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
@@ -60,7 +61,7 @@ public class NotificationTest
         assertEquals(Severity.INFO,
                      info.getSeverity());
         assertNotNull(info.getTimestamp());
-        assertTrue(info.getTimestamp().getTime() > debug.getTimestamp().getTime());
+        assertTrue(DateService.toEpochMillis(info.getTimestamp()) > DateService.toEpochMillis(debug.getTimestamp()));
         // test warn
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
@@ -79,7 +80,7 @@ public class NotificationTest
         assertEquals(Severity.WARN,
                      warn.getSeverity());
         assertNotNull(warn.getTimestamp());
-        assertTrue(warn.getTimestamp().getTime() > info.getTimestamp().getTime());
+        assertTrue(DateService.toEpochMillis(warn.getTimestamp()) > DateService.toEpochMillis(info.getTimestamp()));
         // test error
         Thread.sleep(100);
         subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
@@ -98,6 +99,6 @@ public class NotificationTest
         assertEquals(Severity.ERROR,
                      error.getSeverity());
         assertNotNull(error.getTimestamp());
-        assertTrue(error.getTimestamp().getTime() > warn.getTimestamp().getTime());
+        assertTrue(DateService.toEpochMillis(error.getTimestamp()) > DateService.toEpochMillis(warn.getTimestamp()));
     }
 }

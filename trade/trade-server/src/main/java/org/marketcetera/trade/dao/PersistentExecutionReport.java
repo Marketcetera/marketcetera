@@ -4,7 +4,7 @@ import static org.marketcetera.core.PlatformServices.DECIMAL_PRECISION;
 import static org.marketcetera.core.PlatformServices.DECIMAL_SCALE;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -416,9 +416,9 @@ public class PersistentExecutionReport
     /**
      * Sets the sendingTime value.
      *
-     * @param inSendingTime a <code>Date</code> value
+     * @param inSendingTime a <code>LocalDateTime</code> value
      */
-    public void setSendingTime(Date inSendingTime)
+    public void setSendingTime(LocalDateTime inSendingTime)
     {
         sendingTime = inSendingTime;
     }

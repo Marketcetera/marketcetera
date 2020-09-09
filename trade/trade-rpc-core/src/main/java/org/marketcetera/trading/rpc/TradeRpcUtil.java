@@ -77,6 +77,7 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.trade.rpc.TradeRpc;
 import org.marketcetera.trade.rpc.TradeRpc.TradeMessageListenerResponse;
 import org.marketcetera.trade.rpc.TradeTypesRpc;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Maps;
 import com.google.protobuf.Timestamp;
@@ -1982,7 +1983,7 @@ public abstract class TradeRpcUtil
         if(inReport.getTransactTime() == null) {
             return;
         }
-        Instant time = inReport.getTransactTime().toInstant();
+        Instant time = DateService.toDate(inReport.getTransactTime()).toInstant();
         inBuilder.setTransactTime(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
     }
     /**
@@ -2384,7 +2385,7 @@ public abstract class TradeRpcUtil
         if(inReport.getSendingTime() == null) {
             return;
         }
-        Instant time = inReport.getSendingTime().toInstant();
+        Instant time = DateService.toDate(inReport.getSendingTime()).toInstant();
         inBuilder.setSendingTime(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
     }
     /**
@@ -3055,13 +3056,13 @@ public abstract class TradeRpcUtil
         setRootOrderId(inRpcOrderSummary,
                        orderSummary);
         if(inRpcOrderSummary.hasSendingTime()) {
-            orderSummary.setSendingTime(Date.from(Instant.ofEpochSecond(inRpcOrderSummary.getSendingTime().getSeconds(),
-                                                                        inRpcOrderSummary.getSendingTime().getNanos())));
+            orderSummary.setSendingTime(DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inRpcOrderSummary.getSendingTime().getSeconds(),
+                                                                                                    inRpcOrderSummary.getSendingTime().getNanos()))));
         }
         orderSummary.setSide(getSide(inRpcOrderSummary.getSide()));
         if(inRpcOrderSummary.hasTransactTime()) {
-            orderSummary.setTransactTime(Date.from(Instant.ofEpochSecond(inRpcOrderSummary.getTransactTime().getSeconds(),
-                                                                         inRpcOrderSummary.getTransactTime().getNanos())));
+            orderSummary.setTransactTime(DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inRpcOrderSummary.getTransactTime().getSeconds(),
+                                                                                                     inRpcOrderSummary.getTransactTime().getNanos()))));
         }
         orderSummary.setViewer(orderSummary.getActor());
         return Optional.of(orderSummary);
@@ -3110,7 +3111,7 @@ public abstract class TradeRpcUtil
             orderSummaryBuilder.setRootOrderId(value);
         }
         if(inOrderSummary.getSendingTime() != null) {
-            Instant time = inOrderSummary.getSendingTime().toInstant();
+            Instant time = DateService.toDate(inOrderSummary.getSendingTime()).toInstant();
             Timestamp timestamp = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build();
             orderSummaryBuilder.setSendingTime(timestamp);
         }
@@ -3118,7 +3119,7 @@ public abstract class TradeRpcUtil
             orderSummaryBuilder.setSide(getRpcSide(inOrderSummary.getSide()));
         }
         if(inOrderSummary.getTransactTime() != null) {
-            Instant time = inOrderSummary.getTransactTime().toInstant();
+            Instant time = DateService.toDate(inOrderSummary.getTransactTime()).toInstant();
             Timestamp timestamp = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build();
             orderSummaryBuilder.setTransactTime(timestamp);
         }

@@ -22,6 +22,7 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.StringDataRequest;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Lists;
 import com.google.protobuf.Timestamp;
@@ -257,8 +258,8 @@ public abstract class DataFlowRpcUtil
     {
         java.time.LocalDateTime created = null;
         if(inDataFlowInfo.hasCreated()) {
-            created = Date.from(Instant.ofEpochSecond(inDataFlowInfo.getCreated().getSeconds(),
-                                                      inDataFlowInfo.getCreated().getNanos()));
+            created = DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inDataFlowInfo.getCreated().getSeconds(),
+                                                                                  inDataFlowInfo.getCreated().getNanos())));
         }
         DataFlowID dataFlowId = getDataFlowId(inDataFlowInfo.getFlowId());
         List<DataFlowStep> dataFlowStepBuilder = Lists.newArrayList();
@@ -271,8 +272,8 @@ public abstract class DataFlowRpcUtil
         }
         java.time.LocalDateTime stopped = null;
         if(inDataFlowInfo.hasStopped()) {
-            stopped = Date.from(Instant.ofEpochSecond(inDataFlowInfo.getStopped().getSeconds(),
-                                                      inDataFlowInfo.getStopped().getNanos()));
+            stopped = DateService.toLocalDateTime(Date.from(Instant.ofEpochSecond(inDataFlowInfo.getStopped().getSeconds(),
+                                                                                  inDataFlowInfo.getStopped().getNanos())));
         }
         ModuleURN stopperUrn = null;
         if(inDataFlowInfo.hasStopperUrn()) {
@@ -295,7 +296,7 @@ public abstract class DataFlowRpcUtil
     {
         DataFlowRpc.DataFlowInfo.Builder builder = DataFlowRpc.DataFlowInfo.newBuilder();
         if(inDataFlowInfo.getCreated() != null) {
-            Instant time = inDataFlowInfo.getCreated().toInstant();
+            Instant time = DateService.toDate(inDataFlowInfo.getCreated()).toInstant();
             builder.setCreated(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
         }
         if(inDataFlowInfo.getFlowID() != null) {
@@ -310,7 +311,7 @@ public abstract class DataFlowRpcUtil
             builder.setRequesterUrn(getRpcModuleUrn(inDataFlowInfo.getRequesterURN()));
         }
         if(inDataFlowInfo.getStopped() != null) {
-            Instant time = inDataFlowInfo.getStopped().toInstant();
+            Instant time = DateService.toDate(inDataFlowInfo.getStopped()).toInstant();
             builder.setStopped(Timestamp.newBuilder().setSeconds(time.getEpochSecond()).setNanos(time.getNano()).build());
         }
         if(inDataFlowInfo.getStopperURN() != null) {

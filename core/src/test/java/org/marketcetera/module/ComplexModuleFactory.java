@@ -1,11 +1,11 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-
-import java.util.Date;
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDateTime;
+
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -21,14 +21,14 @@ import java.net.URL;
 public class ComplexModuleFactory extends ModuleFactory {
     public ComplexModuleFactory() {
         super(PROVIDER_URN, TestMessages.MULTIPLE_2_PROVIDER, true, false,
-                String.class, File.class, URL.class, Date.class);
+                String.class, File.class, URL.class, LocalDateTime.class);
     }
     public MultipleModule create(Object... parameters)
             throws ModuleCreationException {
         ModuleURN u = new ModuleURN(PROVIDER_URN ,(String)parameters[0]);
         File f = (File) parameters[1];
         URL url = (URL) parameters[2];
-        java.time.LocalDateTime date = (Date) parameters[3];
+        java.time.LocalDateTime date = (LocalDateTime)parameters[3];
         if(!f.isAbsolute()) {
             throw new ModuleCreationException(new I18NBoundMessage1P(
                     TestMessages.INCORRECT_FILE_PATH, f.toString()));

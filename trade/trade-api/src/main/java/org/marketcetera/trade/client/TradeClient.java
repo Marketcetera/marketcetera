@@ -1,8 +1,8 @@
 package org.marketcetera.trade.client;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -73,27 +73,27 @@ public interface TradeClient
     /**
      * Returns the position of the supplied instrument based on reports generated and received on or before the supplied date in UTC.
      *
-     * @param inDate a <code>Date</code> value
+     * @param inDate a <code>LocalDateTime</code> value
      * @param inInstrument an <code>Instrument</code> value
      * @return a <code>BigDecimal</code> value
      */
-    BigDecimal getPositionAsOf(Date inDate,
+    BigDecimal getPositionAsOf(LocalDateTime inDate,
                                Instrument inInstrument);
     /**
      * Returns all positions based on reports generated and received on or before the supplied date in UTC.
      *
-     * @param inDate a <code>Date</code> value
+     * @param inDate a <code>LocalDateTime</code> value
      * @return a <code>Map&lt;PositionKey&lt;? extends Instrument&gt;,BigDecimal&gt;</code> value
      */
-    Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate);
+    Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(LocalDateTime inDate);
     /**
      * Returns all positions of options with the given root symbols based on reports generated and received on or before the supplied date in UTC.
      *
-     * @param inDate a <code>Date</code> value
+     * @param inDate a <code>LocalDateTime</code> value
      * @param inRootElements a <code>String[]</code> value
      * @return a <code>Map&lt;PositionKey&lt;Optiont&gt;,BigDecimal&gt;</code> value
      */
-    Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
+    Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(LocalDateTime inDate,
                                                                String... inRootSymbols);
     /**
      * Add the given report to the system data flow.

@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.admin.User;
 
@@ -157,7 +157,7 @@ public class SimpleExecutionReportSummary
      * @see org.marketcetera.trade.ExecutionReportSummary#getSendingTime()
      */
     @Override
-    public java.time.LocalDateTime getSendingTime()
+    public LocalDateTime getSendingTime()
     {
         return sendingTime;
     }
@@ -362,10 +362,10 @@ public class SimpleExecutionReportSummary
         executionType = inExecutionType;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.MutableExecutionReportSummary#setSendingTime(java.util.Date)
+     * @see org.marketcetera.trade.MutableExecutionReportSummary#setSendingTime(java.time.LocalDateTime)
      */
     @Override
-    public void setSendingTime(Date inSendingTime)
+    public void setSendingTime(LocalDateTime inSendingTime)
     {
         sendingTime = inSendingTime;
     }
@@ -598,7 +598,7 @@ public class SimpleExecutionReportSummary
     /**
      * sending time value
      */
-    private java.time.LocalDateTime sendingTime;
+    private LocalDateTime sendingTime;
     /**
      * viewer value
      */

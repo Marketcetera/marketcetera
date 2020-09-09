@@ -1,9 +1,10 @@
 package org.marketcetera.brokers.service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.Session;
 import quickfix.SessionID;
@@ -16,13 +17,13 @@ import quickfix.SessionID;
  * @since $Release$
  */
 public class GetSessionStartTask
-        extends AbstractCallableClusterTask<Date>
+        extends AbstractCallableClusterTask<LocalDateTime>
 {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()
      */
     @Override
-    public java.time.LocalDateTime call()
+    public LocalDateTime call()
             throws Exception
     {
         SLF4JLoggerProxy.debug(this,
@@ -33,7 +34,7 @@ public class GetSessionStartTask
         if(session == null) {
             return null;
         }
-        return session.getStartTime();
+        return DateService.toLocalDateTime(session.getStartTime());
     }
     /**
      * Create a new GetSessionStartTask instance.
