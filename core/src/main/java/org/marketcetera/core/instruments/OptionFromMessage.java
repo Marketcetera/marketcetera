@@ -6,7 +6,6 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -181,5 +180,5 @@ public class OptionFromMessage
     /**
      * validates expiries of the pattern YYYYMMDD as valid dates
      */
-    private static final DateTimeFormatter EXPIRY_WITH_DAY = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter();
+    private static final DateTimeFormatter EXPIRY_WITH_DAY = DateTimeFormatter.ofPattern(new StringBuilder().append(YEAR).append(MONTH).append(DAY).toString());
 }

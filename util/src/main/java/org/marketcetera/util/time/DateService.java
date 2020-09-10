@@ -39,7 +39,7 @@ public abstract class DateService
     public static LocalDateTime toUtcDateTime(Date inDate)
     {
         return LocalDateTime.ofInstant(inDate.toInstant(),
-                                       ZoneId.of("UTC"));
+                                       zoneUTC);
     }
     /**
      * Converts from {@link Date} types to {@link LocalDate} types.
@@ -102,4 +102,8 @@ public abstract class DateService
     {
         return toLocalDateTime(inTimestamp.getTime());
     }
+    /**
+     * UTC {@link ZoneId}
+     */
+    public static final ZoneId zoneUTC = ZoneId.of("UTC");
 }

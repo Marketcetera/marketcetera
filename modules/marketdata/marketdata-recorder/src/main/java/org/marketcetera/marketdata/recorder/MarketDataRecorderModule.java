@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -396,12 +395,12 @@ public class MarketDataRecorderModule
     /**
      * output timestamp for filenames
      */
-    private static final DateTimeFormatter timestampFormatter = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter();
+    private static final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern(new StringBuilder().append(YEAR).append(MONTH).append(DAY).toString());
     /**
      * output timestamp for market data timestamps
      */
-    private static final DateTimeFormatter marketDataTimestampFormatter = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
-            .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter();
+    private static final DateTimeFormatter marketDataTimestampFormatter = DateTimeFormatter.ofPattern(new StringBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
+            .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toString());
     /**
      * suffix to use for output files
      */

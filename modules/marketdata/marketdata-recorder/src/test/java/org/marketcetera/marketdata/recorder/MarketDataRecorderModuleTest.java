@@ -11,7 +11,6 @@ import static org.marketcetera.core.time.TimeFactoryImpl.SECOND;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -936,5 +935,5 @@ public class MarketDataRecorderModuleTest
     /**
      * used to manufacture session reset values
      */
-    private static final DateTimeFormatter sessionResetFormatter = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter();
+    private static final DateTimeFormatter sessionResetFormatter = DateTimeFormatter.ofPattern(new StringBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toString());
 }

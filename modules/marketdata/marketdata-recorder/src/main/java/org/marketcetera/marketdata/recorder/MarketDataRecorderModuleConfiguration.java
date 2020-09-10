@@ -8,7 +8,6 @@ import static org.marketcetera.core.time.TimeFactoryImpl.SECOND;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
 import javax.annotation.PostConstruct;
@@ -104,5 +103,5 @@ public class MarketDataRecorderModuleConfiguration
     /**
      * used to parse the {@link #sessionReset} value
      */
-    private static final DateTimeFormatter sessionResetFormatter = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter();
+    private static final DateTimeFormatter sessionResetFormatter = DateTimeFormatter.ofPattern(new StringBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toString());
 }
