@@ -2,11 +2,11 @@ package org.marketcetera.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.joda.time.DateTime;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -149,7 +149,7 @@ public class ApplicationVersion
     {
         StringBuilder buildNumber = new StringBuilder();
         buildNumber.append(inProperties.getProperty(BUILD_NUMBER,DEFAULT_BUILD))
-                   .append(' ').append(inProperties.getProperty(REVISION,DEFAULT_REVISION)).append(' ').append(LocalDateTime.now().format(DateUtils.MILLIS_WITH_TZ));
+                   .append(' ').append(inProperties.getProperty(REVISION,DEFAULT_REVISION)).append(' ').append(DateUtils.MILLIS_WITH_TZ.print(DateTime.now()));
         inProperties.put(BUILD_NUMBER,
                          buildNumber.toString());
     }

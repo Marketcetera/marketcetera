@@ -1,25 +1,17 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.marketdata.DateUtils.DAYS;
-import static org.marketcetera.marketdata.DateUtils.DAYS_WITH_TZ;
-import static org.marketcetera.marketdata.DateUtils.MILLIS;
-import static org.marketcetera.marketdata.DateUtils.MILLIS_WITH_TZ;
-import static org.marketcetera.marketdata.DateUtils.MINUTES;
-import static org.marketcetera.marketdata.DateUtils.MINUTES_WITH_TZ;
-import static org.marketcetera.marketdata.DateUtils.SECONDS;
-import static org.marketcetera.marketdata.DateUtils.SECONDS_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.*;
 import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 
@@ -34,6 +26,7 @@ import org.marketcetera.module.ExpectedFailure;
  */
 public class DateUtilsTest
 {
+    private static DateFormat testDateFormat;
     /**
      * Initialization that needs to be run once for all tests.
      */
@@ -75,12 +68,12 @@ public class DateUtilsTest
             }
         };
         // now build a few (incomplete) lists of invalid and valid components
-        String[] invalidDateStrings = new String[] { "", "1", "11", "111", "1111", "11111", "111111", "x111111", "-123-4-5", "00000000", "20091301", "20090132" };
+        String[] invalidDateStrings = new String[] { "", "1", "11", "111", "1111", "11111", "111111", "x111111", "-123-4-5", "00000000", "20091301", "20090132", "19960230", "21000229" }; // haha, 2100 will *not* be a leap year
         String[] invalidTimeStrings = new String[] { "", "1", "11", "111", "-123", "-1-2", "12345", "1234567", "12345678", "2500", "2461", "240061" };
         String[] invalidTimeZoneStrings = new String[] { "X", "ZZ", "/1000", "+2500", "-0061" };
-        String[] validDateStrings = new String[] { "00010101", "20040229", "99990531", "19960230", "21000229" };
+        String[] validDateStrings = new String[] { "00000101", "20040229", "99990531" };
         String[] validTimeStrings = new String[] { "0000", "000000", "000000000" };
-        String[] validTimeZoneStrings = new String[] { "Z", "+0000", "-1000", "+0530" };
+        String[] validTimeZoneStrings = new String[] { "Z", "z", "+0000", "-1000", "+0530" };
         // iterate over the failure cases
         for(int dateCounter=0;dateCounter<invalidDateStrings.length;dateCounter++) {
             for(int timeCounter=0;timeCounter<invalidTimeStrings.length;timeCounter++) {
@@ -176,7 +169,7 @@ public class DateUtilsTest
      *
      * @throws Exception if an error occurs
      */
-    @Ignore@Test
+    @Test
     public void specificFormats()
         throws Exception
     {
@@ -185,29 +178,16 @@ public class DateUtilsTest
             protected void run()
                 throws Exception
             {
-                DateUtils.dateToString(LocalDateTime.now(),
+                DateUtils.dateToString(new Date(),
                                        null);
             }
         };
         // take a date and make sure it comes out correctly when asking for a specific format
-        LocalDateTime testDate = LocalDateTime.now();
+        Date testDate = new Date();
         for(DateTimeFormatter format : formats) {
-            assertEquals(testDate.format(format),
+            assertEquals(format.print(new DateTime(testDate)),
                          DateUtils.dateToString(testDate,
                                                 format));
-        }
-    }
-    @Test@Ignore
-    public void testOne()
-            throws Exception
-    {
-        String dateString = "19970230";//"0101";
-        try {
-            System.out.println(LocalDate.parse(dateString,
-                                               DateUtils.DAYS));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
         }
     }
     /**
@@ -226,14 +206,10 @@ public class DateUtilsTest
                                    String inExpectedEasternDate)
         throws Exception
     {
-        LocalDateTime date = DateUtils.stringToDate(inDateToTest);
+        Date date = DateUtils.stringToDate(inDateToTest);
         assertEquals(inExpectedUTCDate,
                      DateUtils.dateToString(date));
         assertEquals(testDateFormat.parse(inExpectedEasternDate),
                      date);
     }
-    /**
-     * date format used for tests
-     */
-    private static DateFormat testDateFormat;
 }

@@ -73,6 +73,17 @@ public abstract class DateService
                                        ZoneId.systemDefault());
     }
     /**
+     * Converts from millis since epoch to {@link LocalDateTime}.
+     *
+     * @param inMillis a <code>long</code> value
+     * @return a <code>LocalDateTime</code> value
+     */
+    public static LocalDateTime toUtcDateTime(long inMillis)
+    {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(inMillis),
+                                       zoneUTC);
+    }
+    /**
      * Convert the given {@link LocalDateTime} to milliseconds since epoch.
      *
      * @param inTimestamp a <code>LocalDateTime</code> value

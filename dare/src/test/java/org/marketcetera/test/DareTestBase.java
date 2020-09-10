@@ -1923,7 +1923,7 @@ public class DareTestBase
         if(inOrder.isSetField(quickfix.field.TimeInForce.FIELD)) {
             if(commaNeeded) { body.append(','); } body.append(quickfix.field.TimeInForce.FIELD).append('=').append(inOrder.getChar(quickfix.field.TimeInForce.FIELD)); commaNeeded = true;
         }
-        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(LocalDateTime.now().format(TimeFactoryImpl.FULL_MILLISECONDS)); commaNeeded = true;
+        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(TimeFactoryImpl.FULL_MILLISECONDS.print(DateTime.now())); commaNeeded = true;
         if(commaNeeded) { body.append(','); } body.append(quickfix.field.ExecType.FIELD).append('=').append(inExecutionType.getFIXValue()); commaNeeded = true;
         if(commaNeeded) { body.append(','); } body.append(quickfix.field.LeavesQty.FIELD).append('=').append(inPriceQtyInfo.calculateLeavesQty().toPlainString()); commaNeeded = true;
         return buildMessage(MsgType.FIELD+"="+MsgType.EXECUTION_REPORT,
@@ -1954,13 +1954,20 @@ public class DareTestBase
         if(inMessage.isSetField(quickfix.field.Text.FIELD)) {
             if(commaNeeded) { body.append(','); } body.append(quickfix.field.Text.FIELD).append('=').append(inMessage.getString(quickfix.field.Text.FIELD)); commaNeeded = true;
         }
-        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(LocalDateTime.now().format(TimeFactoryImpl.FULL_MILLISECONDS)); commaNeeded = true;
+        if(commaNeeded) { body.append(','); } body.append(quickfix.field.TransactTime.FIELD).append('=').append(TimeFactoryImpl.FULL_MILLISECONDS.print(DateTime.now())); commaNeeded = true;
         if(commaNeeded) { body.append(','); } body.append(quickfix.field.CxlRejResponseTo.FIELD).append('=').append(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD).equals(quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST)?quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REPLACE_REQUEST:quickfix.field.CxlRejResponseTo.ORDER_CANCEL_REQUEST); commaNeeded = true;
         return buildMessage(MsgType.FIELD+"="+MsgType.ORDER_CANCEL_REJECT,
                             body.toString(),
                             MsgType.ORDER_CANCEL_REJECT,
                             inFactory);
     }
+    /**
+     * Tracks orders and subsequent executions.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     public class CalculatedOrderData
     {
         /**
@@ -1975,11 +1982,10 @@ public class DareTestBase
             tuples.add(new PriceQtyTuple(inPrice,inQty));
         }
         /**
-         * 
+         * Adds the given execution to the order data.
          *
-         *
-         * @param inExecution
-         * @throws Exception
+         * @param inExecution a <code>quickfix.Message</code> value
+         * @throws Exception if an error occurs adding the execution
          */
         public void addExecution(quickfix.Message inExecution)
                 throws Exception

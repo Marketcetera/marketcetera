@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.marketcetera.core.time.TimeFactoryImpl;
+import org.marketcetera.util.time.DateService;
 
 import com.vaadin.data.util.converter.Converter;
 
@@ -40,7 +41,7 @@ public class DateConverter
                                         Locale inLocale)
             throws ConversionException
     {
-        return inValue.format(TimeFactoryImpl.FULL_MILLISECONDS_LOCAL);
+        return TimeFactoryImpl.FULL_MILLISECONDS_LOCAL.print(DateService.toEpochMillis(inValue));
     }
     /* (non-Javadoc)
      * @see com.vaadin.data.util.converter.Converter#getModelType()

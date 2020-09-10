@@ -1,11 +1,10 @@
 package org.marketcetera.marketdata;
 
-import static org.marketcetera.marketdata.Messages.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.util.Date;
+import static org.marketcetera.marketdata.Messages.INSTRUMENT_OR_UNDERLYING_INSTRUMENT_REQUIRED;
+import static org.marketcetera.marketdata.Messages.OPTION_REQUIRES_UNDERLYING_INSTRUMENT;
 
 import org.junit.Test;
 import org.marketcetera.event.EventTestBase;

@@ -1,10 +1,14 @@
 package org.marketcetera.core.time;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.core.time.TimeFactoryImpl.COLON;
+import static org.marketcetera.core.time.TimeFactoryImpl.HOUR;
+import static org.marketcetera.core.time.TimeFactoryImpl.MINUTE;
+import static org.marketcetera.core.time.TimeFactoryImpl.SECOND;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.Test;
 
 /* $License$ */
@@ -19,58 +23,24 @@ import org.junit.Test;
 public class IntervalTest
 {
     /**
-     * Perform various interval tests.
+     * Test that an interval contains a time point tomorrow at the same time.
      *
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void testIntervalInside()
+    public void testIntervalTomorrow()
             throws Exception
     {
-        doIntervalTest("00:20:00",
-                       "00:30:00",
-                       "00:25:00",
-                       true);
-        doIntervalTest("00:20:00",
-                       "00:30:00",
-                       "00:20:00",
-                       true);
-        doIntervalTest("00:20:00",
-                       "00:30:00",
-                       "00:30:00",
-                       false);
-        doIntervalTest("00:20:00",
-                       "00:30:00",
-                       "00:15:00",
-                       false);
-        doIntervalTest("00:20:00",
-                       "00:30:00",
-                       "00:45:00",
-                       false);
+        Interval interval1 = new Interval();
+        interval1.setBegin("00:20:00");
+        interval1.setEnd("00:30:00");
+        interval1.start();
+        DateTime timePoint1 = new DateTime().plusDays(1).withTimeAtStartOfDay().plus(WALLCLOCK_SECONDS_LOCAL.parseLocalDateTime("00:25:00").getMillisOfDay());
+        assertTrue(interval1.contains(timePoint1));
     }
     /**
-     * Perform a single interval test with the given attributes.
-     *
-     * @param inBegin a <code>String</code> value
-     * @param inEnd a <code>String</code> value
-     * @param inTestString a <code>String</code> value
-     * @param inExpectedResult a <code>boolean</code> value
-     * @throws Exception if an unexpected error occurs
+     * time/date formatter used for test data
      */
-    private void doIntervalTest(String inBegin,
-                                String inEnd,
-                                String inTestString,
-                                boolean inExpectedResult)
-            throws Exception
-    {
-        Interval testInterval = new Interval();
-        testInterval.setBegin(inBegin);
-        testInterval.setEnd(inEnd);
-        testInterval.start();
-        LocalDateTime timePoint = LocalDateTime.now().toLocalDate().atStartOfDay().plusSeconds(LocalTime.parse(inTestString,
-                                                                                                               TimeFactoryImpl.WALLCLOCK_SECONDS_LOCAL).toSecondOfDay());
-        assertEquals("Expected '" + inTestString + "' to be " + (inExpectedResult?"inside":"outside") + " (" + inBegin + "-" + inEnd + "]",
-                     inExpectedResult,
-                     testInterval.contains(timePoint));
-    }
+    private final DateTimeFormatter WALLCLOCK_SECONDS_LOCAL = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
+            .append(COLON).append(SECOND).toFormatter();
 }

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,6 +62,7 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.util.test.TestCaseBase;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
@@ -1872,15 +1874,15 @@ public class SimulatedExchangeTest
                          currentDividend.getCurrency());
             assertEquals(inEquity,
                          currentDividend.getEquity());
-            java.time.LocalDateTime today = java.time.LocalDateTime.now();
+            LocalDateTime today = LocalDateTime.now();
             assertNotNull(currentDividend.getDeclareDate());
-            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getDeclareDate())));
+            assertTrue(today.isAfter(DateService.toLocalDateTime(DateUtils.stringToDate(currentDividend.getDeclareDate()))));
             assertNotNull(currentDividend.getExecutionDate());
-            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getExecutionDate())));
+            assertTrue(today.isAfter(DateService.toLocalDateTime(DateUtils.stringToDate(currentDividend.getExecutionDate()))));
             assertNotNull(currentDividend.getPaymentDate());
-            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getPaymentDate())));
+            assertTrue(today.isAfter(DateService.toLocalDateTime(DateUtils.stringToDate(currentDividend.getPaymentDate()))));
             assertNotNull(currentDividend.getRecordDate());
-            assertTrue(today.isAfter(DateUtils.stringToDate(currentDividend.getRecordDate())));
+            assertTrue(today.isAfter(DateService.toLocalDateTime(DateUtils.stringToDate(currentDividend.getRecordDate()))));
             assertEquals(DividendFrequency.QUARTERLY,
                          currentDividend.getFrequency());
             assertEquals(DividendStatus.OFFICIAL,
@@ -1906,7 +1908,7 @@ public class SimulatedExchangeTest
                 assertNull(futureDividend.getRecordDate());
                 String executionDate = futureDividend.getExecutionDate();
                 assertNotNull(executionDate);
-                assertTrue(today.isBefore(DateUtils.stringToDate(executionDate)));
+                assertTrue(today.isBefore(DateService.toLocalDateTime(DateUtils.stringToDate(executionDate))));
             }
         }
     }
