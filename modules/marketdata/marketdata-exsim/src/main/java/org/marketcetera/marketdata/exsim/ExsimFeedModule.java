@@ -529,8 +529,8 @@ public class ExsimFeedModule
                                                                        updateAction));
                 }
             }
-            Date date = DateService.toDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
-            Date time = DateService.toDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
+            Date date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
+            Date time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
             Date eventDate = new Date(date.getTime()+time.getTime());
             switch(entryType) {
                 case quickfix.field.MDEntryType.BID:

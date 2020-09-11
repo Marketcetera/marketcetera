@@ -144,24 +144,28 @@ public abstract class DateService
         return new Date(toUtcEpochMillis(inTimestamp));
     }
     /**
+     * Convert the given {@link LocalDate} to a {@link Date} value.
      *
-     *
-     * @param inUtcDateOnly
-     * @return
+     * @param inUtcDate a <code>LocalDate</code> value
+     * @return a <code>Date</code> value
      */
-    public static Date toDate(LocalDate inUtcDateOnly)
+    public static Date toUtcDate(LocalDate inUtcDate)
     {
-        throw new UnsupportedOperationException(); // TODO
+        LocalDateTime localDateTime = LocalDateTime.of(inUtcDate,
+                                                       LocalTime.MIDNIGHT);
+        return toUtcDate(localDateTime);
     }
     /**
+     * Convert the given {@link LocalTime} to a {@link Date} value.
      *
-     *
-     * @param inUtcTimeOnly
-     * @return
+     * @param inUtcTime a <code>LocalTime</code> value
+     * @return a <code>Date</code> value
      */
-    public static Date toDate(LocalTime inUtcTimeOnly)
+    public static Date toUtcDate(LocalTime inUtcTime)
     {
-        throw new UnsupportedOperationException(); // TODO
+        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(),
+                                                       inUtcTime);
+        return toUtcDate(localDateTime);
     }
     /**
      * Convert the given {@link Calendar} to a {@link LocalDateTime} value.
