@@ -20,6 +20,7 @@ import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -206,12 +207,12 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         newSingle.setField(new ClOrdID("123-"+(++nosSuffixCounter)+"-"+suffix)); //$NON-NLS-1$ //$NON-NLS-2$
         newSingle.setField(new Symbol(symbol));
         newSingle.setField(new Side(side));
-        newSingle.setField(new TransactTime(new Date()));
+        newSingle.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
         newSingle.setField(ordType);
         // technically, the OrderID is set by the exchange but for tests we'll set it too b/c OrderProgress expects it
         newSingle.setField(new OrderID("456"+suffix)); //$NON-NLS-1$
         newSingle.setField(new OrderQty(qty));
-        newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount")); //$NON-NLS-1$
         newSingle.setField(new SecurityType(SecurityType.COMMON_STOCK));
@@ -267,7 +268,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<Instrument>()); //$NON-NLS-1$
         assertEquals("sending 0 numSymbols doesn't work", 0, req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
         assertEquals("toliID", req.getString(MDReqID.FIELD)); //$NON-NLS-1$
-        assertEquals(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES, req.getChar(SubscriptionRequestType.FIELD));
+        assertEquals(SubscriptionRequestType.SNAPSHOT_UPDATES, req.getChar(SubscriptionRequestType.FIELD));
         assertEquals(3, req.getInt(NoMDEntryTypes.FIELD));
         Group entryTypeGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
         req.getGroup(1, entryTypeGroup);
@@ -444,9 +445,9 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         buy.setChar(OrdStatus.FIELD, OrdStatus.NEW);
         buy.setString(ClOrdID.FIELD, "someClOrd"); //$NON-NLS-1$
         buy.setString(ExecID.FIELD, "anExecID"); //$NON-NLS-1$
-        buy.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC));
+        buy.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC_BROKER_INTERVENTION_OK));
         buy.setString(1900, "bogusField"); //$NON-NLS-1$
-        buy.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
+        buy.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED_FOR_A_SECURITY_TO_BE_REISSUED_UNDER_AN_OLD_CUSIP_OR_ISIN));
 
         Message execReport = msgFactory.newExecutionReport("orderID", "clOrderID", "1234", OrdStatus.CANCELED, Side.BUY,  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 new BigDecimal(2385), new BigDecimal("23.45"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, //$NON-NLS-1$
@@ -456,7 +457,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         FIXMessageUtil.fillFieldsFromExistingMessage(execReport, buy, false);
         fixDD.getDictionary().validate(execReport, true);
         assertFalse(execReport.isSetField(1900));
-        assertEquals(SymbolSfx.WHEN_ISSUED, execReport.getString(SymbolSfx.FIELD));
+        assertEquals(SymbolSfx.WHEN_ISSUED_FOR_A_SECURITY_TO_BE_REISSUED_UNDER_AN_OLD_CUSIP_OR_ISIN, execReport.getString(SymbolSfx.FIELD));
     }
 
     public void testGetTextOrEncodedText() throws InvalidMessage {

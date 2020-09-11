@@ -38,6 +38,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.time.DateService;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 import com.google.common.collect.Maps;
@@ -489,7 +490,7 @@ public class PositionTest
                                                         "58=pending new,6=0,11="+order.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.PendingNew.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.PendingNew.getFIXValue()+",151="+inOrderQty.toPlainString(),
                                                         quickfix.field.MsgType.EXECUTION_REPORT,
                                                         messageFactory);
-        orderPendingNew.setField(new quickfix.field.TransactTime(new Date(System.currentTimeMillis()-1000)));
+        orderPendingNew.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
                                                                      FIXMessageUtil.getDataDictionary(receivedOrder),
                                                                      quickfix.field.MsgType.EXECUTION_REPORT,
@@ -506,7 +507,7 @@ public class PositionTest
                                                  "58=new,6=0,11="+order.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.New.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.New.getFIXValue()+",151="+inOrderQty.toPlainString(),
                                                  quickfix.field.MsgType.EXECUTION_REPORT,
                                                  messageFactory);
-        orderNew.setField(new quickfix.field.TransactTime(new Date(System.currentTimeMillis()-1000)));
+        orderNew.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
                                                                      FIXMessageUtil.getDataDictionary(receivedOrder),
                                                                      quickfix.field.MsgType.EXECUTION_REPORT,
@@ -525,7 +526,7 @@ public class PositionTest
                                                    "58=fill1,6="+order.getPrice().toPlainString()+",11="+order.getOrderID()+",14="+inFillQty.toPlainString()+",15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.PartiallyFilled.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.PartialFill.getFIXValue()+",151="+inOrderQty.subtract(inFillQty).toPlainString(),
                                                    quickfix.field.MsgType.EXECUTION_REPORT,
                                                    messageFactory);
-        orderFill1.setField(new quickfix.field.TransactTime(new Date(System.currentTimeMillis()-1000)));
+        orderFill1.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
                                                                      FIXMessageUtil.getDataDictionary(receivedOrder),
                                                                      quickfix.field.MsgType.EXECUTION_REPORT,

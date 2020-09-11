@@ -18,14 +18,6 @@ public class NullLogFactory
         implements LogFactory
 {
     /* (non-Javadoc)
-     * @see quickfix.LogFactory#create()
-     */
-    @Override
-    public Log create()
-    {
-        return new NullLog();
-    }
-    /* (non-Javadoc)
      * @see quickfix.LogFactory#create(quickfix.SessionID)
      */
     @Override
