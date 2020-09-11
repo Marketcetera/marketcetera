@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -180,7 +181,7 @@ class FIXUtil {
     static Date getTransactTime(Message inMessage) {
         if (inMessage.isSetField(TransactTime.FIELD)) {
             try {
-                return inMessage.getUtcTimeStamp(TransactTime.FIELD);
+                return DateService.toUtcDate(inMessage.getUtcTimeStamp(TransactTime.FIELD));
             } catch (FieldNotFound ignore) {
             }
         }
@@ -189,7 +190,7 @@ class FIXUtil {
     static Date getSendingTime(Message inMessage) {
         if (inMessage.getHeader().isSetField(SendingTime.FIELD)) {
             try {
-                return inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD);
+                return DateService.toUtcDate(inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD));
             } catch (FieldNotFound ignore) {
             }
         }
