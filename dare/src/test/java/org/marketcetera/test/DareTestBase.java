@@ -392,22 +392,40 @@ public class DareTestBase
         MarketDataFeedTestBase.wait(inBlock,
                                     inSecondsTimeout);
     }
+    /**
+     * Verify the order with the given root order id reaches the given status.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inExpectedOrderStatus an <code>OrderStatus</code> value
+     * @return an <code>OrderSummary</code> value
+     * @throws Exception if the order status cannot be verified
+     */
     protected OrderSummary verifyOrderStatus(final OrderID inRootOrderId,
                                              final OrderStatus inExpectedOrderStatus)
             throws Exception
     {
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                OrderSummary orderStatus = orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
-                if(orderStatus == null) {
-                    return false;
+        try {
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    OrderSummary orderStatus = orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
+                    if(orderStatus == null) {
+                        return false;
+                    }
+                    return orderStatus.getOrderStatus() == inExpectedOrderStatus;
                 }
-                return orderStatus.getOrderStatus() == inExpectedOrderStatus;
-            }
-        },10);
+            },10);
+        } catch (AssertionError e) {
+            OrderSummary orderStatus = orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
+            assertNotNull("No order status for " + inRootOrderId,
+                          orderStatus);
+            assertEquals(inRootOrderId + " expected order status: " + inExpectedOrderStatus + " actual: " + orderStatus.getOrderStatus(),
+                         inExpectedOrderStatus,
+                         orderStatus.getOrderStatus());
+            throw e;
+        }
         return orderSummaryService.findMostRecentByRootOrderId(inRootOrderId);
     }
     /**
