@@ -275,7 +275,7 @@
                   <value>src/test/cmd_exec/conf/application.properties,target/local.properties</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>log4j.configurationFile</key>
+                  <key>log.configurationFile</key>
                   <value>src/test/cmd_exec/conf/log4j2.xml</value>
                 </systemProperty>
                 <systemProperty>
