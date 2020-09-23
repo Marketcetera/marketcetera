@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -55,6 +56,8 @@ import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -101,6 +104,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import junitparams.JUnitParamsRunner;
 import quickfix.Acceptor;
@@ -1185,11 +1189,11 @@ public class DareTestBase
      * @throws Exception if an unexpected error occurs
      */
     protected quickfix.Message verifyOrderReceived(quickfix.Message inOrder,
-                                          quickfix.SessionID inTarget)
+                                                   quickfix.SessionID inTarget)
             throws Exception
     {
         quickfix.Message orderPendingMsg = waitForAndVerifyReceiverMessage(inTarget,
-                                                                  MsgType.EXECUTION_REPORT);
+                                                                           MsgType.EXECUTION_REPORT);
         assertEquals("Expected " + OrderStatus.PendingNew + " actual " + OrderStatus.getInstanceForFIXMessage(orderPendingMsg),
                      OrderStatus.PendingNew.getFIXValue(),
                      orderPendingMsg.getChar(quickfix.field.OrdStatus.FIELD));
@@ -1198,7 +1202,7 @@ public class DareTestBase
                            inOrder.getDecimal(quickfix.field.MaxFloor.FIELD));
         }
         quickfix.Message orderAckMsg = waitForAndVerifyReceiverMessage(inTarget,
-                                                              MsgType.EXECUTION_REPORT);
+                                                                       MsgType.EXECUTION_REPORT);
         assertEquals("Expected " + OrderStatus.New + " actual " + OrderStatus.getInstanceForFIXMessage(orderAckMsg),
                      OrderStatus.New.getFIXValue(),
                      orderAckMsg.getChar(quickfix.field.OrdStatus.FIELD));
@@ -1886,19 +1890,17 @@ public class DareTestBase
                                        inFactory);
     }
     /**
-     * 
+     * Generate a <code>quickfix.Message</code> value for the given parameters.
      *
-     *
-     * @param inOrder
-     * @param inPriceQtyInfo
-     * @param inClOrdId
-     * @param inOrigClOrdId
-     * @param inOrderId
-     * @param inOrderStatus
-     * @param inExecutionType
-     * @param inFactory
-     * @return
-     * @throws Exception
+     * @param inOrder a <code>quickfix.Message</code> value
+     * @param inPriceQtyInfo an <code>OrderData</code> value
+     * @param inClOrdId a <code>String</code> value
+     * @param inOrigClOrdId a <code>String</code> value or <code>null</code>
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @param inExecutionType an <code>ExecutionType</code> value
+     * @param inFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if the message cannot be generated
      */
     protected static quickfix.Message generateExecutionReport(quickfix.Message inOrder,
                                                               OrderData inPriceQtyInfo,
@@ -1980,6 +1982,64 @@ public class DareTestBase
                             MsgType.ORDER_CANCEL_REJECT,
                             inFactory);
     }
+    /**
+     * Verify that no open orders exist.
+     *
+     * @throws Exception if open orders exist
+     */
+    protected void verifyNoOpenOrders()
+            throws Exception
+    {
+        try {
+            wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return orderSummaryService.findOpenOrders(PageRequest.ALL).getElements().isEmpty();
+                }},10);
+        } catch (AssertionError e) {
+            CollectionPageResponse<OrderSummary> openOrders = orderSummaryService.findOpenOrders(PageRequest.ALL);
+            assertTrue("Expected no open orders, found: " + openOrders.getElements(),
+                       openOrders.getElements().isEmpty());
+            throw e;
+        }
+    }
+    /**
+     * Verify that the given expected open orders are the only ones that are open.
+     *
+     * @param inOpenOrders a <code>Set&lt;OrderID&gt;</code> value
+     * @throws Exception if other open orders exist
+     */
+    protected void verifyOpenOrders(final Set<OrderID> inOpenOrders)
+            throws Exception
+    {
+        try {
+            wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    Set<OrderID> actualOrderIds = Sets.newHashSet();
+                    orderSummaryService.findOpenOrders(PageRequest.ALL).getElements().forEach(orderSummary -> actualOrderIds.add(orderSummary.getOrderId()));
+                    return actualOrderIds.equals(inOpenOrders);
+                }},10);
+        } catch (AssertionError e) {
+            Set<OrderID> actualOrderIds = Sets.newHashSet();
+            orderSummaryService.findOpenOrders(PageRequest.ALL).getElements().forEach(orderSummary -> actualOrderIds.add(orderSummary.getOrderId()));
+            assertEquals("Expected: "+ inOpenOrders + " actual: " + actualOrderIds,
+                         inOpenOrders,
+                         actualOrderIds);
+            throw e;
+        }
+    }
+    /**
+     * Provides a test artifact capable of tracking an order and its executions.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     public class CalculatedOrderData
     {
         /**
@@ -1994,11 +2054,10 @@ public class DareTestBase
             tuples.add(new PriceQtyTuple(inPrice,inQty));
         }
         /**
-         * 
+         * Add an execution to the data store.
          *
-         *
-         * @param inExecution
-         * @throws Exception
+         * @param inExecution a <code>quickfix.Message</code> value
+         * @throws Exception if an error occurs processing the execution
          */
         public void addExecution(quickfix.Message inExecution)
                 throws Exception
@@ -2279,6 +2338,16 @@ public class DareTestBase
                  inSessionIndex,
                  inSessionIndex);
         }
+        /**
+         * Create a new OrderData instance.
+         *
+         * @param inOrderQuantity a <code>BigDecimal</code> value
+         * @param inOrderPrice a <code>BigDecimal</code> value
+         * @param inOrderType an <code>OrderType</code> value
+         * @param inSide a <code>Side</code> value
+         * @param inAcceptorSessionIndex an <code>int</code> value
+         * @param inInitiatorSessionIndex an <code>int</code> value
+         */
         public OrderData(BigDecimal inOrderQuantity,
                          BigDecimal inOrderPrice,
                          OrderType inOrderType,
@@ -2534,7 +2603,7 @@ public class DareTestBase
                                         senderSessionId);
         }
         /**
-         *
+         * Wait for and verify the given receiver message.
          *
          * @param inMessage a <code>quickfix.Message</code> value
          * @return a <code>quickfix.Message</code> value
@@ -2544,7 +2613,7 @@ public class DareTestBase
                 throws Exception
         {
             return DareTestBase.this.waitForAndVerifyReceiverMessage(acceptorSessionId,
-                                                                             inMessage.getHeader().getString(MsgType.FIELD));
+                                                                     inMessage.getHeader().getString(MsgType.FIELD));
         }
         /**
          * Wait for a receiver message of the given type.
@@ -2557,7 +2626,7 @@ public class DareTestBase
                 throws Exception
         {
             return DareTestBase.this.waitForAndVerifyReceiverMessage(acceptorSessionId,
-                                                                             inMsgType);
+                                                                     inMsgType);
         }
         /**
          * Wait for a sender message of the given type.
@@ -2570,14 +2639,14 @@ public class DareTestBase
                 throws Exception
         {
             return DareTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
-                                                                           inMsgType);
+                                                                   inMsgType);
         }
         /**
+         * Wait for the given sender message to be received.
          *
-         *
-         * @param inSenderMessage
+         * @param inSenderMessage a <code>quickfix.Message</code> value
          * @return a <code>quickfix.Message</code> value
-         * @throws Exception
+         * @throws Exception if the message was not received
          */
         public quickfix.Message waitForAndVerifySenderMessage(quickfix.Message inSenderMessage)
                 throws Exception
@@ -2585,11 +2654,29 @@ public class DareTestBase
             return DareTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
                                                                            inSenderMessage.getHeader().getString(MsgType.FIELD));
         }
+        /**
+         * acceptor session index value
+         */
         private final int acceptorSessionIndex;
+        /**
+         * initiator session index value
+         */
         private final int initiatorSessionIndex;
+        /**
+         * sender session id value
+         */
         private final quickfix.SessionID senderSessionId;
+        /**
+         * receiver session id value
+         */
         private final quickfix.SessionID receiverSessionId;
+        /**
+         * acceptor session id value
+         */
         private final quickfix.SessionID acceptorSessionId;
+        /**
+         * initiator session id value
+         */
         private final quickfix.SessionID initiatorSessionId;
     }
     /**
