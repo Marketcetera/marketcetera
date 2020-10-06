@@ -13,6 +13,16 @@ import java.util.Properties;
  */
 public interface DisplayLayoutService
 {
+    /**
+     * Get the display layout.
+     *
+     * @return a <code>Properties</code> value
+     */
     Properties getDisplayLayout();
+    /**
+     * Set the display layout.
+     *
+     * @param inDisplayLayout a <code>Properties</code> value
+     */
     void setDisplayLayout(Properties inDisplayLayout);
 }

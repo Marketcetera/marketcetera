@@ -164,13 +164,13 @@ public class ServiceManager
     @Value("${host.port}")
     private int port;
     /**
-     * 
+     * holds connectable services by service class
      */
     private final Map<Class<?>,ConnectableServiceFactory<?>> connectableServiceFactoriesByServiceClass = Maps.newHashMap();
     /**
      * service factories
      */
-    @Autowired
+    @Autowired(required=false)
     private Collection<ConnectableServiceFactory<?>> connectableServiceFactories = Lists.newArrayList();
     /**
      * static instance

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 /* $License$ */
 
 /**
- *
+ * Provides display layout services for the admin client.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
