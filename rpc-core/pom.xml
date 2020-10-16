@@ -61,8 +61,7 @@
     <!-- runtime -->
     <dependency>
       <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty</artifactId>
-      <scope>runtime</scope>
+      <artifactId>grpc-netty-shaded</artifactId>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>

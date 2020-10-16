@@ -31,6 +31,14 @@ public abstract class BaseRpcClientParameters
     {
         return shutdownWait;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.RpcClientParameters#useSsl()
+     */
+    @Override
+    public boolean useSsl()
+    {
+        return useSsl;
+    }
     /**
      * Sets the heartbeatInterval value.
      *
@@ -49,6 +57,19 @@ public abstract class BaseRpcClientParameters
     {
         shutdownWait = inShutdownWait;
     }
+    /**
+     * Sets the useSsl value.
+     *
+     * @param inUseSsl a <code>boolean</code> value
+     */
+    public void setUseSsl(boolean inUseSsl)
+    {
+        useSsl = inUseSsl;
+    }
+    /**
+     * indicates if the client connection should use SSL
+     */
+    private boolean useSsl = false;
     /**
      * heartbeat interval value
      */

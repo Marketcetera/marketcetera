@@ -211,10 +211,20 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      */
     private void startService()
     {
-        // TODO this really needs to be fixed, but, it does create a huge dependency problem that needs to be worked out.
-        //  see here: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty
+        // see here for SSL-related black magic: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty
+        // as configured here, this will use SSL/TLS by default
         ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress(parameters.getHostname(),
-                                                                                   parameters.getPort()).usePlaintext(true);
+                                                                                   parameters.getPort());
+        if(parameters.useSsl()) {
+            SLF4JLoggerProxy.info(this,
+                                  "{} using SSL",
+                                  getClass().getSimpleName());
+        } else {
+            SLF4JLoggerProxy.warn(this,
+                                  "{} not using SSL",
+                                  getClass().getSimpleName());
+            channelBuilder = channelBuilder.usePlaintext();
+        }
         channel = channelBuilder.build();
         blockingStub = getBlockingStub(channel);
         asyncStub = getAsyncStub(channel);

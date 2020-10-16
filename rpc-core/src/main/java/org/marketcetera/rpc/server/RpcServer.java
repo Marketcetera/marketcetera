@@ -1,5 +1,6 @@
 package org.marketcetera.rpc.server;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,9 +42,63 @@ public class RpcServer
         return ports;
     }
     /**
+     * Get the useSsl value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean useSsl()
+    {
+        return useSsl;
+    }
+    /**
+     * Sets the useSsl value.
+     *
+     * @param inUseSsl a <code>boolean</code> value
+     */
+    public void setUseSsl(boolean inUseSsl)
+    {
+        useSsl = inUseSsl;
+    }
+    /**
+     * Get the publicKey value.
+     *
+     * @return a <code>File</code> value
+     */
+    public File getPublicKeyPath()
+    {
+        return publicKey;
+    }
+    /**
+     * Sets the publicKey value.
+     *
+     * @param inPublicKey a <code>File</code> value
+     */
+    public void setPublicKey(File inPublicKey)
+    {
+        publicKey = inPublicKey;
+    }
+    /**
+     * Get the privateKey value.
+     *
+     * @return a <code>File</code> value
+     */
+    public File getPrivateKey()
+    {
+        return privateKey;
+    }
+    /**
+     * Sets the privateKey value.
+     *
+     * @param inPrivateKey a <code>File</code> value
+     */
+    public void setPrivateKey(File inPrivateKey)
+    {
+        privateKey = inPrivateKey;
+    }
+    /**
      * Validate and start the server.
      *
-     * @throws Exception if an unexpected error occcurs.
+     * @throws Exception if an unexpected error occurs.
      */
     @PostConstruct
     public synchronized void start()
@@ -51,16 +106,26 @@ public class RpcServer
     {
         Validate.notNull(hostname);
         Validate.isTrue(port > 0 && port < 65536);
-        Messages.SERVER_STARTING.info(this,
-                                      description,
-                                      hostname,
-                                      String.valueOf(port));
         // TODO bind to host?
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
+        if(useSsl()) {
+            Validate.notNull(publicKey);
+            Validate.notNull(privateKey);
+            Validate.isTrue(publicKey.exists());
+            Validate.isTrue(privateKey.exists());
+            Validate.isTrue(publicKey.canRead());
+            Validate.isTrue(privateKey.canRead());
+            serverBuilder = serverBuilder.useTransportSecurity(publicKey,
+                                                               privateKey);
+        }
         for(BindableService serverServiceDefinition : serverServiceDefinitions) {
             serverBuilder.addService(serverServiceDefinition);
         }
         server = serverBuilder.build();
+        Messages.SERVER_STARTING.info(this,
+                                      description,
+                                      hostname,
+                                      String.valueOf(port));
         server.start();
         ports.add(new PortDescriptor(port,
                                      description));
@@ -169,6 +234,18 @@ public class RpcServer
     {
         description = inDescription;
     }
+    /**
+     * SSL public key or <code>null</code>
+     */
+    private File publicKey;
+    /**
+     * SSL private key or <code>null</code>
+     */
+    private File privateKey;
+    /**
+     * indicates if the RPC server should be configured to use SSL
+     */
+    private boolean useSsl = false;
     /**
      * indicates if the server is alive or not
      */

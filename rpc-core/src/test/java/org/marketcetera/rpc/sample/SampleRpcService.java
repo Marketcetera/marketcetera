@@ -8,7 +8,6 @@ import org.marketcetera.rpc.base.BaseRpc.LoginRequest;
 import org.marketcetera.rpc.base.BaseRpc.LoginResponse;
 import org.marketcetera.rpc.base.BaseRpc.LogoutRequest;
 import org.marketcetera.rpc.base.BaseRpc.LogoutResponse;
-import org.marketcetera.rpc.sample.SampleRpcServiceGrpc;
 import org.marketcetera.rpc.sample.SampleRpcServiceGrpc.SampleRpcServiceImplBase;
 import org.marketcetera.rpc.server.AbstractRpcService;
 
