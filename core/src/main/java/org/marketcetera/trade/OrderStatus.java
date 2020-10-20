@@ -108,6 +108,9 @@ public enum OrderStatus {
         mFIXValue = inFIXValue;
     }
     private final char mFIXValue;
+    /**
+     * order status by FIX values
+     */
     private static final Map<Character, OrderStatus> mFIXValueTable;
     /**
      * holds status values that represent open orders

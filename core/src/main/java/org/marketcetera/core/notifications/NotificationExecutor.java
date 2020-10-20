@@ -1,6 +1,5 @@
 package org.marketcetera.core.notifications;
 
-import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.publisher.IPublisher;
 
 /* $License$ */

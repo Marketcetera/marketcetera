@@ -2,9 +2,8 @@ package org.marketcetera.core.notifications;
 
 import java.util.concurrent.ExecutionException;
 
-import org.marketcetera.core.notifications.INotification;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.core.publisher.Subscriber;
 
 /* $License$ */
 
