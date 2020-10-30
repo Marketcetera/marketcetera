@@ -3,6 +3,8 @@ package org.marketcetera.core;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -179,6 +181,21 @@ public abstract class PlatformServices
         return passwordEncoder;
     }
     /**
+     * Get the hostname value.
+     *
+     * @return a <code>String</code> value
+     */
+    public static String getHostname()
+    {
+        if(hostname == null) {
+            hostname = "unknown host";
+            try {
+                hostname =InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException ignored) {}
+        }
+        return hostname;
+    }
+    /**
      * Create a new EnterprisePlatformServices instance.
      */
     private PlatformServices()
@@ -218,4 +235,8 @@ public abstract class PlatformServices
      * password encoder to use for the platform
      */
     private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    /**
+     * hostname value
+     */
+    private static String hostname;
 }
