@@ -1,8 +1,12 @@
 package org.marketcetera.fix.store;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -29,8 +33,20 @@ public class HibernateMessageStoreConfiguration
      */
     public static HibernateMessageStoreConfiguration getInstance()
     {
+        waitForReady();
         Validate.notNull(instance);
         return instance;
+    }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        synchronized(ready) {
+            ready.set(true);
+            ready.notifyAll();
+        }
     }
     /**
      * Create a new HibernateMessageStoreConfiguration instance.
@@ -46,6 +62,7 @@ public class HibernateMessageStoreConfiguration
      */
     public MessageStoreMessageDao getMessageDao()
     {
+        waitForReady();
         return messageDao;
     }
     /**
@@ -55,6 +72,7 @@ public class HibernateMessageStoreConfiguration
      */
     public MessageStoreSessionDao getSessionDao()
     {
+        waitForReady();
         return sessionDao;
     }
     /**
@@ -64,6 +82,7 @@ public class HibernateMessageStoreConfiguration
      */
     public PlatformTransactionManager getTransactionManager()
     {
+        waitForReady();
         return transactionManager;
     }
     /**
@@ -73,6 +92,7 @@ public class HibernateMessageStoreConfiguration
      */
     public Set<String> getMessageTypeBlacklist()
     {
+        waitForReady();
         return messageTypeBlacklist;
     }
     /**
@@ -91,6 +111,7 @@ public class HibernateMessageStoreConfiguration
      */
     public Set<String> getMessageTypeWhitelist()
     {
+        waitForReady();
         return messageTypeWhitelist;
     }
     /**
@@ -101,6 +122,25 @@ public class HibernateMessageStoreConfiguration
     public void setMessageTypeWhitelist(Set<String> inMessageTypeWhitelist)
     {
         messageTypeWhitelist = inMessageTypeWhitelist;
+    }
+    /**
+     * Wait until the object is ready to be used.
+     * 
+     * @throws RuntimeException if the object is interrupted while waiting
+     */
+    private static void waitForReady()
+    {
+        try {
+            synchronized(ready) {
+                while(!ready.get()) {
+                    SLF4JLoggerProxy.info(HibernateMessageStoreConfiguration.class,
+                                         "Waiting for the config to be ready");
+                    ready.wait(100);
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
     /**
      * provides access to the message data store
@@ -129,4 +169,8 @@ public class HibernateMessageStoreConfiguration
      * message types listed here will be stored, others will not
      */
     private Set<String> messageTypeWhitelist = Sets.newHashSet();
+    /**
+     * indicates that this object is ready to use
+     */
+    private final static AtomicBoolean ready = new AtomicBoolean(false);
 }
