@@ -9,6 +9,13 @@ import java.util.UUID;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.trade.ConvertibleBond;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.HasInstrumentAttributes;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
@@ -177,6 +184,33 @@ public abstract class PlatformServices
     public static PasswordEncoder getPasswordEncoder()
     {
         return passwordEncoder;
+    }
+    public static Instrument getInstrument(HasInstrumentAttributes inHasInstrumentAttributes)
+    {
+        Validate.notNull(inHasInstrumentAttributes.getSymbol(),
+                         "Symbol is required");
+        Validate.notNull(inHasInstrumentAttributes.getSecurityType(),
+                         "Security type is required");
+        String symbol = inHasInstrumentAttributes.getSymbol();
+        SecurityType securityType = inHasInstrumentAttributes.getSecurityType();
+        switch(securityType) {
+            case CommonStock:
+                return new Equity(symbol);
+            case ConvertibleBond:
+                return new ConvertibleBond(symbol);
+            case Currency:
+                return new Currency(symbol);
+            case Future:
+                return Future.fromString(symbol);
+            case Option:
+                break;
+            case Unknown:
+                break;
+            default:
+                break;
+            
+        }
+        throw new UnsupportedOperationException();
     }
     /**
      * Create a new EnterprisePlatformServices instance.
