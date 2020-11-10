@@ -6,23 +6,22 @@ import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.marketcetera.trade.ConvertibleBond;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.HasInstrumentAttributes;
+import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
@@ -35,8 +34,20 @@ import com.hazelcast.core.HazelcastInstanceNotActiveException;
  * @version $Id$
  * @since $Release$
  */
-public abstract class PlatformServices
+@Component
+public class PlatformServices
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        instance = this;
+        SLF4JLoggerProxy.info(this,
+                              "Starting {}",
+                              getServiceName(getClass()));
+    }
     /**
      * Split the given value into its components where each component starts with a capital letter.
      *
@@ -185,40 +196,27 @@ public abstract class PlatformServices
     {
         return passwordEncoder;
     }
-    public static Instrument getInstrument(HasInstrumentAttributes inHasInstrumentAttributes)
+    /**
+     * Get the instrument for the given full symbol.
+     *
+     * @param inFullSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
+     */
+    public static Instrument getInstrument(String inFullSymbol)
     {
-        Validate.notNull(inHasInstrumentAttributes.getSymbol(),
-                         "Symbol is required");
-        Validate.notNull(inHasInstrumentAttributes.getSecurityType(),
-                         "Security type is required");
-        String symbol = inHasInstrumentAttributes.getSymbol();
-        SecurityType securityType = inHasInstrumentAttributes.getSecurityType();
-        switch(securityType) {
-            case CommonStock:
-                return new Equity(symbol);
-            case ConvertibleBond:
-                return new ConvertibleBond(symbol);
-            case Currency:
-                return new Currency(symbol);
-            case Future:
-                return Future.fromString(symbol);
-            case Option:
-                break;
-            case Unknown:
-                break;
-            default:
-                break;
-            
-        }
-        throw new UnsupportedOperationException();
+        Validate.notNull(instance,
+                         "Platform services must be initialized before use");
+        return instance.symbolResolverService.resolveSymbol(inFullSymbol);
     }
     /**
-     * Create a new EnterprisePlatformServices instance.
+     * provides symbol resolver services
      */
-    private PlatformServices()
-    {
-        throw new UnsupportedOperationException();
-    }
+    @Autowired
+    private SymbolResolverService symbolResolverService;
+    /**
+     * static instance
+     */
+    private static PlatformServices instance;
     /**
      * indicates that hazelcast is not active
      */
