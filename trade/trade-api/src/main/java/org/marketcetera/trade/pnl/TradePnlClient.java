@@ -20,9 +20,9 @@ public interface TradePnlClient
      *
      * @param inUserID a <code>org.marketcetera.trade.UserID</code> value
      * @param inPageRequest a <code>org.marketcetera.persist.PageRequest</code> value
-     * @returns a <code>org.marketcetera.trade.pnl.Position</code> value
+     * @returns a <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
      */
-    org.marketcetera.trade.pnl.Position getCurrentPositions(org.marketcetera.trade.UserID inUserID,org.marketcetera.persist.PageRequest inPageRequest);
+    org.marketcetera.trade.pnl.CurrentPosition getCurrentPositions(org.marketcetera.trade.UserID inUserID,org.marketcetera.persist.PageRequest inPageRequest);
     /**
      * Requests profit and loss for a user and an instrument.
      *

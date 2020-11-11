@@ -3,6 +3,19 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.core.PreserveGeneratedCode;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.trade.pnl.dao.CurrentPositionDao;
+import org.marketcetera.trade.pnl.dao.ProfitAndLossDao;
+import org.marketcetera.trade.pnl.dao.QPersistentCurrentPosition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 /* $License$ */
 
 /**
@@ -12,6 +25,7 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@PreserveGeneratedCode
 @org.springframework.stereotype.Component
 public class TradePnlServiceImpl
         implements org.marketcetera.trade.pnl.TradePnlService
@@ -21,13 +35,24 @@ public class TradePnlServiceImpl
      *
      * @param inUserID a <code>org.marketcetera.trade.UserID</code> value
      * @param inPageRequest a <code>org.marketcetera.persist.PageRequest</code> value
-     * @returns a <code>org.marketcetera.trade.pnl.Position</code> value
+     * @returns a <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
      */
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
-    public org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.Position> getCurrentPositions(org.marketcetera.trade.UserID inUserID,org.marketcetera.persist.PageRequest inPageRequest)
+    public org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.CurrentPosition> getCurrentPositions(org.marketcetera.trade.UserID inUserID,org.marketcetera.persist.PageRequest inPageRequest)
     {
-        throw new UnsupportedOperationException(); // TODO
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                           QPersistentCurrentPosition.persistentCurrentPosition.symbol.getMetadata().getName()));
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                              inPageRequest.getPageSize(),
+                                              sort);
+        PersistentUser user = (PersistentUser)userService.findByUserId(inUserID);
+        if(user == null) {
+            throw new IllegalArgumentException("No user for user id '" + inUserID + "'");
+        }
+        Page<CurrentPosition> pageResponse = currentPositionDao.findByUser(user,
+                                                                           pageRequest);
+        return new CollectionPageResponse<>(pageResponse);
     }
     /**
      * Requests profit and loss for a user and an instrument.
@@ -43,4 +68,19 @@ public class TradePnlServiceImpl
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /**
+     * provides access to user services
+     */
+    @Autowired
+    private UserService userService;
+    /**
+     * provides data store access to current positions
+     */
+    @Autowired
+    private CurrentPositionDao currentPositionDao;
+    /**
+     * provides data store access to profit and loss values
+     */
+    @Autowired
+    private ProfitAndLossDao profitAndLossDao;
 }

@@ -88,7 +88,7 @@ public class TradePnlRpcServer<SessionClazz>
                 org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.Builder responseBuilder = org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.newBuilder();
                 org.marketcetera.trade.UserID userID = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inCurrentPositionsRequest.getUserId()).orElse(null);
                 org.marketcetera.persist.PageRequest pageRequest = inCurrentPositionsRequest.hasPageRequest()?org.marketcetera.rpc.paging.PagingRpcUtil.getPageRequest(inCurrentPositionsRequest.getPageRequest()):org.marketcetera.persist.PageRequest.ALL;
-                org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.Position> serviceData = tradePnlService.getCurrentPositions(userID,pageRequest);
+                org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.CurrentPosition> serviceData = tradePnlService.getCurrentPositions(userID,pageRequest);
                 responseBuilder.setPageResponse(org.marketcetera.rpc.paging.PagingRpcUtil.getPageResponse(pageRequest,serviceData));
                 org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(TradePnlRpcServer.this,"Responding {}",response);

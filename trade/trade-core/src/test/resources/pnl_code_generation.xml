@@ -217,7 +217,7 @@
           <rpcServiceEntry name="login" description="starts the session" paramType="LoginRequest" returnType="LoginResponse"/>
           <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
           <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
-          <rpcServiceEntry name="getCurrentPositions" description="requests positions for a user" paramType="CurrentPositionsRequest" returnType="CurrentPositionsResponse" paged="true" serviceReturnType="org.marketcetera.trade.pnl.Position">
+          <rpcServiceEntry name="getCurrentPositions" description="requests positions for a user" paramType="CurrentPositionsRequest" returnType="CurrentPositionsResponse" paged="true" serviceReturnType="org.marketcetera.trade.pnl.CurrentPosition">
             <rpcMessageAttributes>
               <rpcMessageAttribute name="userId" type="org.marketcetera.trade.UserID" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUserId" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUserId"/>
             </rpcMessageAttributes>
