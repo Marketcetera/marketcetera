@@ -13,27 +13,27 @@ package org.marketcetera.trade.pnl;
  * @since $Release$
  */
 public class SimpleTradeFactory
-        implements TradeFactory
+        implements org.marketcetera.trade.pnl.TradeFactory
 {
     /**
-     * Create a new <code>SimpleTrade</code> instance.
+     * Create a new <code>org.marketcetera.trade.pnl.SimpleTrade</code> instance.
      *
-     * @return a <code>SimpleTrade</code> value
+     * @return a <code>org.marketcetera.trade.pnl.SimpleTrade</code> value
      */
     @Override
-    public SimpleTrade create()
+    public org.marketcetera.trade.pnl.SimpleTrade create()
     {
-        return new SimpleTrade();
+        return new org.marketcetera.trade.pnl.SimpleTrade();
     }
     /**
-     * Create a new <code>SimpleTrade</code> instance from the given object.
+     * Create a new <code>org.marketcetera.trade.pnl.SimpleTrade</code> instance from the given object.
      *
-     * @param inObject a <code>SimpleTrade</code> value
-     * @return a <code>SimpleTrade</code> value
+     * @param inObject a <code>org.marketcetera.trade.pnl.SimpleTrade</code> value
+     * @return a <code>org.marketcetera.trade.pnl.SimpleTrade</code> value
      */
     @Override
-    public SimpleTrade create(Trade inSimpleTrade)
+    public org.marketcetera.trade.pnl.SimpleTrade create(org.marketcetera.trade.pnl.Trade inSimpleTrade)
     {
-        return new SimpleTrade(inSimpleTrade);
+        return new org.marketcetera.trade.pnl.SimpleTrade(inSimpleTrade);
     }
 }

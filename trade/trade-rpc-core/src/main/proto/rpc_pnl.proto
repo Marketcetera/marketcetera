@@ -20,7 +20,7 @@ message CurrentPositionsRequest {
 // return the current positions for a user
 message CurrentPositionsResponse {
     PageResponse pageResponse = 1;
-    repeated PnlPosition position = 2;
+    repeated CurrentPnlPosition position = 2;
 }
 
 // request the profit and loss data for the user with the given user id
