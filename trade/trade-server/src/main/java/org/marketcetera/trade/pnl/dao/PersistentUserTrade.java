@@ -178,5 +178,5 @@ public class PersistentUserTrade
      */
     @javax.persistence.Column(name="order_id",nullable=false)
     private org.marketcetera.trade.OrderID orderId;
-    private static final long serialVersionUID = -17885022342939L;
+    private static final long serialVersionUID = 2006431268L;
 }

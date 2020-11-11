@@ -66,7 +66,7 @@
       </authors>
       <modelEntityAttributes>
         <modelEntityAttribute name="instrument" description="position instrument value" type="org.marketcetera.trade.Instrument" useGetters="true" useSetters="true" interfaceProvided="true"/>
-        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
         <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
         <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
         <modelEntityAttribute name="basisPrice" description="basis price value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
@@ -145,7 +145,7 @@
         </rpcMessage>
       </rpcMessages>
     </rpcEntity>
-    <rpcEntity project="trade/trade-rpc-core" protoPrefix="pnl" javaPackage="org.marketcetera.trade.pnl" javaClassName="TradePnlRpc" serverProject="trade/trade-rpc-server" apiProject="trade/trade-api">
+    <rpcEntity project="trade/trade-rpc-core" protoPrefix="pnl" javaPackage="org.marketcetera.trade.pnl" javaClassName="TradePnlRpc" serverProject="trade/trade-rpc-server" apiProject="trade/trade-api" persistentProject="trade/trade-server">
       <imports>
         <import>rpc_base.proto</import>
         <import>rpc_paging.proto</import>
@@ -197,8 +197,7 @@
               <rpcMessageAttribute name="userId" type="org.marketcetera.trade.UserID" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUserId" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUserId"/>
             </rpcMessageAttributes>
             <requiredPermissions>
-              <requiredPermission>"test1"</requiredPermission>
-              <requiredPermission>"test2"</requiredPermission>
+              <requiredPermission>ReadCurrentPositions</requiredPermission>
             </requiredPermissions>
           </rpcServiceEntry>
           <rpcServiceEntry name="getProfitAndLoss" description="requests profit and loss for a user and an instrument" paramType="ProfitAndLossRequest" returnType="ProfitAndLossResponse" paged="true" serviceReturnType="org.marketcetera.trade.pnl.ProfitAndLoss">

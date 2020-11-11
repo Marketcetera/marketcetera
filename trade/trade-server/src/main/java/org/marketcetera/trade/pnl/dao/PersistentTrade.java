@@ -222,5 +222,5 @@ public class PersistentTrade
      */
     @javax.persistence.Column(name="transaction_time",nullable=true)
     private java.util.Date transactionTime;
-    private static final long serialVersionUID = -17885021905651L;
+    private static final long serialVersionUID = -1169854614L;
 }

@@ -286,5 +286,5 @@ public class PersistentLot
      */
     @javax.persistence.Column(name="trade_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal tradePrice = java.math.BigDecimal.ZERO;
-    private static final long serialVersionUID = -17885019332433L;
+    private static final long serialVersionUID = 682666976L;
 }

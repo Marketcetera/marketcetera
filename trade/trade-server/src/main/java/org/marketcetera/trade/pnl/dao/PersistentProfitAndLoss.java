@@ -88,7 +88,7 @@ public class PersistentProfitAndLoss
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
     {
-        user = inUser;
+        user = (org.marketcetera.admin.user.PersistentUser)inUser;
     }
     /**
      * Get the realizedGain value.
@@ -227,8 +227,9 @@ public class PersistentProfitAndLoss
     /**
      * user which owns lot
      */
-    @javax.persistence.Column(name="user",nullable=true)
-    private org.marketcetera.admin.User user;
+    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
+    @javax.persistence.JoinColumn(name="user_id",nullable=false)
+    private org.marketcetera.admin.user.PersistentUser user;
     /**
      * realized gain value
      */
@@ -249,5 +250,5 @@ public class PersistentProfitAndLoss
      */
     @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
     private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
-    private static final long serialVersionUID = -17885022796082L;
+    private static final long serialVersionUID = -527699615L;
 }

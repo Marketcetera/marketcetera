@@ -277,5 +277,5 @@ public class PersistentPosition
      */
     @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
-    private static final long serialVersionUID = -17885020997146L;
+    private static final long serialVersionUID = 1028526536L;
 }
