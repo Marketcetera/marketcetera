@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <model>
+  <modelEvents>
+    <modelEvent name="PositionChangedEvent" apiProject="trade/trade-api" pojoProject="trade/trade-core" packageName="org.marketcetera.trade.pnl.event" description="Indicates that the position of an instrument has changed for a user">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="position" apiType="org.marketcetera.trade.pnl.Position" pojoType="org.marketcetera.trade.pnl.SimplePosition" useSetters="true" useGetters="true" description="position which changed"/>
+      </modelEventAttributes>
+    </modelEvent>
+  </modelEvents>
   <modelEntities>
     <modelEntity name="Lot" description="Identifies a lot used to calculate profit and loss" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
                  packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="HasPosition,HasTrade,org.marketcetera.admin.HasUser" sqlName="pnl_lots">
