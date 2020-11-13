@@ -181,6 +181,9 @@
       </rpcMessages>
     </rpcEntity>
     <rpcEntity project="trade/trade-rpc-core" protoPrefix="pnl" javaPackage="org.marketcetera.trade.pnl" javaClassName="TradePnlRpc" serverProject="trade/trade-rpc-server" apiProject="trade/trade-api" persistentProject="trade/trade-server">
+      <subscribedEvents>
+        <subscribedEvent>org.marketcetera.trade.pnl.event.PositionChangedEvent</subscribedEvent>
+      </subscribedEvents>
       <imports>
         <import>rpc_base.proto</import>
         <import>rpc_paging.proto</import>

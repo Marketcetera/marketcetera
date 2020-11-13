@@ -9,6 +9,6 @@ package org.marketcetera.core;
  * @version $Id$
  * @since $Release$
  */
-public @interface PreserveGeneratedCode
+public @interface Preserve
 {
 }

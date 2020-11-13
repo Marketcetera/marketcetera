@@ -5,7 +5,7 @@ package org.marketcetera.trade.pnl;
 
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
-import org.marketcetera.core.PreserveGeneratedCode;
+import org.marketcetera.core.Preserve;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.trade.pnl.dao.CurrentPositionDao;
 import org.marketcetera.trade.pnl.dao.ProfitAndLossDao;
@@ -25,7 +25,7 @@ import org.springframework.data.domain.Sort;
  * @version $Id$
  * @since $Release$
  */
-@PreserveGeneratedCode
+@Preserve
 @org.springframework.stereotype.Component
 public class TradePnlServiceImpl
         implements org.marketcetera.trade.pnl.TradePnlService
@@ -68,6 +68,28 @@ public class TradePnlServiceImpl
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /**
+     * Accept incoming PositionChangedEvent values.
+     */
+    @com.google.common.eventbus.Subscribe
+    public void accept(org.marketcetera.trade.pnl.event.PositionChangedEvent inPositionChangedEvent)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     * Validate and start the object.
+     */
+    @javax.annotation.PostConstruct
+    public void start()
+    {
+        org.marketcetera.util.log.SLF4JLoggerProxy.info(this,"Starting {}",org.marketcetera.core.PlatformServices.getServiceName(getClass()));
+        eventBusService.register(this);
+    }
+    /**
+     * provides access to event services
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.marketcetera.eventbus.EventBusService eventBusService;
     /**
      * provides access to user services
      */
