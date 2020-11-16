@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>4.0.2-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -1032,10 +1032,13 @@
         <!-- mvn javadoc:* -->
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.2.0</version>
           <configuration>
             <!-- add this to disable checking -->
             <failOnError>false</failOnError>
+            <!-- add this to disable checking -->
+            <additionalparam>-Xdoclint:none</additionalparam>
+	    <doclint>none</doclint>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
