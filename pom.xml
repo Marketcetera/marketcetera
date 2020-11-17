@@ -1209,7 +1209,7 @@
           <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
             <artifactId>svnkit</artifactId>
-            <version>1.8.3-1</version>
+            <version>1.10.1</version>
           </dependency>
           <dependency>
             <groupId>org.tmatesoft.sqljet</groupId>
