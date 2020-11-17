@@ -773,7 +773,7 @@
       <dependency>
         <groupId>org.apache.geronimo.javamail</groupId>
         <artifactId>geronimo-javamail_1.4_provider</artifactId>
-        <version>1.8.3</version>
+        <version>1.8.4</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
