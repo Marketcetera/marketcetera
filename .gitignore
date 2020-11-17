@@ -35,3 +35,6 @@ target
 target-eclipse
 .externalToolBuilders
 maven-eclipse.xml
+
+# Vaadin Generated Artifacts
+**/VAADIN/widgetsets/

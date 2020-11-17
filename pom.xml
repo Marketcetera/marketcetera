@@ -14,11 +14,11 @@
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
-  <url>http://www.marketcetera.org</url>
+  <url>https://www.marketcetera.org</url>
   <licenses>
     <license>
       <name>GNU General Public License (GPL)</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <url>https://www.gnu.org/licenses/gpl.html</url>
     </license>
   </licenses>
   <developers>
