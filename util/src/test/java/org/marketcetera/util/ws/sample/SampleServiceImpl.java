@@ -15,12 +15,12 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: SampleServiceImpl.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: SampleServiceImpl.java 16154 2012-07-14 16:34:05Z colin $") //$NON-NLS-1$
 public class SampleServiceImpl
     extends ServiceBaseImpl<SampleSession>
     implements SampleService

@@ -9,12 +9,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: I18NRuntimeException.java 17411 2017-04-28 14:50:38Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: I18NRuntimeException.java 17411 2017-04-28 14:50:38Z colin $")
 public class I18NRuntimeException
     extends RuntimeException
     implements I18NThrowable

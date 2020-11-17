@@ -12,9 +12,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: SessionId.java 16873 2014-04-11 16:55:47Z colin $
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SessionId.java 16873 2014-04-11 16:55:47Z colin $")
 public class SessionId
         extends Tag
 {

@@ -3,7 +3,7 @@ package org.marketcetera.util.unicode;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: FileDecoderStringTest.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */

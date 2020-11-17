@@ -42,7 +42,7 @@ import quickfix.fix42.NewOrderSingle;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: AnalyzedMessageTest.java 18094 2020-09-11 18:09:58Z colin $
  */
 
 public class AnalyzedMessageTest

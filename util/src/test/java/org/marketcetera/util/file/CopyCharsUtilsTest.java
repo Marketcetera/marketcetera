@@ -13,7 +13,7 @@ import static org.marketcetera.util.test.UnicodeData.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: CopyCharsUtilsTest.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */

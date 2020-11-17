@@ -12,13 +12,13 @@ import org.marketcetera.util.ws.wrappers.MarshalledLocale;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: LocaleWrapper.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
 @XmlSeeAlso(MarshalledLocale.class)
-@ClassVersion("$Id$")
+@ClassVersion("$Id: LocaleWrapper.java 16154 2012-07-14 16:34:05Z colin $")
 public class LocaleWrapper
     extends DualWrapper<Locale,MarshalledLocale>
 {

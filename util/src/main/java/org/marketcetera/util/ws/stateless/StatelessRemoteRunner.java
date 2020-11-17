@@ -12,12 +12,12 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: StatelessRemoteRunner.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StatelessRemoteRunner.java 16154 2012-07-14 16:34:05Z colin $")
 public abstract class StatelessRemoteRunner
     extends StatelessRemoteCall
 {

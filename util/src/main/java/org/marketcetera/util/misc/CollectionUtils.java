@@ -8,12 +8,12 @@ import java.util.ListIterator;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: CollectionUtils.java 17760 2018-11-14 14:54:11Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: CollectionUtils.java 17760 2018-11-14 14:54:11Z colin $")
 public final class CollectionUtils
 {
 

@@ -16,7 +16,7 @@ import org.marketcetera.util.ws.wrappers.CompSerWrapper;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: CompSerWrapperHolder.java 16994 2015-03-09 21:18:25Z colin $
  */
 
 /* $License$ */
