@@ -15,10 +15,10 @@ import org.springframework.context.Lifecycle;
  * Provides web services for the Strategy Agent.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: StrategyAgentWebServicesProvider.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.4.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StrategyAgentWebServicesProvider.java 16901 2014-05-11 16:14:11Z colin $")
 public class StrategyAgentWebServicesProvider
         implements Lifecycle, ServerProvider<ClientSession>
 {

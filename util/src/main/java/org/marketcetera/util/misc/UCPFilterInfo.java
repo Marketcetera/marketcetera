@@ -8,12 +8,12 @@ import java.util.Vector;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: UCPFilterInfo.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: UCPFilterInfo.java 16154 2012-07-14 16:34:05Z colin $")
 public class UCPFilterInfo
 {
 

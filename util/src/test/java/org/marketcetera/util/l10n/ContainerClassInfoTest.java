@@ -21,7 +21,7 @@ import org.marketcetera.util.test.TestCaseBase;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: ContainerClassInfoTest.java 16994 2015-03-09 21:18:25Z colin $
  */
 
 /* $License$ */

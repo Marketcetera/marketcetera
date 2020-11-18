@@ -51,10 +51,10 @@ import com.google.common.collect.Maps;
  * Implements the remote web services offered by the strategy agent.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: SAServiceImpl.java 16879 2014-04-15 21:40:25Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SAServiceImpl.java 16879 2014-04-15 21:40:25Z colin $")
 public class SAServiceImpl
         extends ServiceBaseImpl<ClientSession>
         implements SAService,SAServiceAdapter

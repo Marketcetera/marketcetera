@@ -9,10 +9,10 @@ import org.marketcetera.module.*;
  * when the module methods are invoked
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: ContextCLTestModuleBase.java 16154 2012-07-14 16:34:05Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ContextCLTestModuleBase.java 16154 2012-07-14 16:34:05Z colin $")
 public class ContextCLTestModuleBase extends Module
         implements DataEmitter, DataReceiver, DataFlowRequester, ContextCLModuleMXBean {
     protected ContextCLTestModuleBase(ModuleURN inURN) {

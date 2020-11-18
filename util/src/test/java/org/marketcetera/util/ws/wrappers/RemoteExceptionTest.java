@@ -17,7 +17,7 @@ import org.marketcetera.util.ws.stateless.StatelessServiceBaseImpl;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: RemoteExceptionTest.java 16841 2014-02-20 19:59:04Z colin $
  */
 
 /* $License$ */

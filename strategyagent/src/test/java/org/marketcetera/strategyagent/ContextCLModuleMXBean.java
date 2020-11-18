@@ -11,10 +11,10 @@ import javax.management.MXBean;
  * classloader is correctly setup when the methods are invoked.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: ContextCLModuleMXBean.java 16154 2012-07-14 16:34:05Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ContextCLModuleMXBean.java 16154 2012-07-14 16:34:05Z colin $")
 @DisplayName("Management Interface for the module")
 @MXBean(true)
 public interface ContextCLModuleMXBean {

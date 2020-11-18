@@ -13,12 +13,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: Deleter.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: Deleter.java 16154 2012-07-14 16:34:05Z colin $")
 public class Deleter
 {
 
@@ -29,7 +29,7 @@ public class Deleter
      * symbolic links, and deletes all files it traverses.
      */
 
-    @ClassVersion("$Id$")
+    @ClassVersion("$Id: Deleter.java 16154 2012-07-14 16:34:05Z colin $")
     private static final class RecursiveDeleter
         extends SmartLinksDirectoryWalker
     {

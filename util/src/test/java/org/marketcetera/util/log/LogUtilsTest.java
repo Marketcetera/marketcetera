@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: LogUtilsTest.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */

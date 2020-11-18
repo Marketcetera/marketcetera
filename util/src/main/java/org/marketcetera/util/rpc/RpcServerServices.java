@@ -12,10 +12,10 @@ import org.marketcetera.util.ws.tags.SessionId;
  * Provides common RPC server services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: RpcServerServices.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.4.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: RpcServerServices.java 16901 2014-05-11 16:14:11Z colin $")
 public interface RpcServerServices<SessionClazz>
 {
     /**

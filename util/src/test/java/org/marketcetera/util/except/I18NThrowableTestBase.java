@@ -14,7 +14,7 @@ import static org.marketcetera.util.test.SerializableAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: I18NThrowableTestBase.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */

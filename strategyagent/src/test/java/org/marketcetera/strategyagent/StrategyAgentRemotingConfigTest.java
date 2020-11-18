@@ -25,7 +25,7 @@ import org.marketcetera.util.ws.stateless.Node;
  * Tests configuration of remoting capabilities on strategy agent.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: StrategyAgentRemotingConfigTest.java 17112 2016-02-11 17:58:19Z colin $
  * @since 2.0.0
  */
 public class StrategyAgentRemotingConfigTest

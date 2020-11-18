@@ -21,7 +21,7 @@ import org.marketcetera.util.unicode.Signature;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: ReaderWrapperTest.java 16994 2015-03-09 21:18:25Z colin $
  */
 
 /* $License$ */

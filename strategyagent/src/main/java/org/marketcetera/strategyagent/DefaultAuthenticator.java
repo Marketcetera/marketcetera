@@ -17,10 +17,10 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
  * Provides authentication services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: DefaultAuthenticator.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.4.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: DefaultAuthenticator.java 16901 2014-05-11 16:14:11Z colin $")
 public class DefaultAuthenticator
         implements Authenticator
 {

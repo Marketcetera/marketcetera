@@ -13,12 +13,12 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: SpringUtils.java 16841 2014-02-20 19:59:04Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SpringUtils.java 16841 2014-02-20 19:59:04Z colin $")
 public final class SpringUtils
 {
 

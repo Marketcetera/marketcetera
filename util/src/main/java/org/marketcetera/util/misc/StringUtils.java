@@ -5,12 +5,12 @@ package org.marketcetera.util.misc;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: StringUtils.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StringUtils.java 16154 2012-07-14 16:34:05Z colin $")
 public final class StringUtils
 {
 
