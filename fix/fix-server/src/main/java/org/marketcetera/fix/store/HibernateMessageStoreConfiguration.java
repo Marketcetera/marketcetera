@@ -135,7 +135,7 @@ public class HibernateMessageStoreConfiguration
                 while(!ready.get()) {
                     SLF4JLoggerProxy.info(HibernateMessageStoreConfiguration.class,
                                          "Waiting for the config to be ready");
-                    ready.wait(100);
+                    ready.wait(1000);
                 }
             }
         } catch (InterruptedException e) {
