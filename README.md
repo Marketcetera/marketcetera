@@ -60,22 +60,15 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need.
-
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should element DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue.
-
-A list of commonly used resources that I find helpful are listed in the acknowledgements.
+By taking an open source approach, Marketcetera gives you total control over your trading platform at a fraction of the cost of traditional proprietary commercial software offerings or in-house solutions. You’ll have a robust, extensible software foundation on which to execute your unique strategies, whether you use the platform as is or you choose to customize it to meet your needs. Marketcetera gives you complete transparency into the source code, meaning you have total control over what you do with the product. Use, modify or enhance the source code to meet your business objectives, without paying license fees. You’ll get to market more quickly because there’s no waiting for vendors, and you won’t have to begin your development efforts from scratch. Plus, you’ll maintain complete control – and confidentiality – of your proprietary trading strategies.
 
 ### Built With
 This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-* [Laravel](https://laravel.com)
+* [Spring Boot](https://spring.io/projects/spring-boot)
+* [Hibernate](https://hibernate.org/)
+* [Java 8](https://openjdk.java.net/)
+* [Vaadin](https://vaadin.com/)
+* [Esper](https://www.espertech.com/)
 
 
 
@@ -187,5 +180,5 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 [license-shield]: https://img.shields.io/github/license/colinduplantis/marketcetera.svg?style=flat-square
 [license-url]: https://github.com/colinduplantis/marketcetera/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/cduplantis
+[linkedin-url]: https://www.linkedin.com/in/colin-duplantis-a767142
 [product-screenshot]: images/screenshot.png
