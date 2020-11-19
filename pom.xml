@@ -1071,7 +1071,7 @@
         <!-- war generation. -->
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>2.1-alpha-1</version>
+          <version>3.3.1</version>
         </plugin>
         <!-- bundle generation. -->
         <plugin>
