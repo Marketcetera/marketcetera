@@ -56,8 +56,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://www.marketcetera.com/download/attachments/1409129/slide2.jpg?version=1&modificationDate=1559055667759&api=v2)
-
 By taking an open source approach, Marketcetera gives you total control over your trading platform at a fraction of the cost of traditional proprietary commercial software offerings or in-house solutions. You’ll have a robust, extensible software foundation on which to execute your unique strategies, whether you use the platform as is or you choose to customize it to meet your needs. Marketcetera gives you complete transparency into the source code, meaning you have total control over what you do with the product. Use, modify or enhance the source code to meet your business objectives, without paying license fees. You’ll get to market more quickly because there’s no waiting for vendors, and you won’t have to begin your development efforts from scratch. Plus, you’ll maintain complete control – and confidentiality – of your proprietary trading strategies.
 
 ### Built With
@@ -71,9 +69,10 @@ By taking an open source approach, Marketcetera gives you total control over you
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
+Download the installer for your platform
+Run the installer. There are a few choices, but it’s OK to just accept the defaults the first time through.
+Start the Strategy Engine. On Windows, there is a Start Menu option, you can also run from the command line on any platform. The Strategy Engine will connect to a cloud instance of DARE, the Marketcetera routing engine. If you follow the instructions, you’ll also start a test market data adapter and create a data flow. The Strategy Engine, along with providing the ability to execute strategies, also serves as the Market Data Nexus in this configuration, that is, it supplies market data. As configured, the market data is randomly generated test data. Later on, you can switch to real market data, though there are typically costs associated with that.
+Start Photon, the user interface component. You’ll be prompted to log in. The cloud instance of DARE, to which you’ll be logging in, has a user for testing purposes: user/password (that’s username: ‘user’ and password: ‘password’).
 ### Prerequisites
 
 * maven
