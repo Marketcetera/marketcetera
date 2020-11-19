@@ -37,7 +37,7 @@
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
-    <mvn.hibernate.version>5.4.0.Final</mvn.hibernate.version>
+    <mvn.hibernate.version>5.4.24.Final</mvn.hibernate.version>
     <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.21</mvn.slf4j.version>
     <mvn.log4j.version>2.1</mvn.log4j.version>
@@ -1082,7 +1082,7 @@
         <!-- mvn dependency:* -->
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.0</version>
+          <version>3.1.2</version>
         </plugin>
         <!-- mvn eclipse:* -->
         <plugin>
@@ -1097,7 +1097,7 @@
         <!-- mvn clean -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>2.3</version>
+          <version>3.1.0</version>
         </plugin>
         <!-- mvn antrun:* -->
         <plugin>
@@ -1127,7 +1127,7 @@
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>2.22.2</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkCount>2.5C</forkCount>
@@ -1141,7 +1141,7 @@
         <!-- mvn compile -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.8.1</version>
           <configuration>
             <source>1.${mvn.javase.version}</source>
             <target>1.${mvn.javase.version}</target>
