@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-class NewOrReplaceOrderImpl
+public class NewOrReplaceOrderImpl
         extends OrderBaseImpl
         implements NewOrReplaceOrder
 {
