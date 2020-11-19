@@ -56,12 +56,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://www.marketcetera.com/download/attachments/1409129/slide2.jpg?version=1&modificationDate=1559055667759&api=v2)
 
 By taking an open source approach, Marketcetera gives you total control over your trading platform at a fraction of the cost of traditional proprietary commercial software offerings or in-house solutions. You’ll have a robust, extensible software foundation on which to execute your unique strategies, whether you use the platform as is or you choose to customize it to meet your needs. Marketcetera gives you complete transparency into the source code, meaning you have total control over what you do with the product. Use, modify or enhance the source code to meet your business objectives, without paying license fees. You’ll get to market more quickly because there’s no waiting for vendors, and you won’t have to begin your development efforts from scratch. Plus, you’ll maintain complete control – and confidentiality – of your proprietary trading strategies.
 
 ### Built With
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 * [Spring Boot](https://spring.io/projects/spring-boot)
 * [Hibernate](https://hibernate.org/)
 * [Java 8](https://openjdk.java.net/)
