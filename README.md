@@ -10,9 +10,8 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![GPLv2 License][license-shield]][license-url]
-
-
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -177,16 +176,16 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=flat-square
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=flat-square
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=flat-square
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/colinduplantis/marketcetera.svg?style=flat-square
+[contributors-url]: https://github.com/colinduplantis/marketcetera/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/colinduplantis/marketcetera.svg?style=flat-square
+[forks-url]: https://github.com/colinduplantis/marketcetera/network/members
+[stars-shield]: https://img.shields.io/github/stars/colinduplantis/marketcetera.svg?style=flat-square
+[stars-url]: https://github.com/colinduplantis/marketcetera/stargazers
+[issues-shield]: https://img.shields.io/github/issues/colinduplantis/marketcetera.svg?style=flat-square
+[issues-url]: https://github.com/colinduplantis/marketcetera/issues
+[license-shield]: https://img.shields.io/github/license/colinduplantis/marketcetera.svg?style=flat-square
+[license-url]: https://github.com/colinduplantis/marketcetera/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
+[linkedin-url]: https://linkedin.com/in/cduplantis
 [product-screenshot]: images/screenshot.png
