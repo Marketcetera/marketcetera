@@ -28,11 +28,9 @@
     <a href="https://confluence.marketcetera.com"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    <a href="https://github.com/colinduplantis/marketcetera/issues">Report Bug</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    <a href="https://github.com/colinduplantis/marketcetera/issues">Request Feature</a>
   </p>
 </p>
 
@@ -69,8 +67,7 @@ This section should list any major frameworks that you built your project using.
 * [Java 8](https://openjdk.java.net/)
 * [Vaadin](https://vaadin.com/)
 * [Esper](https://www.espertech.com/)
-
-
+* [Tensor Flow](https://www.tensorflow.org/)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -80,11 +77,8 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-```sh
-npm install npm@latest -g
-```
+* maven
+* java
 
 ### Installation
 
