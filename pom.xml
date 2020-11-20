@@ -40,7 +40,7 @@
     <mvn.hibernate.version>5.4.24.Final</mvn.hibernate.version>
     <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>
     <mvn.slf4j.version>1.7.30</mvn.slf4j.version>
-    <mvn.log4j.version>2.1</mvn.log4j.version>
+    <mvn.log4j.version>2.13.3</mvn.log4j.version> <!-- upgrading to 2.14.0 causes a strange error in SessionManagerTest -->
     <mvn.test.options>-Xmx2048m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
