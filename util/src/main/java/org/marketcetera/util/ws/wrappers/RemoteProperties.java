@@ -26,12 +26,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: RemoteProperties.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: RemoteProperties.java 16154 2012-07-14 16:34:05Z colin $")
 public class RemoteProperties
     implements Serializable
 {

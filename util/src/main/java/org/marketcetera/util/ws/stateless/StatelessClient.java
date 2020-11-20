@@ -21,12 +21,12 @@ import org.marketcetera.util.ws.wrappers.LocaleWrapper;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: StatelessClient.java 17112 2016-02-11 17:58:19Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StatelessClient.java 17112 2016-02-11 17:58:19Z colin $")
 public class StatelessClient
     extends Node
 {

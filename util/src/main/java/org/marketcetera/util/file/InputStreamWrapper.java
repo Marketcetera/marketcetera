@@ -20,12 +20,12 @@ import static org.marketcetera.util.file.SpecialNames.*;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: InputStreamWrapper.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: InputStreamWrapper.java 16154 2012-07-14 16:34:05Z colin $")
 public class InputStreamWrapper
     implements Closeable
 {

@@ -3,7 +3,7 @@
 #
 # author:anshul@marketcetera.com
 # since 1.0.0
-# version: $Id$
+# version: $Id: market_data.rb 16901 2014-05-11 16:14:11Z colin $
 #
 #   
 require 'java'

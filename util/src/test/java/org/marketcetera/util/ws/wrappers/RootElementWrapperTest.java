@@ -13,7 +13,7 @@ import static org.marketcetera.util.test.EqualityAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id$
+ * @version $Id: RootElementWrapperTest.java 16994 2015-03-09 21:18:25Z colin $
  */
 
 /* $License$ */

@@ -12,10 +12,10 @@ import static org.junit.Assert.assertTrue;
  * Verifies that all the messages are correctly specified.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: MessagesTest.java 16901 2014-05-11 16:14:11Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: MessagesTest.java 16901 2014-05-11 16:14:11Z colin $")
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

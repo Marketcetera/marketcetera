@@ -9,13 +9,13 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id$
+ * @version $Id: RootElementWrapper.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
 @XmlRootElement
-@ClassVersion("$Id$")
+@ClassVersion("$Id: RootElementWrapper.java 16154 2012-07-14 16:34:05Z colin $")
 public class RootElementWrapper<T>
     extends BaseWrapper<T>
 {

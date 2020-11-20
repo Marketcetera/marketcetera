@@ -16,9 +16,9 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: StatelessServer.java 17112 2016-02-11 17:58:19Z colin $
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StatelessServer.java 17112 2016-02-11 17:58:19Z colin $")
 public class StatelessServer
         extends Node
 {

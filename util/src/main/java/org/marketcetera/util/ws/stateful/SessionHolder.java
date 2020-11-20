@@ -13,12 +13,12 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: SessionHolder.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SessionHolder.java 16154 2012-07-14 16:34:05Z colin $")
 public class SessionHolder<T>
 {
 

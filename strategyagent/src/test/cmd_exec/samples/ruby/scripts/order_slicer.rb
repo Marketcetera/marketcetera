@@ -4,7 +4,7 @@
 # author:Toli Kuznets
 # author:anshul@marketcetera.com
 # since 2.0.0
-# version: $Id$
+# version: $Id: order_slicer.rb 16901 2014-05-11 16:14:11Z colin $
 #
 #
 require 'java'

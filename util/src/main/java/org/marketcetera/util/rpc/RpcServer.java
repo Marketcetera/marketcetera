@@ -50,10 +50,10 @@ import com.googlecode.protobuf.pro.duplex.util.RenamingThreadFactoryProxy;
  * Provides RPC services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: RpcServer.java 17041 2015-08-26 20:54:27Z colin $
  * @since 2.4.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: RpcServer.java 17041 2015-08-26 20:54:27Z colin $")
 public class RpcServer<SessionClazz>
         implements Lifecycle,RpcServerServices<SessionClazz>
 {
