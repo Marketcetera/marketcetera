@@ -116,7 +116,8 @@ public class CustomAppender
         {
             super(inOutputStream,
                   inStreamName,
-                  inLayout);
+                  inLayout,
+                  true);
         }
         /**
          * Gets the <code>CustomAppenderManager</code> instance for the given stream name and layout.
