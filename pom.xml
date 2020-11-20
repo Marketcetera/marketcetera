@@ -617,7 +617,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.0.15.Final</version>
+        <version>4.1.54.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -724,7 +724,7 @@
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.3.0</version>
+        <version>3.4.2</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
