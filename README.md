@@ -25,7 +25,7 @@
   <p align="center">
     Open-source FIX-based algorithmic trading platform
     <br />
-    <a href="https://confluence.marketcetera.com"><strong>Explore the docs »</strong></a>
+    <a href="https://confluence.marketcetera.com/x/AoAN"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/colinduplantis/marketcetera/issues">Report Bug</a>
@@ -80,26 +80,27 @@ By taking an open source approach, Marketcetera gives you total control over you
 
 #### Prerequisites
 
-* maven 3 or higher
-* java 8 or higher
+* maven 3
+* java 8
 
-### Installation
+#### Build
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+* Clone Github repo
 ```sh
-git clone https://github.com/your_username_/Project-Name.git
+$ mkdir -p marketcetera/code
+$ cd workspaces/marketcetera/code
+$ git clone https://github.com/colinduplantis/marketcetera.git
 ```
-3. Install NPM packages
+* Build
 ```sh
-npm install
+$ mvn -DskipTests clean install
 ```
-4. Enter your API in `config.js`
-```JS
-const API_KEY = 'ENTER YOUR API';
+* Set up your database. You can use most RDBMS systems that are [supported by Hibernate](https://developer.jboss.org/docs/DOC-13921). Marketcetera includes JDBC drivers for [Postgres](https://www.postgresql.org/) and [HSQLDB](http://hsqldb.org/) (an in-memory/local disk database). Marketcetera provides database migration files for Postgres, HSQLDB, Oracle, and MySQL. Any other database systems will require some addition steps to create the initial tables. Any database system except Postgres and HSQLDB will require you to provide a JDBC JAR for licensing reasons. For Postgres, MySQL, and Oracle, create a user and database according to the requirements of the database system.
+* Create your database configuration. In order to support multiple developers in the same environment, Marketcetera requires you to configure your database connection information before running the tests or the server locally.
+* Choose an IDE. For historical reasons, relating to our user interface, Photon, being developed on the Eclipse Rich Client Platform (RCP), we have usually used Eclipse. You don't have to, you can use whatever IDE you want and it can use whatever theme you want. These instructions are for preparing Eclipse to load your workspace. Substitute your own instructions for other IDEs.
+```sh
+$ mvn eclipse:eclipse
 ```
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
