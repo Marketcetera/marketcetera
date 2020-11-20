@@ -35,7 +35,7 @@
     <mvn.spring.version>5.3.1</mvn.spring.version>
     <mvn.cxf.version>3.1.11</mvn.cxf.version>
     <mvn.querydsl.version>4.1.4</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.11.3.RELEASE</mvn.springdatajpa.version>
+    <mvn.springdatajpa.version>2.4.1</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>5.4.24.Final</mvn.hibernate.version>
     <mvn.hazelcast.version>3.8.1</mvn.hazelcast.version>

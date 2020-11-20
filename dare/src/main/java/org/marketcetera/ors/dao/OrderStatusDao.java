@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 
 /* $License$ */
@@ -23,7 +23,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface OrderStatusDao
-        extends JpaRepository<PersistentOrderStatus,Long>,QueryDslPredicateExecutor<PersistentOrderStatus>
+        extends JpaRepository<PersistentOrderStatus,Long>,QuerydslPredicateExecutor<PersistentOrderStatus>
 {
     /**
      * Find the order summary with the given report id.

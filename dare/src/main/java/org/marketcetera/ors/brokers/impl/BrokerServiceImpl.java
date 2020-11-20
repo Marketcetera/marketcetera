@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.SortedSet;
@@ -289,7 +290,8 @@ public class BrokerServiceImpl
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
         where = where.and(QPersistentFixSession.persistentFixSession.id.eq(inId));
-        FixSession session = fixSessionDao.findOne(where);
+        Optional<PersistentFixSession> sessionHolder = fixSessionDao.findOne(where);
+        FixSession session = sessionHolder.orElse(null);
         if(session != null) {
             sessionNamesBySessionId.put(new SessionID(session.getSessionId()),
                                         session.getName());
@@ -354,27 +356,27 @@ public class BrokerServiceImpl
         where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = new Sort(new Sort.Order(Sort.Direction.ASC,
-                                              QPersistentFixSession.persistentFixSession.name.getMetadata().getName()));
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                             QPersistentFixSession.persistentFixSession.name.getMetadata().getName()));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
                 String property = getFixSessionPropertyFor(sort);
                 if(jpaSort == null) {
-                    jpaSort = new Sort(new Sort.Order(jpaSortDirection,
-                                                      property));
+                    jpaSort = Sort.by(new Sort.Order(jpaSortDirection,
+                                                     property));
                 } else {
-                    jpaSort = jpaSort.and(new Sort(new Sort.Order(jpaSortDirection,
-                                                                  property)));
+                    jpaSort = jpaSort.and(Sort.by(new Sort.Order(jpaSortDirection,
+                                                                 property)));
                 }
             }
         }
         SLF4JLoggerProxy.trace(this,
                                "Applying page sort: {}",
                                jpaSort);
-        org.springframework.data.domain.PageRequest pageRequest = new org.springframework.data.domain.PageRequest(inPageRequest.getPageNumber(),
-                                                                                                                  inPageRequest.getPageSize(),
-                                                                                                                  jpaSort);
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(inPageRequest.getPageNumber(),
+                                                                                                                 inPageRequest.getPageSize(),
+                                                                                                                 jpaSort);
         Page<PersistentFixSession> result = fixSessionDao.findAll(where,
                                                                   pageRequest);
         CollectionPageResponse<FixSession> response = new CollectionPageResponse<>();
@@ -754,7 +756,8 @@ public class BrokerServiceImpl
         BooleanBuilder where = new BooleanBuilder();
         where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
         where = where.and(QPersistentFixSession.persistentFixSession.id.eq(inFixSession.getId()));
-        PersistentFixSession existingSession = fixSessionDao.findOne(where);
+        Optional<PersistentFixSession> existingSessionHolder = fixSessionDao.findOne(where);
+        PersistentFixSession existingSession = existingSessionHolder.orElse(null);
         if(existingSession == null) {
             // these checks need to be done manually instead of relying on database integrity because of the "deleted" feature for sessions
             // check for duplicate name

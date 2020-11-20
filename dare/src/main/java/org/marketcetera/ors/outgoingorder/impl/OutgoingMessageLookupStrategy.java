@@ -68,12 +68,12 @@ public class OutgoingMessageLookupStrategy
             BooleanBuilder where = new BooleanBuilder();
             where = where.and(QPersistentOutgoingMessage.persistentOutgoingMessage.brokerId.eq(inBrokerId));
             where = where.and(QPersistentOutgoingMessage.persistentOutgoingMessage.orderId.eq(orderId));
-            Sort sort = new Sort(Sort.Direction.DESC,
-                                 QPersistentOutgoingMessage.persistentOutgoingMessage.lastUpdated.getMetadata().getName(),
-                                 QPersistentOutgoingMessage.persistentOutgoingMessage.msgSeqNum.getMetadata().getName());
-            PageRequest pageRequest = new PageRequest(0,
-                                                      1,
-                                                      sort);
+            Sort sort = Sort.by(Sort.Direction.DESC,
+                                QPersistentOutgoingMessage.persistentOutgoingMessage.lastUpdated.getMetadata().getName(),
+                                QPersistentOutgoingMessage.persistentOutgoingMessage.msgSeqNum.getMetadata().getName());
+            PageRequest pageRequest = PageRequest.of(0,
+                                                     1,
+                                                     sort);
             // this query, as structured, cannot return multiple rows, but there could be multiple matches in the db and the
             //  matches could each be owned by a different user. this is not a perfect technique as, for example, the original
             //  order could be masked by subsequent order status requests. what if the order status requests were owned by
