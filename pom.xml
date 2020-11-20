@@ -788,15 +788,9 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.derby</groupId>
-        <artifactId>derby</artifactId>
-        <version>10.14.2.0</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>hsqldb</groupId>
+        <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
-        <version>1.8.0.10</version>
+        <version>2.5.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -816,7 +810,7 @@
         <artifactId>postgresql</artifactId>
         <!-- use this version for postgres 9 or earlier -->
         <!--version>9.3-1101-jdbc41</version-->
-        <!-- use this version from postgres 10 -->
+        <!-- use this version for postgres 10+ -->
         <version>42.2.5.jre6</version>
         <scope>runtime</scope>
       </dependency>
