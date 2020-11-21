@@ -596,7 +596,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>2.6.1</version>
+        <version>3.14.0</version>
       </dependency>
       <dependency>
         <groupId>com.googlecode.protobuf-rpc-pro</groupId>
@@ -612,7 +612,7 @@
       <dependency>
         <groupId>com.googlecode.protobuf-rpc-pro</groupId>
         <artifactId>protobuf-rpc-pro-duplex</artifactId>
-        <version>3.2.2</version>
+        <version>3.3.4</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
