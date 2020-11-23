@@ -183,8 +183,8 @@
       <artifactId>spring-beans</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -275,12 +275,6 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
-            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
-            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
-            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
-            <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
-            <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
             <metc.jms.port>19600</metc.jms.port>
             <metc.ws.host>localhost</metc.ws.host>
             <metc.ws.port>19601</metc.ws.port>
@@ -496,10 +490,6 @@
                   <key>metc.instanceport.com.sun.management.jmxremote.port</key>
                   <value>9950</value>
                 </systemProperty>
-                <!-- systemProperty>
-                     <key>metc.system.agentpath:/tmp/libyjpagent.so</key>
-                     <value></value>
-                   </systemProperty-->
                  </systemProperties>
                  <classpathScope>test</classpathScope>
                </configuration>
