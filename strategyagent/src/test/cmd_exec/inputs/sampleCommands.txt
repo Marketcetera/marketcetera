@@ -2,7 +2,7 @@
 #
 # author:anshul@marketcetera.com
 # since 2.0.0
-# version: $Id$
+# version: $Id: sampleCommands.txt 17411 2017-04-28 14:50:38Z colin $
 #
 # Create Module Command
 #

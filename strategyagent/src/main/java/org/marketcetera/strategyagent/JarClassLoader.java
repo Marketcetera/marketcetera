@@ -47,7 +47,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: JarClassLoader.java 17818 2018-12-27 15:30:30Z colin $")
 class JarClassLoader
         extends URLClassLoader
         implements RefreshListener

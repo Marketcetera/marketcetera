@@ -13,7 +13,7 @@ import org.marketcetera.marketdata.Content;
  * Strategy that receives market data
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: MarketData.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.0.0
  */
 public class MarketData extends Strategy {

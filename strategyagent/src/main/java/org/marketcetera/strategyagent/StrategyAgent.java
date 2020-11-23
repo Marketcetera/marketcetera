@@ -59,7 +59,7 @@ import org.springframework.context.Lifecycle;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StrategyAgent.java 17857 2019-05-31 16:58:37Z colin $")
 public class StrategyAgent
         implements IPublisher,Lifecycle,ApplicationContextAware
 {

@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: Command.java 16154 2012-07-14 16:34:05Z colin $") //$NON-NLS-1$
 final class Command {
     /**
      * Creates a command instance.
