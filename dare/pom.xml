@@ -82,6 +82,11 @@
       <groupId>com.jcraft</groupId>
       <artifactId>jzlib</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tensorflow</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

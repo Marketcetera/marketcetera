@@ -343,6 +343,36 @@ CREATE TABLE IF NOT EXISTS users (
     user_data text
 );
 
+--
+-- Name: tf_graph_data; Type: TABLE; Schema: public; Owner: metc
+--
+
+CREATE TABLE public.tf_graph_data (
+    id bigint NOT NULL,
+    last_updated timestamp without time zone NOT NULL,
+    update_count integer NOT NULL,
+    description character varying(255),
+    name character varying(255) NOT NULL,
+    graph_data bytea
+);
+
+
+ALTER TABLE public.tf_graph_data OWNER TO metc;
+
+--
+-- Name: tf_graph_data tf_graph_data_pkey; Type: CONSTRAINT; Schema: public; Owner: metc
+--
+
+ALTER TABLE ONLY public.tf_graph_data
+    ADD CONSTRAINT tf_graph_data_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tf_graph_data uk_7fp6kc9v42ua7b2dwrnq5yiht; Type: CONSTRAINT; Schema: public; Owner: metc
+--
+
+ALTER TABLE ONLY public.tf_graph_data
+    ADD CONSTRAINT uk_7fp6kc9v42ua7b2dwrnq5yiht UNIQUE (name);
 
 --
 -- Data for Name: exec_reports; Type: TABLE DATA; Schema: public; Owner: -
