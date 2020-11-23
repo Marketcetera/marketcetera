@@ -19,10 +19,10 @@ import java.util.HashMap;
  * properties file. 
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: AgentConfigurationProvider.java 16154 2012-07-14 16:34:05Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: AgentConfigurationProvider.java 16154 2012-07-14 16:34:05Z colin $")
 public class AgentConfigurationProvider extends PropertiesConfigurationProvider {
     /**
      * Creates a new instance.

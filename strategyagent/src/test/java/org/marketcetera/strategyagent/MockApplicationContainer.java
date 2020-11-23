@@ -10,7 +10,7 @@ import org.springframework.context.support.StaticApplicationContext;
  * Provides a test implementation of <code>ApplicationContainer</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: MockApplicationContainer.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.4.0
  */
 public class MockApplicationContainer

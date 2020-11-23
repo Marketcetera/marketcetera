@@ -30,7 +30,7 @@ import com.google.common.collect.Maps;
  * Base class for Strategy Agent tests.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: StrategyAgentTestBase.java 16994 2015-03-09 21:18:25Z colin $
  * @since 1.5.0
  */
 public class StrategyAgentTestBase

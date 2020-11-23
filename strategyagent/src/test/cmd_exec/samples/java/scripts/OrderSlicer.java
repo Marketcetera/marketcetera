@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * smaller chunks and sends market orders off at random times.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: OrderSlicer.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.0.0
  */
 public class OrderSlicer extends Strategy {

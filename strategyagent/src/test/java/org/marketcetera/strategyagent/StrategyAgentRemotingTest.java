@@ -47,7 +47,7 @@ import com.google.common.collect.Maps;
  * Verifies Remoting capabilities of the strategy agent.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: StrategyAgentRemotingTest.java 17112 2016-02-11 17:58:19Z colin $
  * @since 2.0.0
  */
 public class StrategyAgentRemotingTest

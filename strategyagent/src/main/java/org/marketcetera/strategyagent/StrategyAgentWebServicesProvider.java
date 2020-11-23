@@ -23,10 +23,10 @@ import com.google.common.collect.Lists;
  * Provides web services for the Strategy Agent.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: StrategyAgentWebServicesProvider.java 17857 2019-05-31 16:58:37Z colin $
  * @since 2.4.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: StrategyAgentWebServicesProvider.java 17857 2019-05-31 16:58:37Z colin $")
 public class StrategyAgentWebServicesProvider
         implements Lifecycle, ServerProvider<ClientSession>, UsesPort
 {

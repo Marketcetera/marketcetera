@@ -25,7 +25,7 @@ import org.marketcetera.module.*;
  * invoking various factory / module methods within strategy agent.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: ContextClassLoaderTest.java 16841 2014-02-20 19:59:04Z colin $
  * @since 1.5.0
  */
 public class ContextClassLoaderTest

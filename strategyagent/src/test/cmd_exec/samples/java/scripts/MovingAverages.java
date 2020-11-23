@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * moving average crosses its closing price.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: MovingAverages.java 16901 2014-05-11 16:14:11Z colin $
  * @since 2.0.0
  */
 public class MovingAverages extends Strategy {

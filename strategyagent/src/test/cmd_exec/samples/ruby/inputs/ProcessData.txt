@@ -1,7 +1,7 @@
 #
 # author:anshul@marketcetera.com
 # since 1.0.0
-# version: $Id$
+# version: $Id: ProcessData.txt 16901 2014-05-11 16:14:11Z colin $
 #
 # Create the Process Data strategy
 createModule;metc:strategy:system;processData,ProcessData,RUBY,samples/ruby/scripts/process_data.rb,,true,metc:sink:system

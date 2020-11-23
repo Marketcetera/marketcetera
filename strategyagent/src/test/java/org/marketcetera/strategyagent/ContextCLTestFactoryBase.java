@@ -12,10 +12,10 @@ import java.lang.reflect.InvocationTargetException;
  * set.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: ContextCLTestFactoryBase.java 16841 2014-02-20 19:59:04Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: ContextCLTestFactoryBase.java 16841 2014-02-20 19:59:04Z colin $") //$NON-NLS-1$
 public class ContextCLTestFactoryBase extends ModuleFactory
         implements ContextCLFactoryMXBean {
 
