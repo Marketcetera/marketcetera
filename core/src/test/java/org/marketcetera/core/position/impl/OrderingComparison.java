@@ -1,6 +1,5 @@
 package org.marketcetera.core.position.impl;
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -51,7 +50,6 @@ public class OrderingComparison<T extends Comparable<T>> extends TypeSafeMatcher
     /**
      * Is value = expected?
      */
-    @Factory
     public static <T extends Comparable<T>> Matcher<? super T> comparesEqualTo(T value) {
         return new OrderingComparison<T>(value, 0, 0);
     }
@@ -59,7 +57,6 @@ public class OrderingComparison<T extends Comparable<T>> extends TypeSafeMatcher
     /**
      * Is value > expected?
      */
-    @Factory
     public static <T extends Comparable<T>> Matcher<? super T> greaterThan(T value) {
         return new OrderingComparison<T>(value, -1, -1);
     }
@@ -67,7 +64,6 @@ public class OrderingComparison<T extends Comparable<T>> extends TypeSafeMatcher
     /**
      * Is value >= expected?
      */
-    @Factory
     public static <T extends Comparable<T>> Matcher<? super T> greaterThanOrEqualTo(T value) {
         return new OrderingComparison<T>(value, -1, 0);
     }
@@ -75,7 +71,6 @@ public class OrderingComparison<T extends Comparable<T>> extends TypeSafeMatcher
     /**
      * Is value < expected?
      */
-    @Factory
     public static <T extends Comparable<T>> Matcher<? super T> lessThan(T value) {
         return new OrderingComparison<T>(value, 1, 1);
     }
@@ -83,7 +78,6 @@ public class OrderingComparison<T extends Comparable<T>> extends TypeSafeMatcher
     /**
      * Is value <= expected?
      */
-    @Factory
     public static <T extends Comparable<T>> Matcher<? super T> lessThanOrEqualTo(T value) {
         return new OrderingComparison<T>(value, 0, 1);
     }
