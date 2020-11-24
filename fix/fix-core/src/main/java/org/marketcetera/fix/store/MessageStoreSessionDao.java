@@ -5,7 +5,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -17,7 +17,7 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface MessageStoreSessionDao
-        extends JpaRepository<MessageStoreSession,Long>,QueryDslPredicateExecutor<MessageStoreSession>
+        extends JpaRepository<MessageStoreSession,Long>,QuerydslPredicateExecutor<MessageStoreSession>
 {
     /**
      * Find the session with the given session id.

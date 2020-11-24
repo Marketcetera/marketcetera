@@ -10,7 +10,7 @@ import org.marketcetera.module.ModuleManagerMXBean;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: CreateModule.java 16154 2012-07-14 16:34:05Z colin $") //$NON-NLS-1$
 final class CreateModule extends CommandRunner {
     /**
      * Creates an instance.

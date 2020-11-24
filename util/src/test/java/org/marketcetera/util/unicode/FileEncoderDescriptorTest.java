@@ -3,6 +3,8 @@ package org.marketcetera.util.unicode;
 import java.io.FileOutputStream;
 import java.io.Reader;
 
+import org.junit.Ignore;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
@@ -10,7 +12,7 @@ import java.io.Reader;
  */
 
 /* $License$ */
-
+@Ignore
 public class FileEncoderDescriptorTest
     extends FileEncoderTestBase
 {

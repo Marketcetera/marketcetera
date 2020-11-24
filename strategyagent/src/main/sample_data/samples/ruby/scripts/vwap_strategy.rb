@@ -4,7 +4,7 @@
 # author:Toli Kuznets
 # author:anshul@marketcetera.com
 # since 2.0.0
-# version: $Id$
+# version: $Id: vwap_strategy.rb 17810 2018-12-19 21:43:26Z colin $
 #
 #
 require 'java'

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: MessagesTest.java 16154 2012-07-14 16:34:05Z colin $") //$NON-NLS-1$
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

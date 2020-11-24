@@ -56,6 +56,10 @@
       <artifactId>hibernate-jpa-2.1-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
@@ -187,7 +191,7 @@
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>maven-replacer-plugin</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.1</version>
         <executions>
           <execution>
             <phase>process-sources</phase>

@@ -35,3 +35,7 @@ target
 target-eclipse
 .externalToolBuilders
 maven-eclipse.xml
+
+# Marketcetera artifacts
+dare/src/test/cmd_exec/.metc_host.txt
+dare/src/test/cmd_exec/instances/

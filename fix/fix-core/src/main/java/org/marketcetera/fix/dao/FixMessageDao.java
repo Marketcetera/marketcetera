@@ -1,7 +1,7 @@
 package org.marketcetera.fix.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -13,6 +13,6 @@ import org.springframework.data.querydsl.QueryDslPredicateExecutor;
  * @since $Release$
  */
 public interface FixMessageDao
-        extends JpaRepository<PersistentFixMessage,Long>,QueryDslPredicateExecutor<PersistentFixMessage>
+        extends JpaRepository<PersistentFixMessage,Long>,QuerydslPredicateExecutor<PersistentFixMessage>
 {
 }

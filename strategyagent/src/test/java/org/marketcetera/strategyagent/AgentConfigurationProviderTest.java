@@ -17,10 +17,10 @@ import java.util.HashMap;
  * Tests {@link AgentConfigurationProvider}.
  *
  * @author anshul@marketcetera.com
- * @version $Id$
+ * @version $Id: AgentConfigurationProviderTest.java 16154 2012-07-14 16:34:05Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: AgentConfigurationProviderTest.java 16154 2012-07-14 16:34:05Z colin $")
 public class AgentConfigurationProviderTest extends PropertiesConfigurationProviderTest {
     @Test
     public void receiverProperties() throws Exception {
