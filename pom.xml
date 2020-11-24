@@ -42,7 +42,7 @@
     <mvn.slf4j.version>1.7.30</mvn.slf4j.version>
     <mvn.log4j.version>2.13.3</mvn.log4j.version> <!-- upgrading to 2.14.0 causes a strange error in SessionManagerTest -->
     <mvn.activemq.version>5.9.0</mvn.activemq.version> <!-- upgrading triggers changes to ActiveMQ ObjectName packages -->
-    <mvn.test.options>-Xmx1048 -Xms512</mvn.test.options>
+    <mvn.test.options>-Xmx1024</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <dependencyManagement>
@@ -547,21 +547,6 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>30.0-jre</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry.eclipse</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>2.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
