@@ -1087,7 +1087,7 @@
                   - Removing the brackets will cause the JAR to ultimately
                   - come from our internal repo.
               -->
-              <version>1.7.1</version>
+              <version>1.10.9</version>
             </dependency>
           </dependencies>
         </plugin>
