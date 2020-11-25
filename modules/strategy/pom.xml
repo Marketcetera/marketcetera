@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!--
   - Author: colin@marketcetera.com
   - Since: 1.0.0
   - Version: $Id$
   - $License$
   -->
-
-<project
- xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
@@ -22,11 +14,8 @@
   </parent>
   <artifactId>strategy</artifactId>
   <packaging>jar</packaging>
-
   <name>Strategy Module</name>
-
   <dependencies>
-
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -52,9 +41,7 @@
       <groupId>org.ow2.sirocco</groupId>
       <artifactId>sirocco-text-table-formatter</artifactId>
     </dependency>
-    
     <!-- Runtime. -->
-
     <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -81,20 +68,18 @@
       <artifactId>util-test</artifactId>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
-
-      <!-- Configure Eclipse IDE metadata. -->
       <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
+        <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-	  <buildOutputDirectory>target/classes</buildOutputDirectory>
-	  <downloadSources>true</downloadSources>
-	  <downloadJavadocs>true</downloadJavadocs>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
+          <disableXmlReport>false</disableXmlReport>
+          <forkCount>1</forkCount>
+          <reuseForks>false</reuseForks>
+          <argLine>${mvn.test.options}</argLine>
+          <systemPropertyVariables>
+            <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
