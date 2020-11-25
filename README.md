@@ -74,14 +74,14 @@ By taking an open source approach, Marketcetera gives you total control over you
 * Run the installers. There are a few choices, but it’s OK to just accept the defaults the first time through.
 * Start DARE, the Deploy Anywhere Routing Engine. This is the main server-side package and is required.
 * If desired, start the Strategy Engine. On Windows, there is a Start Menu option, you can also run from the command line on any platform. The Strategy Engine will connect to the local instance of DARE. The Strategy Engine, along with providing the ability to execute strategies, also serves as the Market Data Nexus in this configuration, that is, it supplies market data. As configured, the market data is from our cloud test exchange. Later on, you can switch to real market data, though there are typically costs associated with that.
-* Start Photon, the user interface component. You’ll be prompted to log in. The local instance of DARE, to which you’ll be logging in, has a user for testing purposes: user/password (that’s username: ‘user’ and password: ‘password’).
+* Start Photon, the user interface component. You’ll be prompted to log in. The local instance of DARE, to which you’ll be logging in, has a user for testing purposes: trader/trader (that’s username: ‘trader’ and password: ‘trader’).
 
 ### Build from Source
 
 #### Prerequisites
 
-* maven 3
-* java 8
+* Maven 3
+* Java 8
 
 #### Build
 
@@ -95,11 +95,13 @@ $ git clone https://github.com/colinduplantis/marketcetera.git
 ```sh
 $ mvn -DskipTests clean install
 ```
-* Set up your database. You can use most RDBMS systems that are [supported by Hibernate](https://developer.jboss.org/docs/DOC-13921). Marketcetera includes JDBC drivers for [Postgres](https://www.postgresql.org/) and [HSQLDB](http://hsqldb.org/) (an in-memory/local disk database). Marketcetera provides database migration files for Postgres, HSQLDB, Oracle, and MySQL. Any other database systems will require some addition steps to create the initial tables. Any database system except Postgres and HSQLDB will require you to provide a JDBC JAR for licensing reasons. For Postgres, MySQL, and Oracle, create a user and database according to the requirements of the database system.
-* Create your database configuration. In order to support multiple developers in the same environment, Marketcetera requires you to configure your database connection information before running the tests or the server locally.
 * Choose an IDE. For historical reasons, relating to our user interface, Photon, being developed on the Eclipse Rich Client Platform (RCP), we have usually used Eclipse. You don't have to, you can use whatever IDE you want and it can use whatever theme you want. These instructions are for preparing Eclipse to load your workspace. Substitute your own instructions for other IDEs.
 ```sh
 $ mvn eclipse:eclipse
+```
+* Run tests to make sure your environment is set up correctly
+```sh
+$ mvn clean install
 ```
 
 <!-- USAGE EXAMPLES -->
