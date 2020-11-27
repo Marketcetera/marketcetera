@@ -10,3 +10,10 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 100
+    target-branch: "master"
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 100
+    target-branch: "branches/4.0.x"
