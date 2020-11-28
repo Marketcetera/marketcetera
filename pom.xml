@@ -1100,7 +1100,7 @@
           <dependency>
             <groupId>org.tmatesoft.sqljet</groupId>
             <artifactId>sqljet</artifactId>
-            <version>1.1.6</version>
+            <version>1.1.13</version>
           </dependency>
           <dependency>
             <groupId>de.regnis.q.sequence</groupId>
