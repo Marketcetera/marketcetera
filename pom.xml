@@ -707,6 +707,12 @@
         <version>1.1.7</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.5.1</version>
+        <scope>runtime</scope>
+      </dependency>
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
