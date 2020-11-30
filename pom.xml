@@ -32,7 +32,7 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.2.4.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.4.0</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -396,6 +396,11 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+	<version>2.10.8</version>
+      </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger2</artifactId>
@@ -1013,7 +1018,7 @@
             <failOnError>false</failOnError>
             <!-- add this to disable checking -->
             <additionalparam>-Xdoclint:none</additionalparam>
-	    <doclint>none</doclint>
+            <doclint>none</doclint>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
