@@ -397,6 +397,11 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+	<version>2.10.8</version>
+      </dependency>
+      <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger2</artifactId>
         <version>3.0.0</version>
@@ -1013,7 +1018,7 @@
             <failOnError>false</failOnError>
             <!-- add this to disable checking -->
             <additionalparam>-Xdoclint:none</additionalparam>
-	    <doclint>none</doclint>
+            <doclint>none</doclint>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
