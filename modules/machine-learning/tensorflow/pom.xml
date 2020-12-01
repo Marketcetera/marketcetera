@@ -93,7 +93,7 @@
           <disableXmlReport>false</disableXmlReport>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
-          <argLine>${mvn.test.options}</argLine>
+          <argLine>-Xmx4096m -Xms128m</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
           </systemPropertyVariables>
