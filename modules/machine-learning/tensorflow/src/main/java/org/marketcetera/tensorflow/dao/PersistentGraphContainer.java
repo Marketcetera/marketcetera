@@ -74,7 +74,7 @@ public class PersistentGraphContainer
     /**
      * persistence graph data value
      */
-    @Column(name="graph_data",length=2048)
+    @Column(name="graph_data",length=1024)
     private byte[] graphData;
     private static final long serialVersionUID = 5408021483861544411L;
 }
