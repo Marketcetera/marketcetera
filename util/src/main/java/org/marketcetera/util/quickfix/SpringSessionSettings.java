@@ -40,12 +40,12 @@ import quickfix.SessionSettings;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: SpringSessionSettings.java 17411 2017-04-28 14:50:38Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SpringSessionSettings.java 17411 2017-04-28 14:50:38Z colin $")
 public class SpringSessionSettings
     extends LazyBean
 {

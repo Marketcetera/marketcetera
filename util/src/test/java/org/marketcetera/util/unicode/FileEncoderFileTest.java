@@ -1,21 +1,23 @@
 package org.marketcetera.util.unicode;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.File;
 import java.io.Reader;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.Ignore;
 import org.marketcetera.util.file.CopyBytesUtils;
 import org.marketcetera.util.file.Deleter;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: FileEncoderFileTest.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
-
+@Ignore
 public class FileEncoderFileTest
     extends FileEncoderTestBase
 {

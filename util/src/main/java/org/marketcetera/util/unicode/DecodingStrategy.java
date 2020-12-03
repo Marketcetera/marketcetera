@@ -11,12 +11,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: DecodingStrategy.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: DecodingStrategy.java 16154 2012-07-14 16:34:05Z colin $")
 public enum DecodingStrategy
 {
     UTF8_DEFAULT(new Serialization[]

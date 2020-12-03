@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>marketdata-parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>marketdata-core</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
   <name>Marketdata Core</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -21,6 +21,10 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-api</artifactId>
     </dependency>
     <!-- local test -->
     <dependency>
@@ -34,9 +38,27 @@
     </dependency>
     <!-- other test -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

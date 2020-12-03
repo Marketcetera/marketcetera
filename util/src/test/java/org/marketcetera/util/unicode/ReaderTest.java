@@ -16,7 +16,7 @@ import static org.marketcetera.util.test.UnicodeData.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: ReaderTest.java 17784 2018-11-19 21:08:09Z colin $
  */
 
 /* $License$ */

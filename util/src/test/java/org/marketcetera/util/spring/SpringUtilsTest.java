@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: SpringUtilsTest.java 16841 2014-02-20 19:59:04Z colin $
  */
 
 /* $License$ */

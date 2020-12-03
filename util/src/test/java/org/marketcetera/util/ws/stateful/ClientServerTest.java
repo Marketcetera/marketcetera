@@ -18,7 +18,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: ClientServerTest.java 16841 2014-02-20 19:59:04Z colin $
  */
 
 /* $License$ */

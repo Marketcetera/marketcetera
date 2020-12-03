@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -57,8 +58,8 @@ public class FIXVersionsTest extends TestCase {
         // Add fields that are not added for system fix messages as they
         // are not added by the clients, they are only added by ORS. 
         if(version == FIXVersion.FIX_SYSTEM) {
-            newSingle.setField(new TransactTime(new Date()));
-            newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+            newSingle.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
+            newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
         }
         return newSingle;
     }

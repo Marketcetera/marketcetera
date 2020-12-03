@@ -9,7 +9,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * Indicates that a session has expired.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: SessionExpiredException.java 17411 2017-04-28 14:50:38Z colin $
  * @since $Release$
  */
 public class SessionExpiredException

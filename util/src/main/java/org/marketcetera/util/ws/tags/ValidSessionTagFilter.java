@@ -12,12 +12,12 @@ import org.marketcetera.util.ws.stateful.SessionManager;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: ValidSessionTagFilter.java 17411 2017-04-28 14:50:38Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ValidSessionTagFilter.java 17411 2017-04-28 14:50:38Z colin $")
 public class ValidSessionTagFilter<T>
         implements TagFilter
 {

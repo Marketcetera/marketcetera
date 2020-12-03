@@ -1,23 +1,28 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.marketcetera.util.test.UnicodeData.COMBO;
+
 import java.io.File;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.unicode.DecodingStrategy;
 import org.marketcetera.util.unicode.SignatureCharset;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.UnicodeData.*;
-
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: FileWrapperTest.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
-
+@Ignore
 public class FileWrapperTest
     extends WrapperTestBase
 {

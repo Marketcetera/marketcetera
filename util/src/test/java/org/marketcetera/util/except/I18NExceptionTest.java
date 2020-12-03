@@ -6,7 +6,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: I18NExceptionTest.java 17411 2017-04-28 14:50:38Z colin $
  */
 
 /* $License$ */

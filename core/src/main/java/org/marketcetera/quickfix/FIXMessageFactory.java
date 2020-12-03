@@ -12,6 +12,7 @@ import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Lists;
 
@@ -113,7 +114,7 @@ public class FIXMessageFactory {
     }
 
     protected void addHandlingInst(Message inMessage) {
-        inMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
+        inMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
     }
 
     public Message newCancelReplacePrice(
@@ -185,7 +186,7 @@ public class FIXMessageFactory {
     public void addSendingTime(Message inMessage)
     {
         if(!inMessage.getHeader().isSetField(quickfix.field.SendingTime.FIELD)) {
-            inMessage.getHeader().setField(new SendingTime(new Date()));
+            inMessage.getHeader().setField(new SendingTime(DateService.toUtcDateTime(new Date())));
         }
     }
     protected void fillFieldsFromExistingMessage(Message oldMessage,
@@ -281,8 +282,8 @@ public class FIXMessageFactory {
             return;
         }
         // TODO the time doesn't seem quite right
-        inGroup.setField(new quickfix.field.MDEntryDate(inDateTime.minusMillis(inDateTime.getMillisOfDay()).toDate()));
-        inGroup.setField(new quickfix.field.MDEntryTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate()));
+        inGroup.setField(new quickfix.field.MDEntryDate(DateService.toUtcDate(inDateTime.minusMillis(inDateTime.getMillisOfDay()).toDate())));
+        inGroup.setField(new quickfix.field.MDEntryTime(DateService.toUtcTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate())));
     }
     /**
      * Create a new market data request that cancels the market data request based on the given original request.
@@ -295,7 +296,7 @@ public class FIXMessageFactory {
             throws FieldNotFound
     {
         Message cancelRequest = inOriginalMessage;
-        cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+        cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_UPDATE_REQUEST));
         return cancelRequest;
     }
     /**
@@ -462,7 +463,7 @@ public class FIXMessageFactory {
                                     inInstruments,
                                     inExchange,
                                     Lists.newArrayList(Content.TOP_OF_BOOK,Content.LATEST_TICK),
-                                    quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
+                                    quickfix.field.SubscriptionRequestType.SNAPSHOT_UPDATES);
     }
     /** Creates a new MarketDataRequest for the specified symbols.
      * Setting the incoming symbols array to empty results in a "get all" request
@@ -795,7 +796,7 @@ public class FIXMessageFactory {
     public void addTransactionTimeIfNeeded(Message msg)
     {
         if(msgAugmentor.needsTransactTime(msg)) {
-            msg.setField(new TransactTime(new Date())); //non-i18n
+            msg.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
         }
     }
 

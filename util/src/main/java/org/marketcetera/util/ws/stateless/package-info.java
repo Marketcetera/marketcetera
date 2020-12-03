@@ -8,7 +8,7 @@
  * @author tlerios@marketcetera.com
  * @author anshul@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: package-info.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */

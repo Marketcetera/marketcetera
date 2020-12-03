@@ -39,6 +39,7 @@ import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -186,7 +187,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 .newExecutionReport(
                         "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
         executionReportForOrder1.getHeader().setField(
-                new SendingTime(new Date(currentTime - 10000)));
+                new SendingTime(DateService.toUtcDateTime(new Date(currentTime - 10000))));
         Message order2 = msgFactory
                 .newLimitOrder(
                         "3", Side.SELL, new BigDecimal(2000), new Equity("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -194,12 +195,12 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 .newExecutionReport(
                         "1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("QWER"), null, null);
         executionReportForOrder2.getHeader().setField(
-                new SendingTime(new Date(currentTime - 8000)));
+                new SendingTime(DateService.toUtcDateTime(new Date(currentTime - 8000))));
         Message secondExecutionReportForOrder1 = msgFactory
                 .newExecutionReport(
                         "1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new Equity("ASDF"), null, null);
         secondExecutionReportForOrder1.getHeader().setField(
-                new SendingTime(new Date(currentTime - 7000)));
+                new SendingTime(DateService.toUtcDateTime(new Date(currentTime - 7000))));
 
         history.addIncomingMessage(createServerReport(executionReportForOrder1));
         history.addIncomingMessage(createServerReport(executionReportForOrder2));
@@ -247,7 +248,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 .newExecutionReport(
                         "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
         executionReportForOrder1.getHeader().setField(
-                new SendingTime(new Date(currentTime - 10000)));
+                new SendingTime(DateService.toUtcDateTime(new Date(currentTime - 10000))));
         Message order2 = msgFactory
                 .newLimitOrder(
                         "3", Side.SELL, new BigDecimal(2000), new Equity("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -255,12 +256,12 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 .newExecutionReport(
                         "1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("QWER"), null, null);
         executionReportForOrder2.getHeader().setField(
-                new SendingTime(new Date(currentTime - 8000)));
+                new SendingTime(DateService.toUtcDateTime(new Date(currentTime - 8000))));
         Message secondExecutionReportForOrder1 = msgFactory
                 .newExecutionReport(
                         "1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new Equity("ASDF"), null, null);
         secondExecutionReportForOrder1.getHeader().setField(
-                new SendingTime(new Date(currentTime - 7000)));
+                new SendingTime(DateService.toUtcDateTime(new Date(currentTime - 7000))));
 
         Message aMessage = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
 
@@ -603,8 +604,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         BigDecimal avgPrice = new BigDecimal("12.3"); //$NON-NLS-1$
         Instrument instrument = new Equity("ASDF"); //$NON-NLS-1$
 
-        SendingTime stField = new SendingTime(new Date(10000000));
-        SendingTime stFieldLater = new SendingTime(new Date(10010000));
+        SendingTime stField = new SendingTime(DateService.toUtcDateTime(new Date(10000000)));
+        SendingTime stFieldLater = new SendingTime(DateService.toUtcDateTime(new Date(10010000)));
 
         Message message1 = msgFactory.newExecutionReport(null, clOrderID1,
                 execID, ordStatus, side, orderQty, orderPrice, lastQty,

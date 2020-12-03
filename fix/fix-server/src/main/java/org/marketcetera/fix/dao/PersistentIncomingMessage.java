@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import org.joda.time.DateTime;
 import org.marketcetera.fix.IncomingMessage;
+import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
@@ -56,7 +57,7 @@ public class PersistentIncomingMessage
         try {
             setMsgSeqNum(inMessage.getHeader().getInt(MsgSeqNum.FIELD));
             setMsgType(inMessage.getHeader().getString(MsgType.FIELD));
-            setSendingTime(inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD));
+            setSendingTime(DateService.toLocalDate(inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD)));
             if(inMessage.isSetField(ExecID.FIELD)) {
                 setExecId(inMessage.getString(ExecID.FIELD));
             }

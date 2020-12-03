@@ -16,11 +16,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * synchronization is necessary.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $
  * @since 2.1.4
  */
 @NotThreadSafe
-@ClassVersion("$Id$")
+@ClassVersion("$Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $")
 public class UnmodifiableDeque<T>
         implements Deque<T>
 {
@@ -347,11 +347,11 @@ public class UnmodifiableDeque<T>
      * the underlying <code>Collection</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
+     * @version $Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $
      * @since 2.1.4
      */
     @ThreadSafe
-    @ClassVersion("$Id$")
+    @ClassVersion("$Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $")
     private class UnmodifiableIterator
             implements Iterator<T>
     {

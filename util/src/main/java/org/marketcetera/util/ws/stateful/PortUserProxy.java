@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
  * Allows a port that is implicitly used by the system to be identified.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: PortUserProxy.java 17872 2019-08-07 18:46:33Z colin $
  * @since $Release$
  */
 public class PortUserProxy

@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>fix-parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>fix-server</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
   <name>FIX Server Components</name>
   <dependencies>
     <dependency>
@@ -82,8 +82,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -107,12 +107,6 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
-            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
-            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
-            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
-            <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
-            <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
           </systemPropertyVariables>
         </configuration>
       </plugin>

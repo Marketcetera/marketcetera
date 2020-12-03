@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SmartLinksDirectoryWalker.java 17784 2018-11-19 21:08:09Z colin $")
 public abstract class SmartLinksDirectoryWalker
         extends DirectoryWalker<String>
 {

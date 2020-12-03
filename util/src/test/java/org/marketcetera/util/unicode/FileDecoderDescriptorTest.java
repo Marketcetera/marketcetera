@@ -2,14 +2,16 @@ package org.marketcetera.util.unicode;
 
 import java.io.FileInputStream;
 
+import org.junit.Ignore;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: FileDecoderDescriptorTest.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
-
+@Ignore
 public class FileDecoderDescriptorTest
     extends FileDecoderTestBase
 {

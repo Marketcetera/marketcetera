@@ -12,12 +12,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id$
+ * @version $Id: InputThread.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: InputThread.java 16154 2012-07-14 16:34:05Z colin $")
 class InputThread
     extends Thread
 {

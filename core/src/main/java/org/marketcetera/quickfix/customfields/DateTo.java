@@ -1,6 +1,8 @@
 package org.marketcetera.quickfix.customfields;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.time.DateService;
+
 import quickfix.UtcTimeStampField;
 
 import java.util.Date;
@@ -16,11 +18,11 @@ public class DateTo extends UtcTimeStampField {
     public static final int FIELD = 9884;
 
     public DateTo() {
-        super(FIELD, new Date()); //non-i18n
+        super(FIELD, DateService.toUtcDateTime(new Date()));
     }
 
     public DateTo(Date data) {
-        super(FIELD, data);
+        super(FIELD, DateService.toUtcDateTime(data));
     }
     private static final long serialVersionUID = 5479866651113375958L;
 }

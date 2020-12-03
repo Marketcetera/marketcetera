@@ -37,12 +37,12 @@ import org.marketcetera.util.misc.CollectionUtils;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id$
+ * @version $Id: ActiveLocale.java 17760 2018-11-14 14:54:11Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: ActiveLocale.java 17760 2018-11-14 14:54:11Z colin $")
 public class ActiveLocale
 {
 
