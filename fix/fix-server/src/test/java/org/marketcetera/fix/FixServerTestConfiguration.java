@@ -1,7 +1,5 @@
 package org.marketcetera.fix;
 
-import java.util.Collections;
-
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
@@ -43,7 +41,7 @@ public class FixServerTestConfiguration
     public HibernateMessageStoreConfiguration getMessageStoreConfiguration()
     {
         HibernateMessageStoreConfiguration messageStoreConfiguration = new HibernateMessageStoreConfiguration();
-        messageStoreConfiguration.setMessageTypeBlacklist(Collections.emptySet());
+        messageStoreConfiguration.getMessageTypeBlacklist().clear();
         return messageStoreConfiguration;
     }
     /**
