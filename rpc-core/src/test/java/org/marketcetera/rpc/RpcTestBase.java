@@ -378,6 +378,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
         rpcServer = new RpcServer();
         rpcServer.setHostname(inHostname);
         rpcServer.setPort(inPort);
+        rpcServer.setUseSsl(false);
         if(inServices != null) {
             for(BindableService service : inServices) {
                 rpcServer.getServerServiceDefinitions().add(service);

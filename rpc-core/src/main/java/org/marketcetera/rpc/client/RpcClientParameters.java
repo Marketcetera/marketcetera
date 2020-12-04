@@ -26,4 +26,10 @@ public interface RpcClientParameters
      * @return a <code>long</code> value
      */
     long getShutdownWait();
+    /**
+     * Indicate if the client connection should use SSL or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean useSsl();
 }

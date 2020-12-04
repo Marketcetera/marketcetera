@@ -1,5 +1,7 @@
 package org.marketcetera.test;
 
+import java.util.Collections;
+
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.brokers.service.FixSessionProvider;
@@ -90,7 +92,7 @@ public class DareTestConfiguration
     public HibernateMessageStoreConfiguration getMessageStoreConfiguration()
     {
         HibernateMessageStoreConfiguration messageStoreConfiguration = new HibernateMessageStoreConfiguration();
-        messageStoreConfiguration.getMessageTypeBlacklist().clear();
+        messageStoreConfiguration.setMessageTypeBlacklist(Collections.emptySet());
         return messageStoreConfiguration;
     }
     /**

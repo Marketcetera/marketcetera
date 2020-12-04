@@ -137,7 +137,7 @@ public class ProvisioningAgent
     /**
      * directory to watch for provisioning files
      */
-    private String provisioningDirectory = FileUtils.getTempDirectoryPath()+File.pathSeparator+"provisioning";
+    private String provisioningDirectory = FileUtils.getTempDirectoryPath()+File.separator+"provisioning";
     /**
      * provides access to cluster services
      */
