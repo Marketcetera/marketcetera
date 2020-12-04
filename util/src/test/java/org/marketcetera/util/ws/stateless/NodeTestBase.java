@@ -9,7 +9,7 @@ import org.marketcetera.util.test.TestCaseBase;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: NodeTestBase.java 17112 2016-02-11 17:58:19Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>ml-parent</artifactId>
   <packaging>pom</packaging>

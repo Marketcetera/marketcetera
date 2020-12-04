@@ -8,22 +8,16 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.marketcetera.symbol.SymbolResolverService;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
 
@@ -36,20 +30,8 @@ import com.hazelcast.core.HazelcastInstanceNotActiveException;
  * @version $Id$
  * @since $Release$
  */
-@Component
-public class PlatformServices
+public abstract class PlatformServices
 {
-    /**
-     * Validate and start the object.
-     */
-    @PostConstruct
-    public void start()
-    {
-        instance = this;
-        SLF4JLoggerProxy.info(this,
-                              "Starting {}",
-                              getServiceName(getClass()));
-    }
     /**
      * Split the given value into its components where each component starts with a capital letter.
      *
@@ -215,26 +197,11 @@ public class PlatformServices
     }
     /**
      * Create a new EnterprisePlatformServices instance.
-     * Get the instrument for the given full symbol.
-     *
-     * @param inFullSymbol a <code>String</code> value
-     * @return an <code>Instrument</code> value
      */
-    public static Instrument getInstrument(String inFullSymbol)
+    private PlatformServices()
     {
-        Validate.notNull(instance,
-                         "Platform services must be initialized before use");
-        return instance.symbolResolverService.resolveSymbol(inFullSymbol);
+        throw new UnsupportedOperationException();
     }
-    /**
-     * provides symbol resolver services
-     */
-    @Autowired
-    private SymbolResolverService symbolResolverService;
-    /**
-     * static instance
-     */
-    private static PlatformServices instance;
     /**
      * indicates that hazelcast is not active
      */

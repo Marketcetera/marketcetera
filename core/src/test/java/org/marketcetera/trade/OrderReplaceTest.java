@@ -17,7 +17,6 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -214,7 +213,7 @@ public class OrderReplaceTest extends TypesTestBase {
         int intValue = 1;
         boolean boolValue = false;
 
-        msg.setField(new ExpireTime(DateService.toUtcDateTime(date)));
+        msg.setField(new ExpireTime(date));
         expectedMap.put(String.valueOf(ExpireTime.FIELD),
                 UtcTimestampConverter.convert(date, true));
 
@@ -392,7 +391,7 @@ public class OrderReplaceTest extends TypesTestBase {
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
                 "accountName", null); //$NON-NLS-1$
         erMsg.setString(OrigClOrdID.FIELD, "12222");
-        erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC_BROKER_INTERVENTION_OK);
+        erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC);
         ExecutionReport er = Factory.getInstance().createExecutionReport(erMsg, new BrokerID("broker"), Originator.Server, new UserID(7600L), new UserID(7500L));
         assertEquals("12222", er.getOriginalOrderID().getValue());
         assertEquals("12222", ((HasFIXMessage) er).getMessage().getString(OrigClOrdID.FIELD));

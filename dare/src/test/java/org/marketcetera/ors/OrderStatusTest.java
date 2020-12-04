@@ -127,7 +127,7 @@ public class OrderStatusTest
         reports.clear();
         // send replace
         quickfix.Message order1Replace = buildMessage("35=8",
-                                                      "58=replace1,6=0,11="+replace1.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+order1OrderId+",38="+order1Qty.toPlainString()+",39="+OrderStatus.Replaced.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",41="+order1.getOrderID()+",44="+order1Price.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.Replaced.getFIXValue()+",151="+order1Qty.toPlainString(),
+                                                      "58=replace1,6=0,11="+replace1.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+order1OrderId+",38="+order1Qty.toPlainString()+",39="+OrderStatus.Replaced.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",41="+order1.getOrderID()+",44="+order1Price.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.Replace.getFIXValue()+",151="+order1Qty.toPlainString(),
                                                       quickfix.field.MsgType.EXECUTION_REPORT,
                                                       messageFactory);
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
@@ -164,7 +164,7 @@ public class OrderStatusTest
          reports.clear();
          // send replace
          quickfix.Message order2Replace = buildMessage("35=8",
-                                                       "58=replace2,6=0,11="+replace2.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+order1OrderId+",38="+order1Qty.toPlainString()+",39="+OrderStatus.Replaced.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",41="+replace1.getOrderID()+",44="+order1Price.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.Replaced.getFIXValue()+",151="+order1Qty.toPlainString(),
+                                                       "58=replace2,6=0,11="+replace2.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+order1OrderId+",38="+order1Qty.toPlainString()+",39="+OrderStatus.Replaced.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",41="+replace1.getOrderID()+",44="+order1Price.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.Replace.getFIXValue()+",151="+order1Qty.toPlainString(),
                                                        quickfix.field.MsgType.EXECUTION_REPORT,
                                                        messageFactory);
          InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,

@@ -14,12 +14,12 @@ import org.marketcetera.util.ws.stateful.SessionManager;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SampleServer.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleServer.java 16154 2012-07-14 16:34:05Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SampleServer
     extends TestCaseBase
 {

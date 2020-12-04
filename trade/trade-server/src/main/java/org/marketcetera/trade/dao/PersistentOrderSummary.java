@@ -35,7 +35,6 @@ import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
-import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
@@ -420,10 +419,10 @@ public class PersistentOrderSummary
             orderQuantity = inMessage.getDecimal(OrderQty.FIELD);
         }
         if(inMessage.getHeader().isSetField(SendingTime.FIELD)) {
-            sendingTime = DateService.toLocalDate(inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD));
+            sendingTime = inMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD);
         }
         if(inMessage.isSetField(TransactTime.FIELD)) {
-            transactTime = DateService.toLocalDate(inMessage.getUtcTimeStamp(TransactTime.FIELD));
+            transactTime = inMessage.getUtcTimeStamp(TransactTime.FIELD);
         }
         if(inMessage.isSetField(Price.FIELD)) {
             orderPrice = inMessage.getDecimal(Price.FIELD);

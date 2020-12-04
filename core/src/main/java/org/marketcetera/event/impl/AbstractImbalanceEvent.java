@@ -27,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-public abstract class AbstractImbalanceEvent
+abstract class AbstractImbalanceEvent
         implements ImbalanceEvent, HasEventBean
 {
     /* (non-Javadoc)

@@ -18,12 +18,12 @@ import org.marketcetera.util.ws.tags.SessionId;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SessionManager.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SessionManager.java 17411 2017-04-28 14:50:38Z colin $")
+@ClassVersion("$Id$")
 public class SessionManager<T>
 {
 
@@ -57,7 +57,7 @@ public class SessionManager<T>
      * The reaper.
      */
 
-    @ClassVersion("$Id: SessionManager.java 17411 2017-04-28 14:50:38Z colin $")
+    @ClassVersion("$Id$")
     final class Reaper
         extends Thread
     {

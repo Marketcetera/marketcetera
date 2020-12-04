@@ -26,12 +26,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: UnicodeCharset.java 17757 2018-11-13 20:41:13Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeCharset.java 17757 2018-11-13 20:41:13Z colin $")
+@ClassVersion("$Id$")
 public enum UnicodeCharset
 {
     UTF8(CharEncoding.UTF_8),

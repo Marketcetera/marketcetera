@@ -38,21 +38,20 @@ import org.tensorflow.Tensor;
  * @since $Release$
  */
 public class ImageLabelTensorFlowRunner
-        implements TensorFlowRunner<Float>
+        implements TensorFlowRunner
 {
     /* (non-Javadoc)
      * @see org.marketcetera.tensorflow.model.TensorFlowRunner#fetch(org.marketcetera.module.DataRequest, org.tensorflow.Tensor)
      */
     @Override
     public Object fetch(DataRequest inDataRequest,
-                        Tensor<Float> inInput)
+                        Tensor inInput)
     {
         try {
             List<String> labels = Files.readAllLines(Paths.get("src/test/sample_data",
                                                                "imagenet_comp_graph_label_strings.txt"),
                                                      Charset.forName("UTF-8"));
-            float[] labelProbabilities = executeInceptionGraph(graphDef,
-                                                               inInput);
+            float[] labelProbabilities = executeInceptionGraph(inInput);
             int bestLabelIdx = maxIndex(labelProbabilities);
             String result = labels.get(bestLabelIdx);
             SLF4JLoggerProxy.trace(this,
@@ -99,19 +98,18 @@ public class ImageLabelTensorFlowRunner
      * @param inImage a <code>Tensor</code> value
      * @return a <code>float[]</code> value
      */
-    private static float[] executeInceptionGraph(byte[] graphDef,
-                                                 Tensor<Float> image)
+    private float[] executeInceptionGraph(Tensor inImage)
     {
         try(Graph g = new Graph()) {
             g.importGraphDef(graphDef);
-            // Generally, there may be multiple output tensors, all of them must be closed to prevent resource leaks.
-            try(Session s = new Session(g); Tensor<Float> result = s.runner().feed("input", image).fetch("output").run().get(0).expect(Float.class)) {
+            try(Session s = new Session(g);
+                Tensor result = s.runner().feed("input",inImage).fetch("output").run().get(0)) {
                 final long[] rshape = result.shape();
                 if(result.numDimensions() != 2 || rshape[0] != 1) {
                     throw new RuntimeException(String.format("Expected model to produce a [1 N] shaped tensor where N is the number of labels, instead it produced one with shape %s",
                                                              Arrays.toString(rshape)));
                 }
-                int nlabels = (int) rshape[1];
+                int nlabels = (int)rshape[1];
                 return result.copyTo(new float[1][nlabels])[0];
             }
         }

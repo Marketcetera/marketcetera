@@ -7,7 +7,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -39,7 +38,7 @@ public class TransactionTimeInsertMessageModifier
             fixVersion = FIXVersion.getFIXVersion(inOrder);
             FIXMessageAugmentor augmentor = fixVersion.getMessageFactory().getMsgAugmentor();
             if(augmentor.needsTransactTime(inOrder)) {
-                inOrder.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
+                inOrder.setField(new TransactTime(new Date()));
                 return true;
             }
             return false;

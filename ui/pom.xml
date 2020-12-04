@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>webui-parent</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Web UI Parent</name>
   <properties>
@@ -107,7 +107,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>4.0.1</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.vaadin.addons</groupId>

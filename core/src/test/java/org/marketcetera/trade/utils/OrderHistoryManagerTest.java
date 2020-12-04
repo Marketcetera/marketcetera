@@ -38,7 +38,6 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
-import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -805,7 +804,7 @@ public class OrderHistoryManagerTest
         msg.getHeader().setField(new MsgSeqNum(counter.incrementAndGet()));
         msg.getHeader().setField(new SenderCompID("sender"));
         msg.getHeader().setField(new TargetCompID("target"));
-        msg.getHeader().setField(new SendingTime(DateService.toUtcDateTime(new Date())));
+        msg.getHeader().setField(new SendingTime(new Date()));
         msg.setField(new ExecID(String.valueOf(counter.incrementAndGet())));
         if(orderType != null) {
             switch(orderType) {
@@ -832,7 +831,7 @@ public class OrderHistoryManagerTest
         msg.setField(new OrderQty(EventTestBase.generateDecimalValue()));
         msg.setField(new LastPx(EventTestBase.generateDecimalValue()));
         msg.setField(new LastQty(EventTestBase.generateDecimalValue()));
-        msg.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
+        msg.setField(new TransactTime(new Date()));
         if(inOriginalOrderID != null) {
             msg.setField(new OrigClOrdID(inOriginalOrderID));
         }
@@ -858,11 +857,11 @@ public class OrderHistoryManagerTest
         msg.getHeader().setField(new MsgSeqNum(counter.incrementAndGet()));
         msg.getHeader().setField(new SenderCompID("sender"));
         msg.getHeader().setField(new TargetCompID("target"));
-        msg.getHeader().setField(new SendingTime(DateService.toUtcDateTime(new Date())));
+        msg.getHeader().setField(new SendingTime(new Date()));
         msg.setField(new OrdStatus(OrderStatus.Rejected.getFIXValue()));
         msg.setField(new quickfix.field.OrderID(inOrderID));
         msg.setField(new ClOrdID(inOrderID));
-        msg.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
+        msg.setField(new TransactTime(new Date()));
         msg.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
         msg.setField(new OrigClOrdID(inOriginalOrderID));
         msg.toString();

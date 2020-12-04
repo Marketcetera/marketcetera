@@ -22,7 +22,6 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -142,8 +141,8 @@ public class EventFromFixGenerator
                         throw new UnsupportedOperationException();
                 }
             }
-            Date date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
-            Date time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
+            Date date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
+            Date time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
             Date eventDate = new Date(date.getTime()+time.getTime());
             switch(entryType) {
                 case quickfix.field.MDEntryType.BID:

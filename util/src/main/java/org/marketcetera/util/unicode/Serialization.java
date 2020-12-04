@@ -14,12 +14,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: Serialization.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: Serialization.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public enum Serialization
 {
     UTF8(SignatureCharset.UTF8_UTF8),

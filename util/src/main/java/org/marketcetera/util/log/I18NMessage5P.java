@@ -8,12 +8,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: I18NMessage5P.java 17760 2018-11-14 14:54:11Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NMessage5P.java 17760 2018-11-14 14:54:11Z colin $")
+@ClassVersion("$Id$")
 public class I18NMessage5P
     extends I18NMessage
 {

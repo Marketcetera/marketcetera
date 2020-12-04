@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: ClassVersion.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

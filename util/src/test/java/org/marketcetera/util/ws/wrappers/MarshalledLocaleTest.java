@@ -12,7 +12,7 @@ import static org.marketcetera.util.test.SerializableAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: MarshalledLocaleTest.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

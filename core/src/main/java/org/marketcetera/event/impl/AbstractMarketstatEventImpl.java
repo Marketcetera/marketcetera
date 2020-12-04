@@ -28,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-public abstract class AbstractMarketstatEventImpl
+abstract class AbstractMarketstatEventImpl
         implements MarketstatEvent, HasEventBean
 {
     /* (non-Javadoc)

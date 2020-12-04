@@ -139,5 +139,4 @@ public interface Messages
                                                                                        "dividend_request_missing_instrument"); //$NON-NLS-1$
     static final I18NMessage3P UNSUPPORTED_ASSET_CLASS = new I18NMessage3P(LOGGER,
                                                                            "unsupported_asset_class"); //$NON-NLS-1$
-    static final I18NMessage1P FEED_NOT_AVAILABLE = new I18NMessage1P(LOGGER,"feed_not_available"); //$NON-NLS-1$
 }

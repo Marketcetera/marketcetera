@@ -37,13 +37,14 @@
   <!-- database settings -->
   <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
     <property name="dataSourceName" value="metc"/>
-    <property name="driverClass" value="${metc.jdbc.driver:org.hsqldb.jdbc.JDBCDriver}"/>
-    <property name="jdbcUrl" value="${metc.jdbc.url:jdbc:hsqldb:file:./target/data/metc-hsqldb-data}"/>
-    <property name="user" value="${metc.jdbc.user:metc}"/>
-    <property name="password" value="${metc.jdbc.password:pw4metc}"/>
-    <property name="maxPoolSize" value="${metc.jdbc.pool.size:10}"/>
-    <property name="preferredTestQuery" value="${metc.jdbc.testquery:CALL NOW()}"/>
-    <property name="testConnectionOnCheckout" value="false"/>
+    <property name="driverClass" value="${metc.jdbc.driver}"/>
+    <property name="jdbcUrl" value="${metc.jdbc.url}"/>
+    <property name="user" value="${metc.jdbc.user}"/>
+    <property name="password" value="${metc.jdbc.password}"/>
+    <property name="maxPoolSize" value="50"/>
+    <property name="preferredTestQuery" value="${metc.jdbc.testquery}"/>
+    <property name="testConnectionOnCheckout" value="true"/>
+    <property name="checkoutTimeout" value="10000"/>
   </bean>
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="metc_sql_pool"/>
@@ -53,7 +54,7 @@
     </property>
     <property name="jpaProperties">
       <props>
-        <prop key="hibernate.dialect">${metc.hibernate.dialect:org.hibernate.dialect.HSQLDialect}</prop>
+        <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
         <prop key="hibernate.hbm2ddl.auto">create</prop>
         <prop key="hibernate.show_sql">false</prop>
         <prop key="hibernate.format_sql">false</prop>

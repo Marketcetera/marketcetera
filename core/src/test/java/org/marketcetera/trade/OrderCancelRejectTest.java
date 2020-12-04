@@ -1,7 +1,6 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.time.DateService;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -91,8 +90,8 @@ public class OrderCancelRejectTest extends TypesTestBase {
                 new ClOrdID(orderID.getValue()),
                 new OrigClOrdID(origOrderID.getValue()),
                 text, null);
-        msg.getHeader().setField(new SendingTime(DateService.toUtcDateTime(sendingTime)));
-        msg.setField(new TransactTime(DateService.toUtcDateTime(transactTime)));
+        msg.getHeader().setField(new SendingTime(sendingTime));
+        msg.setField(new TransactTime(transactTime));
         report = sFactory.createOrderCancelReject(msg, cID, Originator.Broker,
                                                   actorID, viewerID);
         assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,

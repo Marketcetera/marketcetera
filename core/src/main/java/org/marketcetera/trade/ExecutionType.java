@@ -1,10 +1,6 @@
 package org.marketcetera.trade;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -32,7 +28,7 @@ public enum ExecutionType {
     Fill(ExecType.FILL),
     DoneForDay(ExecType.DONE_FOR_DAY),
     Canceled(ExecType.CANCELED),
-    Replaced(ExecType.REPLACED),
+    Replace(ExecType.REPLACE),
     PendingCancel(ExecType.PENDING_CANCEL),
     Stopped(ExecType.STOPPED),
     Rejected(ExecType.REJECTED),
