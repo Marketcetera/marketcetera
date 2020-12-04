@@ -64,7 +64,7 @@ public class ExecutionTypeTest extends FIXCharEnumTestBase<ExecutionType> {
                 new Pair<ExecutionType, Character>(Fill, ExecType.FILL),
                 new Pair<ExecutionType, Character>(DoneForDay, ExecType.DONE_FOR_DAY),
                 new Pair<ExecutionType, Character>(Canceled, ExecType.CANCELED),
-                new Pair<ExecutionType, Character>(Replaced, ExecType.REPLACED),
+                new Pair<ExecutionType, Character>(Replace, ExecType.REPLACE),
                 new Pair<ExecutionType, Character>(PendingCancel, ExecType.PENDING_CANCEL),
                 new Pair<ExecutionType, Character>(Stopped, ExecType.STOPPED),
                 new Pair<ExecutionType, Character>(Rejected, ExecType.REJECTED),

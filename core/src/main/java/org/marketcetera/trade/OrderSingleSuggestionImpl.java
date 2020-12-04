@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class OrderSingleSuggestionImpl
+class OrderSingleSuggestionImpl
         implements OrderSingleSuggestion {
     @Override
     public String getIdentifier() {

@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Describes the usage of a port.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PortDescriptor.java 17872 2019-08-07 18:46:33Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class PortDescriptor

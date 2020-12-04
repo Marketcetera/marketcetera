@@ -16,9 +16,9 @@ import org.marketcetera.util.ws.tags.SessionId;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: ClientContext.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: ClientContext.java 17411 2017-04-28 14:50:38Z colin $")
+@ClassVersion("$Id$")
 public class ClientContext
         extends StatelessClientContext
 {

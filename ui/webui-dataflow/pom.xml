@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.marketcetera</groupId>
   <artifactId>webui-dataflow</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Web UI Data Flow</name>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>webui-parent</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

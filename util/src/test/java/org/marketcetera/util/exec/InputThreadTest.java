@@ -14,7 +14,7 @@ import org.marketcetera.util.test.TestCaseBase;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: InputThreadTest.java 16995 2015-03-09 21:56:48Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

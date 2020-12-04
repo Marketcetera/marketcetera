@@ -48,7 +48,7 @@ public enum OrderType {
     Pegged(quickfix.field.OrdType.PEGGED),
     PreviouslyIndicated(quickfix.field.OrdType.PREVIOUSLY_INDICATED),
     PreviouslyQuoted(quickfix.field.OrdType.PREVIOUSLY_QUOTED),
-    StopLoss(quickfix.field.OrdType.STOP_STOP_LOSS),
+    Stop(quickfix.field.OrdType.STOP),
     StopLimit(quickfix.field.OrdType.STOP_LIMIT),
     WithOrWithout(quickfix.field.OrdType.WITH_OR_WITHOUT);
 
@@ -112,11 +112,11 @@ public enum OrderType {
     /**
      * market order types
      */
-    private static final Set<OrderType> marketTypes = EnumSet.of(Market,MarketOnClose,ForexMarket,StopLoss);
+    private static final Set<OrderType> marketTypes = EnumSet.of(Market,MarketOnClose,ForexMarket,Stop);
     /**
      * stop order types
      */
-    private static final Set<OrderType> stopTypes = EnumSet.of(StopLoss,StopLimit);
+    private static final Set<OrderType> stopTypes = EnumSet.of(Stop,StopLimit);
     /**
      * perform static initialization
      */

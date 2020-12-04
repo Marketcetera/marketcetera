@@ -13,7 +13,7 @@ import static org.marketcetera.util.test.CollectionAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: ReflectUtilsTest.java 17784 2018-11-19 21:08:09Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

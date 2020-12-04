@@ -196,8 +196,7 @@ public class DynamicSessionThreadedSocketAcceptor
             SLF4JLoggerProxy.debug(this,
                                    "Unregistering {}",
                                    sessionName);
-            Session.unregisterSessions(Lists.newArrayList(inSessionId),
-                                       true);
+            Session.unregisterSessions(Lists.newArrayList(inSessionId));
             if(Session.lookupSession(inSessionId) == null) {
                 SLF4JLoggerProxy.debug(this,
                                        "{} succesfully unregistered",

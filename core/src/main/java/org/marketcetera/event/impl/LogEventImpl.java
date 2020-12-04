@@ -49,7 +49,7 @@ import org.marketcetera.util.ws.wrappers.RemoteProperties;
  */
 @NotThreadSafe
 @ClassVersion("$Id$")
-public final class LogEventImpl
+final class LogEventImpl
         implements LogEvent, HasEventBean
 {
     /* (non-Javadoc)

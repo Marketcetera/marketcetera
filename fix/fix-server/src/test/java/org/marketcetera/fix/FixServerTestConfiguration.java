@@ -10,9 +10,6 @@ import org.marketcetera.fix.dao.PersistentFixSessionProvider;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.fix.store.HibernateMessageStoreConfiguration;
-import org.marketcetera.symbol.IterativeSymbolResolver;
-import org.marketcetera.symbol.PatternSymbolResolver;
-import org.marketcetera.symbol.SymbolResolverService;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -65,18 +62,6 @@ public class FixServerTestConfiguration
         return new SimpleServerFixSessionFactory();
     }
     /**
-     * Get the symbol resolver service value.
-     *
-     * @return a <code>SymbolResolverService</code> value
-     */
-    @Bean
-    public SymbolResolverService getSymbolResolverService()
-    {
-        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
-        symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
-        return symbolResolverService;
-    }
-   /**
      * Get the cluster data factory value.
      *
      * @return a <code>ClusterDataFactory</code> value

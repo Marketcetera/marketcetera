@@ -7,7 +7,7 @@ import org.marketcetera.util.ws.tags.TagFilter;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: StatelessRemoteRunnerTest.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

@@ -12,12 +12,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: I18NBoundMessageBase.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NBoundMessageBase.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public class I18NBoundMessageBase<T extends I18NMessage>
     implements I18NBoundMessage
 {

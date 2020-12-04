@@ -19,9 +19,9 @@ import com.google.common.collect.Lists;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: Node.java 17757 2018-11-13 20:41:13Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Node.java 17757 2018-11-13 20:41:13Z colin $")
+@ClassVersion("$Id$")
 public class Node
         implements UsesPort
 {
