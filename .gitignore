@@ -36,5 +36,9 @@ target-eclipse
 .externalToolBuilders
 maven-eclipse.xml
 
+# Marketcetera Artifacts
+.metc_host.txt
+**/cmd_exec/instances/
+
 # Vaadin Generated Artifacts
 **/VAADIN/widgetsets/
