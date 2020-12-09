@@ -29,6 +29,8 @@ import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
+import org.marketcetera.photon.commons.events.LoginEvent;
+import org.marketcetera.photon.commons.events.PhotonEventBus;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
@@ -200,6 +202,9 @@ public class ReconnectServerJob
             // reconnect market data, too, if so requested
             if(reconnectMarketData) {
                 PhotonPlugin.getDefault().reconnectMarketDataFeed();
+            }
+            if(success) {
+                PhotonEventBus.post(new LoginEvent());
             }
             return success ? Status.OK_STATUS : Status.CANCEL_STATUS;
         } finally {

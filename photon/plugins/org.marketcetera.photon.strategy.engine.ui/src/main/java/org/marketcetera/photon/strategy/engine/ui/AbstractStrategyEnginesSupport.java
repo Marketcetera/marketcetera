@@ -9,6 +9,7 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.photon.commons.Validate;
+import org.marketcetera.photon.commons.events.PhotonEventBus;
 import org.marketcetera.photon.commons.ui.DisplayThreadExecutor;
 import org.marketcetera.photon.commons.ui.SWTUtils;
 import org.marketcetera.photon.strategy.engine.IStrategyEngines;
@@ -81,8 +82,8 @@ public abstract class AbstractStrategyEnginesSupport {
                 doRemoveEngine(getGenericEngines(), engine);
             }
         }, null);
+        
     }
-
     /**
      * Returns the list of engines.
      * 
@@ -162,7 +163,7 @@ public abstract class AbstractStrategyEnginesSupport {
         if (mDisposed.compareAndSet(false, true)) {
             mRegistration.unregister();
             mEngines.dispose();
+            PhotonEventBus.unregister(this);
         }
     }
-
 }

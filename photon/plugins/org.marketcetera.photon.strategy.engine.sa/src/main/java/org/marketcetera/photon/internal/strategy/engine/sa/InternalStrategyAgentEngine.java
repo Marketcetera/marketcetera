@@ -6,6 +6,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.marketcetera.photon.commons.ExceptionUtils;
 import org.marketcetera.photon.commons.Validate;
+import org.marketcetera.photon.commons.events.LoginEvent;
+import org.marketcetera.photon.commons.events.PhotonEventBus;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
@@ -22,7 +24,10 @@ import org.marketcetera.saclient.SAClient;
 import org.marketcetera.saclient.SAClientFactory;
 import org.marketcetera.saclient.SAClientParameters;
 import org.marketcetera.saclient.rpc.SAClientContextClassProvider;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
@@ -52,6 +57,8 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
             } catch (Exception e) {
                 Messages.INTERNAL_STRATEGY_AGENT_ENGINE_DISCONNECT_ON_LOGOUT_FAILED
                         .error(InternalStrategyAgentEngine.this, e, getName());
+            } finally {
+                PhotonEventBus.unregister(InternalStrategyAgentEngine.this);
             }
         }
     };
@@ -91,8 +98,25 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
         setJmsUrl(engine.getJmsUrl());
         setWebServiceHostname(engine.getWebServiceHostname());
         setWebServicePort(engine.getWebServicePort());
+        PhotonEventBus.register(this);
     }
-
+    /**
+     * Receive a login event.
+     *
+     * @param inLoginEvent a <code>LoginEvent</code> value
+     */
+    @Subscribe
+    public void receiveLogin(LoginEvent inLoginEvent)
+    {
+        try {
+            connect();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to connect");
+            e.printStackTrace();
+        }
+    }
     @Override
     public void connect() throws Exception {
         final AtomicReference<ConnectionException> exception = new AtomicReference<ConnectionException>();
