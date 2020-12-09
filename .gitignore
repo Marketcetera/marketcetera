@@ -42,3 +42,7 @@ maven-eclipse.xml
 # Marketcetera Artifacts
 .metc_host.txt
 **/cmd_exec/instances/
+
+# IntelliJ Artifacts
+*.iml
+.idea
