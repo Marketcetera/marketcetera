@@ -57,16 +57,17 @@ public class ProvisioningAgent
     public void start()
     {
         clusterData = clusterService.getInstanceData();
-        String actualDirectory = provisioningDirectory + clusterData.getInstanceNumber();
+        provisioningDirectory = provisioningDirectory + clusterData.getInstanceNumber();
         try {
             DirectoryWatcherImpl watcher = new DirectoryWatcherImpl();
-            watcher.setDirectoriesToWatch(Lists.newArrayList(new File(actualDirectory)));
+            watcher.setCreateDirectoriesOnStart(true);
+            watcher.setDirectoriesToWatch(Lists.newArrayList(new File(provisioningDirectory)));
             watcher.setPollingInterval(pollingInterval);
             watcher.addWatcher(this);
             watcher.start();
             SLF4JLoggerProxy.info(this,
                                   "Watching {} for provisioning files",
-                                  actualDirectory);
+                                  provisioningDirectory);
         } catch (Exception e) {
             PlatformServices.handleException(this,
                                              "Unable to watch for provisioning files",
