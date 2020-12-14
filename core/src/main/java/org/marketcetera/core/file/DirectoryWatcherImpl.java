@@ -36,6 +36,28 @@ import com.google.common.collect.Sets;
 public class DirectoryWatcherImpl
         implements DirectoryWatcher
 {
+    /* (non-Javadoc)
+     * @see com.marketcetera.ramius.tools.DirectoryWatcher#addWatcher(com.marketcetera.ramius.tools.DirectoryWatcherSubscriber)
+     */
+    @Override
+    public void addWatcher(DirectoryWatcherSubscriber inSubscriber)
+    {
+        synchronized (subscriberList) {
+            if(!subscriberList.contains(inSubscriber)) {
+                subscriberList.add(inSubscriber);
+            }
+        }
+    }
+    /* (non-Javadoc)
+     * @see com.marketcetera.ramius.tools.DirectoryWatcher#removeWatcher(com.marketcetera.ramius.tools.DirectoryWatcherSubscriber)
+     */
+    @Override
+    public void removeWatcher(DirectoryWatcherSubscriber inSubscriber)
+    {
+        synchronized (subscriberList) {
+            subscriberList.remove(inSubscriber);
+        }
+    }
     /**
      * Create a new DirectoryWatcherImpl instance.
      */
@@ -60,6 +82,9 @@ public class DirectoryWatcherImpl
                     synchronized (directoriesToWatch) {
                         Set<File> inputFileList = new TreeSet<File>();
                         for(File inputDir : directoriesToWatch) {
+                            if(createDirectoriesOnStart) {
+                                FileUtils.forceMkdir(inputDir);
+                            }
                             if(inputDir.exists() && inputDir.isDirectory()) {
                                 if(inputDir.canRead() && inputDir.canWrite()) {
                                     inputFileList.addAll(Arrays.asList(inputDir.listFiles()));
@@ -155,32 +180,32 @@ public class DirectoryWatcherImpl
                         "Polling interval " + inPollingInterval + " must be greater than or equal to 0");
         pollingInterval = inPollingInterval;
     }
-    /* (non-Javadoc)
-     * @see com.marketcetera.ramius.tools.DirectoryWatcher#addWatcher(com.marketcetera.ramius.tools.DirectoryWatcherSubscriber)
+    /**
+     * Get the createDirectoriesOnStart value.
+     *
+     * @return a <code>boolean</code> value
      */
-    @Override
-    public void addWatcher(DirectoryWatcherSubscriber inSubscriber)
+    public boolean createDirectoriesOnStart()
     {
-        synchronized (subscriberList) {
-            if (!subscriberList.contains(inSubscriber)) {
-                subscriberList.add(inSubscriber);
-            }
-        }
+        return createDirectoriesOnStart;
     }
-    /* (non-Javadoc)
-     * @see com.marketcetera.ramius.tools.DirectoryWatcher#removeWatcher(com.marketcetera.ramius.tools.DirectoryWatcherSubscriber)
+    /**
+     * Sets the createDirectoriesOnStart value.
+     *
+     * @param inCreateDirectoriesOnStart a <code>boolean</code> value
      */
-    @Override
-    public void removeWatcher(DirectoryWatcherSubscriber inSubscriber)
+    public void setCreateDirectoriesOnStart(boolean inCreateDirectoriesOnStart)
     {
-        synchronized (subscriberList) {
-            subscriberList.remove(inSubscriber);
-        }
+        createDirectoriesOnStart = inCreateDirectoriesOnStart;
     }
     /**
      * interval at which the directories to watch are polled
      */
     private volatile long pollingInterval = 250;
+    /**
+     * indicates whether to create the watched directory or not
+     */
+    private boolean createDirectoriesOnStart = false;
     /**
      * watch each of these directories for changes 
      */
