@@ -4,14 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>mock-provisioning</artifactId>
   <name>Mock Provisioning Jar</name>
-  <version>1.0.0</version>
   <dependencies>
+    <dependency>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>cluster-api</artifactId>
+      <version>4.0.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>

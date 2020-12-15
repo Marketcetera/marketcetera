@@ -10,6 +10,7 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.core.file" level="trace"/>
+    <logger name="org.marketcetera.core.file.DirectoryWatcherImpl" level="trace"/>
+    <logger name="org.marketcetera.admin.provisioning.ProvisioningAgent" level="trace"/>
   </Loggers>
 </Configuration>
