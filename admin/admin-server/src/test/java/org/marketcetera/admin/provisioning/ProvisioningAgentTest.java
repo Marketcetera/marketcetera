@@ -57,7 +57,7 @@ public class ProvisioningAgentTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testValidXml()
             throws Exception
     {
@@ -69,17 +69,18 @@ public class ProvisioningAgentTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testInvalidXml()
             throws Exception
     {
         deployFile("/log4j2-test.xml");
         verifyNoProvisioning();
     }
-    @Ignore@Test
+    @Test
     public void testValidJar()
             throws Exception
     {
+        deployFile("/mock-provisioning-1.0.0.jar");
     }
     @Ignore@Test
     public void testInvalidJar()
