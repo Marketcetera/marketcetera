@@ -1,10 +1,13 @@
 package org.marketcetera.admin.provisioning;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
@@ -14,6 +17,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.google.common.collect.Lists;
@@ -35,18 +39,32 @@ public class ProvisioningAgent
      */
     @Override
     public void received(File inFile,
-                         String inOriginalFileName)
+                         String inOriginalFilename)
     {
         SLF4JLoggerProxy.info(this,
                               "Reading provisioning from {}",
-                              inOriginalFileName);
+                              inOriginalFilename);
         try {
-            try(ConfigurableApplicationContext newContext = new FileSystemXmlApplicationContext(new String[] { "file:"+inFile.getAbsolutePath() },applicationContext)) {
-                newContext.start();
+            String extension = FilenameUtils.getExtension(inOriginalFilename);
+            if(extension == null) {
+                extension = "xml";
+            }
+            extension = extension.toLowerCase();
+            switch(extension) {
+                case "jar" :
+                    handleJar(inFile,
+                              inOriginalFilename);
+                    break;
+                case "xml" :
+                default:
+                    handleXml(inFile,
+                              inOriginalFilename);
             }
         } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
             PlatformServices.handleException(this,
-                                             "Unable to read provisioning file: " + inOriginalFileName,
+                                             "Unable to read provisioning file: " + inOriginalFilename,
                                              e);
         }
     }
@@ -127,6 +145,60 @@ public class ProvisioningAgent
     public void setClusterService(ClusterService inClusterService)
     {
         clusterService = inClusterService;
+    }
+    /**
+     * Handle the received file as a pre-built JAR structured in a specific way.
+     *
+     * @param inFile a <code>File</code> value
+     * @param inOriginalFilename a <code>String</code> value
+     * @throws Exception if an error occurs processing the JAR
+     */
+    private void handleJar(File inFile,
+                           String inOriginalFilename)
+            throws Exception
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Handling {} as a JAR file",
+                               inOriginalFilename);
+        // prepare a new class loader based on the current one to load this class
+        URL url = inFile.toURI().toURL();
+        // create a new class loader for this operation that will be closed at its conclusion
+        try(URLClassLoader newClassloader = new URLClassLoader(new URL[] { url },ClassLoader.getSystemClassLoader())) {
+            Class<?> provisioningClass = newClassloader.loadClass("StartProvisioning");
+            // create a new Spring context as a sandbox for the loaded code. this allows us to discard the loaded code when done
+            try(AnnotationConfigApplicationContext newContext = new AnnotationConfigApplicationContext()) {
+                // explicitly use the new class loader
+                newContext.setClassLoader(newClassloader);
+                // add the parent context to give the provisioning JAR access to all our resources
+                newContext.setParent(applicationContext);
+                // register the new class
+                newContext.register(provisioningClass);
+                // refresh the context, which allows it to prepare to use the provisioning JAR
+                newContext.refresh();
+                // start the context
+                newContext.start();
+            }
+            // new context is closed
+        }
+        // new class loader is closed
+    }
+    /**
+     * Handle the received file as an XML file containing Spring bean descriptors.
+     *
+     * @param inFile a <code>File</code> value
+     * @param inOriginalFilename a <code>String</code> value
+     * @throws Exception if an error occurs processing the XML
+     */
+    private void handleXml(File inFile,
+                           String inOriginalFilename)
+            throws Exception
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Handling {} as an XML command",
+                               inOriginalFilename);
+        try(ConfigurableApplicationContext newContext = new FileSystemXmlApplicationContext(new String[] { "file:"+inFile.getAbsolutePath() },applicationContext)) {
+            newContext.start();
+        }
     }
     /**
      * interval at which to poll for provisioning files

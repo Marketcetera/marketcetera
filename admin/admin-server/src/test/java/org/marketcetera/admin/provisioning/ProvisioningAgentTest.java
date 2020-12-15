@@ -2,6 +2,7 @@ package org.marketcetera.admin.provisioning;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.net.URL;
@@ -16,6 +17,7 @@ import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.mock.MockProvisioningComponent;
 import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.core.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,7 +59,7 @@ public class ProvisioningAgentTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Ignore@Test
+    @Test
     public void testValidXml()
             throws Exception
     {
@@ -69,18 +71,29 @@ public class ProvisioningAgentTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Ignore@Test
+    @Test
     public void testInvalidXml()
             throws Exception
     {
         deployFile("/log4j2-test.xml");
         verifyNoProvisioning();
     }
+    /**
+     * Test commands from a valid provisioning pre-built JAR.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testValidJar()
             throws Exception
     {
-        deployFile("/mock-provisioning-1.0.0.jar");
+        String testData = clusterService.getAttribute("StartProvisioning");
+        assertNull(testData);
+        // deploy provisioning commands from a pre-built JAR in test/resources (source is under src/test/sample_data and can be rebuilt using Maven from there)
+        deployFile("/mock-provisioning-" + Version.pomversion + ".jar");
+        // the mock provisioning commands modified the common cluster data using the common cluster service
+        testData = clusterService.getAttribute("StartProvisioning");
+        assertNotNull(testData);
     }
     @Ignore@Test
     public void testInvalidJar()
@@ -169,4 +182,9 @@ public class ProvisioningAgentTest
      */
     @Autowired
     private ProvisioningAgent provisioningAgent;
+    /**
+     * provides access to cluster services
+     */
+    @Autowired
+    private ClusterService clusterService;
 }
