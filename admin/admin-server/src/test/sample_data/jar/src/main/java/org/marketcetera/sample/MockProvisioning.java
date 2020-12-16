@@ -1,9 +1,10 @@
+package org.marketcetera.sample;
+
 import javax.annotation.PostConstruct;
 
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -14,8 +15,7 @@ import org.springframework.stereotype.Component;
  * @version $Id$
  * @since $Release$
  */
-@Component
-public class StartProvisioning
+public class MockProvisioning
 {
     /**
      * Validate and start the object.
@@ -24,7 +24,8 @@ public class StartProvisioning
     public void start()
     {
         SLF4JLoggerProxy.info(this,
-                              "Starting mock provisioning");
+                              "Starting {}",
+                              getClass().getSimpleName());
         clusterService.setAttribute(getClass().getSimpleName(),
                                     String.valueOf(System.currentTimeMillis()));
     }
