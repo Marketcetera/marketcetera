@@ -9,12 +9,13 @@ on:
       - master
       - branches/2.4.x
       - branches/4.0.x
+      - tags/4.0.1
   pull_request:
     branches:
       - master
       - branches/2.4.x
       - branches/4.0.x
-
+      - tags/4.0.1
 jobs:
   build:
 
