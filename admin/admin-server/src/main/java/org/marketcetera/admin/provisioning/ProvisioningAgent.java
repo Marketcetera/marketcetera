@@ -1,13 +1,20 @@
 package org.marketcetera.admin.provisioning;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.Validate;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
@@ -164,7 +171,13 @@ public class ProvisioningAgent
         URL url = inFile.toURI().toURL();
         // create a new class loader for this operation that will be closed at its conclusion
         try(URLClassLoader newClassloader = new URLClassLoader(new URL[] { url },ClassLoader.getSystemClassLoader())) {
-            Class<?> provisioningClass = newClassloader.loadClass("StartProvisioning");
+            String mainClass = getMainClassName(inFile);
+            SLF4JLoggerProxy.debug(this,
+                                   "Selected {} as the mainClass",
+                                   mainClass);
+            Validate.notNull(mainClass,
+                             "No 'Main-Class' attribute in JAR '" + inOriginalFilename + "': we don't know how to start the JAR");
+            Class<?> provisioningClass = newClassloader.loadClass(mainClass);
             // create a new Spring context as a sandbox for the loaded code. this allows us to discard the loaded code when done
             try(AnnotationConfigApplicationContext newContext = new AnnotationConfigApplicationContext()) {
                 // explicitly use the new class loader
@@ -181,6 +194,27 @@ public class ProvisioningAgent
             // new context is closed
         }
         // new class loader is closed
+    }
+    /**
+     * Determines the main class name from the given JAR.
+     *
+     * <p>The current implementation optimistically assumes the given File is a JAR and contains a <code>Main-Class</code> attribute.
+     * 
+     * @param inJarFile a <code>File</code> value
+     * @return a <code>String</code> value or <code>null</code> if the appropriate attribute cannot be extracted from the given file
+     * @throws FileNotFoundException if the file does not exist
+     * @throws IOException if the file could otherwise not be read
+     */
+    private String getMainClassName(File inJarFile)
+            throws FileNotFoundException, IOException
+    {
+        String mainClassName;
+        try(JarInputStream jarStream = new JarInputStream(new FileInputStream(inJarFile))) {
+            Manifest manifest = jarStream.getManifest();
+            Attributes mainAttributes = manifest.getMainAttributes();
+            mainClassName = mainAttributes.getValue("Main-Class");
+        }
+        return mainClassName;
     }
     /**
      * Handle the received file as an XML file containing Spring bean descriptors.
