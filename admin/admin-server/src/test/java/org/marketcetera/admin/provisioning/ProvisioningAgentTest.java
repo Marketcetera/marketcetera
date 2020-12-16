@@ -17,7 +17,6 @@ import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.mock.MockProvisioningComponent;
 import org.marketcetera.cluster.service.ClusterService;
-import org.marketcetera.core.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,7 +89,7 @@ public class ProvisioningAgentTest
         String testData = clusterService.getAttribute("StartProvisioning");
         assertNull(testData);
         // deploy provisioning commands from a pre-built JAR in test/resources (source is under src/test/sample_data and can be rebuilt using Maven from there)
-        deployFile("/mock-provisioning-" + Version.pomversion + ".jar");
+        deployFile("/mock-provisioning.jar");
         // the mock provisioning commands modified the common cluster data using the common cluster service
         testData = clusterService.getAttribute("MockProvisioning");
         assertNotNull(testData);
