@@ -1,7 +1,14 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.marketdata.DateUtils.*;
+import static org.marketcetera.marketdata.DateUtils.DAYS;
+import static org.marketcetera.marketdata.DateUtils.DAYS_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.MILLIS;
+import static org.marketcetera.marketdata.DateUtils.MILLIS_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.MINUTES;
+import static org.marketcetera.marketdata.DateUtils.MINUTES_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.SECONDS;
+import static org.marketcetera.marketdata.DateUtils.SECONDS_WITH_TZ;
 import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 
 import java.text.DateFormat;
@@ -18,7 +25,7 @@ import org.marketcetera.module.ExpectedFailure;
 /* $License$ */
 
 /**
- * Tests {@link DateUtil}.
+ * Tests {@link DateUtils}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

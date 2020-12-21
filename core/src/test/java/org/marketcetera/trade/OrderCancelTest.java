@@ -282,7 +282,11 @@ public class OrderCancelTest extends TypesTestBase {
         };
     }
 
-    /** verify custom fields are preserved, and that nothing else is added from the execution report */
+    /**
+     * Verify custom fields are preserved, and that nothing else is added from the execution report
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testSecurityExchangePreserved() throws Exception {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderID", "clOrderID", "execID",

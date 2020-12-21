@@ -52,7 +52,10 @@ public class ExpectedTestFailureTest extends TestCase
 
     }
 
-    /** Check the case when the exception has a message (toString()) but getMessage() returns null */
+    /** Check the case when the exception has a message (toString()) but getMessage() returns null.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testExceptinoHasNoMessageButHasString() throws Exception {
         final Exception ex = new Exception() {
             private static final long serialVersionUID = 1L;

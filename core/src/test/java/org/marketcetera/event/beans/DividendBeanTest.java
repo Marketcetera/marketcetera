@@ -64,7 +64,7 @@ public class DividendBeanTest
                      bean.getInstrumentAsString());
     }
     /**
-     * Tests {@link DividendBean#getAmount()} and {@link DividendBean#setAmount(org.marketcetera.trade.Amount)}.
+     * Tests {@link DividendBean#getAmount()} and {@link DividendBean#setAmount(BigDecimal)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -82,7 +82,7 @@ public class DividendBeanTest
                      bean.getAmount());
     }
     /**
-     * Tests {@link DividendBean#getCurrency()} and {@link DividendBean#setCurrency(org.marketcetera.trade.Currency)}.
+     * Tests {@link DividendBean#getCurrency()} and {@link DividendBean#setCurrency(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -100,7 +100,7 @@ public class DividendBeanTest
                      bean.getCurrency());
     }
     /**
-     * Tests {@link DividendBean#getDeclareDate()} and {@link DividendBean#setDeclareDate(org.marketcetera.trade.DeclareDate)}.
+     * Tests {@link DividendBean#getDeclareDate()} and {@link DividendBean#setDeclareDate(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -121,7 +121,7 @@ public class DividendBeanTest
                      bean.getDeclareDate());
     }
     /**
-     * Tests {@link DividendBean#getExecutionDate()} and {@link DividendBean#setExecutionDate(org.marketcetera.trade.ExecutionDate)}.
+     * Tests {@link DividendBean#getExecutionDate()} and {@link DividendBean#setExecutionDate(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -142,7 +142,7 @@ public class DividendBeanTest
                      bean.getExecutionDate());
     }
     /**
-     * Tests {@link DividendBean#getPaymentDate()} and {@link DividendBean#setPaymentDate(org.marketcetera.trade.PaymentDate)}.
+     * Tests {@link DividendBean#getPaymentDate()} and {@link DividendBean#setPaymentDate(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -163,7 +163,7 @@ public class DividendBeanTest
                      bean.getPaymentDate());
     }
     /**
-     * Tests {@link DividendBean#getRecordDate()} and {@link DividendBean#setRecordDate(org.marketcetera.trade.RecordDate)}.
+     * Tests {@link DividendBean#getRecordDate()} and {@link DividendBean#setRecordDate(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -184,7 +184,7 @@ public class DividendBeanTest
                      bean.getRecordDate());
     }
     /**
-     * Tests {@link DividendBean#getFrequency()} and {@link DividendBean#setFrequency(org.marketcetera.trade.Frequency)}.
+     * Tests {@link DividendBean#getFrequency()} and {@link DividendBean#setFrequency(DividendFrequency)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -202,7 +202,7 @@ public class DividendBeanTest
                      bean.getFrequency());
     }
     /**
-     * Tests {@link DividendBean#getStatus()} and {@link DividendBean#setStatus(org.marketcetera.trade.Status)}.
+     * Tests {@link DividendBean#getStatus()} and {@link DividendBean#setStatus(DividendStatus)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -220,7 +220,7 @@ public class DividendBeanTest
                      bean.getStatus());
     }
     /**
-     * Tests {@link DividendBean#getType()} and {@link DividendBean#setType(org.marketcetera.trade.Type)}.
+     * Tests {@link DividendBean#getType()} and {@link DividendBean#setType(DividendType)}.
      *
      * @throws Exception if an unexpected error occurs
      */

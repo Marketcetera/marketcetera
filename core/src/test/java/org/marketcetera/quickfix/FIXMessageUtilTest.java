@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.ExpectedTestFailure;
@@ -21,6 +19,9 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 
+import com.google.common.collect.Lists;
+
+import junit.framework.Test;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -66,8 +67,6 @@ import quickfix.field.SymbolSfx;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
-
-import com.google.common.collect.Lists;
 /* $License$ */
 /**
  * @author Graham Miller
@@ -115,7 +114,11 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertEquals(timeInForce, aMessage.getChar(TimeInForce.FIELD));
     }
 
-    /** want to test the case where price is specified or NULL (market orders) */
+    /**
+     * Want to test the case where price is specified or NULL (market orders).
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testNewExecutionReport() throws Exception {
         String clOrderID = "asdf"; //$NON-NLS-1$
         String orderID = "bob"; //$NON-NLS-1$
@@ -167,11 +170,20 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         }
     }
 
-    /** Creates a NewOrderSingle */
-    public static Message createNOS(String symbol, BigDecimal price, BigDecimal qty, char side, FIXMessageFactory msgFactory)
+    /**
+     * Creates a NewOrderSingle.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @param inQuantity a <code>BigDecimal</code> value
+     * @param inSideChar a <code>char</code> value
+     * @param inMessageFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Message</code> value
+     */
+    public static Message createNOS(String inSymbol, BigDecimal inPrice, BigDecimal inQuantity, char inSideChar, FIXMessageFactory inMessageFactory)
     {
-        Message newSingle = createNOSHelper(symbol, qty, side, new OrdType(OrdType.LIMIT), msgFactory);
-        newSingle.setField(new Price(price));
+        Message newSingle = createNOSHelper(inSymbol, inQuantity, inSideChar, new OrdType(OrdType.LIMIT), inMessageFactory);
+        newSingle.setField(new Price(inPrice));
 
         return newSingle;
     }
@@ -190,16 +202,32 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         return newSingle;
     }
 
-    /** This actually creats a NewOrderSingle with a *set* OrderID - which isn't how
+    /**
+     * This actually creates a NewOrderSingle with a *set* OrderID - which isn't how
      * it comes in through FIX connection originallY
+     *
+     * @param symbol a <code>String</code> value
+     * @param qty a <code>BigDecimal</code> value
+     * @param side a <code>char</code> value
+     * @param msgFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Message</code> value
      */
-    public static Message createMarketNOS(String symbol, BigDecimal qty, char side, FIXMessageFactory msgFactory)
+    public static quickfix.Message createMarketNOS(String symbol, BigDecimal qty, char side, FIXMessageFactory msgFactory)
     {
         return createNOSHelper(symbol, qty, side, new OrdType(OrdType.MARKET), msgFactory);
     }
 
-    /** This needs to be modeled off {@link FIXMessageFactory#newOrderHelper} */
-    public static Message createNOSHelper(String symbol, BigDecimal qty, char side, OrdType ordType, FIXMessageFactory msgFactory)
+    /**
+     * This needs to be modeled off <code>FIXMessageFactory#newOrderHelper</code>.
+     *
+     * @param symbol a <code>String</code> value
+     * @param qty a <code>BigDecimal</code> value
+     * @param side a <code>char</code> value
+     * @param ordType an <code>OrdType</code> value
+     * @param msgFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Message</code> value
+     */
+    public static quickfix.Message createNOSHelper(String symbol, BigDecimal qty, char side, OrdType ordType, FIXMessageFactory msgFactory)
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = msgFactory.newBasicOrder();
@@ -218,7 +246,25 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         return newSingle;
     }
 
-    /** Verifies that the message is a "virgin" executionReport (no half-fills, etc) for a given symbol/side */
+    /**
+     * Verifies that the message is a "virgin" executionReport (no half-fills, etc) for a given symbol/side.
+     *
+     * @param inExecReport a <code>quickfix.Message</code> value
+     * @param qty a <code>String</code> value
+     * @param symbol a <code>String</code> value
+     * @param side a <code>char</code> value
+     * @param leavesQty a <code>BigDecimal</code> value
+     * @param lastQty a <code>BigDecimal</code> value
+     * @param cumQty a <code>BigDecimal</code> value
+     * @param lastPrice a <code>BigDecimal</code> value
+     * @param avgPrice a <code>BigDecimal</code> value
+     * @param ordStatus a <code>char</code> value
+     * @param execType a <code>char</code> value
+     * @param execTransType a <code>char</code> value
+     * @param msgFactory a <code>FIXMessageFactory</code> value
+     * @param fixDD a <code>FIXDataDictionary</code> value
+     * @throws Exception if the execution report cannot be verified
+     */
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side, BigDecimal leavesQty,
                                              BigDecimal lastQty, BigDecimal cumQty, BigDecimal lastPrice,
                                              BigDecimal avgPrice, char ordStatus, char execType, char execTransType,
@@ -254,7 +300,17 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
 
-    /** Useful for verifying execReports for new orders - assumes nothing is filled */
+    /**
+     * Useful for verifying execReports for new orders - assumes nothing is filled.
+     *
+     * @param inExecReport a <code>quickfix.Message</code> value
+     * @param qty a <code>String</code> value
+     * @param symbol a <code>String</code> value
+     * @param side a <code>char</code> value
+     * @param msgFactory a <code>FIXMessageFactory</code> value
+     * @param fixDD a <code>FIXDataDictionary</code> value
+     * @throws Exception if the report cannot be verified
+     */
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side,
                                              FIXMessageFactory msgFactory, FIXDataDictionary fixDD) throws Exception
     {
@@ -400,7 +456,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
     /** Takes 2 messages A and B (outgoing and existing), and tries to extract required fields
      * necessary in A from B
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     public void testFillFieldsFromExistingMessage() throws Exception {
         Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -507,10 +563,10 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     
     /**
      * Test that trailing zeroes are preserved in decimal fields of QuickFIX messages
-     * @throws InvalidMessage
-     * @throws FieldNotFound
+     * @throws Exception if an unexpected error occurs
      */
-    public void testTrailingZeroesAssumption() throws InvalidMessage, FieldNotFound
+    public void testTrailingZeroesAssumption()
+            throws Exception
     {
     	String noZeroes = "1.111"; //$NON-NLS-1$
     	String twoZeroes = "1.100"; //$NON-NLS-1$

@@ -104,14 +104,14 @@
           </reportSet>
         </reportSets>
       </plugin>
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.1.1</version>
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
-      </plugin>
+      </plugin-->
     </plugins>
   </reporting>
 

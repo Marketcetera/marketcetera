@@ -786,10 +786,10 @@ public class MarketceteraTestBase
     /**
      * Assert that the given message is a proper status message.
      *
-     * @param inStatusMessage a <code>Message</code> value
-     * @throws Exception 
+     * @param inStatusMessage a <code>quickfix.Message</code> value
+     * @throws Exception if the message is not a proper status message
      */
-    protected void assertStatus(Message inStatusMessage)
+    protected void assertStatus(quickfix.Message inStatusMessage)
             throws Exception
     {
         DataDictionary dataDictionary = FIXMessageUtil.getDataDictionary(inStatusMessage);
@@ -1210,9 +1210,10 @@ public class MarketceteraTestBase
     /**
      * Verify that the given message is marked as a possible duplicate.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @throws Exception if the given message is not marked as a possible duplicate
      */
-    protected void verifyPossDup(Message inMessage)
+    protected void verifyPossDup(quickfix.Message inMessage)
             throws Exception
     {
         assertTrue("PossDup(" + quickfix.field.PossDupFlag.FIELD + ") not set on " + inMessage,
@@ -1500,16 +1501,17 @@ public class MarketceteraTestBase
     /**
      * Waits for the next message to be received by the receiver and verifies it is of the given type. 
      *
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMsgType a <code>String</code> value
-     * @return a <code>Message</code> value
+     * @return a <code>quickfix.Message</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected Message waitForAndVerifySenderMessage(SessionID inSessionId,
-                                                    String inMsgType)
+    protected quickfix.Message waitForAndVerifySenderMessage(quickfix.SessionID inSessionId,
+                                                             String inMsgType)
             throws Exception
     {
         long start = System.currentTimeMillis();
-        Message senderMessage = null;
+        quickfix.Message senderMessage = null;
         while(senderMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
             senderMessage = receiver.getNextApplicationMessage(inSessionId);
             Thread.sleep(100);
@@ -1613,28 +1615,27 @@ public class MarketceteraTestBase
                                        inFactory);
     }
     /**
-     * 
+     * Generate an execution report with the given values.
      *
-     *
-     * @param inOrder
-     * @param inPriceQtyInfo
-     * @param inClOrdId
-     * @param inOrigClOrdId
-     * @param inOrderId
-     * @param inOrderStatus
-     * @param inExecutionType
-     * @param inFactory
-     * @return
-     * @throws Exception
+     * @param inOrder a <code>quickfix.Message</code> value
+     * @param inPriceQtyInfo an <code>OrderData</code> value
+     * @param inOrderId a <code>String</code> value 
+     * @param inClOrdId a <code>String</code> value
+     * @param inOrigClOrdId a <code>String</code> value or <code>null</code>
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @param inExecutionType an <code>ExecutionType</code> value
+     * @param inFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if the message could not be generated
      */
-    protected static Message generateExecutionReport(Message inOrder,
-                                                     OrderData inPriceQtyInfo,
-                                                     String inOrderId,
-                                                     String inClOrdId,
-                                                     String inOrigClOrdId,
-                                                     org.marketcetera.trade.OrderStatus inOrderStatus,
-                                                     ExecutionType inExecutionType,
-                                                     FIXMessageFactory inFactory)
+    protected static quickfix.Message generateExecutionReport(quickfix.Message inOrder,
+                                                              OrderData inPriceQtyInfo,
+                                                              String inOrderId,
+                                                              String inClOrdId,
+                                                              String inOrigClOrdId,
+                                                              org.marketcetera.trade.OrderStatus inOrderStatus,
+                                                              ExecutionType inExecutionType,
+                                                              FIXMessageFactory inFactory)
             throws Exception
     {
         boolean commaNeeded = false;
@@ -1707,6 +1708,13 @@ public class MarketceteraTestBase
                             MsgType.ORDER_CANCEL_REJECT,
                             inFactory);
     }
+    /**
+     * Tracks an order and its subsequent executions.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     public class CalculatedOrderData
     {
         /**
@@ -1721,13 +1729,12 @@ public class MarketceteraTestBase
             tuples.add(new PriceQtyTuple(inPrice,inQty));
         }
         /**
-         * 
+         * Add an Execution Report to the calculated order data.
          *
-         *
-         * @param inExecution
-         * @throws Exception
+         * @param inExecution a <code>quickfix.Message</code> value
+         * @throws Exception if the execution could not be processed
          */
-        public void addExecution(Message inExecution)
+        public void addExecution(quickfix.Message inExecution)
                 throws Exception
         {
             if(inExecution.isSetField(quickfix.field.LastPx.FIELD) && inExecution.isSetField(quickfix.field.LastQty.FIELD)) {
@@ -1842,12 +1849,13 @@ public class MarketceteraTestBase
         /**
          * Generate an order status request for the given order sent from the given session.
          *
-         * @param inOrderMessage a <code>Message</code> value
-         * @param inSessionId a <code>SessionID</code> value
-         * @return a <code>Message</code> value
+         * @param inOrderMessage a <code>quickfix.Message</code> value
+         * @param inSessionId a <code>quickfix.SessionID</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws an Exception if the order status request could not be generated
          */
-        public Message generateOrderStatusRequest(Message inOrderMessage,
-                                                  SessionID inSessionId)
+        public quickfix.Message generateOrderStatusRequest(quickfix.Message inOrderMessage,
+                                                           quickfix.SessionID inSessionId)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(inOrderMessage);
@@ -2081,14 +2089,13 @@ public class MarketceteraTestBase
             return report;
         }
         /**
-         * 
+         * Generate and send a replaced ack for the given message.
          *
-         *
-         * @param inMessage
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the ack could not be generated or sent
          */
-        public Message generateAndSendReplaceAck(Message inMessage)
+        public quickfix.Message generateAndSendReplaceAck(quickfix.Message inMessage)
                 throws Exception
         {
             return generateAndSendReport(inMessage,
@@ -2096,18 +2103,17 @@ public class MarketceteraTestBase
                                       ExecutionType.Replace);
         }
         /**
-         * 
+         * Generate and send an execution report based on the given message.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the report could not be generated or sent
          */
-        public Message generateAndSendReport(Message inMessage,
-                                             OrderStatus inOrderStatus,
-                                             ExecutionType inExecutionType)
+        public quickfix.Message generateAndSendReport(quickfix.Message inMessage,
+                                                      OrderStatus inOrderStatus,
+                                                      ExecutionType inExecutionType)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(receiverSessionId.getBeginString());
@@ -2129,16 +2135,13 @@ public class MarketceteraTestBase
             return report;
         }
         /**
-         * 
+         * Generate and send an ack for the given message.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message cannot be generated or sent
          */
-        public Message generateAndSendAck(Message inMessage)
+        public quickfix.Message generateAndSendAck(quickfix.Message inMessage)
                 throws Exception
         {
             return generateAndSendReport(inMessage,
@@ -2146,16 +2149,13 @@ public class MarketceteraTestBase
                                          ExecutionType.New);
         }
         /**
-         * 
+         * Generate and send a canceled ack based on the given message.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be generated or sent
          */
-        public Message generateAndSendCancelAck(Message inMessage)
+        public quickfix.Message generateAndSendCancelAck(quickfix.Message inMessage)
                 throws Exception
         {
             return generateAndSendReport(inMessage,
@@ -2163,23 +2163,22 @@ public class MarketceteraTestBase
                                          ExecutionType.Canceled);
         }
         /**
-         * 
+         * Generate and send a replace message based on the given attributes.
          *
-         *
-         * @param inMessage
-         * @param inOrderPrice
-         * @param inOrderQuantity
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderPrice a <code>BigDecimal</code> value
+         * @param inOrderQuantity a <code>BigDecimal</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be generated or sent
          */
-        public Message generateAndSendReplace(Message inMessage,
-                                              BigDecimal inOrderPrice,
-                                              BigDecimal inOrderQuantity)
+        public quickfix.Message generateAndSendReplace(quickfix.Message inMessage,
+                                                       BigDecimal inOrderPrice,
+                                                       BigDecimal inOrderQuantity)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(senderSessionId.getBeginString());
             FIXMessageFactory factory = version.getMessageFactory();
-            Message replace = factory.createMessage(quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+            quickfix.Message replace = factory.createMessage(quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST);
             FIXMessageUtil.copyFields(replace,
                                       inMessage);
             replace.setField(new quickfix.field.OrigClOrdID(inMessage.getString(quickfix.field.ClOrdID.FIELD)));
@@ -2196,18 +2195,18 @@ public class MarketceteraTestBase
             return replace;
         }
         /**
+         * Generate and send a cancel based on the given message.
          *
-         *
-         * @param inMessage
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the cancel could not be generated or sent
          */
-        public Message generateAndSendCancel(Message inMessage)
+        public quickfix.Message generateAndSendCancel(quickfix.Message inMessage)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(senderSessionId.getBeginString());
             FIXMessageFactory factory = version.getMessageFactory();
-            Message cancel = factory.createMessage(quickfix.field.MsgType.ORDER_CANCEL_REQUEST);
+            quickfix.Message cancel = factory.createMessage(quickfix.field.MsgType.ORDER_CANCEL_REQUEST);
             FIXMessageUtil.copyFields(cancel,
                                       inMessage);
             cancel.setField(new quickfix.field.OrigClOrdID(inMessage.getString(quickfix.field.ClOrdID.FIELD)));
@@ -2216,49 +2215,49 @@ public class MarketceteraTestBase
             cancel.removeField(quickfix.field.OrdType.FIELD);
             cancel.removeField(quickfix.field.Price.FIELD);
             orderMessages.add(cancel);
-            Session.sendToTarget(cancel,
-                                 senderSessionId);
+            quickfix.Session.sendToTarget(cancel,
+                                          senderSessionId);
             return cancel;
         }
         /**
-         * 
+         * Generate an order for the given instrument.
          *
-         * @param inInstrument
-         * @return
-         * @throws Exception
+         * @param inInstrument an <code>Instrument</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the order could not be generated
          */
-        public Message generateOrder(Instrument inInstrument)
+        public quickfix.Message generateOrder(Instrument inInstrument)
                 throws Exception
         {
-            return super.generateOrder(inInstrument,
-                                       senderSessionId);
+            return generateOrder(inInstrument,
+                                 senderSessionId);
         }
         /**
          * Generate an order using the given instrument.
          * 
          * @param inInstrument an <code>Instrument</code> value
-         * @return a <code>Message</code> value
+         * @return a <code>quickfix.Message</code> value
          * @throws Exception if an unexpected error occurs
          */
-        public Message generateAndSendOrder(Instrument inInstrument)
+        public quickfix.Message generateAndSendOrder(Instrument inInstrument)
                 throws Exception
         {
-            Message order = generateOrder(inInstrument);
+            quickfix.Message order = generateOrder(inInstrument);
             sendOrder(order);
             return order;
         }
         /**
          * Send the given order to the sender session.
          *
-         * @param inOrder a <code>Message</code> value
+         * @param inOrder a <code>quickfix.Message</code> value
          * @return a <code>boolean</code> value indicating if the order was queued and sent or not
          * @throws Exception if an unexpected error occurs
          */
-        public boolean sendOrder(Message inOrder)
+        public boolean sendOrder(quickfix.Message inOrder)
                 throws Exception
         {
-            return Session.sendToTarget(inOrder,
-                                        senderSessionId);
+            return quickfix.Session.sendToTarget(inOrder,
+                                                 senderSessionId);
         }
         /**
          *

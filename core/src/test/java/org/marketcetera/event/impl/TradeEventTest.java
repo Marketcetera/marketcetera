@@ -359,7 +359,7 @@ public class TradeEventTest
         verify(builder);
     }
     /**
-     * Tests {@link TradeEventBuilder#withMultiplier(int)}.
+     * Tests {@link TradeEventBuilder#withMultiplier(BigDecimal)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -407,7 +407,7 @@ public class TradeEventTest
         verify(builder);
     }
     /**
-     * Tests {@link TradeEventBuilder#withTradeDate(String)}.
+     * Tests {@link TradeEventBuilder#withTradeDate(Date)}.
      *
      * @throws Exception if an unexpected error occurs
      */

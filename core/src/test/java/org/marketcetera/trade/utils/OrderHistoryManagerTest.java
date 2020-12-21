@@ -38,6 +38,9 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+
 import quickfix.Message;
 import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
@@ -61,9 +64,6 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.TransactTime;
-
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -553,7 +553,7 @@ public class OrderHistoryManagerTest
         assertTrue(report6OrderChain.isEmpty());
     }
     /**
-     * Tests {@link LiveOrderHistoryManager#getOpenOrders()}.
+     * Tests {@link OrderHistoryManager#getOpenOrders()}.
      *
      * @throws Exception if an unexpected error occurs
      */

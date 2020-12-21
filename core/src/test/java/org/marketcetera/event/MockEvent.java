@@ -28,8 +28,8 @@ public class MockEvent
     /**
      * Create a new MockEvent instance.
      *
-     * @param inMessageId
-     * @param inTimestamp
+     * @param inMessageId a <code>long</code> value
+     * @param inTimestamp a <code>long</code> value
      */
     public MockEvent(long inMessageId,
                      long inTimestamp)
@@ -40,7 +40,7 @@ public class MockEvent
     /**
      * Create a new MockEvent instance.
      *
-     * @param inRequest
+     * @param inRequest a <code>MarketDataRequest</code> value
      */
     public MockEvent(MarketDataRequest inRequest)
     {

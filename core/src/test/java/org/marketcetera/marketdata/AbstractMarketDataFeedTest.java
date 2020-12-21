@@ -1,11 +1,19 @@
 package org.marketcetera.marketdata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
 import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
@@ -15,7 +23,13 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.event.*;
+import org.marketcetera.event.AggregateEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.MockAggregateEvent;
+import org.marketcetera.event.MockEvent;
+import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.module.ExpectedFailure;
@@ -690,7 +704,9 @@ public class AbstractMarketDataFeedTest
                                  feed.getCanceledHandles().toArray()));
     }
     /**
-     * Tests feed's ability to return capabilities. 
+     * Tests feed's ability to return capabilities.
+     * 
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void testCapabilities()

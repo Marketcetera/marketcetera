@@ -604,7 +604,7 @@ public class InstrumentToMessageTest {
         }
     }
     /**
-     * Tests {@link InstrumentToMessage#setSecurityType(org.marketcetera.trade.Instrument, String, quickfix.Message)}.
+     * Tests {@link InstrumentToMessage#setSecurityType(Instrument, String, quickfix.FieldMap)}.
      *
      * @throws Exception if there were unexpected errors.
      */

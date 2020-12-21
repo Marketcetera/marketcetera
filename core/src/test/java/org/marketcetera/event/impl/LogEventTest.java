@@ -26,7 +26,7 @@ import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessageNP;
 
 /**
- * Tests {@link LogEventBuilder} and {@link LinkEventImpl}.
+ * Tests {@link LogEventBuilder} and {@link LogEventImpl}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

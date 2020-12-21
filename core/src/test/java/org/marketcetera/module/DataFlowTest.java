@@ -97,7 +97,7 @@ public class DataFlowTest extends ModuleTestBase {
     }
 
     /**
-     * Tests creation & cancellation of simple data flows through the module
+     * Tests creation &amp; cancellation of simple data flows through the module
      * manager API.
      *
      * @throws Exception if there's an unexpected error.
@@ -172,7 +172,7 @@ public class DataFlowTest extends ModuleTestBase {
     }
 
     /**
-     * Tests creation & cancellation of simple data flows through the
+     * Tests creation &amp; cancellation of simple data flows through the
      * data flow support interface.
      *
      * @throws Exception if there's an unexpected error.
@@ -270,7 +270,7 @@ public class DataFlowTest extends ModuleTestBase {
     /**
      * Verifies that attempts to invoke data flow setup/cancel APIs, in
      * {@link DataFlowSupport}, from within
-     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)} &
+     * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)} &amp;
      * {@link DataEmitter#cancel(DataFlowID, RequestID)} fails.
      *
      * @throws Exception if there were errors.

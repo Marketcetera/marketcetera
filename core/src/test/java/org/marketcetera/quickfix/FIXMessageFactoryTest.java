@@ -107,6 +107,8 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
     /** Verify that if we include a "failing" order as a Text reason in a reject,
      * the SOH fields get appropriately escaped
+     * 
+     * @throws Exception if an unexpected error occurs
      */
     public void testNewOrderCancelReject_escapesSOH() throws Exception {
         Message basicOrder = msgFactory.newBasicOrder();

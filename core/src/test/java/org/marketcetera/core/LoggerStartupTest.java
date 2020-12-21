@@ -1,8 +1,9 @@
 package org.marketcetera.core;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * @author Toli Kuznets
@@ -18,9 +19,10 @@ public class LoggerStartupTest extends TestCase {
         return new MarketceteraTestSuite(LoggerStartupTest.class);
     }
 
-    /** This is a dummy test, mostly for visual checking of whether or not
-     * the logger is initialized correctly.
-     * @throws Exception
+    /**
+     * This is a dummy test, mostly for visual checking of whether or not the logger is initialized correctly.
+     *
+     * @throws Exception if an unexpected error occurs
      */
     public void testLogSomething() throws Exception {
         new ApplicationBase();

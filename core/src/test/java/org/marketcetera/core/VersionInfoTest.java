@@ -13,7 +13,7 @@ import org.springframework.util.SerializationUtils;
 /* $License$ */
 
 /**
- * Tests {@link #VersionInfo}.
+ * Tests VersionInfo.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -22,7 +22,7 @@ import org.springframework.util.SerializationUtils;
 public class VersionInfoTest
 {
     /**
-     * Tests {@link VersionInfo#VersionInfo(String)}.
+     * Tests the VersionInfo constructor.
      *
      * @throws Exception if an unexpected error occurs
      */

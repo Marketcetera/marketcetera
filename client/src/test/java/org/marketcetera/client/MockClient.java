@@ -536,7 +536,7 @@ public class MockClient
     /**
      * Sets the sendOrderReplaceConnectionException value.
      *
-     * @param a <code>ConnectionException</code> value
+     * @param inSendOrderReplaceConnectionException a <code>ConnectionException</code> value
      */
     public void setSendOrderReplaceConnectionException(ConnectionException inSendOrderReplaceConnectionException)
     {
@@ -545,7 +545,7 @@ public class MockClient
     /**
      * Sets the sendOrderCancelConnectionException value.
      *
-     * @param a <code>ConnectionException</code> value
+     * @param inSendOrderCancelConnectionException a <code>ConnectionException</code> value
      */
     public void setSendOrderCancelConnectionException(ConnectionException inSendOrderCancelConnectionException)
     {
@@ -554,7 +554,7 @@ public class MockClient
     /**
      * Sets the sendOrderSingleValidationException value.
      *
-     * @param an <code>OrderValidationException</code> value
+     * @param inSendOrderSingleValidationException an <code>OrderValidationException</code> value
      */
     public void setSendOrderSingleValidationException(OrderValidationException inSendOrderSingleValidationException)
     {
@@ -563,7 +563,7 @@ public class MockClient
     /**
      * Sets the sendOrderReplaceValidationException value.
      *
-     * @param an <code>OrderValidationException</code> value
+     * @param inSendOrderReplaceValidationException an <code>OrderValidationException</code> value
      */
     public void setSendOrderReplaceValidationException(OrderValidationException inSendOrderReplaceValidationException)
     {
@@ -572,7 +572,7 @@ public class MockClient
     /**
      * Sets the sendOrderCancelValidationException value.
      *
-     * @param an <code>OrderValidationException</code> value
+     * @param inSendOrderCancelValidationException an <code>OrderValidationException</code> value
      */
     public void setSendOrderCancelValidationException(OrderValidationException inSendOrderCancelValidationException)
     {

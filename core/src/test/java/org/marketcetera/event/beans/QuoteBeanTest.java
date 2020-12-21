@@ -47,7 +47,7 @@ public class QuoteBeanTest
     }
     /**
      * Tests {@link QuoteBean#getQuoteBeanFromEvent(org.marketcetera.event.QuoteEvent, QuoteAction)} and
-     * {@link QuoteBean#getQuoteBeanFromEvent(org.marketcetera.event.QuoteEvent, java.util.Date, java.math.BigDecimal, QuoteAction).
+     * {@link QuoteBean#getQuoteBeanFromEvent(org.marketcetera.event.QuoteEvent, Date, BigDecimal, QuoteAction)}.
      *
      * @throws Exception if an unexpected error occurs
      */
