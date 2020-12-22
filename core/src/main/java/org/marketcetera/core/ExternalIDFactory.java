@@ -40,8 +40,11 @@ public abstract class ExternalIDFactory implements IDFactory {
             return prefix + (mNextID++);
         }
     }
-
-    /** Returns the value of the next ID, but does not increment the id - this is more of a peek */
+    /**
+     * Returns the value of the next ID, but does not increment the id - this is more of a peek
+     *
+     * @return a <code>long</code> value
+     */
     protected long peekNextAsInt()
     {
         return mNextID;

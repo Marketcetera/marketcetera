@@ -24,6 +24,7 @@ public class LockHelper
      * Executes the given {@link Callable} block within the context of a
      * write lock.
      *
+     * @param <T> a <code>T</code> value
      * @param inBlock a <code>Callable&lt;T&gt;</code> value
      * @return a <code>T</code> value
      * @throws Exception if an error occurs during block execution
@@ -57,6 +58,7 @@ public class LockHelper
      * Executes the given {@link Callable} block within the context of a
      * read lock.
      *
+     * @param <T> a <code>T</code> value
      * @param inBlock a <code>Callable&lt;T&gt;</code> value
      * @return a <code>T</code> value
      * @throws Exception if an error occurs during block execution
