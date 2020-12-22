@@ -27,7 +27,7 @@ import java.util.Map;
  * If creating new implementations, consider subclassing this class to test the behaviour of that implementation.
  * The tests assume the provided <code>MessageProvider</code>
  * contains the following entries:
- * <p>
+ * <p/>
  * <table summary="Describes the expected MessageProvider setup">
  *   <tr>
  *     <th>Language/<code>Locale</code></th>
@@ -70,7 +70,7 @@ import java.util.Map;
  *     <td>This entry is not translated to any other languages</td>
  *   <tr>
  * </table>
- * <p>
+ * <p/>
  * Specifically, the ID <code>nonExistentId</code> and the entry <code>nonExistentEntry</code> of ID
  * <code>helloWorld</code> must NOT be existent.
  */

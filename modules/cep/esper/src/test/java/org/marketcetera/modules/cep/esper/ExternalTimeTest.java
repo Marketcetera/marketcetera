@@ -62,6 +62,7 @@ public class ExternalTimeTest extends ModuleTestBase {
      * t+year+1day: 2 events (3rd and 4th)
      * t+year+15days: 0 events (window reset), followed by 1 event (new window established)
      *
+     * @throws Exception if an unexpected error occurs
      */
     @Test(timeout = 2*60*1000)
     public void testExternalTime() throws Exception {

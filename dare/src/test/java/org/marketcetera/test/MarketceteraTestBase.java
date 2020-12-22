@@ -2303,7 +2303,7 @@ public class MarketceteraTestBase
          *
          * @param inExpectedMessage a <code>quickfix.Message</code> value
          * @return a <code>quickfix.Message</code> value
-         * @throws Exception
+         * @throws Exception if the message is not verified in a reasonable period of time
          */
         public quickfix.Message waitForAndVerifySenderMessage(quickfix.Message inExpectedMessage)
                 throws Exception

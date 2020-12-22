@@ -19,6 +19,7 @@ public interface MessageModifier
      * Implement the function to make in-line modifications to the incoming message.
      *
      * @param message the message to be modified
+     * @param historyServices provides report history services
      * @param augmentor FIX-version specific augmentor to apply to this message
      * @return true if the modifier has modified the message, false otherwise
      * @throws CoreException if the message coupld not be modified

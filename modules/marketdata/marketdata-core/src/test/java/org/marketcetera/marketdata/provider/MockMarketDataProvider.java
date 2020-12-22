@@ -134,7 +134,7 @@ public class MockMarketDataProvider
     /**
      * Sets the capabilities value.
      *
-     * @param a <code>Set&lt;Capability&gt;</code> value
+     * @param inCapabilities a <code>Set&lt;Capability&gt;</code> value
      */
     public void setCapabilities(Set<Capability> inCapabilities)
     {
@@ -143,7 +143,7 @@ public class MockMarketDataProvider
     /**
      * Sets the feedType value.
      *
-     * @param a <code>FeedType</code> value
+     * @param inFeedType a <code>FeedType</code> value
      */
     public void setFeedType(FeedType inFeedType)
     {
