@@ -97,6 +97,7 @@ public class RemoteCall<T>
      * Returns the default session ID filter for the given session
      * manager.
      *
+     * @param <T> a <code>T</code> value
      * @param sessionManager The session manager.
      *
      * @return The filter.

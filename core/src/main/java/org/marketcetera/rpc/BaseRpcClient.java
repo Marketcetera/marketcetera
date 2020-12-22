@@ -217,47 +217,42 @@ public abstract class BaseRpcClient<BlockingInterfaceClazz>
         return sessionId;
     }
     /**
-     * 
+     * Get the application id value.
      *
-     *
-     * @return
+     * @return an <code>AppId</code> value
      */
     protected abstract AppId getAppId();
     /**
-     * 
+     * Get the version info value.
      *
-     *
-     * @return
+     * @return a <code>VersionInfo</code> value
      */
     protected abstract VersionInfo getVersionInfo();
     /**
-     * 
+     * Create the client.
      *
-     *
-     * @param inChannel
-     * @return
+     * @param inChannel an <code>RpcClientChannel</code> value
+     * @return a <code>BlockingInterfaceClazz</code> value
      */
     protected abstract BlockingInterfaceClazz createClient(RpcClientChannel inChannel);
     /**
-     * 
+     * Execute the login action. 
      *
-     *
-     * @param inController
-     * @param inRequest
-     * @return
-     * @throws ServiceException
+     * @param inController an <code>RpcController</code> value
+     * @param inRequest a <code>BaseRpc.LoginRequest</code> value
+     * @return a <code>BaseRpc.LoginResponse</code> value
+     * @throws ServiceException if the login fails
      */
     protected abstract BaseRpc.LoginResponse executeLogin(RpcController inController,
                                                           BaseRpc.LoginRequest inRequest)
             throws ServiceException;
     /**
-     * 
+     * Execute the logout action.
      *
-     *
-     * @param inController
-     * @param inRequest
-     * @return
-     * @throws ServiceException
+     * @param inController an <code>RpcController</code> value
+     * @param inRequest a <code>BaseRpc.LogoutRequest</code> value
+     * @return a <code>BaseRpc.LogoutResponse</code> value
+     * @throws ServiceException if the logout fails
      */
     protected abstract BaseRpc.LogoutResponse executeLogout(RpcController inController,
                                                             BaseRpc.LogoutRequest inRequest)

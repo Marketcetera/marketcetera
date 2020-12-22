@@ -57,7 +57,7 @@ public class OptionChainTest
     /**
      * Tests {@link OptionChain#OptionChain(org.marketcetera.trade.Instrument)}.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void optionChainConstructor()

@@ -46,7 +46,7 @@ public interface EventTranslator
      *
      * @param inEvent an <code>Event</code> value
      * @return an <code>Object</code> value
-     * @throws CoreException
+     * @throws CoreException if the object cannot be constructed from the given event
      */
     public Object fromEvent(Event inEvent)
         throws CoreException;

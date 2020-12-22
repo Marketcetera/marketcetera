@@ -69,6 +69,7 @@ public class CSVPrinter {
   /**
    * Sets the specified CSV Strategy
    *
+   * @param strategy a <code>CSVStrategy</code> value
    * @return current instance of CSVParser to allow chained method calls
    */
   public CSVPrinter setStrategy(CSVStrategy strategy) {

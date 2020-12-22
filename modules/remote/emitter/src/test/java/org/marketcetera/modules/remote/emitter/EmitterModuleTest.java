@@ -48,7 +48,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
- * Tests {@link EmitterModule} & its integration with
+ * Tests {@link EmitterModule} &amp; its integration with
  * {@link org.marketcetera.modules.remote.receiver.ReceiverModule}.
  * This test also verifies
  * {@link org.marketcetera.modules.remote.receiver.ReceiverModule}

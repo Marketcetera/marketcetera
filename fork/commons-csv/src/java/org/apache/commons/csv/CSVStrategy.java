@@ -24,7 +24,7 @@ import java.io.Serializable;
  * Represents the strategy for a CSV.
  */
 public class CSVStrategy implements Cloneable, Serializable {
-
+    private static final long serialVersionUID = -451433279415143890L;
     private char delimiter;
     private char encapsulator;
     private char commentStart;
@@ -84,8 +84,17 @@ public class CSVStrategy implements Cloneable, Serializable {
         setUnicodeEscapeInterpretation(interpretUnicodeEscapes);
         setIgnoreEmptyLines(ignoreEmptyLines);
     }
-
-    /** @deprecated */
+    /**
+     * Create a new CSVStrategy instance.
+     *
+     * @param delimiter a <code>char</code> value
+     * @param encapsulator a <code>char</code> value
+     * @param commentStart a <code>char</code> value
+     * @param ignoreLeadingWhitespace a <code>boolean</code> value
+     * @param interpretUnicodeEscapes a <code>boolean</code> value
+     * @param ignoreEmptyLines a <code>boolean</code> value
+     * @deprecated use {@link CSVStrategy#CSVStrategy(char, char, char, char, boolean, boolean, boolean, boolean) instead}
+     */
     public CSVStrategy(
         char delimiter,
         char encapsulator,

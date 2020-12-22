@@ -152,6 +152,7 @@ public class StatelessClient
      *
      * @param <T> a <code>T extends StatelessServiceBase</code> value
      * @param inInterface The interface class.
+     * @return a <code>T</code> value
      */
 
     @SuppressWarnings("unchecked")

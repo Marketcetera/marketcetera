@@ -38,9 +38,8 @@ public class CSVConfigGuesser {
     private boolean hasFieldHeader = false;
     /** The found config */
     protected CSVConfig config;
-    
     /**
-     * 
+     * Create a new CSVConfigGuesser instance.
      */
     public CSVConfigGuesser() {
         this.config = new CSVConfig();
@@ -115,7 +114,7 @@ public class CSVConfigGuesser {
     /**
      * Guess if this file is fixedwidth.
      * Just basing the fact on all lines being of the same length
-     * @param lines
+     * @param lines a <code>String[]</code> value
      */
     protected void guessFixedWidth(String[] lines) {
         int lastLength = 0;

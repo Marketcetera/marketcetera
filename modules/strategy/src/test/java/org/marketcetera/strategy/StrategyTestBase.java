@@ -211,7 +211,7 @@ public class StrategyTestBase
         /**
          * Create a new MockRecorderModule instance.
          *
-         * @param inURN
+         * @param inURN a <code>ModuleURN</code> value
          */
         protected MockRecorderModule(ModuleURN inURN)
         {
@@ -543,7 +543,7 @@ public class StrategyTestBase
         /**
          * Create a new MockRecorderModule instance.
          *
-         * @param inURN
+         * @param inURN a <code>ModuleURN</code> value
          */
         protected StrategyDataEmissionModule(ModuleURN inURN)
         {
@@ -1315,7 +1315,7 @@ public class StrategyTestBase
      * a value that changes over time by sorting them by the interval
      * date.  To determine the value of a function represented by a series
      * of intervals, find the intersection of the desired date (D) and the interval
-     * where: D > interval1.getDate() && D < interval2.getDate().
+     * where: D &gt; interval1.getDate() &amp;&amp; D &lt; interval2.getDate().
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -1583,6 +1583,7 @@ public class StrategyTestBase
      * @param inException a <code>Throwable</code> value containing the expected exception or <code>null</code> for none
      * @param inExpectedMessage an <code>I18NMessage</code> value containing the expected message
      * @param inExpectedParameters a <code>Serializable[]</code> value containing the expected parameters
+     * @throws Exception if the event cannot be verified
      */
     public static void verifyEvent(LogEvent inActualEvent,
                                    LogEventLevel inExpectedLevel,
@@ -1617,6 +1618,8 @@ public class StrategyTestBase
     }
     /**
      * Run at the beginning of execution of all tests.
+     *
+     * @throws Exception if the event cannot be verified
      */
     @BeforeClass
     public static void once()
@@ -1835,8 +1838,8 @@ public class StrategyTestBase
     /**
      * Stops the given strategy and cancels all active data flows.
      *
-     * @param inStrategyURN a <code>
-     * @throws Exception
+     * @param inStrategyURN a <code>ModuleURN</code> value
+     * @throws Exception if the strategy cannot be stopped properly
      */
     protected final void stopStrategy(ModuleURN inStrategyURN)
         throws Exception
@@ -1944,30 +1947,31 @@ public class StrategyTestBase
      * @param inOrderStatus a <code>char</code> value corresponding to an {@link OrdStatus} value
      * @param inQuantity a <code>BigDecimal</code> value
      * @param inLastQuantity a <code>BigDecimal</code> value
-     * @return a <code>Message</code> value
+     * @param inFIXVersion a <code>FIXVersion</code> value
+     * @return a <code>quickfix.Message</code> value
      * @throws Exception if an error occurs
      */
-    protected static Message generateFixExecutionReport(OrderSingle inOrder,
-                                                        char inOrderStatus,
-                                                        BigDecimal inQuantity,
-                                                        BigDecimal inLastQuantity,
-                                                        FIXVersion inFIXVersion)
+    protected static quickfix.Message generateFixExecutionReport(OrderSingle inOrder,
+                                                                 char inOrderStatus,
+                                                                 BigDecimal inQuantity,
+                                                                 BigDecimal inLastQuantity,
+                                                                 FIXVersion inFIXVersion)
         throws Exception
     {
-        Message exeReport = inFIXVersion.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
-                                                                                inOrder.getOrderID().toString(),
-                                                                                "execID",
-                                                                                inOrderStatus,
-                                                                                Side.BUY,
-                                                                                inQuantity,
-                                                                                inOrder.getPrice(),
-                                                                                inLastQuantity,
-                                                                                inOrder.getPrice(),
-                                                                                inOrder.getQuantity(),
-                                                                                inOrder.getPrice(),
-                                                                                inOrder.getInstrument(),
-                                                                                inOrder.getAccount(),
-                                                                                inOrder.getText());
+        quickfix.Message exeReport = inFIXVersion.getMessageFactory().newExecutionReport(inOrder.getOrderID().toString(),
+                                                                                         inOrder.getOrderID().toString(),
+                                                                                         "execID",
+                                                                                         inOrderStatus,
+                                                                                         Side.BUY,
+                                                                                         inQuantity,
+                                                                                         inOrder.getPrice(),
+                                                                                         inLastQuantity,
+                                                                                         inOrder.getPrice(),
+                                                                                         inOrder.getQuantity(),
+                                                                                         inOrder.getPrice(),
+                                                                                         inOrder.getInstrument(),
+                                                                                         inOrder.getAccount(),
+                                                                                         inOrder.getText());
         exeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
         return exeReport;
     }

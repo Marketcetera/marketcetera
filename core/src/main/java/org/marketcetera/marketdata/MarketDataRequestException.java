@@ -19,7 +19,7 @@ public class MarketDataRequestException
     /**
      * Create a new MarketDataRequestException instance.
      *
-     * @param inCause
+     * @param inCause a <code>Throwable</code> value
      */
     public MarketDataRequestException(Throwable inCause)
     {
@@ -28,7 +28,7 @@ public class MarketDataRequestException
     /**
      * Create a new MarketDataRequestException instance.
      *
-     * @param inMessage
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public MarketDataRequestException(I18NBoundMessage inMessage)
     {
@@ -37,8 +37,8 @@ public class MarketDataRequestException
     /**
      * Create a new MarketDataRequestException instance.
      *
-     * @param inCause
-     * @param inMessage
+     * @param inCause a <code>Throwable</code> value
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public MarketDataRequestException(Throwable inCause,
                                       I18NBoundMessage inMessage)

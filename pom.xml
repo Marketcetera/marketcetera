@@ -1109,6 +1109,12 @@
           <configuration>
             <!-- add this to disable checking -->
             <failOnError>false</failOnError>
+            <additionalJOptions>
+              <additionalJOption>-Xmaxerrs</additionalJOption>
+              <additionalJOption>65536</additionalJOption>
+              <additionalJOption>-Xmaxwarns</additionalJOption>
+              <additionalJOption>65536</additionalJOption>
+            </additionalJOptions>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
@@ -1355,10 +1361,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
       </plugin>
-      <!--plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin-->
     </plugins>
   </reporting>
   <scm>

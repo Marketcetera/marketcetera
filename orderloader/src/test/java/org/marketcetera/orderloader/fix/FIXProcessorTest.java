@@ -355,8 +355,11 @@ public class FIXProcessorTest {
         assertEquals("123-ASDF-234",
                      message.getString(Account.FIELD));
     }
-
-    /** Verify that HandlInst, if set, overwrites the default one in the NOS message factory */
+    /**
+     * Verify that HandlInst, if set, overwrites the default one in the NOS message factory.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void handlInstField() throws Exception
     {
@@ -412,8 +415,11 @@ public class FIXProcessorTest {
         assertEquals("12345", message.getString(9999) );
         assertEquals("123-ASDF-234", message.getString(Account.FIELD) );
     }
-
-    /** Test using both header and trailer and message custom fields */
+    /**
+     * Test using both header and trailer and message custom fields.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void withMixedCustomFields() throws Exception {
         RowProcessor processor = create();
@@ -433,7 +439,11 @@ public class FIXProcessorTest {
         assertEquals("sig", message.getTrailer().getString(Signature.FIELD));
     }
 
-    /** Try sending a message with key not in dictionary */
+    /**
+     * Try sending a message with key not in dictionary
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void fieldNotInDictionary() throws Exception {
         RowProcessor processor = create();

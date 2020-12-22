@@ -41,8 +41,8 @@ public class CurrencyImbalanceEvent
     /**
      * Create a new CurrencyImbalanceEvent instance.
      *
-     * @param inImbalance
-     * @param inCurrencyBean
+     * @param inImbalance an <code>ImbalanceBean</code> value
+     * @param inCurrencyBean a <code>CurrencyBean</code> value
      */
     public CurrencyImbalanceEvent(ImbalanceBean inImbalance,
                                   CurrencyBean inCurrencyBean)

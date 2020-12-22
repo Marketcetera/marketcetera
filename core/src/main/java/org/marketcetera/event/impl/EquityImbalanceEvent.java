@@ -39,7 +39,7 @@ public class EquityImbalanceEvent
     /**
      * Create a new EquityImbalanceEvent instance.
      *
-     * @param inImbalance
+     * @param inImbalance an <code>ImbalanceBean</code> value
      */
     public EquityImbalanceEvent(ImbalanceBean inImbalance)
     {

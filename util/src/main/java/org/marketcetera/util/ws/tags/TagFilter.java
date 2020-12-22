@@ -20,9 +20,9 @@ public interface TagFilter
     /**
      * Asserts that the given tag is acceptable to the receiver.
      *
+     * @param tag a <code>Tag</code> value
      * @throws I18NException Thrown if the tag is not acceptable.
      */
-
     void assertMatch
         (Tag tag)
         throws I18NException;

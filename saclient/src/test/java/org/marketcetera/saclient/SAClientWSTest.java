@@ -1,12 +1,23 @@
 package org.marketcetera.saclient;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -19,7 +30,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.module.*;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.log.I18NMessage0P;
@@ -30,7 +45,7 @@ import org.marketcetera.util.ws.wrappers.MapWrapper;
 /* $License$ */
 /**
  * Tests {@link SAClient} web services.
- * <p/>
+ * <p>
  * For each web service, verifies that the parameters to each web service
  * are correctly received and that the return values are correctly received.
  * And if the web service failed that the exception is correctly received.
@@ -142,7 +157,8 @@ public class SAClientWSTest extends SAClientTestBase {
         File f = File.createTempFile("strat", ".tst");
         f.deleteOnExit();
         CopyCharsUtils.copy("Test Strategy Contents".toCharArray(), f.getAbsolutePath());
-        int fileLength = FileUtils.readFileToString(f).length();
+        int fileLength = FileUtils.readFileToString(f,
+                                                    Charset.defaultCharset()).length();
         final CreateStrategyParameters input = new CreateStrategyParameters(
                 "instance", "strategy", "java", f, "key=value", false);
         final ModuleURN output = new ModuleURN("test:prov:me:A");
@@ -184,7 +200,8 @@ public class SAClientWSTest extends SAClientTestBase {
         File f = File.createTempFile("strat", ".tst");
         f.deleteOnExit();
         CopyCharsUtils.copy("Test Strategy Contents".toCharArray(), f.getAbsolutePath());
-        int fileLength = FileUtils.readFileToString(f).length();
+        int fileLength = FileUtils.readFileToString(f,
+                                                    Charset.defaultCharset()).length();
         final CreateStrategyParameters output = new CreateStrategyParameters(
                 "instance", "strategy", "java", f, "key=value", false);
         testAPI(new WSTester<CreateStrategyParameters>() {
@@ -574,7 +591,7 @@ public class SAClientWSTest extends SAClientTestBase {
         /**
          * Sets the attribute1 value.
          *
-         * @param a <code>String</code> value
+         * @param inAttribute1 a <code>String</code> value
          */
         public void setAttribute1(String inAttribute1)
         {
@@ -592,7 +609,7 @@ public class SAClientWSTest extends SAClientTestBase {
         /**
          * Sets the attribute2 value.
          *
-         * @param a <code>long</code> value
+         * @param inAttribute2 a <code>long</code> value
          */
         public void setAttribute2(long inAttribute2)
         {
@@ -610,7 +627,7 @@ public class SAClientWSTest extends SAClientTestBase {
         /**
          * Sets the attribute3 value.
          *
-         * @param a <code>Date</code> value
+         * @param inAttribute3 a <code>Date</code> value
          */
         public void setAttribute3(Date inAttribute3)
         {

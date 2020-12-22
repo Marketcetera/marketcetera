@@ -290,6 +290,7 @@ public class OrderBook
      * Creates a human-readable representation of an order book as defined
      * by the given {@link Iterator} values.
      *
+     * @param <I> an <code>I extends Instrument</code> value
      * @param bidIterator an <code>Iterator&lt;BidEvent&gt;</code> value representing the bids to display
      * @param askIterator an <code>Iterator&lt;AskEvent&gt;</code> value representing the asks to display
      * @param inShowExchange a <code>boolean</code> value indicating whether to display the exchange associated with each bid and ask

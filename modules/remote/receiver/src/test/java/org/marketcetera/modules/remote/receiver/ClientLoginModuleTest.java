@@ -47,7 +47,7 @@ import com.sun.security.auth.UserPrincipal;
 public class ClientLoginModuleTest extends TestCaseBase {
 
     /**
-     * Test login success & failures.
+     * Test login success &amp; failures.
      * @throws Exception if there was failure
      */
     @Test

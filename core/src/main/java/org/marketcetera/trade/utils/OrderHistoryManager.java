@@ -401,6 +401,7 @@ public class OrderHistoryManager
      * <p>If the given <code>OrderID</code> has no corresponding order history, the
      * returned collection will be empty.
      *
+     * @param inOrderId an <code>OrderID</code> value
      * @return a <code>Set&lt;OrderID&gt;</code> value
      */
     public Set<OrderID> getOrderChain(OrderID inOrderId)
