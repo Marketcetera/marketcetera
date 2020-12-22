@@ -152,8 +152,11 @@ public abstract class CEPTestBase extends ModuleTestBase {
             }
         }.run();
     }
-
-    /** See what happens when you send in a non-string request parameter - should error out */
+    /**
+     * See what happens when you send in a non-string request parameter - should error out.
+     * 
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testNonStringRequestParameter() throws Exception {
         new ExpectedTestFailure(UnsupportedRequestParameterType.class,
@@ -170,11 +173,17 @@ public abstract class CEPTestBase extends ModuleTestBase {
             }
         }.run();
     }
-
-    /** Subclasses should specify the error class that's thrown in case of incorrect syntax for query */
+    /**
+     * Subclasses should specify the error class that's thrown in case of incorrect syntax for query
+     *
+     * @return a <code>Class&lt;?&gt;</code> value
+     */
     protected abstract Class<?> getIncorrectQueryException();
-
-    /** unit test that verifies failure for incorrect query syntax and invalid type name */
+    /**
+     * unit test that verifies failure for incorrect query syntax and invalid type name.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testIncorrectQuerySyntax() throws Exception {
         final String query = "man, is this syntax incorrect or what??";
@@ -191,11 +200,17 @@ public abstract class CEPTestBase extends ModuleTestBase {
             }
         }.run();
     }
-
-    /** Subclasses should implement a test that verifies the right exception is thrown in case of invalid type name in select */
+    /**
+     * Subclasses should implement a test that verifies the right exception is thrown in case of invalid type name in select.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public abstract void testUnknownAlias() throws Exception;
-
-    /** Verify that a request with valid java class name can be created */
+    /**
+     * Verify that a request with valid java class name can be created.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testValidJavaClass() throws Exception {
         final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
@@ -209,8 +224,11 @@ public abstract class CEPTestBase extends ModuleTestBase {
         
         sManager.cancel(flow1);
     }
-
-    // send in an unmapped java object, like Integer for instance and verify that it gets filtered correctly.
+    /**
+     * Send in an unmapped java object, like Integer for instance and verify that it gets filtered correctly.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testUnmappedJavaObject() throws Exception {
         final DataFlowID flow1 = sManager.createDataFlow(new DataRequest[] {
@@ -225,13 +243,16 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals(37, sSink.getNextData());
         sManager.cancel(flow1);
     }
-
-    /** Setup two data flows
+    /**
+     * Setup two data flows
+     * 
      * Send some events through first one
      * Cancel it
      * verify that statements are gone, and then when you send similar events only 2nd data flow gets it
      * Then cancel the 2nd flow, and do a 3rd one that gets totally different events
      * verify that only 3rd-flow events are coming through, and not ones from 2nd or 1st flow
+     *
+     * @throws Exception if an unexpected error occurs
      */
     @Test(timeout=120000)
     public void testCancel() throws Exception {
@@ -303,42 +324,64 @@ public abstract class CEPTestBase extends ModuleTestBase {
             }
         }.run();
     }
-
-    /** Test multiple data flows with same queries but different sinks. Make sure that  
-
-    /** Run all the varous event types through */
+    /**
+     * Test ask events.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testAsk() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.ASK, AskEvent.class.getName(), (Object[])new Event[] {ask1, ask2});
     }
-
+    /**
+     * Test bid events.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testBid() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.BID, BidEvent.class.getName(), (Object[])new Event[] {bid1, bid2});
     }
-
+    /**
+     * Test trade events.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testTrade() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.TRADE, TradeEvent.class.getName(), (Object[])new Event[] {trade1, trade2});
     }
-
+    /**
+     * Test execution reports.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testExecutionReport() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.REPORT, ExecutionReport.class.getName(), er1, er2);
     }
-
-    // validation inspects Text field
+    /**
+     * Test order cancel rejects.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testOrderCancelReject() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.CANCEL_REJECT, OrderCancelReject.class.getName(), ocr1, ocr2);
     }
-
-    // on orders we look at destinations
+    /**
+     * Test order singles.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testOrderSingle() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.ORDER_SINGLE, OrderSingle.class.getName(), os1, os2);
     }
-
-    // on orders we look at dest id
+    /**
+     * Test order cancels.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testOrderCancel() throws Exception {
         flowTestHelperWrapper(CEPDataTypes.ORDER_CANCEL, OrderCancel.class.getName(), oc1, oc2);
@@ -389,18 +432,30 @@ public abstract class CEPTestBase extends ModuleTestBase {
         flowTestHelperWrapper(CEPDataTypes.MARKET_STAT,
                 MarketstatEvent.class.getName(), mStat1, mStat2);
     }
-
-
+    /**
+     * Wraps calls to {@link #flowTestHelper(String, Object[])}.
+     *
+     * @param expectedAlias a <code>String</code> value
+     * @param expectedClass a <code>String</code> value
+     * @param expectedEvents a <code>String...</code> value
+     * @throws Exception if the flow test helper call fails
+     */
     protected void flowTestHelperWrapper(String expectedAlias,
                                          String expectedClass,
-                                         Object... expectedEvents) throws Exception {
+                                         Object... expectedEvents)
+            throws Exception
+    {
         flowTestHelper(expectedAlias, expectedEvents);
         flowTestHelper(expectedClass, expectedEvents);
     }
-
-
-    /** Helper to run multiple data types through the flow. We will be matching on 'symbol', or something
-     * similar in the particular event type if that's available
+    /**
+     * Helper to run multiple data types through the flow.
+     *
+     * <p>We will be matching on 'symbol', or something similar in the particular event type if that's available
+     *
+     * @param type a <code>String</code> value
+     * @param expectedEvents an <code>Object[]</code> value
+     * @throws Exception if the flow test helper fails
      */
     protected void flowTestHelper(String type, Object[] expectedEvents) throws Exception {
         // verify module not found before data flow is started

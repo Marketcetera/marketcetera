@@ -58,7 +58,7 @@ public class EsperModuleTest extends CEPTestBase {
 
     /**
      * We have the following data flow:
-     * CopierModule --> CEP --> Sink
+     * CopierModule --&gt; CEP --&gt; Sink
      * Feed 3 events into copier (which just re-emits it), and then test that it goes through to the Sink via Esper
      *
      * @throws Exception if there were unexpected errors.
@@ -92,8 +92,10 @@ public class EsperModuleTest extends CEPTestBase {
         sManager.cancel(flowID);
     }
 
-    /** Create a data flow where you subscribe to 2 types of events, but only the last one
-     * should result in statements being received
+    /**
+     * Create a data flow where you subscribe to 2 types of events, but only the last one should result in statements being received.
+     *
+     * @throws Exception if an unexpected error occurs
      */
     @Test(timeout=120000)
     public void testOnlyLastStatementGetsSubscriber() throws Exception {
@@ -115,9 +117,12 @@ public class EsperModuleTest extends CEPTestBase {
         sManager.cancel(flowID);
     }
 
-    /** Create one data flow, send events, make sure they come through
+    /**
+     * Create one data flow, send events, make sure they come through
      * Then cancel it, create similar data flow, send same events, but make sure
-     * only the laste subscriptions get hits
+     * only the last subscriptions get hits
+     * 
+     * @throws Exception if an unexpected error occurs
      */
     @Test(timeout=120000)
     public void testEsperCancel() throws Exception {
@@ -202,7 +207,11 @@ public class EsperModuleTest extends CEPTestBase {
         }.run();
     }
 
-    /** Verify that when you send a query of N steps, where a non-first step is invalid, all N statements are cleaned up */
+    /**
+     * Verify that when you send a query of N steps, where a non-first step is invalid, all N statements are cleaned up.
+     * 
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout=120000)
     public void testAllStatementsCleanedUpIfOneHasError() throws Exception {
         // first create a valid statement
@@ -232,10 +241,11 @@ public class EsperModuleTest extends CEPTestBase {
         assertEquals("invalid # of statements"+ Arrays.toString(esperBean.getStatementNames()), 1, esperBean.getStatementNames().length);
         sManager.cancel(flow);
     }
-
-
-    /** do a pattern query and make sure we get something reasonable back
-       p:every ask(symbol="IBM") where timer:within(10 seconds)
+    /**
+     * do a pattern query and make sure we get something reasonable back
+     * p:every ask(symbol="IBM") where timer:within(10 seconds)
+     *
+     * @throws Exception if an unexpected error occurs
      */
     @Test(timeout=120000)
     public void testPattern() throws Exception {
@@ -256,8 +266,11 @@ public class EsperModuleTest extends CEPTestBase {
         assertTrue("Didn't wait longer than 10 secs: "+(timeEnd-timeStart), timeEnd - timeStart > 10*1000);
         sManager.cancel(flow);
     }
-
-    /** Create an explicit pattern (instead of using p:query that results in createPattern call) */
+    /**
+     * Create an explicit pattern (instead of using p:query that results in createPattern call)
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testPattern_explicit() throws Exception {
 

@@ -27,8 +27,8 @@ import java.util.Map;
  * If creating new implementations, consider subclassing this class to test the behaviour of that implementation.
  * The tests assume the provided <code>MessageProvider</code>
  * contains the following entries:
- * <p />
- * <table>
+ * <p>
+ * <table summary="Describes the expected MessageProvider setup">
  *   <tr>
  *     <th>Language/<code>Locale</code></th>
  *     <th>ID</th>
@@ -70,7 +70,7 @@ import java.util.Map;
  *     <td>This entry is not translated to any other languages</td>
  *   <tr>
  * </table>
- * <p />
+ * <p>
  * Specifically, the ID <code>nonExistentId</code> and the entry <code>nonExistentEntry</code> of ID
  * <code>helloWorld</code> must NOT be existent.
  */
@@ -102,7 +102,7 @@ public abstract class MessageProviderTestBase extends TestCase {
     /**
      * Test functionality of getText() method, which should be common for all implementations of the
      * <code>MessageProvider</code> interface.
-     * @param messageProvider
+     * @param messageProvider a <code>MessageProvider</code> value
      */
     protected void testGetText(MessageProvider messageProvider) {
         // Explicit default locale
@@ -195,7 +195,7 @@ public abstract class MessageProviderTestBase extends TestCase {
     }
 
     private static void assertEnglishEntries(MessageProvider messageProvider, Locale locale, boolean hasNonTranslatedEntry) {
-        Map entries = messageProvider.getEntries("helloWorld", locale);
+        Map<?,?> entries = messageProvider.getEntries("helloWorld", locale);
         if(hasNonTranslatedEntry) {
             assertEquals("Locale = " + locale + ", No of entries", 3, entries.size());
             assertEquals("Locale = " + locale, "This entry is not translated to any other languages",
@@ -208,7 +208,7 @@ public abstract class MessageProviderTestBase extends TestCase {
     }
 
     private static void assertGermanEntries(MessageProvider messageProvider, Locale locale) {
-        Map entries = messageProvider.getEntries("helloWorld", locale);
+        Map<?,?> entries = messageProvider.getEntries("helloWorld", locale);
 
         // TODO: Consider whether all MessageProviders must behave the same way
         if(entries.size() == 3) // If non-translated entries included

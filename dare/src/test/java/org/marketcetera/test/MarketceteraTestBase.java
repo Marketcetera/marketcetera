@@ -1852,7 +1852,7 @@ public class MarketceteraTestBase
          * @param inOrderMessage a <code>quickfix.Message</code> value
          * @param inSessionId a <code>quickfix.SessionID</code> value
          * @return a <code>quickfix.Message</code> value
-         * @throws an Exception if the order status request could not be generated
+         * @throws Exception if the order status request could not be generated
          */
         public quickfix.Message generateOrderStatusRequest(quickfix.Message inOrderMessage,
                                                            quickfix.SessionID inSessionId)
@@ -2299,24 +2299,42 @@ public class MarketceteraTestBase
                                                                            inMsgType);
         }
         /**
+         * Waits for and verifies the next sender message against the given expected message.
          *
-         *
-         * @param inSenderMessage
-         * @return a <code>Message</code> value
+         * @param inExpectedMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
          * @throws Exception
          */
-        public Message waitForAndVerifySenderMessage(Message inSenderMessage)
+        public quickfix.Message waitForAndVerifySenderMessage(quickfix.Message inExpectedMessage)
                 throws Exception
         {
             return MarketceteraTestBase.this.waitForAndVerifySenderMessage(initiatorSessionId,
-                                                                           inSenderMessage.getHeader().getString(MsgType.FIELD));
+                                                                           inExpectedMessage.getHeader().getString(MsgType.FIELD));
         }
+        /**
+         * index of this acceptor session
+         */
         private final int acceptorSessionIndex;
+        /**
+         * index of this initiator session
+         */
         private final int initiatorSessionIndex;
-        private final SessionID senderSessionId;
-        private final SessionID receiverSessionId;
-        private final SessionID acceptorSessionId;
-        private final SessionID initiatorSessionId;
+        /**
+         * sender session id value
+         */
+        private final quickfix.SessionID senderSessionId;
+        /**
+         * received session id value
+         */
+        private final quickfix.SessionID receiverSessionId;
+        /**
+         * acceptor session id value
+         */
+        private final quickfix.SessionID acceptorSessionId;
+        /**
+         * initiator session id value
+         */
+        private final quickfix.SessionID initiatorSessionId;
     }
     /**
      * listens for reports

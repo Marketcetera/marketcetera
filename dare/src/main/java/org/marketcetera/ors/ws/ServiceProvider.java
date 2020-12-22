@@ -176,7 +176,6 @@ public class ServiceProvider
      *
      * @param inUserId a <code>UserID</code> value
      * @return a <code>UserInfo</code> value
-     * @throws PersistenceException
      */
     public UserInfo getUserInfo(UserID inUserId)
     {

@@ -5,9 +5,6 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.misc.ClassVersion;
 
-
-import quickfix.Message;
-
 /**
  * Interface for all custom order modifiers that can be created by
  * Marketcetera Platform users, added to the ORS to be executed
@@ -16,20 +13,18 @@ import quickfix.Message;
  * containing the value of the {@link quickfix.field.Symbol} field.
  */
 @ClassVersion("$Id$")
-public interface MessageModifier {
-
+public interface MessageModifier
+{
     /**
      * Implement the function to make in-line modifications to the incoming message.
-     *
      *
      * @param message the message to be modified
      * @param augmentor FIX-version specific augmentor to apply to this message
      * @return true if the modifier has modified the message, false otherwise
-     * @throws CoreException
+     * @throws CoreException if the message coupld not be modified
      */
-    public boolean modifyMessage
-        (Message message,
-         ReportHistoryServices historyServices,
-         FIXMessageAugmentor augmentor)
+    public boolean modifyMessage(quickfix.Message message,
+                                 ReportHistoryServices historyServices,
+                                 FIXMessageAugmentor augmentor)
         throws CoreException;
 }
