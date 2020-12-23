@@ -21,7 +21,7 @@ public class ExpirationTypeTest
     /**
      * Tests {@link ExpirationType#getExpirationTypeForChar(char)}.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void getByChar()

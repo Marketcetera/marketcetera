@@ -410,7 +410,7 @@ public class QuoteEventTest
         verify(builder);
     }
     /**
-     * Tests {@link QuoteEventBuilder<?>#withInstrument(Instrument)}.
+     * Tests {@link QuoteEventBuilder#withInstrument(Instrument)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -461,7 +461,7 @@ public class QuoteEventTest
         verify(builder);
     }
     /**
-     * Tests {@link QuoteEventBuilder#withMultiplier(int)}.
+     * Tests {@link QuoteEventBuilder#withMultiplier(BigDecimal)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -557,7 +557,7 @@ public class QuoteEventTest
         verify(builder);
     }
     /**
-     * Tests {@link QuoteEventBuilder#withQuoteDate(String)}.
+     * Tests {@link QuoteEventBuilder#withQuoteDate(Date)}.
      *
      * @throws Exception if an unexpected error occurs
      */

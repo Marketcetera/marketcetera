@@ -144,13 +144,12 @@ public class CFICodeUtils {
         }
         return code.toString();
     }
-    
     /**
-     * 
+     * Get the CFI code from the given instrument.
      *
-     *
-     * @param inInstrument
-     * @return
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>String</code> value
+     * @throws UnsupportedOperationException if the given instrument does not have a CFI code
      */
     public static String getCFICode(Instrument inInstrument)
     {

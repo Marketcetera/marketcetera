@@ -146,6 +146,8 @@ public abstract class MarketDataModuleTestBase
     protected abstract String getProvider();
     /**
      * Tests that the feed's capabilities match the expected values.
+     *
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void capabilities()

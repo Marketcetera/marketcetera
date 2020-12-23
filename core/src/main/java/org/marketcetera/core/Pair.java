@@ -19,6 +19,8 @@ public class Pair<T1, T2>
     /**
      * Creates a new <code>Pair</code> with the given attributes.
      *
+     * @param <Clazz1> a <code>Clazz1</code> value
+     * @param <Clazz2> a <code>Clazz2</code> value
      * @param inType1 a <code>Clazz1</code> value
      * @param inType2 a <code>Clazz2</code> value
      * @return a <code>Pair&lt;Clazz1,Clazz2&gt;</code> value

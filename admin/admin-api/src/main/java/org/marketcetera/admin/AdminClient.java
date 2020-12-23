@@ -107,6 +107,7 @@ public interface AdminClient
      *
      * @param inNewUser a <code>User</code> value
      * @param inPassword a <code>String</code> value
+     * @return a <code>User</code> value
      */
     User createUser(User inNewUser,
                     String inPassword);

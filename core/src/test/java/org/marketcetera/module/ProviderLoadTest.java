@@ -1,14 +1,17 @@
 package org.marketcetera.module;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.ServiceConfigurationError;
+import java.util.regex.Pattern;
+
+import org.junit.After;
+import org.junit.Test;
 import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
-import org.junit.Test;
-import org.junit.After;
-import static org.junit.Assert.*;
-
-import java.util.regex.Pattern;
-import java.util.ServiceConfigurationError;
-import java.io.IOException;
 
 /* $License$ */
 /**
@@ -23,7 +26,7 @@ public class ProviderLoadTest extends ModuleTestBase {
         mManager.stop();
     }
     /**
-     * Tests various failures in {@link ModuleManager#init()} &
+     * Tests various failures in {@link ModuleManager#init()} &amp;
      * {@link ModuleManager#refresh()}
      *  and their expected behavior.
      *

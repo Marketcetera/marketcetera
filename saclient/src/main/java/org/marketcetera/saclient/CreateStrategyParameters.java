@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,15 +39,15 @@ public final class CreateStrategyParameters
      * @param inParameters the strategy parameters as a list of ':' separated,
      * name=value pairs. Can be null.
      * @param inRouteOrdersToServer if the strategy should route its orders to the server.
-     * @throws IOException 
+     * @throws IOException if the strategy parameters cannot be created
      * @throws NullPointerException if any of the non-null field values are null.
      */
     public CreateStrategyParameters(String inInstanceName,
-                              String inStrategyName,
-                              String inLanguage,
-                              File inStrategySource,
-                              String inParameters,
-                              boolean inRouteOrdersToServer)
+                                    String inStrategyName,
+                                    String inLanguage,
+                                    File inStrategySource,
+                                    String inParameters,
+                                    boolean inRouteOrdersToServer)
             throws IOException
     {
         if(inStrategyName == null) {
@@ -65,7 +66,8 @@ public final class CreateStrategyParameters
         mInstanceName = inInstanceName;
         mStrategyName = inStrategyName;
         mLanguage = inLanguage;
-        mStrategySource = IOUtils.toString(new FileInputStream(inStrategySource));
+        mStrategySource = IOUtils.toString(new FileInputStream(inStrategySource),
+                                           Charset.defaultCharset());
         mParameters = inParameters;
         mRouteOrdersToServer = inRouteOrdersToServer;
     }
@@ -110,7 +112,8 @@ public final class CreateStrategyParameters
     public InputStream getStrategySource()
             throws IOException
     {
-        return IOUtils.toInputStream(mStrategySource);
+        return IOUtils.toInputStream(mStrategySource,
+                                     Charset.defaultCharset());
     }
 
     /**

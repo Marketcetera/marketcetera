@@ -132,8 +132,11 @@ public class ApplicationBase
     public boolean isWaitingForever() {
         return waitingForever;
     }
-    
-    /** Get the FIX version associated with this application */
+    /**
+     * Get the FIX version associated with this application.
+     *
+     * @return a <code>FIXVersion</code> value
+     */
     public FIXVersion getFIXVersion()
     {
         return fixVersion;
@@ -153,8 +156,11 @@ public class ApplicationBase
         // TODO: make this read a variable that is updated periodically by a thread
         return System.currentTimeMillis(); //i18n_datetime
     }
-
-    /** Returns a pointer to the Spring application context that started this app */
+    /**
+     * Returns a pointer to the Spring application context that started this app.
+     *
+     * @return a <code>ClassPathXmlApplicationContext</code> value
+     */
     public ClassPathXmlApplicationContext getAppCtx() {
         return appCtx;
     }

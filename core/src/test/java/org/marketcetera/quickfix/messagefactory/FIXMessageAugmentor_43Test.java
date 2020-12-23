@@ -33,7 +33,11 @@ public class FIXMessageAugmentor_43Test extends FIXVersionedTestCase {
         assertEquals(30, new FIXMessageAugmentor_43().getApplicableMsgTypes().size());
     }
 
-    /** Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does. */
+    /**
+     * Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testMarketOnClose() throws Exception {
         FIXMessageFactory factory = FIXVersion.FIX43.getMessageFactory();
         Message buy = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("123"), Side.BUY, factory); //$NON-NLS-1$ //$NON-NLS-2$
@@ -54,7 +58,11 @@ public class FIXMessageAugmentor_43Test extends FIXVersionedTestCase {
         assertEquals(TimeInForce.DAY, buy.getChar(TimeInForce.FIELD));
     }
 
-    /** Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does. */
+    /**
+     * Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testLimitOnClose() throws Exception {
         FIXMessageFactory factory = FIXVersion.FIX43.getMessageFactory();
         Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("123"), new BigDecimal("100"), Side.BUY, factory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -75,7 +83,11 @@ public class FIXMessageAugmentor_43Test extends FIXVersionedTestCase {
         assertEquals(TimeInForce.DAY, buy.getChar(TimeInForce.FIELD));
     }
 
-    /** Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does. */
+    /**
+     * Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testMarketOnClose_cxr() throws Exception {
         FIXMessageFactory factory = FIXVersion.FIX43.getMessageFactory();
         Message buy = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("123"), Side.BUY, factory); //$NON-NLS-1$ //$NON-NLS-2$
@@ -98,7 +110,11 @@ public class FIXMessageAugmentor_43Test extends FIXVersionedTestCase {
         assertEquals(TimeInForce.DAY, cancelReplace.getChar(TimeInForce.FIELD));
     }
 
-    /** Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does. */
+    /**
+     * Verify that we undo whatever changes the {@link FIXMessageAugmentor_40} does.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testLimitOnClose_cxr() throws Exception {
         FIXMessageFactory factory = FIXVersion.FIX43.getMessageFactory();
         Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("123"), new BigDecimal("100"), Side.BUY, factory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

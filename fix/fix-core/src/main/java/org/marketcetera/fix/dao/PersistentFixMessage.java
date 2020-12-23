@@ -8,9 +8,6 @@ import javax.persistence.Table;
 import org.marketcetera.fix.FixMessage;
 import org.marketcetera.persist.EntityBase;
 
-
-import quickfix.Message;
-
 /* $License$ */
 
 /**
@@ -35,7 +32,7 @@ public class PersistentFixMessage
     /**
      * Create a new PersistentFixMessage instance.
      *
-     * @param inFixMessage
+     * @param inFixMessage a <code>FixMessage</code> value
      */
     public PersistentFixMessage(FixMessage inFixMessage)
     {
@@ -44,9 +41,9 @@ public class PersistentFixMessage
     /**
      * Create a new PersistentFixMessage instance.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      */
-    public PersistentFixMessage(Message inMessage)
+    public PersistentFixMessage(quickfix.Message inMessage)
     {
         message = inMessage.toString();
     }
@@ -70,7 +67,7 @@ public class PersistentFixMessage
      * @see com.marketcetera.ors.history.FixMessage#setMessage(quickfix.Message)
      */
     @Override
-    public void setMessage(Message inMessage)
+    public void setMessage(quickfix.Message inMessage)
     {
         message = inMessage.toString();
     }

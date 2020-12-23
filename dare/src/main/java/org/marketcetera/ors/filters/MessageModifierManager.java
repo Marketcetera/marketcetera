@@ -27,14 +27,18 @@ public class MessageModifierManager {
     private List<MessageModifier> messageModifiers;
 
     public void setMessageModifiers(List<MessageModifier> mods){
-		messageModifiers = new LinkedList<MessageModifier>();
-		for (MessageModifier mod : mods) {
-			messageModifiers.add(mod);
-		}
-		messageModifiers.add(new TransactionTimeInsertMessageModifier());
+                messageModifiers = new LinkedList<MessageModifier>();
+                for (MessageModifier mod : mods) {
+                        messageModifiers.add(mod);
+                }
+                messageModifiers.add(new TransactionTimeInsertMessageModifier());
     }
-
-    /** Apply all the order modifiers to this message */
+    /**
+     * Apply all the order modifiers to this message
+     *
+     * @param info a <code>RequestInfo</code> value
+     * @throws I18NException if an error occurs modifying the message
+     */
     public void modifyMessage(RequestInfo info)
         throws I18NException
     {

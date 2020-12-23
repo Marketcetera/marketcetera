@@ -26,7 +26,7 @@ import org.marketcetera.util.unicode.SignatureCharset;
 
 /* $License$ */
 /**
- * Tests {@link OrderParser} & {@link RowProcessor}
+ * Tests {@link OrderParser} &amp; {@link RowProcessor}
  *
  * @author anshul@marketcetera.com
  * @version $Id$

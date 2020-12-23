@@ -237,7 +237,7 @@ public class MockServer {
 
     /**
      * The URL for the broker hosted by this server.
-     * Do note that this URL is changed, the mock_server.xml & broker.xml
+     * Do note that this URL is changed, the mock_server.xml &amp; broker.xml
      * files need to be updated as well.
      */
     public static final String URL = "tcp://localhost:61616";

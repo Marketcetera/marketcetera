@@ -15,12 +15,32 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.AllocAccount;
+import quickfix.field.AllocQty;
+import quickfix.field.AvgPx;
+import quickfix.field.BeginString;
+import quickfix.field.CumQty;
+import quickfix.field.ExpireTime;
+import quickfix.field.HandlInst;
+import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.Product;
+import quickfix.field.SecurityExchange;
+import quickfix.field.SettlType;
+import quickfix.field.SolicitedFlag;
 import quickfix.field.converter.BooleanConverter;
 import quickfix.field.converter.UtcTimestampConverter;
 import quickfix.fix44.OrderCancelReplaceRequest;
@@ -363,7 +383,11 @@ public class OrderReplaceTest extends TypesTestBase {
         checkNRSetters(inOrder);
         checkRelatedOrderSetters(inOrder);
     }
-    /** verify custom fields are preserved, and that nothing else is added from the execution report */
+    /**
+     * Verify custom fields are preserved, and that nothing else is added from the execution report
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testSecurityExchangePreserved() throws Exception {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderID", "clOrderID", "execID", //$NON-NLS-1$
@@ -380,11 +404,14 @@ public class OrderReplaceTest extends TypesTestBase {
         assertEquals("has extra fields: "+ Arrays.toString(replace.getCustomFields().keySet().toArray()), 1, replace.getCustomFields().size());
     }
 
-    @Test
-    /** Create ER for previous order that has OrderID of 12345
+    /**
+     * Create ER for previous order that has OrderID of 12345
      * Set an OrigClOrdID on it of 12222
      * Create a replace form this ER, the OrigClOrdID should be 12345, not the "very original" of 12222
+     *
+     * @throws Exception if an unexpected error occurs
      */
+    @Test
     public void testCreateOrderReplace() throws Exception {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("7600", "12345", "execID", //$NON-NLS-1$
                 OrdStatus.NEW, Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),

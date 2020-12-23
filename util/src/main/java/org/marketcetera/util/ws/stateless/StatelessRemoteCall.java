@@ -183,6 +183,7 @@ public class StatelessRemoteCall
      *
      * @param context The context.
      * @param t The throwable.
+     * @return a <code>RemoteException</code> value
      */
 
     protected RemoteException wrapFailure

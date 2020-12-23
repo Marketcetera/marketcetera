@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.trade.TypesTestBase.assertCancelRejectEquals;
 import static org.marketcetera.trade.TypesTestBase.assertExecReportEquals;
@@ -31,6 +30,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -437,7 +437,7 @@ public class ClientTest
         Map<PositionKey<Option>, BigDecimal> positions = getClient().
                 getOptionPositionsAsOf(date, "XYZ", "PQR");
         assertEquals(2, positions.size());
-        assertThat(positions, allOf(hasEntry(
+        MatcherAssert.assertThat(positions, allOf(hasEntry(
                 PositionKeyFactory.createOptionKey("XYZ",
                         option.getExpiry(), option.getStrikePrice(),
                         option.getType(), "acc", "tra"), 
@@ -452,7 +452,7 @@ public class ClientTest
         //getAllOptionPositionsAsOf()
         positions = getClient().getAllOptionPositionsAsOf(date);
         assertEquals(1, positions.size());
-        assertThat(positions, Matchers.hasEntry(
+        MatcherAssert.assertThat(positions, Matchers.hasEntry(
                 PositionKeyFactory.createOptionKey("OPT",
                         option.getExpiry(), option.getStrikePrice(),
                         option.getType(), "acc", "tra"),
@@ -486,7 +486,7 @@ public class ClientTest
         
         roots = getClient().getOptionRoots(symbol);
         assertEquals(symbol.length(), roots.size());
-        assertThat(roots, Matchers.hasItem(symbol));
+        MatcherAssert.assertThat(roots, Matchers.hasItem(symbol));
         //verify caching
         sServer.getServiceImpl().resetServiceInvoked();
         assertSame(roots, getClient().getOptionRoots(symbol));
@@ -1104,7 +1104,7 @@ public class ClientTest
     }
 
     /**
-     * Verifies the interplay between client initialization, reconnect & close.
+     * Verifies the interplay between client initialization, reconnect &amp; close.
      *
      * @throws Exception if there were errors
      */

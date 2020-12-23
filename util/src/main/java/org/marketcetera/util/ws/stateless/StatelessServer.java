@@ -64,6 +64,7 @@ public class StatelessServer
      * implementation, and returns a handle that can be used to stop
      * the interface.
      *
+     * @param <T> a <code>T extends StatelessServiceBase</code> value
      * @param impl The implementation.
      * @param iface The interface class.
      *

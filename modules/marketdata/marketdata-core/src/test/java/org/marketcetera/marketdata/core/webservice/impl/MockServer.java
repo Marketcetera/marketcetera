@@ -14,7 +14,7 @@ import org.springframework.context.Lifecycle;
 /* $License$ */
 
 /**
- *
+ * Provides a test market data server implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -132,7 +132,7 @@ public class MockServer
     /**
      * Get the sessionManager value.
      *
-     * @return a <code>SessionManager<MockSession></code> value
+     * @return a <code>SessionManager&lt;MockSession&gt;</code> value
      */
     public SessionManager<MockSession> getSessionManager()
     {
@@ -141,7 +141,7 @@ public class MockServer
     /**
      * Sets the sessionManager value.
      *
-     * @param inSessionManager a <code>SessionManager<MockSession></code> value
+     * @param inSessionManager a <code>SessionManager&lt;MockSession&gt;</code> value
      */
     public void setSessionManager(SessionManager<MockSession> inSessionManager)
     {

@@ -88,7 +88,7 @@ public class MarketDataBean
     /**
      * Sets the meta-type of the event.
      *
-     * @param inEventType
+     * @param inEventType an <code>EventType</code> value
      */
     public final void setEventType(EventType inEventType)
     {

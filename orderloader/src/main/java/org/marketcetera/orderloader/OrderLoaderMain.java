@@ -1,6 +1,22 @@
 package org.marketcetera.orderloader;
 
-import static org.marketcetera.orderloader.Messages.*;
+import static org.marketcetera.orderloader.Messages.ARG_BROKER_DESCRIPTION;
+import static org.marketcetera.orderloader.Messages.ARG_BROKER_VALUE;
+import static org.marketcetera.orderloader.Messages.ARG_MODE_DESCRIPTION;
+import static org.marketcetera.orderloader.Messages.ARG_MODE_VALUE;
+import static org.marketcetera.orderloader.Messages.ARG_PASSWORD_DESCRIPTION;
+import static org.marketcetera.orderloader.Messages.ARG_PASSWORD_VALUE;
+import static org.marketcetera.orderloader.Messages.ARG_USERNAME_DESCRIPTION;
+import static org.marketcetera.orderloader.Messages.ARG_USERNAME_VALUE;
+import static org.marketcetera.orderloader.Messages.ERROR_MISSING_FILE;
+import static org.marketcetera.orderloader.Messages.ERROR_TOO_MANY_ARGUMENTS;
+import static org.marketcetera.orderloader.Messages.ERROR_USAGE;
+import static org.marketcetera.orderloader.Messages.FAILED_ORDER;
+import static org.marketcetera.orderloader.Messages.FAILED_ORDERS;
+import static org.marketcetera.orderloader.Messages.LINE_SUMMARY;
+import static org.marketcetera.orderloader.Messages.LOG_APP_COPYRIGHT;
+import static org.marketcetera.orderloader.Messages.LOG_APP_VERSION_BUILD;
+import static org.marketcetera.orderloader.Messages.ORDER_SUMMARY;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -9,7 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
@@ -175,10 +195,9 @@ public class OrderLoaderMain
         ApplicationContainer.stopInstanceWaiting();
     }
     /**
-     * 
+     * Get the application start arguments.
      *
-     *
-     * @return
+     * @return a <code>String[]</code> value
      */
     protected String[] getArgs()
     {
@@ -296,8 +315,8 @@ public class OrderLoaderMain
         printMessage(LOG_APP_VERSION_BUILD.getText(ApplicationVersion.getVersion(),
                                                    ApplicationVersion.getBuildNumber()));
         try {
-            execute(new GnuParser().parse(options(),
-                                          inArgs));
+            execute(new DefaultParser().parse(options(),
+                                              inArgs));
         } catch (Exception e) {
             printError(e);
             usage();
@@ -388,44 +407,47 @@ public class OrderLoaderMain
      */
     private String mFilename;
     /**
-     * 
+     * indicates the mode
      */
     private static final String OPT_MODE = "m";  //$NON-NLS-1$
     /**
-     * 
+     * indicates the broker
      */
     private static final String OPT_BROKER = "b";  //$NON-NLS-1$
     /**
-     * 
+     * indicates the username
      */
     private static final String OPT_USERNAME = "u";  //$NON-NLS-1$
     /**
-     * 
+     * indicates th password
      */
     private static final String OPT_PASSWORD = "p";  //$NON-NLS-1$
     /**
      * indicates if the order loader is running or not 
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
+    /**
+     * client username value
+     */
     private String clientUsername;
     /**
-     * 
+     * client password value
      */
     private char[] clientPassword;
     /**
-     * 
+     * client URL value
      */
     private String clientURL;
     /**
-     * 
+     * client web-services host value
      */
     private String clientWsHost;
     /**
-     * 
+     * client order id prefix value
      */
     private String clientIdPrefix;
     /**
-     * 
+     * client web-services port value
      */
     private String clientWsPort;
 }

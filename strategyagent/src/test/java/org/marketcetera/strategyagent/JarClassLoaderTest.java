@@ -21,7 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.Pair;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.file.Deleter;
 
 /* $License$ */
@@ -40,7 +39,7 @@ public class JarClassLoaderTest
      * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5041014">
      * bug report</a> for details on this issue.
      *
-     * @throws I18NException if there were errors.
+     * @throws Exception if there were errors.
      */
     @BeforeClass
     public static void cleanup() throws Exception {

@@ -85,28 +85,40 @@ public interface PositionRow {
      * @return the child positions, or null if this is not a summary row
      */
     EventList<PositionRow> getChildren();
-
     /**
+     * Add the given property change listener.
+     * 
+     * @param listener a <code>PropertyChangeListener</code> value
+     *
      * @see PropertyChangeSupport#addPropertyChangeListener(PropertyChangeListener)
      */
     void addPropertyChangeListener(PropertyChangeListener listener);
-
     /**
+     * Remove the given property change listener.
+     *
+     * @param listener a <code>PropertyChangeListener</code> value
+     *
      * @see PropertyChangeSupport#removePropertyChangeListener(PropertyChangeListener)
      */
     void removePropertyChangeListener(PropertyChangeListener listener);
-
     /**
-     * @see PropertyChangeSupport#addPropertyChangeListener(String,
-     *      PropertyChangeListener)
+     * Add a property change listener for the given property name.
+     *
+     * @param propertyName a <code>String</code> value
+     * @param listener a <code>PropertyChangeListener</code> value
+     * 
+     * @see PropertyChangeSupport#addPropertyChangeListener(String,PropertyChangeListener)
      */
     void addPropertyChangeListener(String propertyName,
-            PropertyChangeListener listener);
-
+                                   PropertyChangeListener listener);
     /**
-     * @see PropertyChangeSupport#removePropertyChangeListener(String,
-     *      PropertyChangeListener)
+     * Remove the given property change listener for the given property name.
+     *
+     * @param propertyName a <code>String</code> value
+     * @param listener a <code>PropertyChangeListener</code> value
+     *
+     * @see PropertyChangeSupport#removePropertyChangeListener(String,PropertyChangeListener)
      */
     void removePropertyChangeListener(String propertyName,
-            PropertyChangeListener listener);
+                                      PropertyChangeListener listener);
 }

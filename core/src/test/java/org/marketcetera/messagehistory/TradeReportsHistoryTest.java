@@ -942,7 +942,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
      * with OrdStatus of PARTIALLY_FILLED, FILLED, or PENDING_CANCEL, so that's
      * what we do.
      * 
-     * @throws FieldNotFound
+     * @throws Exception if an unexpected error occurs
      */
     public void testMerrillPAXIgnoreLastShares() throws Exception {
         Message executionReportA = msgFactory

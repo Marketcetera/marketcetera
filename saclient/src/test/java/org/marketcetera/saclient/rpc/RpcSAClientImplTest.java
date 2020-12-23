@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,7 @@ public class RpcSAClientImplTest
                      serviceAdapter.getProvidersCount().get());
     }
     /**
-     * Tests {@link RpcSAClientImpl#getInstances()}.
+     * Tests {@link RpcSAClientImpl#getInstances(ModuleURN)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -376,7 +377,8 @@ public class RpcSAClientImplTest
                                            "txt");
         tmpFile.deleteOnExit();
         FileUtils.writeStringToFile(tmpFile,
-                                    "Lorum ipsum");
+                                    "Lorum ipsum",
+                                    Charset.defaultCharset());
         return tmpFile;
     }
     /**

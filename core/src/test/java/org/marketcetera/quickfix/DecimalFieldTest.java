@@ -1,19 +1,18 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.MarketceteraTestSuite;
+import java.math.BigDecimal;
+
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.trade.Equity;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-
-import java.math.BigDecimal;
-
 import quickfix.Message;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.TimeInForce;
-import quickfix.field.Price;
-import quickfix.field.OrderQty;
 
 /**
  * Verify that the round-tripping of BigDecimals works with QFJ
@@ -35,7 +34,9 @@ public class DecimalFieldTest extends TestCase {
 
     /** Verify that the round-tripping of BigDecimals works with QFJ
      * this is testing the fix for bug QFJ-300 (http://www.quickfixj.org/jira/browse/QFJ-300)
-     *  */
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     public void testQFJ_BigDecimal() throws Exception {
         BigDecimal originalPrice = new BigDecimal("10.3000"); //$NON-NLS-1$
         assertEquals(4, originalPrice.scale());

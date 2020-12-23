@@ -1269,7 +1269,7 @@ public abstract class LanguageTestBase
     /**
      * Takes a single strategy and starts and stops it many times.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @PerformanceTest
     public void startStop()
@@ -1293,7 +1293,7 @@ public abstract class LanguageTestBase
     /**
      * Starts and stops many different strategies.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @PerformanceTest
     public void manyStrategiesStartStop()
@@ -2896,7 +2896,7 @@ public abstract class LanguageTestBase
     /**
      * Tests that two strategies with the same class name can co-exist.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void strategiesOfSameClass()

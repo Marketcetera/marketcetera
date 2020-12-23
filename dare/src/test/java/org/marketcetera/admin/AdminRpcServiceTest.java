@@ -12,11 +12,6 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.admin.AdminClient;
-import org.marketcetera.admin.AdminClientFactory;
-import org.marketcetera.admin.AdminPermissions;
-import org.marketcetera.admin.Permission;
-import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.module.ExpectedFailure;
@@ -71,7 +66,7 @@ public class AdminRpcServiceTest
         }
     }
     /**
-     * Test {@link AdminClient#getPermissionsForUsername(String)}.
+     * Test {@link AdminClient#getPermissionsForCurrentUser()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -123,7 +118,7 @@ public class AdminRpcServiceTest
                      adminClient.readUsers().size());
     }
     /**
-     * Test {@link AdminClient#updateUser(String, org.marketcetera.ors.security.SimpleUser)}.
+     * Test {@link AdminClient#updateUser(String, User)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -152,7 +147,7 @@ public class AdminRpcServiceTest
         assertFalse("updated-description".equals(user.getDescription()));
     }
     /**
-     * Test {@link AdminClient#createUser(SimpleUser, String)}.
+     * Test {@link AdminClient#createUser(User, String)}.
      *
      * @throws Exception if an unexpected error occurs
      */

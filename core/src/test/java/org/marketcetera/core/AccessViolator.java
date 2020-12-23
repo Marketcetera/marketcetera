@@ -1,8 +1,8 @@
 package org.marketcetera.core;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author Graham Miller
@@ -39,7 +39,14 @@ public class AccessViolator {
 	}
     
 
-    /** Sets the speicified field to the passed-in value */
+    /** Sets the specified field to the passed-in value.*
+     *
+     * @param fieldName a <code>String</code> value
+     * @param reference an <code>Object</code> value
+     * @param value an <code>Object</code> value
+     * @throws NoSuchFieldException if the field cannot be set because it doesn't exist
+     * @throws IllegalAccessException if the field cannot be set because it cannot be accessed
+     */
     public void setField(String fieldName, Object reference, Object value)
             throws NoSuchFieldException, IllegalAccessException {
         Field theField = violatedClass.getDeclaredField(fieldName);

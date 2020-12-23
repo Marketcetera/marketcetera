@@ -47,6 +47,8 @@ public class SelfRepostingEventsTest extends ModuleTestBase {
      * Setup a data flow where 1st esper instance feeds data into the same Esper instance multiple times
      * So feed it a custom class, then grab an individual getter method on that until we get something in the end
      * and verify that comes through correctly.
+     *
+     * @throws Exception if an unexpected error occurs
      */
     @Test(timeout = 2*60*1000)
     public void testSelfRepostingEvents() throws Exception {

@@ -14,8 +14,12 @@ public interface IDFactory {
      * @throws NoMoreIDsException When there are no more exceptions to get from the DB
      * @return the next unique identifier as a string
      */
-    public String getNext() throws NoMoreIDsException;
-
-    /** Do your init thing, you factory, you! */
-    public void init() throws ClassNotFoundException, NoMoreIDsException ;
+    String getNext() throws NoMoreIDsException;
+    /**
+     * Do your init thing, you factory, you!
+     *
+     * @throws ClassNotFoundException if the ID factory cannot be initialized
+     * @throws NoMoreIDsException if no more IDs are available
+     */
+    void init() throws ClassNotFoundException, NoMoreIDsException ;
 }

@@ -20,8 +20,8 @@ public class MockMarketDataFeedCredentials
     /**
      * Create a new <code>TestMarketDataFeedCredentials</code> instance.
      *
-     * @param inURL
-     * @throws FeedException
+     * @param inURL a <code>String</code> value
+     * @throws FeedException if the credentials cannot be constructed
      */
     public MockMarketDataFeedCredentials(String inURL)
         throws FeedException

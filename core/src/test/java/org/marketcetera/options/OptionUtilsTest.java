@@ -3,7 +3,6 @@ package org.marketcetera.options;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.marketcetera.trade.OptionType.Call;
 import static org.marketcetera.trade.OptionType.Put;
 import static org.marketcetera.trade.OptionType.Unknown;
@@ -12,6 +11,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
@@ -30,7 +30,7 @@ import org.marketcetera.trade.OptionType;
 public class OptionUtilsTest {
     	
     /**
-     * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &
+     * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &amp;
      * {@link OptionUtils#normalizeUSEquityOptionExpiry(String)}.
      *
      * @throws Exception if there were unexpected errors
@@ -65,8 +65,8 @@ public class OptionUtilsTest {
     }
 
     private void assertNormalized(String expiry, String expected) {
-        assertThat(OptionUtils.normalizeUSEquityOptionExpiry(expiry), is(expected));
-        assertThat(OptionUtils.normalizeEquityOptionExpiry(expiry), is(expected));
+        MatcherAssert.assertThat(OptionUtils.normalizeUSEquityOptionExpiry(expiry), is(expected));
+        MatcherAssert.assertThat(OptionUtils.normalizeEquityOptionExpiry(expiry), is(expected));
     }
     
     /**

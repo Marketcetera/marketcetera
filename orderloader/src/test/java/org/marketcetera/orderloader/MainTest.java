@@ -275,10 +275,9 @@ public class MainTest
             return mOrderProcessor;
         }
         /**
-         * 
+         * Get the client parameters.
          *
-         *
-         * @return
+         * @return a <code>ClientParameters</code> value
          */
         public ClientParameters getClientParameters()
         {
@@ -294,20 +293,18 @@ public class MainTest
             loader = inLoader;
         }
         /**
-         * 
+         * Set the fail-on-create processor value.
          *
-         *
-         * @param inFailCreateProcessor
+         * @param inFailCreateProcessor a <code>boolean</code> value
          */
         public void setFailCreateProcessor(boolean inFailCreateProcessor)
         {
             mFailCreateProcessor = inFailCreateProcessor;
         }
         /**
-         * 
+         * Get the order processor value.
          *
-         *
-         * @return
+         * @return a <code>MockOrderProcessor</code> value
          */
         public MockOrderProcessor getOrderProcessor()
         {

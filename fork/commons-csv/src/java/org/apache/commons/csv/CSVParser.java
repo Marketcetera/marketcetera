@@ -17,9 +17,9 @@
 package org.apache.commons.csv;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.InputStreamReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 
 
@@ -75,7 +75,7 @@ public class CSVParser {
   
   // the following objects are shared to reduce garbage 
   /** A record buffer for getLine(). Grows as necessary and is reused. */
-  private final ArrayList record = new ArrayList();
+  private final ArrayList<String> record = new ArrayList<>();
   private final Token reusableToken = new Token();
   private final CharBuffer wsBuf = new CharBuffer();
   private final CharBuffer code = new CharBuffer(4);
@@ -184,7 +184,7 @@ public class CSVParser {
    * @throws IOException on parse error or input read-failure
    */
   public String[][] getAllValues() throws IOException {
-    ArrayList records = new ArrayList();
+    ArrayList<String[]> records = new ArrayList<>();
     String[] values;
     String[][] ret = null;
     while ((values = getLine()) != null)  {
@@ -288,6 +288,9 @@ public class CSVParser {
  
   /**
    * Convenience method for <code>nextToken(null)</code>.
+   *
+   * @return a <code>Token</code> value
+   * @throws IOException if an error occurs generating the next token
    */
   protected Token nextToken() throws IOException {
       return nextToken(new Token());
@@ -563,6 +566,7 @@ public class CSVParser {
   /**
    * Sets the specified CSV Strategy
    *
+   * @param strategy a <code>CSVStrategy</code> value
    * @return current instance of CSVParser to allow chained method calls
    * @deprecated the strategy should be set in the constructor {@link #CSVParser(Reader,CSVStrategy)}.
    */

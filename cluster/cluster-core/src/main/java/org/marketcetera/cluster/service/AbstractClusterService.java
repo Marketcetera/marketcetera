@@ -547,10 +547,10 @@ public abstract class AbstractClusterService
      * Returns a candidate that suits the given work unit spec if one exists.
      *
      * @param inWorkUnitSpec a <code>ClusterWorkUnitSpec</code> value
-     * @return an <code>Object</code> value
-     * @throws InvocationTargetException 
-     * @throws IllegalArgumentException 
-     * @throws IllegalAccessException 
+     * @return an <code>Object</code> value or <code>null</code>
+     * @throws InvocationTargetException if the candidate cannot be instantiated
+     * @throws IllegalArgumentException if an error occurs finding the candidate
+     * @throws IllegalAccessException if the candidate cannot be instatiated
      */
     protected Object findCandidateFor(ClusterWorkUnitSpec inWorkUnitSpec)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
@@ -590,10 +590,10 @@ public abstract class AbstractClusterService
      * Finds a candidate bean for the given work unit spec and activates it.
      *
      * @param inWorkUnitSpec a <code>ClusterWorkUnitSpec</code> value
-     * @return an <code>Object</code>value
-     * @throws InvocationTargetException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
+     * @return an <code>Object</code>value or <code>null</code>
+     * @throws InvocationTargetException if the work unit cannot be activated
+     * @throws IllegalArgumentException if an error occurs finding the work unit
+     * @throws IllegalAccessException if the work unit cannot be activated
      */
     protected Object findAndActivateWorkUnit(ClusterWorkUnitSpec inWorkUnitSpec)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
@@ -723,6 +723,8 @@ public abstract class AbstractClusterService
     /**
      * Gets the annotation of the given type from the given argument.
      *
+     * @param <Clazz> the class of the given object
+     * @param <AnnotationClazz> the type of the given annotation
      * @param inInstance an <code>Object</code> value
      * @param inAnnotation a <code>Class&lt;AnnotationClazz&gt;</code> value
      * @return an <code>AnnotationClazz</code> value
@@ -859,6 +861,7 @@ public abstract class AbstractClusterService
     /**
      * Marshals the given value as XML.
      *
+     * @param <Clazz> the type of the provided data
      * @param inData a <code>Clazz</code> value
      * @return a <code>String</code> value
      * @throws JAXBException if the given object cannot be marshaled

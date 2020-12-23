@@ -76,7 +76,7 @@ public class EventFromFixGenerator
      * @param inIsSnapshot a <code>boolean</code> value
      * @param inReceivedTimestamp a <code>long</code> value
      * @return a <code>List&lt;Event&gt;</code> value
-     * @throws FieldNotFound
+     * @throws FieldNotFound if the event list cannot be generated
      */
     public List<Event> events(Message inMessage,
                               boolean inIsSnapshot,

@@ -50,6 +50,7 @@ public interface RpcServerServices<SessionClazz>
     /**
      * Unmarshals the given XML stream. 
      *
+     * @param <Clazz> the type of the object to un-marshal
      * @param inData a <code>String</code> value
      * @return a <code>Clazz</code> value
      * @throws JAXBException if an error occurs unmarshalling the stream

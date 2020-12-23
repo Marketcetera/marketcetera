@@ -63,7 +63,7 @@ public class RemoteEmitterTestBase extends ModuleTestBase {
     }
 
     /**
-     * Closes the client connection & shuts down the mock server.
+     * Closes the client connection &amp; shuts down the mock server.
      *
      * @throws Exception if there were errors
      */

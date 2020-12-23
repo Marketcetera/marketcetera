@@ -21,19 +21,15 @@ import quickfix.field.MsgType;
 
 /**
  * Removes fields based on conditions.
- *
  */
 @ClassVersion("$Id$")
 public class ConditionalFieldRemoverMessageModifier
         implements MessageModifier
 {
-	private int conditionalField;
-	
-	private List<String> matchCriteria;
-	
     /**
      * Create a new ConditionalFieldRemoverMessageModifier instance.
      *
+     * @param skipField a <code>boolean</code> value
      */
     public ConditionalFieldRemoverMessageModifier(String skipField)
     {
@@ -61,52 +57,49 @@ public class ConditionalFieldRemoverMessageModifier
                                  FIXMessageAugmentor inAugmentor)
             throws CoreException
     {
-    	boolean isModified = false;
+        boolean isModified = false;
         boolean matchFlag = false;
-        
-        if(inMessage.isSetField(conditionalField))
-        {
-        	String matcherValue = null;
-        	try {
-				matcherValue = inMessage.getString(conditionalField);
-			} catch (FieldNotFound e) {
-				e.printStackTrace();
-			}
-        	for(String value: matchCriteria)
-        	{
-        		if(value.equals(matcherValue)){
-        			matchFlag = true;
-        			break;
-        		}
-        	}
+        if(inMessage.isSetField(conditionalField)) {
+            String matcherValue = null;
+            try {
+                matcherValue = inMessage.getString(conditionalField);
+            } catch (FieldNotFound e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+            for(String value: matchCriteria) {
+                if(value.equals(matcherValue)){
+                    matchFlag = true;
+                    break;
+                }
+            }
         }
-        
         if(matchFlag){
-	        if(msgType != null &&
-	           inMessage.isSetField(field)) {
-	            SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
-	                                   "Message contains field {}", //$NON-NLS-1$
-	                                   field);
-	            if(msgType.equals(allMessageIndicator)) {
-	                SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
-	                                       "Message type specifier is 'all messages', removing field"); //$NON-NLS-1$
-	                inMessage.removeField(field);
-	                isModified = true;
-	            } else {
-	                MsgType thisMessageType = new MsgType();
-	                try {
-	                    inMessage.getHeader().getField(thisMessageType);
-	                } catch (FieldNotFound e) {
-	                    throw new CoreException(e);
-	                }
-	                if(thisMessageType.valueEquals(msgType)) {
-	                    SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
-	                                           "Message type specified matches message, removing field"); //$NON-NLS-1$
-	                    inMessage.removeField(field);
-	                    isModified = true;
-	                }
-	            }
-	        }
+            if(msgType != null &&
+                    inMessage.isSetField(field)) {
+                SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
+                                       "Message contains field {}", //$NON-NLS-1$
+                                       field);
+                if(msgType.equals(allMessageIndicator)) {
+                    SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
+                                           "Message type specifier is 'all messages', removing field"); //$NON-NLS-1$
+                    inMessage.removeField(field);
+                    isModified = true;
+                } else {
+                    MsgType thisMessageType = new MsgType();
+                    try {
+                        inMessage.getHeader().getField(thisMessageType);
+                    } catch (FieldNotFound e) {
+                        throw new CoreException(e);
+                    }
+                    if(thisMessageType.valueEquals(msgType)) {
+                        SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
+                                               "Message type specified matches message, removing field"); //$NON-NLS-1$
+                        inMessage.removeField(field);
+                        isModified = true;
+                    }
+                }
+            }
         }
         if(isModified) {
             SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
@@ -143,16 +136,33 @@ public class ConditionalFieldRemoverMessageModifier
                                                 msgType).append("Field", //$NON-NLS-1$
                                                                 field).toString();
     }
-    
-
-	public void setConditionalField(int conditionalField) {
-		this.conditionalField = conditionalField;
-	}
-	public void setMatchCriteria(List<String> matchCriteria) {
-		this.matchCriteria = matchCriteria;
-	}
-
-	/**
+    /**
+     * Set the conditional field value.
+     *
+     * @param conditionalField an <code>int</code> value
+     */
+    public void setConditionalField(int conditionalField)
+    {
+        this.conditionalField = conditionalField;
+    }
+    /**
+     * Set the match criteria value.
+     *
+     * @param matchCriteria a <code>List&lt;String&gt;</code> value
+     */
+    public void setMatchCriteria(List<String> matchCriteria)
+    {
+        this.matchCriteria = matchCriteria;
+    }
+    /**
+     * conditional field value
+     */
+    private int conditionalField;
+    /**
+     * match criteria value
+     */
+    private List<String> matchCriteria;
+    /**
      * FIX message code of the messages to modify
      */
     private final String msgType;

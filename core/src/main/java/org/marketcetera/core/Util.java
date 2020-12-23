@@ -30,7 +30,7 @@ public class Util
     /** Tries to load the named file from a classpath
      * If the file name doesn't start with a leading / then
      * if we fail to load it we prepend the / and try again
-     * @param inFileName
+     * @param inFileName a <code>String</code> value
      * @param inObj some object to get the classloader from
      * @return The URL to the resource or NULL if it's not found
      */
@@ -44,15 +44,15 @@ public class Util
         }
         return resource;
     }
-
     /**
      * Reads the entire file and stuffs it into a StringBuffer and returns the string
      * The file is loaded from classpath.
      * Use wisely, this will choke on very large files.
      *
-     * @param inFileName
+     * @param inFileName a <code>String</code> value
      * @param inObj some object to get the classloader from
      * @return The entire contents of the file
+     * @throws Exception if an error occurs reading the file
      */
     public static String getStringFromFile(String inFileName, Object inObj) throws Exception
     {
@@ -69,10 +69,11 @@ public class Util
     /**
      * Deep copies the given object.
      *
+     * @param <Clazz> the type of the object to copy
      * @param inOriginalObject a <code>Clazz</code> value
      * @return a <code>Clazz</code> value
-     * @throws IOException 
-     * @throws ClassNotFoundException 
+     * @throws IOException if an error occurs copying the object
+     * @throws ClassNotFoundException if the new copy cannot be created
      */
     @SuppressWarnings("unchecked")
     public static <Clazz extends Serializable> Clazz deepCopy(Clazz inOriginalObject)

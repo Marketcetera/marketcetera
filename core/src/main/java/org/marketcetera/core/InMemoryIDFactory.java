@@ -1,6 +1,5 @@
 package org.marketcetera.core;
 
-
 /**
  * Implementation of IDFactory that provides identifiers unique to this run of the
  * Java VM.  They are simply the string representation of a counter that is incremented
@@ -19,23 +18,22 @@ public class InMemoryIDFactory implements IDFactory {
      * @param startAt the value at which to start the unique identifiers.
      */
     public InMemoryIDFactory(long startAt) {
-	this(startAt, ""); //$NON-NLS-1$
+        this(startAt, ""); //$NON-NLS-1$
     }
-
     /**
      * Creates a new instance of InMemoryOrderIDFactory, with the given starting
      * number, and a prefix for the identifiers
      * @param startAt the value at which to start the unique identifiers.
+     * @param suffix a <code>String</code> value
      */
     public InMemoryIDFactory(long startAt, String suffix) {
         mNextID = startAt;
-	this.prefix = suffix;
+        this.prefix = suffix;
     }
-
     /**
      * Returns the next unique identifier as a string
      * @return the next unique identifier
-     * @throws NoMoreIDsException 
+     * @throws NoMoreIDsException if no more IDs are available
      */
     public String getNext() throws NoMoreIDsException {
         long retVal = 0;
@@ -43,12 +41,10 @@ public class InMemoryIDFactory implements IDFactory {
             retVal = mNextID++;
         }
         if (retVal == Long.MAX_VALUE){
-        	throw new NoMoreIDsException(Messages.ERROR_IN_MEMORY_ID_FACTORY_OVERRUN);
+            throw new NoMoreIDsException(Messages.ERROR_IN_MEMORY_ID_FACTORY_OVERRUN);
         }
         return prefix+retVal;
     }
-
-
     public void init() {
         // no-op
     }

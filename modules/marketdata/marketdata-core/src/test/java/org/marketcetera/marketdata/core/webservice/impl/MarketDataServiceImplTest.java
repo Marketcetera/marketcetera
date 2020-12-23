@@ -28,6 +28,7 @@ import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
+import org.marketcetera.marketdata.core.webservice.MarketDataService;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory;
 import org.marketcetera.module.ModuleManager;
@@ -110,7 +111,7 @@ public class MarketDataServiceImplTest
         context = inContext;
     }
     /**
-     * Tests the transmission of all event types via {@link MarketDataService#getEvents(org.marketcetera.util.ws.stateful.ClientContext, long).
+     * Tests the transmission of all event types via {@link MarketDataService#getEvents(org.marketcetera.util.ws.stateful.ClientContext, long)}.
      *
      * @throws Exception if an unexpected error occurs
      */

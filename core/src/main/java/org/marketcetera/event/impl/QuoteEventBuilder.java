@@ -134,7 +134,10 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * with the same attributes except for the {@link QuoteAction} which
      * will always be {@link QuoteAction#CHANGE}.
      *
+     * @param <E> an <code>E extends QuoteEvent</code> value
      * @param inEvent a <code>QuoteEvent</code> value
+     * @param inNewTimestamp a <code>Date</code> value
+     * @param inNewSize a <code>BigDecimal</code> value
      * @return a <code>QuoteEvent</code> value
      * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
      *  an unsupported asset class
@@ -213,6 +216,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * with the same attributes except for the {@link QuoteAction} which
      * will always be {@link QuoteAction#CHANGE}.
      *
+     * @param <E> an <code>E extends QuoteEvent</code> value
      * @param inEvent a <code>QuoteEvent</code> value
      * @param inNewPrice a <code>BigDecimal</code> value
      * @param inNewSize a <code>BigDecimal</code> value
@@ -297,6 +301,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * with the same attributes except for the {@link QuoteAction} which
      * will always be {@link QuoteAction#DELETE}.
      *
+     * @param <E> an <code>E extends QuoteEvent</code> value
      * @param inEvent a <code>QuoteEvent</code> value
      * @return a <code>QuoteEvent</code> value
      * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for

@@ -20,6 +20,7 @@ package org.apache.commons.csv.writer;
 
 
 /**
+ * Represents a single CSV field.
  * 
  * @version $Id$
  */
@@ -31,7 +32,7 @@ public class CSVField {
     private boolean overrideFill;
 
     /**
-     * 
+     * Create a new CSVField instance.
      */
     public CSVField() {
     }
@@ -103,7 +104,7 @@ public class CSVField {
     /**
      * Does this field override fill ?
      * 
-     * @return
+     * @return a <code>boolean</code> value
      */
     public boolean overrideFill() {
         return overrideFill;

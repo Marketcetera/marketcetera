@@ -38,6 +38,7 @@ public class DynamicAcceptorSessionProvider
      * @param inApplication an <code>Application</code> value
      * @param inSessionService a <code>SessionService</code> value
      * @param inFixSettingsProviderFactory a <code>FixSettingsProviderFactory</code> value
+     * @param inClusterData a <code>ClusterData</code> value
      */
     public DynamicAcceptorSessionProvider(Application inApplication,
                                           SessionService inSessionService,

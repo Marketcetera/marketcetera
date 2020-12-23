@@ -350,7 +350,7 @@
       <dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>tensorflow</artifactId>
-	<!-- upgrading past 1.13.1 causes crashes with OpenJDK 1.8 -->
+        <!-- upgrading past 1.13.1 causes crashes with OpenJDK 1.8 -->
         <version>1.13.1</version>
       </dependency>
       <dependency>
@@ -1109,6 +1109,12 @@
           <configuration>
             <!-- add this to disable checking -->
             <failOnError>false</failOnError>
+            <additionalJOptions>
+              <additionalJOption>-Xmaxerrs</additionalJOption>
+              <additionalJOption>65536</additionalJOption>
+              <additionalJOption>-Xmaxwarns</additionalJOption>
+              <additionalJOption>65536</additionalJOption>
+            </additionalJOptions>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
@@ -1124,6 +1130,21 @@
     </pluginManagement>
     <!-- **** PLUGINS SECTION **** -->
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.9.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.1.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.1</version>
+      </plugin>
       <!-- source jar generation -->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
@@ -1335,12 +1356,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.9.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.1.1</version>
       </plugin>
     </plugins>
   </reporting>

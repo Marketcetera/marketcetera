@@ -83,8 +83,8 @@ public class MockMarketDataFeed
     /**
      * Create a new <code>TestMarketDataFeed</code> instance.
      *
-     * @param inFeedType
-     * @throws NoMoreIDsException 
+     * @param inFeedType a <code>FeedType</code> value
+     * @throws NoMoreIDsException if the feed cannot be constructed
      */
     public MockMarketDataFeed(FeedType inFeedType)
         throws NoMoreIDsException
@@ -133,7 +133,7 @@ public class MockMarketDataFeed
     /**
      * Sets the supported asset classes for this feed.
      *
-     * @param inAssetClasses a <code>Set&lt;AssetClass&gt</code> value
+     * @param inAssetClasses a <code>Set&lt;AssetClass&gt;</code> value
      */
     public void setAssetClasses(Set<AssetClass> inAssetClasses)
     {
@@ -277,7 +277,7 @@ public class MockMarketDataFeed
     /**
      * Sets the allowLogin value.
      *
-     * @param a <code>TestMarketDataFeed</code> value
+     * @param inAllowLogin a <code>boolean</code> value
      */
     public void setLoginFails(boolean inAllowLogin)
     {
@@ -297,7 +297,7 @@ public class MockMarketDataFeed
     /**
      * Sets the initFails value.
      *
-     * @param a <code>TestMarketDataFeed</code> value
+     * @param inInitFails a <code>boolean</code> value
      */
     public void setInitFails(boolean inInitFails)
     {
@@ -333,7 +333,7 @@ public class MockMarketDataFeed
     /**
      * Sets the executionFails value.
      *
-     * @param a <code>TestMarketDataFeed</code> value
+     * @param inExecutionFails a <code>boolean</code> value
      */
     public void setExecutionFails(boolean inExecutionFails)
     {
@@ -383,7 +383,7 @@ public class MockMarketDataFeed
     /**
      * Sets the cancelFails value.
      *
-     * @param a <code>TestMarketDataFeed</code> value
+     * @param inCancelFails a <code>boolean</code> value
      */
     public void setCancelFails(boolean inCancelFails)
     {
@@ -509,7 +509,7 @@ public class MockMarketDataFeed
     /**
      * Get the timeout value.
      *
-     * @return a <code>TestMarketDataFeed</code> value
+     * @return a <code>boolean</code> value
      */
     public boolean getShouldTimeout()
     {
@@ -518,7 +518,7 @@ public class MockMarketDataFeed
     /**
      * Sets the timeout value.
      *
-     * @param a <code>TestMarketDataFeed</code> value
+     * @param inTimeout a <code>boolean</code> value
      */
     public void setShouldTimeout(boolean inTimeout)
     {

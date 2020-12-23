@@ -73,8 +73,8 @@
         <version>3.2.0</version>
         <configuration>
           <links>
-            <link>http://commons.apache.org/sandbox/csv/apidocs/</link>
-            <link>http://repo.marketcetera.org/javadoc/1.5.0/platform/</link>
+            <link>https://javadoc.io/doc/org.apache.commons/commons-csv/latest/index.html</link>
+            <link>https://repo.marketcetera.org/javadoc/3.2.1/platform</link>
           </links>
         </configuration>
       </plugin>

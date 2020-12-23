@@ -20,7 +20,7 @@ public class UnsupportedEventException
     /**
      * Create a new UnsupportedEventException instance.
      *
-     * @param inMessage
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public UnsupportedEventException(I18NBoundMessage inMessage)
     {
@@ -30,7 +30,7 @@ public class UnsupportedEventException
     /**
      * Create a new UnsupportedEventException instance.
      *
-     * @param inNested
+     * @param inNested a <code>Throwable</code> value
      */
     public UnsupportedEventException(Throwable inNested)
     {
@@ -40,8 +40,8 @@ public class UnsupportedEventException
     /**
      * Create a new UnsupportedEventException instance.
      *
-     * @param inNested
-     * @param inMessage
+     * @param inNested a <code>Throwable</code> value
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public UnsupportedEventException(Throwable inNested,
                                      I18NBoundMessage inMessage)
