@@ -24,7 +24,7 @@ public class XmlValue
     /**
      * Create a new XmlValue instance.
      *
-     * @param inValue
+     * @param inValue an <code>Object</code> value
      */
     public XmlValue(Object inValue)
     {

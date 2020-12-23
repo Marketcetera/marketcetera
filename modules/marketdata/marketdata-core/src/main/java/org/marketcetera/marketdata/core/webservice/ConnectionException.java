@@ -6,7 +6,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /* $License$ */
 
 /**
- *
+ * Indicates an error occurred trying to connect to a remote source.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -24,8 +24,8 @@ public class ConnectionException
     /**
      * Create a new ConnectionException instance.
      *
-     * @param inHostname
-     * @param inPort
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
      */
     public ConnectionException(String inHostname,
                                int inPort)
@@ -84,7 +84,7 @@ public class ConnectionException
     /**
      * Get the port value.
      *
-     * @return a <code>int</code> value
+     * @return an <code>int</code> value
      */
     public int getPort()
     {
@@ -93,18 +93,18 @@ public class ConnectionException
     /**
      * Sets the port value.
      *
-     * @param inPort a <code>int</code> value
+     * @param inPort an <code>int</code> value
      */
     public void setPort(int inPort)
     {
         port = inPort;
     }
     /**
-     * 
+     * hostname value
      */
     private String hostname;
     /**
-     * 
+     * port value
      */
     private int port;
     private static final long serialVersionUID = 8121822556635716771L;

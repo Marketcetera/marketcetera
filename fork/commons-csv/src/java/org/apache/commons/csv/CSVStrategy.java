@@ -59,8 +59,10 @@ public class CSVStrategy implements Cloneable, Serializable {
      * @param delimiter a Char used for value separation
      * @param encapsulator a Char used as value encapsulation marker
      * @param commentStart a Char used for comment identification
+     * @param escape a Char used to escape other chars
      * @param ignoreLeadingWhitespace TRUE when leading whitespaces should be
      *                                ignored
+     * @param ignoreTrailingWhitespace TRUE when trailing whitespaces should be ignored
      * @param interpretUnicodeEscapes TRUE when unicode escapes should be 
      *                                interpreted
      * @param ignoreEmptyLines TRUE when the parser should skip emtpy lines

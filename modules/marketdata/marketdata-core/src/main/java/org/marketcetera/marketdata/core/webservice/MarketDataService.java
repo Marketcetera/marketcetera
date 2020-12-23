@@ -90,7 +90,7 @@ public interface MarketDataService
      * @param inContext a <code>ClientContext</code> value
      * @param inRequestIds a <code>List&lt;Long&gt;</code> value
      * @return a <code>Map&lt;Long,LinkedList&lt;Event&gt;&gt;</code> value
-     * @throws RemoteException
+     * @throws RemoteException if an error occurs getting the events
      */
     Map<Long,LinkedList<Event>> getAllEvents(@WebParam(name="context")ClientContext inContext,
                                              @WebParam(name="id")List<Long> inRequestIds)

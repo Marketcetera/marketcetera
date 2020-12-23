@@ -432,8 +432,8 @@ public class MarketceteraFeed
      * 
      * @param inProviderName a <code>String</code> value
      * @return a <code>MarketceteraFeed</code> value
-     * @throws CoreException 
-     * @throws URISyntaxException 
+     * @throws CoreException if the instance cannot be retrieved
+     * @throws URISyntaxException if the provider name cannot be parsed
      */
     public static MarketceteraFeed getInstance(String inProviderName)
         throws URISyntaxException, CoreException
