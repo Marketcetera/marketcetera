@@ -76,10 +76,11 @@ public class Total implements Serializable {
             this.value = total;
         }
     }
-
     /**
+     * Add the given values if the condition evaluates to true.
+     *
      * @param condition if true, do the addition.
-     * @param values
+     * @param values a <code>BigDecimal[]</code> value
      * @return the total with changed value if condition is true.
      * @since 1.4.0
      */
@@ -89,8 +90,10 @@ public class Total implements Serializable {
         }
         return this;
     }
-
     /**
+     * Add the given values to the <code>Total</code> value and return the new value.
+     *
+     * @param value a <code>BigDecimal[]</code> value
      * @return the current Sum with new total.
      */
     public Total add(final BigDecimal... value) {
@@ -100,10 +103,11 @@ public class Total implements Serializable {
         }
         return this;
     }
-
     /**
+     * Subtract the given values if the condition evaluates to true.
+     *
      * @param condition if true, do the subtraction.
-     * @param values
+     * @param values a <code>BigDecimal[]</code> value
      * @return the total with changed value if condition is true.
      * @since 1.4.0
      */
@@ -129,8 +133,10 @@ public class Total implements Serializable {
         }
         return this;
     }
-
     /**
+     * Add the given <code>Total</code> and return the new value.
+     *
+     * @param value a <code>Total</code> value
      * @return the current Sum with new total.
      */
     public Total add(final Total value) {
@@ -140,8 +146,10 @@ public class Total implements Serializable {
         }
         return this;
     }
-
     /**
+     * Subtract the given values and return the new value.
+     *
+     * @param value a <code>BigDecimal[]</code> value
      * @return the current Sum with new total.
      */
     public Total minus(final BigDecimal... value) {
@@ -151,8 +159,10 @@ public class Total implements Serializable {
         }
         return this;
     }
-
     /**
+     * Subtract the given value and return the new value.
+     *
+     * @param value a <code>Total</code> value
      * @return the current Sum with new total.
      */
     public Total minus(final Total value) {

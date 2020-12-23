@@ -18,6 +18,7 @@
  * instrument instance is available is abstracted out by
  * implementing it in a subclass of
  * {@link org.marketcetera.core.instruments.InstrumentFunctionHandler}.
+ * </p>
  * <p>
  * A {@link org.marketcetera.core.instruments.StaticInstrumentFunctionSelector}
  * instance can be used to dynamically select the appropriate handler
@@ -26,10 +27,10 @@
  * The selector chooses the appropriate instrument specific subclass of
  * {@link org.marketcetera.core.instruments.StaticInstrumentFunctionSelector}
  * based on the runtime type of the instrument.
+ * </p>
  * <p>
  * See {@link org.marketcetera.core.instruments.InstrumentToMessage} for an
- * example.
- * <p>
+ * example.</p>
  * <h3>DynamicInstrumentHandler</h3>
  * In cases when an instrument instance is not available and instrument
  * specific functionality needs to be invoked based on an arbitrary data,

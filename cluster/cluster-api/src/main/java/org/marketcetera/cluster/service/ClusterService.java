@@ -25,6 +25,7 @@ public interface ClusterService
     /**
      * Adds the given object to the given cluster queue.
      *
+     * @param <Clazz> the type of object
      * @param inQueueDescriptor a <code>QueueDescriptor&lt;Class&gt;</code> value
      * @param inObject a <code>Clazz</code> value
      */
@@ -33,6 +34,7 @@ public interface ClusterService
     /**
      * Peeks the top value in the given queue.
      *
+     * @param <Clazz> the type of object held by the queue
      * @param inQueueDescriptor a <code>QueueDescriptor&lt;Class&gt;</code> value
      * @return a <code>Clazz</code> value or <code>null</code>
      */
@@ -42,6 +44,8 @@ public interface ClusterService
      * 
      * <p>This call will block until a value becomes available.
      *
+     * @param <Clazz> the type of object held by the queue
+     * @param inQueueDescriptor a <code>QueueDescriptor&lt;Class&gt;</code> value
      * @return a <code>QueueDescriptor&lt;Class&gt;</code> value
      * @throws InterruptedException if this call is interrupted
      */
@@ -56,6 +60,7 @@ public interface ClusterService
     /**
      * Asynchronously executes the given task on members of the cluster as determined by the task.
      *
+     * @param <Clazz> the type of object returned by the task
      * @param inTask a <code>CallableClusterTask&lt;Clazz&gt;</code> value
      * @return an <code>Map&lt;Object,Future&lt;Clazz&gt;</code> value containing the result tokens by cluster member
      * @throws Exception if an error occurs executing the task

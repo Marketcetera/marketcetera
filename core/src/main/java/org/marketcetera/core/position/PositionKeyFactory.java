@@ -24,14 +24,11 @@ public class PositionKeyFactory {
      * Creates an equity position key. Note that account and traderId are
      * converted to null if they only contain whitespace.
      * 
-     * @param symbol
-     *            symbol, cannot be null or whitespace
-     * @param account
-     *            account
-     * @param traderId
-     *            trader id
-     * @throws IllegalArgumentException
-     *             if symbol is null or whitespace
+     * @param symbol symbol, cannot be null or whitespace
+     * @param account account
+     * @param traderId trader id
+     * @return a <code>PositionKey&lt;Equity&gt;</code> value
+     * @throws IllegalArgumentException if symbol is null or whitespace
      */
     public static PositionKey<Equity> createEquityKey(String symbol,
             @Nullable String account, @Nullable String traderId) {
@@ -79,6 +76,7 @@ public class PositionKeyFactory {
      * @param inSymbol a <code>String</code> value
      * @param inAccount a <code>String</code> value
      * @param inTraderId a <code>String</code> value
+     * @return a <code>PositionKey&lt;ConvertibleBond&gt;</code> value
      * @throws IllegalArgumentException if one of the given parameters are invalid
      */
     public static PositionKey<ConvertibleBond> createConvertibleBondKey(String inSymbol,
@@ -99,14 +97,15 @@ public class PositionKeyFactory {
      * @param farTenor a <code>String</code> value
      * @param inAccount a <code>String</code> value
      * @param inTraderId a <code>String</code> value
+     * @return a <code>PositionKey&lt;Currency&gt;</code> value
      * @throws IllegalArgumentException if one of the given parameters are invalid
      */
     public static PositionKey<Currency> createCurrencyKey(String baseCCY,
-                                                      String plCCY,
-                                                      String nearTenor,
-                                                      @Nullable String farTenor,
-                                                      @Nullable String inAccount,
-                                                      @Nullable String inTraderId)
+                                                          String plCCY,
+                                                          String nearTenor,
+                                                          @Nullable String farTenor,
+                                                          @Nullable String inAccount,
+                                                          @Nullable String inTraderId)
     {
         return createKey(new Currency(baseCCY, plCCY, nearTenor, farTenor),inAccount,
                 inTraderId);
@@ -118,6 +117,9 @@ public class PositionKeyFactory {
      * @param inExpiry a <code>String</code> value
      * @param inStrikePrice a <code>BigDecimal</code> value
      * @param inType an <code>OptionType</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inTraderId a <code>String</code> value
+     * @return a <code>PositionKey&lt;Currency&gt;</code> value
      * @throws IllegalArgumentException if any argument is <code>null</code>, or if symbol or expiry is whitespace
      */
     public static PositionKey<Option> createOptionKey(String inSymbol,
@@ -138,21 +140,26 @@ public class PositionKeyFactory {
      * Creates a position key for an arbitrary Instrument. Note that account and
      * traderId are converted to null if they only contain whitespace.
      * 
-     * @param instrument
-     *            instrument, cannot be null
-     * @param account
-     *            account
-     * @param traderId
-     *            trader id
-     * @throws IllegalArgumentException
-     *             if symbol is null or whitespace
+     * @param <T> the instrument type
+     * @param instrument instrument, cannot be null
+     * @param account account
+     * @param traderId trader id
+     * @return a <code>PositionKey&lt;T&gt;</code> value
+     * @throws IllegalArgumentException if symbol is null or whitespace
      */
     public static <T extends Instrument> PositionKey<T> createKey(T instrument,
-            @Nullable String account, @Nullable String traderId) {
-        return new PositionKeyImpl<T>(instrument, account, traderId);
+                                                                  @Nullable String account,
+                                                                  @Nullable String traderId)
+    {
+        return new PositionKeyImpl<T>(instrument,
+                                      account,
+                                      traderId);
     }
-
-    private PositionKeyFactory() {
+    /**
+     * Create a new PositionKeyFactory instance.
+     */
+    private PositionKeyFactory()
+    {
         throw new AssertionError("non-instantiable"); //$NON-NLS-1$
     }
 }

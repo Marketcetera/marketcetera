@@ -38,6 +38,7 @@ public interface ResourcePool<ResourceClazz extends Resource<ResourceAllocationH
      * <p>The caller must {@link #returnResource(Resource) return} allocated
      * resources after use.
      *
+     * @param inHint a <code>ResourceAllocationHintClazz</code> value
      * @return a <code>ResourceClazz</code> value
      * @throws IllegalArgumentException if no resource is available
      */

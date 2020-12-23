@@ -267,8 +267,11 @@ public final class LogEventImpl
         throw new IllegalStateException();
     }
     /**
-     * @serialData The <code>Level</code>, <code>exceptionInfo</code>,
-     * and <code>boundMessage</code> are emitted.
+     * Write the object to the given output stream.
+     *
+     * @param inStream an <code>ObjectOutputStream</code> value
+     * @throws IOException if the object cannot be written
+     * @serialData The <code>Level</code>, <code>exceptionInfo</code>, and <code>boundMessage</code> are emitted.
      */
     private void writeObject(ObjectOutputStream inStream)
         throws IOException

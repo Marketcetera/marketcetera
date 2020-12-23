@@ -25,6 +25,9 @@ public class JmxUtils {
      * the supplied bean server.
      *
      * @param inServer the mbean server to register the management interface to.
+     * @throws MBeanRegistrationException if a problem occurs registering the interface
+     * @throws InstanceAlreadyExistsException if the interface already exists
+     * @throws NotCompliantMBeanException if the there is a problem with the bean
      *
      * @see MBeanServer#registerMBean(Object, javax.management.ObjectName)
      */
@@ -34,14 +37,14 @@ public class JmxUtils {
         inServer.registerMBean(new ThreadedMetricBeanImpl(), DEFAULT_NAME);
         Messages.LOG_REGISTERED_MXBEAN.info(JmxUtils.class, DEFAULT_NAME);
     }
-
     /**
      * Unregisters the {@link ThreadedMetric} management interface from the
      * supplied bean server.
      *
      * @param inServer the mbean server to unregister the management interface
      * from.
-     *
+     * @throws InstanceNotFoundException if the instance cannot be found
+     * @throws MBeanRegistrationException if a problem occurs unregistering the interface
      *
      * @see MBeanServer#unregisterMBean(javax.management.ObjectName) 
      */
@@ -50,7 +53,6 @@ public class JmxUtils {
         inServer.unregisterMBean(DEFAULT_NAME);
         Messages.LOG_UNREGISTERED_MXBEAN.info(JmxUtils.class, DEFAULT_NAME);
     }
-
     /**
      * The object name that is used to register the {@link ThreadedMetricMXBean}.
      * The value of the object name should

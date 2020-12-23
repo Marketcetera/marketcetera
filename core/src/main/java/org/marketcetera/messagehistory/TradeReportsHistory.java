@@ -177,7 +177,7 @@ public class TradeReportsHistory {
      * The report might not be added immediately if a reset is in progress. In this case, it will be
      * queued until the reset has completed.
      * 
-     * @param inReport
+     * @param inReport a <code>ReportBase</code> value
      */
     public void addIncomingMessage(ReportBase inReport) {
         // wait if queue is being emptied

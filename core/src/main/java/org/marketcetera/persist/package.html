@@ -327,26 +327,6 @@
     JVM that has access to the database and is configured with appropriate JPA
     EntityManager to interact with the database. 
 </p>
-<pre>
-    {@link org.marketcetera.persist.EntityBase#saveRemote(PersistContext)}
-       |
-       |-{@link org.marketcetera.persist.EntityBase#createSaveResult()}
-       |
-       |-{@link org.marketcetera.persist.EntityRemoteServices#save(EntityBase,PersistContext)}
-       |    |   (Remoting)
-       |    |
-       |    '-{@link org.marketcetera.persist.EntityRemoteServices#execute(Transaction,PersistContext)}
-       |         |   (Transaction Envelope)
-       |         |
-       |         '-{@link org.marketcetera.persist.EntityBase#saveLocal(EntityManager,PersistContext)}
-       |              |
-       |              |-{@link org.marketcetera.persist.EntityBase#postSaveLocal(EntityManager,EntityBase,PersistContext)}
-       |              |         (Can be over-ridden to carry out custom stuff)
-       |              |
-       |              '-{@link org.marketcetera.persist.EntityBase#createSaveResult()}
-       |
-       '-{@link org.marketcetera.persist.EntityBase#applyRemote(SaveResult)}
-</pre>
 <h4>Multi Query Execution</h4>
 <p>
     This section documents the sequence of API invocations that happen when running a multi
