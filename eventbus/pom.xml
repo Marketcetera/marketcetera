@@ -17,5 +17,6 @@
     <module>eventbus-api</module>
     <module>eventbus-core</module>
     <module>eventbus-guava</module>
+    <module>eventbus-server</module>
   </modules>
 </project>
