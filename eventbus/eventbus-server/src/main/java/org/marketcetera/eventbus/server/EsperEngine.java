@@ -2,8 +2,10 @@ package org.marketcetera.eventbus.server;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.marketcetera.eventbus.EsperEvent;
 import org.marketcetera.eventbus.HasEsperEvent;
@@ -16,9 +18,19 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.espertech.esper.common.client.EPCompiled;
 import com.espertech.esper.common.client.configuration.Configuration;
+import com.espertech.esper.compiler.client.CompilerArguments;
+import com.espertech.esper.compiler.client.EPCompileException;
+import com.espertech.esper.compiler.client.EPCompiler;
+import com.espertech.esper.compiler.client.EPCompilerProvider;
+import com.espertech.esper.runtime.client.EPDeployException;
+import com.espertech.esper.runtime.client.EPDeployment;
 import com.espertech.esper.runtime.client.EPRuntime;
+import com.espertech.esper.runtime.client.EPRuntimeDestroyedException;
 import com.espertech.esper.runtime.client.EPRuntimeProvider;
+import com.espertech.esper.runtime.client.EPStatement;
+import com.espertech.esper.runtime.client.EPUndeployException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -79,8 +91,58 @@ public class EsperEngine
                                                configuration);
         runtime.initialize();
         SLF4JLoggerProxy.info(this,
-                              "Created Esper runtime {}",
+                              "Created Esper runtime: {}",
                               runtimeName);
+    }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        if(runtime != null) {
+            try {
+                runtime.destroy();
+            } catch (Exception ignored) {
+            } finally {
+                runtime = null;
+            }
+        }
+    }
+    /**
+     * Deploy the given statement to the Esper engine.
+     *
+     * @param inStatement a <code>String</code> value, separated by ';' as necessary for multiple statements
+     * @return an <code>EsperQueryMetaData</code> value
+     * @throws EPRuntimeDestroyedException if the Esper engine is no longer available
+     * @throws EPDeployException if the compiled Esper statement(s) cannot be deployed
+     * @throws EPCompileException if the Esper statement(s) cannot be compiled
+     */
+    public EsperQueryMetaData deployStatement(String inStatement)
+            throws EPRuntimeDestroyedException, EPDeployException, EPCompileException
+    {
+        String statementId = UUID.randomUUID().toString();
+        CompilerArguments args = new CompilerArguments(configuration);
+        EPCompiler compiler = EPCompilerProvider.getCompiler();
+        EPCompiled epCompiled = compiler.compile("@name('" + statementId + "') " + inStatement,
+                                                 args);
+        EPDeployment deployment = runtime.getDeploymentService().deploy(epCompiled);
+        EPStatement statement = runtime.getDeploymentService().getStatement(deployment.getDeploymentId(),
+                                                                            statementId);
+        return new EsperQueryMetaData(statementId,
+                                      statement);
+    }
+    /**
+     * Undeploy the Esper statement associated with the given query data.
+     *
+     * @param inQueryMetaData an <code>EsperQueryMetaData</code> value
+     * @throws EPRuntimeDestroyedException if the Esper engine is no longer available
+     * @throws EPUndeployException if the statement associated with the given meta data cannot be undeployed
+     */
+    public void undeployStatement(EsperQueryMetaData inQueryMetaData)
+            throws EPRuntimeDestroyedException, EPUndeployException
+    {
+        runtime.getDeploymentService().undeploy(inQueryMetaData.getEsperStatement().getDeploymentId());
     }
     /**
      * Get the eventTypes value.

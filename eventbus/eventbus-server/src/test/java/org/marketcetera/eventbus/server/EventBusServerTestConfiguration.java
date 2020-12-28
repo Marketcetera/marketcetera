@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 /* $License$ */
 
 /**
- *
+ * Provides test configuration for Esper EventBus tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -32,13 +32,23 @@ public class EventBusServerTestConfiguration
         symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
         return symbolResolverService;
     }
+    /**
+     * Get the Esper Engine value.
+     *
+     * @return an <code>EsperEngine</code> value
+     */
     @Bean
-    public EsperEngine getEsperRuntime()
+    public EsperEngine getEsperEngine()
     {
         EsperEngine esperRuntime = new EsperEngine();
-        esperRuntime.getEventTypes().add(TestAutoregisteredEventBean.class);
+        esperRuntime.getEventTypes().add(TestManuallyRegisteredEventBean.class);
         return esperRuntime;
     }
+    /**
+     * Get the event bus Esper connector value.
+     *
+     * @return an <code>EventBusEsperConnector</code> valu
+     */
     @Bean
     public EventBusEsperConnector getEventBusEsperConnector()
     {

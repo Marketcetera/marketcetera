@@ -1,7 +1,6 @@
 package org.marketcetera.eventbus.server;
 
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,12 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.espertech.esper.common.client.EPCompiled;
-import com.espertech.esper.compiler.client.CompilerArguments;
-import com.espertech.esper.compiler.client.EPCompiler;
-import com.espertech.esper.compiler.client.EPCompilerProvider;
-import com.espertech.esper.runtime.client.EPDeployment;
-import com.espertech.esper.runtime.client.EPStatement;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -36,35 +30,46 @@ import com.espertech.esper.runtime.client.EPStatement;
 public class EventBusServerEsperTest
 {
     /**
-     * Test that an auto-registered event is processed properly.
+     * Test that events are processed properly.
      *
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void testAutoregisteredEvent()
+    public void testEvents()
             throws Exception
     {
-        String matchingEpl1 = "select * from " + TestAutoregisteredEventBean.class.getSimpleName();
-        final String matchingEpl1Id = UUID.randomUUID().toString();
-        CompilerArguments args = new CompilerArguments(esperEngine.getConfiguration());
-        EPCompiler compiler = EPCompilerProvider.getCompiler();
-        EPCompiled epCompiled1 = compiler.compile("@name('" + matchingEpl1Id + "') " + matchingEpl1,
-                                                  args);
-        EPDeployment deployment1 = esperEngine.getRuntime().getDeploymentService().deploy(epCompiled1);
-        // create a registered event type
-        final TestAutoregisteredEventBean event1 = new TestAutoregisteredEventBean();
-        EPStatement statement1 = esperEngine.getRuntime().getDeploymentService().getStatement(deployment1.getDeploymentId(),
-                                                                                              matchingEpl1Id);
-        final AtomicBoolean matchingEventReceived1 = new AtomicBoolean(false);
-        statement1.addListener( (newData, oldData, theStatement, runtime) -> {
+        doEventTest(new TestAutoregisteredEventBean());
+        doEventTest(new TestManuallyRegisteredEventBean());
+    }
+    /**
+     * Execute an event test.
+     *
+     * @param inEvent a <code>HasId</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doEventTest(final HasId inEvent)
+            throws Exception
+    {
+        String matchingEpl = "select * from " + inEvent.getClass().getSimpleName();
+        EsperQueryMetaData queryMetaData = esperEngine.deployStatement(matchingEpl);
+        final Map<String,Boolean> matchingEventsReceived = Maps.newHashMap();
+        matchingEventsReceived.put(inEvent.getId(),
+                                   false);
+        queryMetaData.getEsperStatement().addListener( (newData, oldData, statement, runtime) -> {
             String id = (String)newData[0].get("id");
-            matchingEventReceived1.set(event1.getId().equals(id));
+            matchingEventsReceived.put(id,
+                                       true);
         });
-        eventBusService.post(event1);
-        Assertions.assertTrue(matchingEventReceived1.get());
-        matchingEventReceived1.set(false);
+        eventBusService.post(inEvent);
+        Assertions.assertTrue(matchingEventsReceived.get(inEvent.getId()));
+        matchingEventsReceived.put(inEvent.getId(),
+                                   false);
         eventBusService.post(this);
-        Assertions.assertFalse(matchingEventReceived1.get());
+        Assertions.assertFalse(matchingEventsReceived.get(inEvent.getId()));
+        esperEngine.undeployStatement(queryMetaData);
+        matchingEventsReceived.clear();
+        eventBusService.post(inEvent);
+        Assertions.assertTrue(matchingEventsReceived.isEmpty());
     }
     /**
      * provides access to the default Esper engine

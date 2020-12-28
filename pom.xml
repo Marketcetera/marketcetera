@@ -32,7 +32,7 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.4.0</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.4.1</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -404,7 +404,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-	<version>2.10.8</version>
+        <version>2.10.8</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
@@ -544,10 +544,21 @@
         <artifactId>jruby</artifactId>
         <version>1.7.8</version>
       </dependency>
+      <!-- return old version of Esper until retirement of CEP-Esper module -->
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
         <version>7.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.espertech</groupId>
+        <artifactId>esper-runtime</artifactId>
+        <version>8.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.espertech</groupId>
+        <artifactId>esper-compiler</artifactId>
+        <version>8.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -604,9 +615,9 @@
         <version>1.16.1</version>
       </dependency>
       <dependency>
-	<groupId>io.netty</groupId>
-	<artifactId>netty-tcnative-boringssl-static</artifactId>
-	<version>2.0.17.Final</version>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-tcnative-boringssl-static</artifactId>
+        <version>2.0.17.Final</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
@@ -619,9 +630,9 @@
         <version>1.16.1</version>
       </dependency>
       <dependency>
-	<groupId>io.grpc</groupId>
-	<artifactId>grpc-netty-shaded</artifactId>
-	<version>1.16.1</version>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-netty-shaded</artifactId>
+        <version>1.16.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -826,10 +837,10 @@
       </dependency>
       <!-- Testing: other. -->
       <dependency>
-	<groupId>org.junit.vintage</groupId>
-	<artifactId>junit-vintage-engine</artifactId>
-	<version>5.7.0</version>
-	<scope>test</scope>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>5.7.0</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>pl.pragmatists</groupId>

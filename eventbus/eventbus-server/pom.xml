@@ -20,10 +20,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <!-- spring compile -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
     </dependency>
+    <!-- other compile -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
@@ -31,13 +33,12 @@
     <dependency>
       <groupId>com.espertech</groupId>
       <artifactId>esper-runtime</artifactId>
-      <version>8.6.0</version>
     </dependency>
     <dependency>
       <groupId>com.espertech</groupId>
       <artifactId>esper-compiler</artifactId>
-      <version>8.6.0</version>
     </dependency>    
+    <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>eventbus-guava</artifactId>
