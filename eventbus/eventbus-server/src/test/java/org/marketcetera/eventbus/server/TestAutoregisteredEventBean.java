@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class TestEventBean
+public class TestAutoregisteredEventBean
         implements EsperEvent
 {
     /* (non-Javadoc)

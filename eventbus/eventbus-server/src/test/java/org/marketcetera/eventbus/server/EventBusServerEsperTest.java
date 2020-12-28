@@ -44,7 +44,7 @@ public class EventBusServerEsperTest
     public void testAutoregisteredEvent()
             throws Exception
     {
-        String matchingEpl1 = "select * from " + TestEventBean.class.getSimpleName();
+        String matchingEpl1 = "select * from " + TestAutoregisteredEventBean.class.getSimpleName();
         final String matchingEpl1Id = UUID.randomUUID().toString();
         CompilerArguments args = new CompilerArguments(esperEngine.getConfiguration());
         EPCompiler compiler = EPCompilerProvider.getCompiler();
@@ -52,7 +52,7 @@ public class EventBusServerEsperTest
                                                   args);
         EPDeployment deployment1 = esperEngine.getRuntime().getDeploymentService().deploy(epCompiled1);
         // create a registered event type
-        final TestEventBean event1 = new TestEventBean();
+        final TestAutoregisteredEventBean event1 = new TestAutoregisteredEventBean();
         EPStatement statement1 = esperEngine.getRuntime().getDeploymentService().getStatement(deployment1.getDeploymentId(),
                                                                                               matchingEpl1Id);
         final AtomicBoolean matchingEventReceived1 = new AtomicBoolean(false);
