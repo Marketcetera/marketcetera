@@ -7,6 +7,15 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/* $License$ */
+
+/**
+ * Provides a test Esper event.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class TestEventBean
@@ -39,6 +48,9 @@ public class TestEventBean
     {
         return id;
     }
+    /**
+     * uniquely identifies an event
+     */
     private final String id = UUID.randomUUID().toString();
     private static final long serialVersionUID = -2451794740755514121L;
 }

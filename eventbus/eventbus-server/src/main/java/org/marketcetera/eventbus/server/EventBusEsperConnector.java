@@ -14,7 +14,7 @@ import com.google.common.eventbus.Subscribe;
 /* $License$ */
 
 /**
- *
+ * Connects the system Esper default space to the event bus.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -53,5 +53,5 @@ public class EventBusEsperConnector
     @Autowired
     private EventBusService eventBusService;
     @Autowired
-    private EsperRuntime esperRuntime;
+    private EsperEngine esperRuntime;
 }

@@ -33,9 +33,9 @@ public class EventBusServerTestConfiguration
         return symbolResolverService;
     }
     @Bean
-    public EsperRuntime getEsperRuntime()
+    public EsperEngine getEsperRuntime()
     {
-        EsperRuntime esperRuntime = new EsperRuntime();
+        EsperEngine esperRuntime = new EsperEngine();
         esperRuntime.getEventTypes().add(TestEventBean.class);
         return esperRuntime;
     }
