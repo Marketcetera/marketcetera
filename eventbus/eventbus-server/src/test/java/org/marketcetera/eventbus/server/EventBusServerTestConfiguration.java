@@ -36,6 +36,7 @@ public class EventBusServerTestConfiguration
     public EsperRuntime getEsperRuntime()
     {
         EsperRuntime esperRuntime = new EsperRuntime();
+        esperRuntime.getEventTypes().add(TestEventBean.class);
         return esperRuntime;
     }
     @Bean

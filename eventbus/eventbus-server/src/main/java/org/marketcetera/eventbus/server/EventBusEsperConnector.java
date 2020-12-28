@@ -3,7 +3,9 @@ package org.marketcetera.eventbus.server;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.marketcetera.eventbus.EsperEvent;
 import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.eventbus.HasEsperEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,13 +33,22 @@ public class EventBusEsperConnector
         eventBusService.unregister(this);
     }
     @Subscribe
-    public void receiveEvents(Object inEvent)
+    public void receiveEvents(EsperEvent inEvent)
+    {
+        processEvent(inEvent);
+    }
+    @Subscribe
+    public void receiveEvents(HasEsperEvent inEvent)
+    {
+        processEvent(inEvent.getEsperEvent());
+    }
+    private void processEvent(EsperEvent inEvent)
     {
         SLF4JLoggerProxy.trace(this,
                                "Passing {} to Esper",
                                inEvent);
         esperRuntime.getRuntime().getEventService().sendEventBean(inEvent,
-                                                                  inEvent.getClass().getSimpleName());
+                                                                  inEvent.getEventName());
     }
     @Autowired
     private EventBusService eventBusService;

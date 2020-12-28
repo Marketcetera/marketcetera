@@ -2,6 +2,8 @@ package org.marketcetera.eventbus.server;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.marketcetera.eventbus.EventBusService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,6 +28,11 @@ public class EventBusServerEsperTest
     public void testOne()
             throws Exception
     {
-        
+        // post a non-esper event
+        eventBusService.post(this);
+        TestEventBean event1 = new TestEventBean();
+        eventBusService.post(event1);
     }
+    @Autowired
+    private EventBusService eventBusService;
 }
