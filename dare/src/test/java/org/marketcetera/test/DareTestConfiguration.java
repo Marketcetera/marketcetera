@@ -65,12 +65,22 @@ public class DareTestConfiguration
         symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
         return symbolResolverService;
     }
+    /**
+     * Get the Esper engine value.
+     *
+     * @return an <code>EsperEngine</code> value
+     */
     @Bean
     public EsperEngine getEsperEngine()
     {
         EsperEngine esperEngine = new EsperEngine();
         return esperEngine;
     }
+    /**
+     * Get the Event Bus &lt;-&gt; Esper connector value.
+     *
+     * @return an <code>EventBusEsperConnector</code> value
+     */
     @Bean
     public EventBusEsperConnector getEventBusEsperConnector()
     {

@@ -354,7 +354,6 @@ public class AuthorizationServiceImpl
                               "Beginning provisioning");
         for(AdminConfiguration.User userDescriptor : adminConfiguration.getUsers()) {
             try {
-                System.out.println("COCO: userDescriptor: " + userDescriptor);
                 if(userService.findByName(userDescriptor.getName()) == null) {
                     SLF4JLoggerProxy.info(this,
                                           "Adding user {}",
