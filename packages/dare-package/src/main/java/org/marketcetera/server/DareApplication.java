@@ -23,6 +23,8 @@ import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.rpc.ClusterRpcService;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
+import org.marketcetera.eventbus.server.EsperEngine;
+import org.marketcetera.eventbus.server.EventBusEsperConnector;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.ServerFixSessionFactory;
@@ -517,6 +519,28 @@ public class DareApplication
     public IncomingTradeMessageBroadcastConnector getIncomingTradeMessageBroadcastConnector()
     {
         return new IncomingTradeMessageBroadcastConnector();
+    }
+    /**
+     * Get the Esper engine value.
+     *
+     * @return an <code>EsperEngine</code> value
+     */
+    @Bean
+    public EsperEngine getEsperEngine()
+    {
+        EsperEngine esperEngine = new EsperEngine();
+        return esperEngine;
+    }
+    /**
+     * Get the Event Bus &lt;-&gt; Esper connector value.
+     *
+     * @return an <code>EventBusEsperConnector</code> value
+     */
+    @Bean
+    public EventBusEsperConnector getEventBusEsperConnector()
+    {
+        EventBusEsperConnector eventBusEsperConnector = new EventBusEsperConnector();
+        return eventBusEsperConnector;
     }
     /**
      * Get the API info (REST Swagger) for DARE.

@@ -1,44 +1,50 @@
-<?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>cluster-parent</artifactId>
+    <artifactId>eventbus-parent</artifactId>
     <version>4.0.3-SNAPSHOT</version>
   </parent>
-  <groupId>org.marketcetera</groupId>
-  <artifactId>cluster-simple</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
-  <name>Simple Cluster</name>
+  <artifactId>eventbus-server</artifactId>
+  <packaging>jar</packaging>
+  <name>Eventbus Server</name>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-core</artifactId>
+      <artifactId>eventbus-api</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
-      <type>test-jar</type>
     </dependency>
+    <!-- spring compile -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
+    <!-- other compile -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.espertech</groupId>
+      <artifactId>esper-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.espertech</groupId>
+      <artifactId>esper-compiler</artifactId>
+    </dependency>    
+    <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>cluster-core</artifactId>
-      <type>test-jar</type>
+      <artifactId>eventbus-guava</artifactId>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-    </dependency>
+    <!-- spring test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

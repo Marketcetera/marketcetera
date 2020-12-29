@@ -64,6 +64,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-rpc-server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-server</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>io.springfox</groupId>

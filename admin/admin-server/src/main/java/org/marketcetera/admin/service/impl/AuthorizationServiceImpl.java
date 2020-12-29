@@ -340,6 +340,9 @@ public class AuthorizationServiceImpl
     {
         return permissionDao.findByName(inName);
     }
+    /**
+     * Perform the provisioning actions.
+     */
     private void provision()
     {
         if(adminConfiguration == null) {
@@ -350,21 +353,28 @@ public class AuthorizationServiceImpl
         SLF4JLoggerProxy.info(this,
                               "Beginning provisioning");
         for(AdminConfiguration.User userDescriptor : adminConfiguration.getUsers()) {
-            if(userService.findByName(userDescriptor.getName()) == null) {
-                SLF4JLoggerProxy.info(this,
-                                      "Adding user {}",
+            try {
+                if(userService.findByName(userDescriptor.getName()) == null) {
+                    SLF4JLoggerProxy.info(this,
+                                          "Adding user {}",
+                                          userDescriptor);
+                    PersistentUser user = new PersistentUser();
+                    user.setActive(userDescriptor.getIsActive());
+                    user.setDescription(userDescriptor.getDescription());
+                    user.setName(userDescriptor.getName());
+                    user.setPassword(userDescriptor.getPassword().toCharArray());
+                    user.setSuperuser(false);
+                    userService.save(user);
+                } else {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Not adding user {} because a user by that name already exists",
+                                           userDescriptor);
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to provision user: {}",
                                       userDescriptor);
-                PersistentUser user = new PersistentUser();
-                user.setActive(userDescriptor.getIsActive());
-                user.setDescription(userDescriptor.getDescription());
-                user.setName(userDescriptor.getName());
-                user.setPassword(userDescriptor.getPassword().toCharArray());
-                user.setSuperuser(false);
-                userService.save(user);
-            } else {
-                SLF4JLoggerProxy.debug(this,
-                                       "Not adding user {} because a user by that name already exists",
-                                       userDescriptor);
             }
         }
         for(AdminConfiguration.Permission permissionDescriptor : adminConfiguration.getPermissions()) {
