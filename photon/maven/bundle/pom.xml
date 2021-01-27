@@ -38,6 +38,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>cep-esper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>remote-emitter</artifactId>
     </dependency>
     <dependency>
