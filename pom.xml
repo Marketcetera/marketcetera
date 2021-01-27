@@ -405,7 +405,9 @@
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
-        <version>5.5.0</version>
+        <version>7.1.0</version>
+	<!-- use this version (and commit changes) when building Photon -->
+        <!--version>5.5.0</version-->
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
