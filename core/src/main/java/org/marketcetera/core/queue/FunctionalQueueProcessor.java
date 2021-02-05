@@ -1,11 +1,11 @@
 package org.marketcetera.core.queue;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,9 +24,33 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @version $Id$
  * @since $Release$
  */
-public abstract class FunctionalQueueProcessor<MessagePackageClazz extends Serializable,KeyClazz>
+public abstract class FunctionalQueueProcessor<MessagePackageClazz extends AbstractMessagePackage,KeyClazz>
         extends QueueProcessor<MessagePackageClazz>
 {
+    /**
+     * Add the given message package to the queue.
+     *
+     * @param inPackage a <code>MessagePackageClazz</code> value
+     */
+    public void post(MessagePackageClazz inPackage)
+    {
+        super.add(inPackage);
+    }
+    /**
+     * Add the given message package to the queue and wait for the package to be processed, up to the given number of milliseconds.
+     *
+     * @param inPackage a <code>MessagePackageClazz</code> value
+     * @param inTimeout a <code>long</code> value
+     * @throws InterruptedException if the method is interrupted before the package is processed
+     * @throws TimeoutException if the given number of milliseconds elapses before the package is processed
+     */
+    public void postAndWait(MessagePackageClazz inPackage,
+                            long inTimeout)
+            throws InterruptedException, TimeoutException
+    {
+        post(inPackage);
+        inPackage.waitForComplete(inTimeout);
+    }
     /**
      * Get the distinctive functional characteristic from the given message package.
      *
