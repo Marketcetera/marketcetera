@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -283,6 +283,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dare</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dare-package</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
