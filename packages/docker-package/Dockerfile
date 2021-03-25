@@ -4,7 +4,7 @@ LABEL maintainer="colin@marketcetera.com"
 WORKDIR /opt/Marketcetera
 
 # RUN apt-get update && apt-get install -y telnet
-RUN apt-get update && apt-get install -y procps
+# RUN apt-get update && apt-get install -y procps
 
 # Create the marketcetera user
 RUN useradd marketcetera
