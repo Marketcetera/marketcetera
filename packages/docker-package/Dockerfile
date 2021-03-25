@@ -4,6 +4,7 @@ LABEL maintainer="colin@marketcetera.com"
 WORKDIR /opt/Marketcetera
 
 # RUN apt-get update && apt-get install -y telnet
+RUN apt-get update && apt-get install -y procps
 
 # Create the marketcetera user
 RUN useradd marketcetera
@@ -25,7 +26,7 @@ RUN chmod ug+x /opt/Marketcetera/dare/bin/*.sh
 RUN mkdir -p /opt/Marketcetera/dare/logs
 RUN touch /opt/Marketcetera/dare/logs/dare_gc.out
 
-EXPOSE 13010
+EXPOSE 8080 9010
 
 ENTRYPOINT ["sh", "-c"]
 CMD [ "/opt/Marketcetera/docker_start.sh" ]

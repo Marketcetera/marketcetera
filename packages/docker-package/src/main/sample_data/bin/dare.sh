@@ -31,20 +31,20 @@ INSTANCE_DIR=instances
 # These port values are used for day-to-day work, just make sure they are unique and leave enough room for each instance
 #
 # DARE RPC port
-RPC_PORT=13010
+RPC_PORT=9010
 # Cluster port
-CLUSTER_PORT=9800
+CLUSTER_PORT=9040
 #
 # These values are typically the ones you'll need to change
 #
 # This port value is what web services connect to
 # DARE WS port
-WS_PORT=13000
+WS_PORT=9000
 #
 # This port value is what incoming FIX sessions would connect to the DARE instance
-DARE_ACCEPTOR_PORT=13020
+DARE_ACCEPTOR_PORT=9020
 # This port value is what incoming FIX sessions would connect to the EXSIM instance
-EXSIM_ACCEPTOR_PORT=13030
+EXSIM_ACCEPTOR_PORT=9030
 #
 # Set this to a comma-separated list of cluster hosts
 CLUSTER_TCPIP_MEMBERS=127.0.0.1
@@ -64,13 +64,13 @@ java -Xms384m -Xmx512m -Xloggc:${LOGDIR}/dare_gc.out -server -Dorg.marketcetera.
  -XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseFastAccessorMethods\
  -Dlog.configurationFile=${METC_HOME}/${APPLICATION_DIR}/conf/logback.xml\
  -cp "${THE_CLASSPATH}"\
- -Dorg.marketcetera.app=com.marketcetera.sixer.SixerApplication\
+ -Dorg.marketcetera.app=org.marketcetera.server.DareApplication\
  -Dmetc.cluster.tcpip.members=${CLUSTER_TCPIP_MEMBERS}\
  -Dmetc.logdir=${LOGDIR}\
  -Dmetc.logname=${LOGNAME}\
  -Dmetc.total.instances=${TOTAL_INSTANCES}\
  -Dmetc.instance.spring.config.location=conf/application.properties\
- -Dmetc.instance.log.configurationFile=conf/logback.xml\
+ -Dmetc.instance.log.configurationFile=conf/log4j2.xml\
  -Dmetc.instance.Xms${INSTANCE_XMS}\
  -Dmetc.instance.Xmx${INSTANCE_XMX}\
  -Dmetc.start.delay=${INSTANCE_START_DELAY}\

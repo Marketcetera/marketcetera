@@ -27,6 +27,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
         <executions>
           <execution>
             <phase>generate-test-resources</phase>
@@ -35,6 +36,24 @@
             </goals>
             <configuration>
               <outputFile>${project.build.directory}/local.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/local.properties</file>
+              <token>\\</token>
+              <value></value>
             </configuration>
           </execution>
         </executions>
