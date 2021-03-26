@@ -2,8 +2,14 @@ package org.marketcetera.test;
 
 import java.util.Collections;
 
+import org.marketcetera.admin.PermissionFactory;
+import org.marketcetera.admin.RoleFactory;
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.dao.PersistentPermissionFactory;
+import org.marketcetera.admin.dao.PersistentRoleFactory;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
+import org.marketcetera.admin.user.PersistentUserFactory;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
@@ -294,5 +300,35 @@ public class DareTestConfiguration
     public IncomingTradeMessageBroadcastConnector getIncomingTradeMessageBroadcastConnector()
     {
         return new IncomingTradeMessageBroadcastConnector();
+    }
+    /**
+     * Get the permission factory value.
+     *
+     * @return a <code>PermissionFactory</code> value
+     */
+    @Bean
+    public PermissionFactory getPermissionFactory()
+    {
+        return new PersistentPermissionFactory();
+    }
+    /**
+     * Get the role factory value.
+     *
+     * @return a <code>RoleFactory</code> value
+     */
+    @Bean
+    public RoleFactory getRoleFactory()
+    {
+        return new PersistentRoleFactory();
+    }
+    /**
+     * Get the user factory value.
+     *
+     * @return a <code>UserFactory</code> value
+     */
+    @Bean
+    public UserFactory getUserFactory()
+    {
+        return new PersistentUserFactory();
     }
 }

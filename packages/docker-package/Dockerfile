@@ -20,6 +20,8 @@ COPY --chown=marketcetera:marketcetera src/main/sample_data/bin/stopServerCompon
 COPY --chown=marketcetera:marketcetera src/main/sample_data/conf /opt/Marketcetera/dare/conf/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/contrib /opt/Marketcetera/dare/contrib/
 COPY --chown=marketcetera:marketcetera target/output/* /opt/Marketcetera/dare/lib/
+RUN rm /opt/Marketcetera/dare/lib/webui*
+COPY --chown=marketcetera:marketcetera target/output/* /opt/Marketcetera/ui/lib/
 COPY --chown=marketcetera:marketcetera target/docker-package-4.1.0-SNAPSHOT.jar /opt/Marketcetera/dare/lib/
 RUN chmod ug+x /opt/Marketcetera/*.sh
 RUN chmod ug+x /opt/Marketcetera/dare/bin/*.sh
