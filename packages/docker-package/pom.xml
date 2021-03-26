@@ -21,6 +21,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>dare-package</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>webui-package</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

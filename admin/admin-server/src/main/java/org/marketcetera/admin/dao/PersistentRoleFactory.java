@@ -1,7 +1,6 @@
 package org.marketcetera.admin.dao;
 
 import org.marketcetera.admin.MutableRoleFactory;
-import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
  * @version $Id$
  * @since 1.0.1
  */
-@Service
 public class PersistentRoleFactory
         implements MutableRoleFactory
 {

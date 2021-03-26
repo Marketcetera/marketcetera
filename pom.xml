@@ -354,6 +354,11 @@
       <!-- compile: web ui -->
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>webui-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>webui-admin</artifactId>
         <version>${project.version}</version>
       </dependency>

@@ -2,7 +2,6 @@ package org.marketcetera.admin.user;
 
 import org.marketcetera.admin.MutableUserFactory;
 import org.marketcetera.admin.User;
-import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
  * @version $Id$
  * @since $Release$
  */
-@Component
 public class PersistentUserFactory
         implements MutableUserFactory
 {
