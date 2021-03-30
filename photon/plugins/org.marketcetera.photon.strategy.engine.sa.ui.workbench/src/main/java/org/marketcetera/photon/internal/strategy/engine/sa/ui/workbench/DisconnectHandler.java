@@ -35,10 +35,13 @@ public final class DisconnectHandler extends
     }
 
     @Override
-    protected void process(StrategyAgentEngine item, IProgressMonitor monitor)
-            throws Exception {
-        monitor.setTaskName(Messages.DISCONNECT_HANDLER__TASK_NAME.getText(item
-                .getName()));
+    protected void process(StrategyAgentEngine item,
+                           IProgressMonitor monitor)
+            throws Exception
+    {
+        // this is triggered by a context-menu "disconnect" action
+        monitor.setTaskName(Messages.DISCONNECT_HANDLER__TASK_NAME.getText(item.getName()));
+        item.setUserDisconnected(true);
         item.disconnect();
     }
 }

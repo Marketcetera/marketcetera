@@ -35,8 +35,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class StrategyAgentEngineImpl extends StrategyEngineImpl implements
-        StrategyAgentEngine {
+public class StrategyAgentEngineImpl
+        extends StrategyEngineImpl
+        implements StrategyAgentEngine
+{
     /**
      * The default value of the '{@link #getJmsUrl() <em>Jms Url</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -195,10 +197,19 @@ public class StrategyAgentEngineImpl extends StrategyEngineImpl implements
     }
 
     @Override
-    public void disconnect() throws Exception {
+    public void disconnect()
+            throws Exception
+    {
         throw new UnsupportedOperationException();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEngine#setUserDisconnected(boolean)
+     */
+    @Override
+    public void setUserDisconnected(boolean inUserDisconnected)
+    {
+        throw new UnsupportedOperationException();
+    }
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -300,5 +311,4 @@ public class StrategyAgentEngineImpl extends StrategyEngineImpl implements
         result.append(')');
         return result.toString();
     }
-
 } //StrategyAgentEngineImpl

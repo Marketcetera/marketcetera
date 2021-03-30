@@ -2,6 +2,9 @@ package org.marketcetera.photon.internal.strategy.engine.sa;
 
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.marketcetera.photon.commons.ExceptionUtils;
@@ -118,94 +121,155 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
         }
     }
     @Override
-    public void connect() throws Exception {
-        final AtomicReference<ConnectionException> exception = new AtomicReference<ConnectionException>();
-        if (!mCredentialsService.authenticateWithCredentials(new IAuthenticationHelper() {
-                    @Override
-                    public boolean authenticate(ICredentials credentials) {
+    public void connect()
+            throws Exception
+    {
+        try {
+            final AtomicReference<ConnectionException> exception = new AtomicReference<ConnectionException>();
+            if(!mCredentialsService.authenticateWithCredentials(new IAuthenticationHelper() {
+                @Override
+                public boolean authenticate(ICredentials inCredentials)
+                {
+                    try {
+                        SAClient client = mClientFactory.create(new SAClientParameters(inCredentials.getUsername(),
+                                                                                       inCredentials.getPassword().toCharArray(),
+                                                                                       getJmsUrl(),
+                                                                                       getWebServiceHostname(),
+                                                                                       getWebServicePort(),
+                                                                                       SAClientContextClassProvider.INSTANCE));
+                        client.start();
+                        mClient.set(client);
+                        return true;
+                    } catch (ConnectionException e) {
+                        exception.set(e);
+                        return false;
+                    }}})) {
+                if(exception.get() != null) {
+                    throw exception.get();
+                } else {
+                    return;
+                }
+            }
+            SAClient client = mClient.get();
+            client.addConnectionStatusListener(new ConnectionStatusListener() {
+                @Override
+                public void receiveConnectionStatus(boolean inStatus) {
+                    if (!inStatus) {
                         try {
-                            SAClient client = mClientFactory.create(new SAClientParameters(credentials.getUsername(),
-                                                                                           credentials.getPassword().toCharArray(),
-                                                                                           getJmsUrl(),
-                                                                                           getWebServiceHostname(),
-                                                                                           getWebServicePort(),
-                                                                                           SAClientContextClassProvider.INSTANCE));
-                            client.start();
-                            mClient.set(client);
-                            return true;
-                        } catch (ConnectionException e) {
-                            exception.set(e);
-                            return false;
+                            disconnect();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                         }
                     }
-                })) {
-            if (exception.get() != null) {
-                throw exception.get();
-            } else {
-                return;
-            }
-        }
-
-        SAClient client = mClient.get();
-        client.addConnectionStatusListener(new ConnectionStatusListener() {
-            @Override
-            public void receiveConnectionStatus(boolean inStatus) {
-                if (!inStatus) {
-                    try {
-                        disconnect();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-        });
-
-        if (mSinkDataManager != null) {
-            client.addDataReceiver(new DataReceiver() {
-                @Override
-                public void receiveData(Object inObject) {
-                    mSinkDataManager.sendData(getName(), inObject);
                 }
             });
-        }
-
-        mLogoutService.addLogoutRunnable(mLogoutRunnable);
-        final StrategyAgentConnection newConnection = new StrategyAgentConnection(
-                client, mGUIExecutor);
-        ExceptionUtils.launderedGet(mGUIExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                setConnection(newConnection);
-                setConnectionState(ConnectionState.CONNECTED);
+            if(mSinkDataManager != null) {
+                client.addDataReceiver(new DataReceiver() {
+                    @Override
+                    public void receiveData(Object inObject) {
+                        mSinkDataManager.sendData(getName(), inObject);
+                    }
+                });
             }
-        }));
-        // pull remote state
-        newConnection.refresh();
-    }
-
-    @Override
-    public void disconnect() throws InterruptedException {
-        SAClient client = mClient.getAndSet(null);
-        if (client == null) {
-            return;
+            mLogoutService.addLogoutRunnable(mLogoutRunnable);
+            final StrategyAgentConnection newConnection = new StrategyAgentConnection(
+                    client, mGUIExecutor);
+            ExceptionUtils.launderedGet(mGUIExecutor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    setConnection(newConnection);
+                    setConnectionState(ConnectionState.CONNECTED);
+                }
+            }));
+            // pull remote state
+            newConnection.refresh();
+        } finally {
+            setUserDisconnected(false);
         }
-        client.close();
-        mLogoutService.removeLogoutRunnable(mLogoutRunnable);
-        ExceptionUtils.launderedGet(mGUIExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                setConnection(null);
-                setConnectionState(ConnectionState.DISCONNECTED);
-                /*
-                 * Cannot call getDeployedStrategies().clear() due to Eclipse
-                 * bug. See note on StrategyEngine#getDeployedStrategies().
-                 */
-                for (Iterator<?> iterator = getDeployedStrategies().iterator(); iterator
-                        .hasNext();) {
-                    iterator.next();
-                    iterator.remove();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.strategy.engine.model.sa.impl.StrategyAgentEngineImpl#setUserDisconnected(boolean)
+     */
+    @Override
+    public void setUserDisconnected(boolean inUserDisconnected)
+    {
+        manualDisconnect = inUserDisconnected;
+    }
+    @Override
+    public void disconnect()
+            throws InterruptedException
+    {
+        SAClient client = mClient.getAndSet(null);
+        try {
+            if(client == null) {
+                return;
+            }
+            client.close();
+            mLogoutService.removeLogoutRunnable(mLogoutRunnable);
+            ExceptionUtils.launderedGet(mGUIExecutor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    setConnection(null);
+                    setConnectionState(ConnectionState.DISCONNECTED);
+                    /*
+                     * Cannot call getDeployedStrategies().clear() due to Eclipse
+                     * bug. See note on StrategyEngine#getDeployedStrategies().
+                     */
+                    for(Iterator<?> iterator = getDeployedStrategies().iterator(); iterator.hasNext();) {
+                        iterator.next();
+                        iterator.remove();
+                    }
+                }
+            }));
+        } finally {
+            if(!manualDisconnect) {
+                try {
+                    scheduleReconnection();
+                } finally {
+                    setUserDisconnected(false);
                 }
             }
-        }));
+        }
     }
+    /**
+     * Schedule a reconnection attempt to the Strategy Engine.
+     */
+    private void scheduleReconnection()
+    {
+        reconnectService.schedule(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    connect();
+                    SLF4JLoggerProxy.info(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                          "Successfully reconnected to {}",
+                                          getName());
+                    System.out.println("Successfully reconnected to " + getName());
+                    reconnectNotified = false;
+                } catch (Exception e) {
+                    if(!reconnectNotified) {
+                        System.out.println("Unable to reconnect to " + getName() + " because " + e.getMessage() + ", will try to reconnect");
+                        SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                              "Unable to reconnect to {} because {}, will try to reconnect",
+                                              getName(),
+                                              e.getMessage());
+                        reconnectNotified = true;
+                    }
+                    scheduleReconnection();
+                }
+            }},5000,TimeUnit.MILLISECONDS);
+    }
+    /**
+     * used to schedule reconnection attempts
+     */
+    private final ScheduledExecutorService reconnectService = Executors.newSingleThreadScheduledExecutor();
+    /**
+     * indicates if a disconnection was manually instigated or not
+     */
+    private boolean manualDisconnect = false;
+    /**
+     * indicates if a reconnection failed attempt has already been announced
+     */
+    private boolean reconnectNotified = false;
 }

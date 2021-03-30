@@ -6,7 +6,6 @@
 package org.marketcetera.photon.strategy.engine.model.sa;
 
 import org.marketcetera.photon.strategy.engine.model.core.StrategyEngine;
-
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -122,6 +121,7 @@ public interface StrategyAgentEngine extends StrategyEngine {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception"
      * @generated
      */
-    void disconnect() throws Exception;
-
+    void disconnect()
+            throws Exception;
+    void setUserDisconnected(boolean inUserDisconnected);
 } // StrategyAgentEngine
