@@ -8,21 +8,28 @@ RUN useradd marketcetera
 USER marketcetera
 
 # Copy the latest build artifacts to the Marketcetera home directory
-COPY --chown=marketcetera:marketcetera src/main/sample_data/bin/dare.sh /opt/Marketcetera/dare/bin/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/bin/setEnv.sh /opt/Marketcetera/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/contrib/docker_start.sh /opt/Marketcetera/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/contrib/env.sh /opt/Marketcetera/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/bin/startServerComponents.sh /opt/Marketcetera/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/bin/stopServerComponents.sh /opt/Marketcetera/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/conf /opt/Marketcetera/dare/conf/
-COPY --chown=marketcetera:marketcetera src/main/sample_data/contrib /opt/Marketcetera/dare/contrib/
-COPY --chown=marketcetera:marketcetera target/output/* /opt/Marketcetera/dare/lib/
-RUN rm /opt/Marketcetera/dare/lib/webui*
-COPY --chown=marketcetera:marketcetera target/output/* /opt/Marketcetera/ui/lib/
-COPY --chown=marketcetera:marketcetera target/docker-package-4.1.0-SNAPSHOT.jar /opt/Marketcetera/dare/lib/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/dare.sh /opt/Marketcetera/dare/bin/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/ui/bin/ui.sh /opt/Marketcetera/ui/bin/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/setEnv.sh /opt/Marketcetera/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib/docker_start.sh /opt/Marketcetera/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib/env.sh /opt/Marketcetera/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/startServerComponents.sh /opt/Marketcetera/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/stopServerComponents.sh /opt/Marketcetera/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/conf /opt/Marketcetera/dare/conf/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib /opt/Marketcetera/dare/contrib/
+COPY --chown=marketcetera:marketcetera target/output/* /opt/Marketcetera/common/lib/
+#COPY --chown=marketcetera:marketcetera target/docker-package-4.1.0-SNAPSHOT.jar /opt/Marketcetera/dare/lib/
+RUN mkdir -p /opt/Marketcetera/dare/lib
+RUN mkdir -p /opt/Marketcetera/ui/lib
+RUN mv /opt/Marketcetera/common/lib/webui* /opt/Marketcetera/ui/lib
+RUN mv /opt/Marketcetera/common/lib/crudui* /opt/Marketcetera/ui/lib
+RUN mv /opt/Marketcetera/common/lib/dare* /opt/Marketcetera/dare/lib
+RUN mv /opt/Marketcetera/common/lib/*vaadin* /opt/Marketcetera/ui/lib
 RUN chmod ug+x /opt/Marketcetera/*.sh
 RUN chmod ug+x /opt/Marketcetera/dare/bin/*.sh
+RUN chmod ug+x /opt/Marketcetera/ui/bin/*.sh
 RUN mkdir -p /opt/Marketcetera/dare/logs
+RUN mkdir -p /opt/Marketcetera/ui/logs
 RUN touch /opt/Marketcetera/dare/logs/dare_gc.out
 
 EXPOSE 8080 9000 9010 9020

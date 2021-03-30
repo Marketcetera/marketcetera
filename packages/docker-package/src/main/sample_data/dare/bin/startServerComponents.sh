@@ -16,5 +16,5 @@
 cd ${DARE_HOME}
 ./bin/dare.sh
 
-#cd ${UI_HOME}
-#./bin/ui.sh > /dev/null 2>&1
+cd ${UI_HOME}
+./bin/ui.sh > logs/uiout.log 2>&1
