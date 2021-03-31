@@ -143,7 +143,6 @@
     <module>webui-cluster</module>
     <module>webui-dataflow</module>
     <module>webui-marketdata</module>
-    <module>webui-package</module>
     <module>webui-trade</module>
   </modules>
   <repositories>

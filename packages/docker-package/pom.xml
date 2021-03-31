@@ -29,6 +29,32 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>copy-dependency-files</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/output-dare"/>
+                <copy todir="${project.build.directory}/output-dare">
+                  <fileset dir="../dare-package/target/output"/>
+                </copy>
+                <mkdir dir="${project.build.directory}/output-webui"/>
+                <copy todir="${project.build.directory}/output-webui">
+                  <fileset dir="../webui-package/target/output"/>
+                </copy>
+              </target>
+            </configuration>                       
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
         <version>1.0.0</version>
@@ -62,27 +88,27 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
+      <!--plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
           <execution>
-            <id>copy-dependencies</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/output</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-              <includeScope>runtime</includeScope>
-              <excludeScope>test</excludeScope>
-            </configuration>
+          <id>copy-dependencies</id>
+          <phase>prepare-package</phase>
+          <goals>
+          <goal>copy-dependencies</goal>
+          </goals>
+          <configuration>
+          <outputDirectory>${project.build.directory}/output</outputDirectory>
+          <overWriteReleases>false</overWriteReleases>
+          <overWriteSnapshots>false</overWriteSnapshots>
+          <overWriteIfNewer>true</overWriteIfNewer>
+          <includeScope>runtime</includeScope>
+          <excludeScope>test</excludeScope>
+          </configuration>
           </execution>
-        </executions>
-      </plugin>
+          </executions>
+          </plugin-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>

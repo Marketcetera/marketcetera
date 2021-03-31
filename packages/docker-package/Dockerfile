@@ -17,14 +17,9 @@ COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/startServer
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/stopServerComponents.sh /opt/Marketcetera/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/conf /opt/Marketcetera/dare/conf/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib /opt/Marketcetera/dare/contrib/
-COPY --chown=marketcetera:marketcetera target/output/* /opt/Marketcetera/common/lib/
+COPY --chown=marketcetera:marketcetera target/output-dare/* /opt/Marketcetera/dare/lib/
+COPY --chown=marketcetera:marketcetera target/output-webui/* /opt/Marketcetera/ui/lib/
 #COPY --chown=marketcetera:marketcetera target/docker-package-4.1.0-SNAPSHOT.jar /opt/Marketcetera/dare/lib/
-RUN mkdir -p /opt/Marketcetera/dare/lib
-RUN mkdir -p /opt/Marketcetera/ui/lib
-RUN mv /opt/Marketcetera/common/lib/webui* /opt/Marketcetera/ui/lib
-RUN mv /opt/Marketcetera/common/lib/crudui* /opt/Marketcetera/ui/lib
-RUN mv /opt/Marketcetera/common/lib/dare* /opt/Marketcetera/dare/lib
-RUN mv /opt/Marketcetera/common/lib/*vaadin* /opt/Marketcetera/ui/lib
 RUN chmod ug+x /opt/Marketcetera/*.sh
 RUN chmod ug+x /opt/Marketcetera/dare/bin/*.sh
 RUN chmod ug+x /opt/Marketcetera/ui/bin/*.sh
