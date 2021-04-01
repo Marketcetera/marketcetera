@@ -14,7 +14,17 @@ APPLICATION_DIR=ui
 cd ${UI_HOME}
 
 THE_CLASSPATH=./conf
-for file in `ls -1 ./lib/*.jar`
+
+cd ${COMMON_HOME}
+
+for file in `ls -1 ${COMMON_HOME}/lib/*.jar`
+do
+    THE_CLASSPATH=${THE_CLASSPATH}:${file}
+done
+
+cd ${UI_HOME}
+
+for file in `ls -1 ${UI_HOME}/lib/*.jar`
 do
     THE_CLASSPATH=${THE_CLASSPATH}:${file}
 done
@@ -30,7 +40,7 @@ java -Xms384m -Xmx4096m -Xloggc:${LOGDIR}/ui_gc.out -server -Dorg.marketcetera.a
  -XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseFastAccessorMethods\
  -cp "${THE_CLASSPATH}"\
  -Dspring.config.location=conf/application.properties\
- com.marketcetera.sixer.web.SixerUiApplication $* &
+  org.marketcetera.web.WebuiApplication $* &
 retval=$?
 pid=$!
 [ ${retval} -eq 0 ] && [ ${pid} -eq ${pid} ] && echo ${pid} > ui.pid

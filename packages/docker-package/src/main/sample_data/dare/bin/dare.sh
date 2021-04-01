@@ -14,7 +14,17 @@ APPLICATION_DIR=dare
 cd ${DARE_HOME}
 
 THE_CLASSPATH=./conf
-for file in `ls -1 ./lib/*.jar`
+
+cd ${COMMON_HOME}
+
+for file in `ls -1 ${COMMON_HOME}/lib/*.jar`
+do
+    THE_CLASSPATH=${THE_CLASSPATH}:${file}
+done
+
+cd ${DARE_HOME}
+
+for file in `ls -1 ${DARE_HOME}/lib/*.jar`
 do
     THE_CLASSPATH=${THE_CLASSPATH}:${file}
 done

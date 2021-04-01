@@ -10,6 +10,7 @@ USER marketcetera
 # Copy the latest build artifacts to the Marketcetera home directory
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/dare.sh /opt/Marketcetera/dare/bin/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/ui/bin/ui.sh /opt/Marketcetera/ui/bin/
+COPY --chown=marketcetera:marketcetera src/main/sample_data/ui/conf /opt/Marketcetera/ui/conf/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/bin/setEnv.sh /opt/Marketcetera/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib/docker_start.sh /opt/Marketcetera/
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib/env.sh /opt/Marketcetera/
@@ -19,7 +20,7 @@ COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/conf /opt/Marke
 COPY --chown=marketcetera:marketcetera src/main/sample_data/dare/contrib /opt/Marketcetera/dare/contrib/
 COPY --chown=marketcetera:marketcetera target/output-dare/* /opt/Marketcetera/dare/lib/
 COPY --chown=marketcetera:marketcetera target/output-webui/* /opt/Marketcetera/ui/lib/
-#COPY --chown=marketcetera:marketcetera target/docker-package-4.1.0-SNAPSHOT.jar /opt/Marketcetera/dare/lib/
+COPY --chown=marketcetera:marketcetera target/output-common/* /opt/Marketcetera/common/lib/
 RUN chmod ug+x /opt/Marketcetera/*.sh
 RUN chmod ug+x /opt/Marketcetera/dare/bin/*.sh
 RUN chmod ug+x /opt/Marketcetera/ui/bin/*.sh

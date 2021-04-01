@@ -45,9 +45,19 @@
                 <copy todir="${project.build.directory}/output-dare">
                   <fileset dir="../dare-package/target/output"/>
                 </copy>
+                <copy todir="${project.build.directory}/output-dare">
+                  <fileset dir="../dare-package/target/">
+                    <include name="dare-package-${project.version}.jar"/>
+                  </fileset>
+                </copy>
                 <mkdir dir="${project.build.directory}/output-webui"/>
                 <copy todir="${project.build.directory}/output-webui">
                   <fileset dir="../webui-package/target/output"/>
+                </copy>
+                <copy todir="${project.build.directory}/output-webui">
+                  <fileset dir="../webui-package/target/">
+                    <include name="webui-package-${project.version}.jar"/>
+                  </fileset>
                 </copy>
                 <mkdir dir="${project.build.directory}/output-common"/>
                 <copy todir="${project.build.directory}/output-common">
@@ -207,6 +217,14 @@
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
                 <argument>run</argument>
+                <argument>-p</argument>
+                <argument>8080:8080</argument>
+                <argument>-p</argument>
+                <argument>9000:9000</argument>
+                <argument>-p</argument>
+                <argument>9010:9010</argument>
+                <argument>-p</argument>
+                <argument>9020:9020</argument>
                 <argument>--env-file</argument>
                 <argument>target/local.properties</argument>
                 <argument>-t</argument>
