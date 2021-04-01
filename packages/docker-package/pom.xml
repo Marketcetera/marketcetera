@@ -49,6 +49,22 @@
                 <copy todir="${project.build.directory}/output-webui">
                   <fileset dir="../webui-package/target/output"/>
                 </copy>
+                <mkdir dir="${project.build.directory}/output-common"/>
+                <copy todir="${project.build.directory}/output-common">
+                  <fileset dir="${project.build.directory}/output-dare">
+                    <present targetdir="${project.build.directory}/output-webui" present="both"/>
+                  </fileset>
+                </copy>
+                <delete>
+                  <fileset dir="${project.build.directory}/output-dare" includes="**/*">
+                    <present targetdir="${project.build.directory}/output-common"/>
+                  </fileset>
+                </delete>
+                <delete>
+                  <fileset dir="${project.build.directory}/output-webui" includes="**/*">
+                    <present targetdir="${project.build.directory}/output-common"/>
+                  </fileset>
+                </delete>
               </target>
             </configuration>                       
           </execution>
@@ -88,27 +104,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <executions>
-          <execution>
-          <id>copy-dependencies</id>
-          <phase>prepare-package</phase>
-          <goals>
-          <goal>copy-dependencies</goal>
-          </goals>
-          <configuration>
-          <outputDirectory>${project.build.directory}/output</outputDirectory>
-          <overWriteReleases>false</overWriteReleases>
-          <overWriteSnapshots>false</overWriteSnapshots>
-          <overWriteIfNewer>true</overWriteIfNewer>
-          <includeScope>runtime</includeScope>
-          <excludeScope>test</excludeScope>
-          </configuration>
-          </execution>
-          </executions>
-          </plugin-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
