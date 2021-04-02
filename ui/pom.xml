@@ -14,12 +14,6 @@
   <packaging>pom</packaging>
   <name>Web UI Parent</name>
   <properties>
-    <!-- this version intentionally different from the top-level version -->
-    <!--mvn.spring.boot.version>2.0.5.RELEASE</mvn.spring.boot.version-->
-    <vaadin.version>7.7.13</vaadin.version>
-    <vaadin.theme>mytheme</vaadin.theme>
-    <gwt.version>2.8.2</gwt.version>
-    <gwt.plugin.version>2.8.2</gwt.plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -40,34 +34,8 @@
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-client-compiled</artifactId>
-        <version>${vaadin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
         <artifactId>vaadin-client-compiler</artifactId>
         <version>${vaadin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-trade</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-spring-boot-starter</artifactId>
-        <version>1.2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.vaadin.addons</groupId>
@@ -88,7 +56,7 @@
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
-        <version>2.8.2</version>
+        <version>${gwt.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
