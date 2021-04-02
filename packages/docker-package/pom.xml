@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>packages-parent</artifactId>
+    <version>4.1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>docker-package</artifactId>
+  <version>4.1.0-SNAPSHOT</version>
+  <name>Docker Package</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>dare-package</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>webui-package</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>copy-dependency-files</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/output-dare"/>
+                <copy todir="${project.build.directory}/output-dare">
+                  <fileset dir="../dare-package/target/output"/>
+                </copy>
+                <copy todir="${project.build.directory}/output-dare">
+                  <fileset dir="../dare-package/target/">
+                    <include name="dare-package-${project.version}.jar"/>
+                  </fileset>
+                </copy>
+                <mkdir dir="${project.build.directory}/output-webui"/>
+                <copy todir="${project.build.directory}/output-webui">
+                  <fileset dir="../webui-package/target/output"/>
+                </copy>
+                <copy todir="${project.build.directory}/output-webui">
+                  <fileset dir="../webui-package/target/">
+                    <include name="webui-package-${project.version}.jar"/>
+                  </fileset>
+                </copy>
+                <mkdir dir="${project.build.directory}/output-common"/>
+                <copy todir="${project.build.directory}/output-common">
+                  <fileset dir="${project.build.directory}/output-dare">
+                    <present targetdir="${project.build.directory}/output-webui" present="both"/>
+                  </fileset>
+                </copy>
+                <delete>
+                  <fileset dir="${project.build.directory}/output-dare" includes="**/*">
+                    <present targetdir="${project.build.directory}/output-common"/>
+                  </fileset>
+                </delete>
+                <delete>
+                  <fileset dir="${project.build.directory}/output-webui" includes="**/*">
+                    <present targetdir="${project.build.directory}/output-common"/>
+                  </fileset>
+                </delete>
+              </target>
+            </configuration>                       
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+              <outputFile>${project.build.directory}/local.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/local.properties</file>
+              <token>\\</token>
+              <value></value>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <!-- Remove existing image from local repo -->
+          <execution>
+            <id>docker-clean</id>
+            <phase>install</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>rmi</argument>
+                <argument>-f</argument>
+                <argument>${project.groupId}/${project.artifactId}:${project.version}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <!-- 
+               Create new docker image using Dockerfile which must be present in current working directory.
+               Tag the image using maven project version information.
+          -->
+          <execution>
+            <id>docker-build</id>
+            <phase>install</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>build</argument>
+                <argument>--rm</argument>
+                <argument>-t</argument>
+                <argument>${project.groupId}/${project.artifactId}:${project.version}</argument>
+                <argument>.</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <!-- Login and Push the image to a docker repo. -->
+          <execution>
+            <id>docker-login</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>login</argument>
+                <argument>-u</argument>
+                <argument>${docker.user}</argument>
+                <argument>-p</argument>
+                <argument>${docker.password}</argument>
+                <argument>${docker.url}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>docker-push</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>push</argument>
+                <argument>${project.groupId}/${project.artifactId}:${project.version}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <!-- start the Docker container -->
+    <profile>
+      <id>dockerRun</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <executable>docker</executable>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>
+                <argument>run</argument>
+                <argument>-p</argument>
+                <argument>8080:8080</argument>
+                <argument>-p</argument>
+                <argument>9000:9000</argument>
+                <argument>-p</argument>
+                <argument>9010:9010</argument>
+                <argument>-p</argument>
+                <argument>9020:9020</argument>
+                <argument>--env-file</argument>
+                <argument>target/local.properties</argument>
+                <argument>-t</argument>
+                <argument>${project.groupId}/${project.artifactId}:${project.version}</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

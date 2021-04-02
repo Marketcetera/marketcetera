@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
@@ -37,6 +37,10 @@
     <mvn.log4j.version>2.11.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
+    <vaadin.version>7.7.13</vaadin.version>
+    <vaadin.theme>mytheme</vaadin.theme>
+    <gwt.version>2.8.2</gwt.version>
+    <gwt.plugin.version>2.8.2</gwt.plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -287,6 +291,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>dare-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>notional-value-modifier</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -349,6 +358,11 @@
       <!-- compile: web ui -->
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>webui-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>webui-admin</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -366,6 +380,43 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>webui-cluster</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webui-trade</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Compile: Vaadin -->
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-spring-boot-starter</artifactId>
+        <version>1.2.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-client-compiled</artifactId>
+        <version>${vaadin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-server</artifactId>
+        <version>${vaadin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-themes</artifactId>
+        <version>${vaadin.version}</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
@@ -743,6 +794,13 @@
         <artifactId>hsqldb</artifactId>
         <version>2.5.1</version>
         <scope>runtime</scope>
+      </dependency>
+      <!-- Runtime: Vaadin -->
+      <dependency>
+	<groupId>com.vaadin</groupId>
+	<artifactId>vaadin-push</artifactId>
+	<scope>runtime</scope>
+	<version>${vaadin.version}</version>
       </dependency>
       <!-- Testing: local modules. -->
       <dependency>

@@ -6,14 +6,20 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.jms.ServerSession;
 
+import org.marketcetera.admin.PermissionFactory;
+import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserAttributeFactory;
+import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.auth.DBAuthenticator;
+import org.marketcetera.admin.dao.PersistentPermissionFactory;
+import org.marketcetera.admin.dao.PersistentRoleFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
 import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
+import org.marketcetera.admin.user.PersistentUserFactory;
 import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeRpcService;
@@ -541,6 +547,36 @@ public class DareApplication
     {
         EventBusEsperConnector eventBusEsperConnector = new EventBusEsperConnector();
         return eventBusEsperConnector;
+    }
+    /**
+     * Get the permission factory value.
+     *
+     * @return a <code>PermissionFactory</code> value
+     */
+    @Bean
+    public PermissionFactory getPermissionFactory()
+    {
+        return new PersistentPermissionFactory();
+    }
+    /**
+     * Get the role factory value.
+     *
+     * @return a <code>RoleFactory</code> value
+     */
+    @Bean
+    public RoleFactory getRoleFactory()
+    {
+        return new PersistentRoleFactory();
+    }
+    /**
+     * Get the user factory value.
+     *
+     * @return a <code>UserFactory</code> value
+     */
+    @Bean
+    public UserFactory getUserFactory()
+    {
+        return new PersistentUserFactory();
     }
     /**
      * Get the API info (REST Swagger) for DARE.

@@ -2,7 +2,6 @@ package org.marketcetera.admin.dao;
 
 import org.marketcetera.admin.MutablePermission;
 import org.marketcetera.admin.MutablePermissionFactory;
-import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
  * @version $Id$
  * @since 1.0.1
  */
-@Service
 public class PersistentPermissionFactory
         implements MutablePermissionFactory
 {
