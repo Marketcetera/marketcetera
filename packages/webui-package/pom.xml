@@ -10,7 +10,7 @@
   <name>Web UI Package</name>
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>webui-parent</artifactId>
+    <artifactId>packages-parent</artifactId>
     <version>4.1.0-SNAPSHOT</version>
   </parent>
   <dependencies>
