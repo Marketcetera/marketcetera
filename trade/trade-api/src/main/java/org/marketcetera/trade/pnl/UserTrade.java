@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl;
  * @since $Release$
  */
 public interface UserTrade
-        extends HasTrade,HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser
+        extends org.marketcetera.trade.pnl.HasTrade,org.marketcetera.trade.pnl.HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser
 {
     /**
      * Get the side value.

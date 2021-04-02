@@ -21,16 +21,6 @@ message PnlPosition {
     Qty unrealizedGain = 7; // unrealized gain of the position
 }
 
-// describes the position of a user of an instrument
-message CurrentPnlPosition {
-    Instrument instrument = 1; // instrument of the position
-    User user = 2; // user that owns the position
-    Qty position = 3; // quantity of the position
-    Qty weightedAverageCost = 4; // total cost of the position
-    Qty realizedGain = 5; // realized gain of the position
-    Qty unrealizedGain = 6; // unrealized gain of the position
-}
-
 // describes the PnL of a user of an instrument
 message ProfitAndLoss {
     Instrument instrument = 1; // instrument for which pnl is calculated

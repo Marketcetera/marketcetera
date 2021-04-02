@@ -84,7 +84,8 @@ public class TradePnlRpcServer<SessionClazz>
             try {
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(TradePnlRpcServer.this,"Received {}",inCurrentPositionsRequest);
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inCurrentPositionsRequest.getSessionId());
-                authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.ReadCurrentPositions.name());
+                authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.test1.name());
+                authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.test2.name());
                 org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.Builder responseBuilder = org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.newBuilder();
                 org.marketcetera.trade.UserID userID = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inCurrentPositionsRequest.getUserId()).orElse(null);
                 org.marketcetera.persist.PageRequest pageRequest = inCurrentPositionsRequest.hasPageRequest()?org.marketcetera.rpc.paging.PagingRpcUtil.getPageRequest(inCurrentPositionsRequest.getPageRequest()):org.marketcetera.persist.PageRequest.ALL;

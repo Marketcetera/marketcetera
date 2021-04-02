@@ -16,7 +16,7 @@ package org.marketcetera.trade.pnl.dao;
 @javax.persistence.Table(name="user_trades")
 public class PersistentUserTrade
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.UserTrade
+        implements org.marketcetera.trade.pnl.UserTrade,org.marketcetera.trade.pnl.HasTrade,org.marketcetera.trade.pnl.HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser
 {
     /**
      * Create a new PersistentUserTrade instance.
@@ -53,7 +53,7 @@ public class PersistentUserTrade
     @Override
     public void setTrade(org.marketcetera.trade.pnl.Trade inTrade)
     {
-        trade = (PersistentTrade)inTrade;
+        trade = inTrade;
     }
     /**
      * Get the user value.
@@ -73,7 +73,7 @@ public class PersistentUserTrade
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
     {
-        user = (org.marketcetera.admin.user.PersistentUser)inUser;
+        user = inUser;
     }
     /**
      * Get the side value.
@@ -113,7 +113,7 @@ public class PersistentUserTrade
     @Override
     public void setProfitAndLoss(org.marketcetera.trade.pnl.ProfitAndLoss inProfitAndLoss)
     {
-        profitAndLoss = (PersistentProfitAndLoss)inProfitAndLoss;
+        profitAndLoss = inProfitAndLoss;
     }
     /**
      * Get the orderId value.
@@ -153,30 +153,27 @@ public class PersistentUserTrade
     /**
      * underlying trade value
      */
-    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="trade_id",nullable=false)
-    private PersistentTrade trade;
+    @javax.persistence.Column(name="trade",nullable=true,unique=false)
+    private org.marketcetera.trade.pnl.Trade trade;
     /**
      * user which owns lot
      */
-    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="user_id",nullable=false)
-    private org.marketcetera.admin.user.PersistentUser user;
+    @javax.persistence.Column(name="user",nullable=true,unique=false)
+    private org.marketcetera.admin.User user;
     /**
      * side of this trade
      */
-    @javax.persistence.Column(name="side",nullable=false)
+    @javax.persistence.Column(name="side",nullable=true,unique=false)
     private org.marketcetera.trade.Side side;
     /**
      * profit and loss data for this trade
      */
-    @javax.persistence.OneToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="pnl_id",nullable=false)
-    private PersistentProfitAndLoss profitAndLoss;
+    @javax.persistence.Column(name="profit_and_loss",nullable=true,unique=false)
+    private org.marketcetera.trade.pnl.ProfitAndLoss profitAndLoss;
     /**
      * order ID for this trade
      */
-    @javax.persistence.Column(name="order_id",nullable=false)
+    @javax.persistence.Column(name="order_id",nullable=true,unique=false)
     private org.marketcetera.trade.OrderID orderId;
     private static final long serialVersionUID = 2006431268L;
 }

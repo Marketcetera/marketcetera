@@ -16,7 +16,7 @@ package org.marketcetera.trade.pnl.dao;
 @javax.persistence.Table(name="trades")
 public class PersistentTrade
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.Trade
+        implements org.marketcetera.trade.pnl.Trade,org.marketcetera.trade.HasInstrument
 {
     /**
      * Create a new PersistentTrade instance.
@@ -205,22 +205,22 @@ public class PersistentTrade
     /**
      * exchange execution id that uniquely identifies this trade
      */
-    @javax.persistence.Column(name="execution_id",nullable=true)
+    @javax.persistence.Column(name="execution_id",nullable=true,unique=false)
     private org.marketcetera.trade.OrderID executionId;
     /**
      * price at which trade occurred
      */
-    @javax.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
-    private java.math.BigDecimal price = java.math.BigDecimal.ZERO;
+    @javax.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
+    private java.math.BigDecimal price;
     /**
      * size of trade
      */
-    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
-    private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
+    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
+    private java.math.BigDecimal quantity;
     /**
      * transaction date
      */
-    @javax.persistence.Column(name="transaction_time",nullable=true)
+    @javax.persistence.Column(name="transaction_time",nullable=true,unique=false)
     private java.util.Date transactionTime;
     private static final long serialVersionUID = -1169854614L;
 }
