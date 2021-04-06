@@ -257,12 +257,12 @@ public class PersistentLot
      * size of lot
      */
     @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal quantity;
+    private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
     /**
      * quantity of this lot that has been allocated to account for a sell trade
      */
     @javax.persistence.Column(name="allocated_quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal allocatedQuantity;
+    private java.math.BigDecimal allocatedQuantity = java.math.BigDecimal.ZERO;
     /**
      * date lot was created
      */
@@ -272,16 +272,16 @@ public class PersistentLot
      * basis price value
      */
     @javax.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal basisPrice;
+    private java.math.BigDecimal basisPrice = java.math.BigDecimal.ZERO;
     /**
      * realized gain from this lot
      */
     @javax.persistence.Column(name="gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal gain;
+    private java.math.BigDecimal gain = java.math.BigDecimal.ZERO;
     /**
      * trade price value of this lot
      */
     @javax.persistence.Column(name="trade_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal tradePrice;
+    private java.math.BigDecimal tradePrice = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = 682666976L;
 }

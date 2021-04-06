@@ -38,6 +38,26 @@ public abstract class TradePnlRpcUtil
     /**
      * Get the RPC object from the given value.
      *
+     * @param inCurrentPosition a <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
+     * @return a java.util.Optional<TradePnlTypesRpc.CurrentPnlPosition> value
+     */
+    public static java.util.Optional<TradePnlTypesRpc.CurrentPnlPosition> getRpcCurrentPnlPosition(org.marketcetera.trade.pnl.CurrentPosition inCurrentPosition)
+    {
+        if(inCurrentPosition == null) {
+            return java.util.Optional.empty();
+        }
+        TradePnlTypesRpc.CurrentPnlPosition.Builder builder = TradePnlTypesRpc.CurrentPnlPosition.newBuilder();
+        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument(inCurrentPosition.getInstrument()).ifPresent(value->builder.setInstrument(value));
+        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inCurrentPosition.getUser()).ifPresent(value->builder.setUser(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getPosition()).ifPresent(value->builder.setPosition(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getWeightedAverageCost()).ifPresent(value->builder.setWeightedAverageCost(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
+        return java.util.Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC object from the given value.
+     *
      * @param inProfitAndLoss a <code>org.marketcetera.trade.pnl.ProfitAndLoss</code> value
      * @return a java.util.Optional<TradePnlTypesRpc.ProfitAndLoss> value
      */
@@ -138,6 +158,28 @@ public abstract class TradePnlRpcUtil
         org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inPosition.getRealizedGain()).ifPresent(value->position.setRealizedGain(value));
         org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inPosition.getUnrealizedGain()).ifPresent(value->position.setUnrealizedGain(value));
         return java.util.Optional.of(position);
+    }
+    /**
+     * Get the object from the given RPC value.
+     *
+     * @param inCurrentPosition a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.CurrentPnlPosition</code> value
+     * @param inCurrentPositionFactory a <code>org.marketcetera.trade.pnl.CurrentPositionFactory</code> value
+     * @param inUserFactory a <code>org.marketcetera.admin.UserFactory</code> value
+     * @return a org.marketcetera.trade.pnl.CurrentPosition value
+     */
+    public static java.util.Optional<org.marketcetera.trade.pnl.CurrentPosition> getCurrentPnlPosition(org.marketcetera.trade.pnl.TradePnlTypesRpc.CurrentPnlPosition inCurrentPosition,org.marketcetera.trade.pnl.CurrentPositionFactory inCurrentPositionFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    {
+        if(inCurrentPosition == null) {
+            return java.util.Optional.empty();
+        }
+        org.marketcetera.trade.pnl.CurrentPosition currentPosition = inCurrentPositionFactory.create();
+        org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument(inCurrentPosition.getInstrument()).ifPresent(value->currentPosition.setInstrument(value));
+        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inCurrentPosition.getUser(),inUserFactory).ifPresent(value->currentPosition.setUser(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getPosition()).ifPresent(value->currentPosition.setPosition(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getWeightedAverageCost()).ifPresent(value->currentPosition.setWeightedAverageCost(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getRealizedGain()).ifPresent(value->currentPosition.setRealizedGain(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getUnrealizedGain()).ifPresent(value->currentPosition.setUnrealizedGain(value));
+        return java.util.Optional.of(currentPosition);
     }
     /**
      * Get the object from the given RPC value.

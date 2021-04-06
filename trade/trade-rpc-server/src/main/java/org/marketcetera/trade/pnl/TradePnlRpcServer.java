@@ -3,6 +3,11 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.trade.pnl.TradePnlRpc.PositionChangeEventsRequest;
+import org.marketcetera.trade.pnl.TradePnlRpc.PositionChangeEventsResponse;
+
+import io.grpc.stub.StreamObserver;
+
 /* $License$ */
 
 /**
@@ -41,6 +46,15 @@ public class TradePnlRpcServer<SessionClazz>
         service = new Service();
         super.start();
         eventBusService.register(this);
+    }
+    /**
+     * Accept incoming PositionChangedEvent values.
+     */
+    @com.google.common.eventbus.Subscribe
+    public void accept(org.marketcetera.trade.pnl.event.PositionChangedEvent inPositionChangedEvent)
+    {
+        org.marketcetera.trade.pnl.TradePnlRpc.PositionChangeEventsResponse.Builder responseBuilder = org.marketcetera.trade.pnl.TradePnlRpc.PositionChangeEventsResponse.newBuilder();
+        TradePnlRpcUtil.getRpcPnlPosition(inPositionChangedEvent.getPosition()).ifPresent(rpcPosition->responseBuilder.setPosition(rpcPosition));
     }
     /**
      * provides access to event services
@@ -90,8 +104,7 @@ public class TradePnlRpcServer<SessionClazz>
             try {
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(TradePnlRpcServer.this,"Received {}",inCurrentPositionsRequest);
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inCurrentPositionsRequest.getSessionId());
-                authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.test1.name());
-                authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.test2.name());
+                authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.ReadCurrentPositions.name());
                 org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.Builder responseBuilder = org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.newBuilder();
                 org.marketcetera.trade.UserID userID = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inCurrentPositionsRequest.getUserId()).orElse(null);
                 org.marketcetera.persist.PageRequest pageRequest = inCurrentPositionsRequest.hasPageRequest()?org.marketcetera.rpc.paging.PagingRpcUtil.getPageRequest(inCurrentPositionsRequest.getPageRequest()):org.marketcetera.persist.PageRequest.ALL;
@@ -127,6 +140,15 @@ public class TradePnlRpcServer<SessionClazz>
             } catch (Exception e) {
                 handleError(e,inResponseObserver);
             }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.pnl.TradePnlRpcServiceGrpc.TradePnlRpcServiceImplBase#getPositionChanges(org.marketcetera.trade.pnl.TradePnlRpc.PositionChangeEventsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getPositionChanges(PositionChangeEventsRequest inRequest,
+                                       StreamObserver<PositionChangeEventsResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
         }
     }
     /**

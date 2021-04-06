@@ -14,6 +14,5 @@ package org.marketcetera.trade.pnl;
  */
 public enum TradePnlPermissions
 {
-    test1,
-    test2,
+    ReadCurrentPositions,
 }

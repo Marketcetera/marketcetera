@@ -211,12 +211,12 @@ public class PersistentTrade
      * price at which trade occurred
      */
     @javax.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal price;
+    private java.math.BigDecimal price = java.math.BigDecimal.ZERO;
     /**
      * size of trade
      */
     @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal quantity;
+    private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
     /**
      * transaction date
      */

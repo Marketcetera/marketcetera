@@ -89,7 +89,7 @@ public class PersistentPosition
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
     {
-        user = inUser;
+        user = (org.marketcetera.admin.user.PersistentUser)inUser;
     }
     /**
      * Get the position value.
@@ -250,12 +250,12 @@ public class PersistentPosition
      * user which owns lot
      */
     @javax.persistence.Column(name="user",nullable=true,unique=false)
-    private org.marketcetera.admin.User user;
+    private org.marketcetera.admin.user.PersistentUser user;
     /**
      * position value
      */
     @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal position;
+    private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
     /**
      * date as of which position is effective
      */
@@ -265,16 +265,16 @@ public class PersistentPosition
      * weighted average cost to attain this position
      */
     @javax.persistence.Column(name="weighted_average_cost",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal weightedAverageCost;
+    private java.math.BigDecimal weightedAverageCost = java.math.BigDecimal.ZERO;
     /**
      * realized gain value
      */
     @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal realizedGain;
+    private java.math.BigDecimal realizedGain = java.math.BigDecimal.ZERO;
     /**
      * unrealized gain value
      */
     @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
-    private java.math.BigDecimal unrealizedGain;
+    private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = 1028526536L;
 }

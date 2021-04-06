@@ -20,7 +20,7 @@ message CurrentPositionsRequest {
 // return the current positions for a user
 message CurrentPositionsResponse {
     PageResponse pageResponse = 1;
-    repeated PnlPosition position = 2;
+    repeated CurrentPnlPosition position = 2;
 }
 
 // request the profit and loss data for the user with the given user id
@@ -37,6 +37,14 @@ message ProfitAndLossResponse {
     repeated ProfitAndLoss profitAndLossData = 2;
 }
 
+message PositionChangeEventsRequest {
+    string sessionId = 1;
+}
+
+message PositionChangeEventsResponse {
+    PnlPosition position = 1;
+}
+
 // services for Trade PnL
 service TradePnlRpcService {
     rpc login(LoginRequest) returns (LoginResponse); // starts the session
@@ -44,4 +52,5 @@ service TradePnlRpcService {
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse); // keeps the session alive
     rpc getCurrentPositions(CurrentPositionsRequest) returns (CurrentPositionsResponse); // requests positions for a user
     rpc getProfitAndLoss(ProfitAndLossRequest) returns (ProfitAndLossResponse); // requests profit and loss for a user and an instrument
+    rpc getPositionChanges(PositionChangeEventsRequest) returns (stream PositionChangeEventsResponse);
 }
