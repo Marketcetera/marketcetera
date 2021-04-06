@@ -40,7 +40,13 @@ public class TradePnlRpcServer<SessionClazz>
     {
         service = new Service();
         super.start();
+        eventBusService.register(this);
     }
+    /**
+     * provides access to event services
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.marketcetera.eventbus.EventBusService eventBusService;
     /**
      * TradePnlRpc Service implementation.
      *

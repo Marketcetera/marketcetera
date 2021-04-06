@@ -6,18 +6,13 @@ package org.marketcetera.trade.pnl.event;
 /* $License$ */
 
 /**
- * Indicates that the position of an instrument has changed for a user.
+ * Indicates that an existing position for a user has changed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public interface PositionChangedEvent
+        extends org.marketcetera.trade.pnl.HasPosition
 {
-    /**
-     * Get the position value.
-     *
-     * @return a <code>org.marketcetera.trade.pnl.Position</code> value
-     */
-    org.marketcetera.trade.pnl.Position getPosition();
 }

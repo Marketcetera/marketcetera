@@ -211,4 +211,16 @@
       </rpcService>
     </rpcEntity>
   </rpcEntities>
+  <modelEvents>
+    <modelEvent name="PositionChangedEvent" description="Indicates that an existing position for a user has changed"
+                pojoProject="trade/trade-core" apiProject="trade/trade-api" rpcEvent="true"
+                packageName="org.marketcetera.trade.pnl.event" apiExtends="org.marketcetera.trade.pnl.HasPosition">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="position" description="position which has changed" apiType="org.marketcetera.trade.pnl.Position" pojoType="org.marketcetera.trade.pnl.Position" useGetters="true" useSetters="true" interfaceProvided="true" isCurrency="false"/>
+      </modelEventAttributes>
+    </modelEvent>
+  </modelEvents>
 </model>

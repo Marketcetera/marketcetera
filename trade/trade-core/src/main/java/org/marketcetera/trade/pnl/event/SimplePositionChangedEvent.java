@@ -6,7 +6,7 @@ package org.marketcetera.trade.pnl.event;
 /* $License$ */
 
 /**
- * Indicates that the position of an instrument has changed for a user.
+ * Indicates that an existing position for a user has changed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -22,19 +22,19 @@ public class SimplePositionChangedEvent
     /**
      * Get the position value.
      *
-     * @return a <code>org.marketcetera.trade.pnl.SimplePosition</code> value
+     * @return a <code>org.marketcetera.trade.pnl.Position</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.SimplePosition getPosition()
+    public org.marketcetera.trade.pnl.Position getPosition()
     {
         return position;
     }
     /**
      * Set the position value.
      *
-     * @param inPosition a <code>org.marketcetera.trade.pnl.SimplePosition</code> value
+     * @param inPosition a <code>org.marketcetera.trade.pnl.Position</code> value
      */
-    public void setPosition(org.marketcetera.trade.pnl.SimplePosition inPosition)
+    public void setPosition(org.marketcetera.trade.pnl.Position inPosition)
     {
         position = inPosition;
     }
@@ -50,7 +50,7 @@ public class SimplePositionChangedEvent
         return builder.toString();
     }
     /**
-     * position which changed
+     * position which has changed
      */
-    private org.marketcetera.trade.pnl.SimplePosition position;
+    private org.marketcetera.trade.pnl.Position position;
 }
