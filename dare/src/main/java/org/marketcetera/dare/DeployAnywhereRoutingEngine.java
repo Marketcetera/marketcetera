@@ -375,6 +375,8 @@ public class DeployAnywhereRoutingEngine
             }
             Session.lookupSession(inSessionId).setTargetDefaultApplicationVersionID(new quickfix.field.ApplVerID(defaultApplVerId));
         }
+        modifyOutgoingMessage(serverFixSession,
+                              inMessage);
         Messages.QF_TO_ADMIN.info(getCategory(inMessage),
                                   inMessage,
                                   serverFixSession);
@@ -392,9 +394,9 @@ public class DeployAnywhereRoutingEngine
         if(!isRunning.get()) {
             return;
         }
+        ServerFixSession session = brokerService.getServerFixSession(inSessionId);
         if(FIXMessageUtil.isLogon(inMessage)) {
             if(!brokerService.isSessionTime(inSessionId)) {
-                ServerFixSession session = brokerService.getServerFixSession(inSessionId);
                 if(session == null) {
                     throw new quickfix.RejectLogon(inSessionId + " is not a known session");
                 }
@@ -405,6 +407,8 @@ public class DeployAnywhereRoutingEngine
                 throw new quickfix.RejectLogon(inSessionId + " logon is not allowed outside of session time");
             }
         }
+        modifyIncomingMessage(session,
+                              inMessage);
         addToQueue(new MessagePackage(inMessage,
                                       MessageType.FROM_ADMIN,
                                       inSessionId,
@@ -430,6 +434,8 @@ public class DeployAnywhereRoutingEngine
                                   brokerService.getSessionName(inSessionId));
             return;
         }
+        modifyOutgoingMessage(serverFixSession,
+                              inMessage);
         Messages.QF_TO_APP.info(getCategory(inMessage),
                                 inMessage,
                                 serverFixSession);
@@ -1326,6 +1332,63 @@ public class DeployAnywhereRoutingEngine
         sender = inSender;
     }
     /**
+     * Modify the given incoming message using the settings in the given session, if appropriate.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     */
+    private void modifyOutgoingMessage(ServerFixSession inServerFixSession,
+                                       quickfix.Message inMessage)
+    {
+        SessionCustomization sessionCustomization = brokerService.getSessionCustomization(inServerFixSession.getActiveFixSession().getFixSession());
+        if(sessionCustomization != null) {
+            modifyMessage(inServerFixSession,
+                          sessionCustomization.getOrderModifiers(),
+                          inMessage);
+        }
+    }
+    /**
+     * Modify the given incoming message using the settings in the given session, if appropriate.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     */
+    private void modifyIncomingMessage(ServerFixSession inServerFixSession,
+                                       quickfix.Message inMessage)
+    {
+        SessionCustomization sessionCustomization = brokerService.getSessionCustomization(inServerFixSession.getActiveFixSession().getFixSession());
+        if(sessionCustomization != null) {
+            modifyMessage(inServerFixSession,
+                          sessionCustomization.getResponseModifiers(),
+                          inMessage);
+        }
+    }
+    /**
+     * Modify the given message using the given modifiers from the given session.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inModifiers a <code>List&lt;MessageModifier&gt;</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     */
+    private void modifyMessage(ServerFixSession inServerFixSession,
+                               List<MessageModifier> inModifiers,
+                               quickfix.Message inMessage)
+    {
+        for(MessageModifier messageModifier : inModifiers) {
+            try {
+                messageModifier.modify(inServerFixSession,
+                                       inMessage);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Error applying {} to {} for {}",
+                                      messageModifier,
+                                      FIXMessageUtil.toPrettyString(inMessage,
+                                                                    inServerFixSession.getFIXDataDictionary()),
+                                      inServerFixSession);
+            }
+        }
+    }
+    /**
      * Initializes the acceptor if necessary.
      *
      * @throws ConfigError if an error occurs initializing the session
@@ -1489,6 +1552,8 @@ public class DeployAnywhereRoutingEngine
         Messages.QF_FROM_APP.info(getCategory(inMessage),
                                   inMessage,
                                   fixSession);
+        modifyIncomingMessage(fixSession,
+                              inMessage);
         FIXMessageUtil.logMessage(inMessage);
         logMessage(inMessage,
                    fixSession);

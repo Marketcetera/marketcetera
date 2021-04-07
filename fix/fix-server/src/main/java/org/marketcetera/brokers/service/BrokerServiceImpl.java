@@ -816,6 +816,9 @@ public class BrokerServiceImpl
                 sessionCustomizationsByName.put(sessionCustomization.getName(),
                                                 sessionCustomization);
             }
+            SLF4JLoggerProxy.info(this,
+                                  "Found the following session customizations: {}",
+                                  sessionCustomizationsByName.asMap());
         }
         eventBusService.register(this);
         updateBrokerStatus();
