@@ -434,8 +434,8 @@ public class DeployAnywhereRoutingEngine
                                   brokerService.getSessionName(inSessionId));
             return;
         }
-        modifyOutgoingMessage(serverFixSession,
-                              inMessage);
+//        modifyOutgoingMessage(serverFixSession,
+//                              inMessage);
         Messages.QF_TO_APP.info(getCategory(inMessage),
                                 inMessage,
                                 serverFixSession);
@@ -1552,8 +1552,8 @@ public class DeployAnywhereRoutingEngine
         Messages.QF_FROM_APP.info(getCategory(inMessage),
                                   inMessage,
                                   fixSession);
-        modifyIncomingMessage(fixSession,
-                              inMessage);
+//        modifyIncomingMessage(fixSession,
+//                              inMessage);
         FIXMessageUtil.logMessage(inMessage);
         logMessage(inMessage,
                    fixSession);
