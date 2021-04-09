@@ -1,9 +1,10 @@
-package org.marketcetera.web.view.sessions;
+package org.marketcetera.web.trade.view;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.admin.AdminPermissions;
+import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentViewFactory;
@@ -24,14 +25,14 @@ import com.vaadin.ui.MenuBar.MenuItem;
 /* $License$ */
 
 /**
- * Creates {@link SessionView} content objects.
+ * Creates {@link SessionStatusView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @SpringComponent
-public class SessionViewFactory
+public class SessionStatusViewFactory
         extends AbstractContentViewFactory
         implements MenuContent
 {
@@ -41,7 +42,7 @@ public class SessionViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "FIX Sessions";
+        return "FIX Session Status";
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getWeight()
@@ -49,7 +50,7 @@ public class SessionViewFactory
     @Override
     public int getWeight()
     {
-        return 300;
+        return 400;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCategory()
@@ -65,7 +66,7 @@ public class SessionViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.UNIVERSITY;
+        return FontAwesome.BUILDING_O;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()
@@ -86,11 +87,11 @@ public class SessionViewFactory
                     @Override
                     public Class<? extends ContentViewFactory> getViewFactoryType()
                     {
-                        return SessionViewFactory.class;
+                        return SessionStatusViewFactory.class;
                     }}
                 );
             }
-            private static final long serialVersionUID = 49365592058433460L;
+            private static final long serialVersionUID = -7062277132332697204L;
         };
     }
     /* (non-Javadoc)
@@ -107,12 +108,12 @@ public class SessionViewFactory
     @Override
     protected Class<? extends ContentView> getViewType()
     {
-        return SessionView.class;
+        return SessionStatusView.class;
     }
     /**
-     * permission(s) required to execute open order view
+     * permission(s) required to execute the session status view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(AdminPermissions.ViewSessionAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.ViewBrokerStatusAction,AdminPermissions.ViewSessionAction));
     /**
      * provides access to web message services
      */
