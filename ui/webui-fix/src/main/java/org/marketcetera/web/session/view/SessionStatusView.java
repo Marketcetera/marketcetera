@@ -20,7 +20,7 @@ import com.google.common.collect.Maps;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -39,7 +39,7 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionStatusView
-        extends CssLayout
+        extends HorizontalLayout
         implements ContentView,BrokerStatusListener
 {
     /* (non-Javadoc)
