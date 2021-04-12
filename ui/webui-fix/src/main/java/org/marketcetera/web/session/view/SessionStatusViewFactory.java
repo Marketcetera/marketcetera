@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.admin.AdminPermissions;
-import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.fix.FixPermissions;
 import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentViewFactory;
@@ -113,7 +113,7 @@ public class SessionStatusViewFactory
     /**
      * permission(s) required to execute the session status view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.ViewBrokerStatusAction,AdminPermissions.ViewSessionAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(FixPermissions.ViewBrokerStatusAction,AdminPermissions.ViewSessionAction));
     /**
      * provides access to web message services
      */

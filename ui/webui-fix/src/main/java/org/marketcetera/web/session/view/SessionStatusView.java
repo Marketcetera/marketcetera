@@ -8,9 +8,9 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
-import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -49,7 +49,7 @@ public class SessionStatusView
     public void attach()
     {
         super.attach();
-        AdminClientService adminClientService = serviceManager.getService(AdminClientService.class);
+        FixAdminClientService adminClientService = serviceManager.getService(FixAdminClientService.class);
         synchronized(sessionRows) {
             adminClientService.getFixSessions().forEach(activeFixSession-> {
                 handleFixSession(activeFixSession);}
@@ -65,7 +65,7 @@ public class SessionStatusView
     @Override
     public void detach()
     {
-        serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
+        serviceManager.getService(FixAdminClientService.class).removeBrokerStatusListener(this);
         synchronized(sessionRows) {
             sessionRows.clear();
         }

@@ -8,7 +8,7 @@ import org.marketcetera.fix.FixSessionStatus;
 /* $License$ */
 
 /**
- *
+ * Provides a composite displayable {@link ActiveFixSession}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -16,7 +16,15 @@ import org.marketcetera.fix.FixSessionStatus;
  */
 public class DisplayFixSession
 {
+    /**
+     * Create a new DisplayFixSession instance.
+     */
     public DisplayFixSession() {}
+    /**
+     * Create a new DisplayFixSession instance.
+     *
+     * @param inFixSession an <code>ActiveFixSession</code> value
+     */
     public DisplayFixSession(ActiveFixSession inFixSession)
     {
         name = inFixSession.getFixSession().getName();
@@ -247,13 +255,40 @@ public class DisplayFixSession
                 .append(", senderSeqNum=").append(senderSeqNum).append("]");
         return builder.toString();
     }
+    /**
+     * name value
+     */
     private String name;
+    /**
+     * description value
+     */
     private String description;
+    /**
+     * session id value
+     */
     private String sessionId;
+    /**
+     * broker id value
+     */
     private String brokerId;
+    /**
+     * host id value
+     */
     private String hostId;
+    /**
+     * status value
+     */
     private FixSessionStatus status;
+    /**
+     * target sequence number
+     */
     private int targetSeqNum;
+    /**
+     * sender sequence number
+     */
     private int senderSeqNum;
+    /**
+     * underlying active FIX session value
+     */
     private ActiveFixSession source;
 }

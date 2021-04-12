@@ -17,6 +17,7 @@ import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixPermissions;
 import org.marketcetera.fix.FixRpcUtil;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -768,7 +769,7 @@ public class TradeRpcService<SessionClazz>
                                        inRequest,
                                        sessionHolder);
                 authzService.authorize(sessionHolder.getUser(),
-                                       TradePermissions.ViewBrokerStatusAction.name());
+                                       FixPermissions.ViewBrokerStatusAction.name());
                 TradeRpc.ReadAvailableFixInitiatorSessionsResponse.Builder responseBuilder = TradeRpc.ReadAvailableFixInitiatorSessionsResponse.newBuilder();
                 Collection<ActiveFixSession> pagedResponse = brokerService.getAvailableFixInitiatorSessions();
                 SLF4JLoggerProxy.trace(TradeRpcService.this,
