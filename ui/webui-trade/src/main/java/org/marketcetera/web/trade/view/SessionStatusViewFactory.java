@@ -42,7 +42,7 @@ public class SessionStatusViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "FIX Session Status";
+        return "Session Status";
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getWeight()

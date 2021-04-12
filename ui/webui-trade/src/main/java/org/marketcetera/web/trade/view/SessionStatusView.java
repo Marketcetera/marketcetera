@@ -18,11 +18,12 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -38,7 +39,7 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionStatusView
-        extends VerticalLayout
+        extends CssLayout
         implements ContentView,BrokerStatusListener
 {
     /* (non-Javadoc)
@@ -54,6 +55,7 @@ public class SessionStatusView
                 handleFixSession(activeFixSession);}
             );
         }
+        setId(getClass().getCanonicalName() + ".sessionStatusView");
         adminClientService.addBrokerStatusListener(this);
         styleService.addStyle(this);
     }
@@ -85,20 +87,6 @@ public class SessionStatusView
             handleFixSession(inActiveFixSession);
         }
     }
-    private void handleFixSession(ActiveFixSession inActiveFixSession)
-    {
-        SLF4JLoggerProxy.trace(this,
-                               "Incoming broker status: {}",
-                               inActiveFixSession);
-        SessionRow sessionRow = sessionRows.get(inActiveFixSession.getFixSession().getBrokerId());
-        if(sessionRow == null) {
-            sessionRow = new SessionRow(inActiveFixSession);
-            addComponent(sessionRow.fixSessionLayout);
-            sessionRows.put(inActiveFixSession.getFixSession().getBrokerId(),
-                            sessionRow);
-        }
-        sessionRow.setFixSession(inActiveFixSession);
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.ContentView#getViewName()
      */
@@ -122,6 +110,54 @@ public class SessionStatusView
         event = inEvent;
         viewProperties = inProperties;
     }
+    /**
+     * Handle the update for the given FIX session.
+     *
+     * @param inActiveFixSession an <code>ActiveFixSession</code> value
+     */
+    private void handleFixSession(ActiveFixSession inActiveFixSession)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Incoming broker status: {}",
+                               inActiveFixSession);
+        System.out.println("COCO: incoming broker status: " + inActiveFixSession);
+        try {
+            SessionRow sessionRow = sessionRows.get(inActiveFixSession.getFixSession().getBrokerId());
+            System.out.println("COCO: session row: " + sessionRow);
+            if(inActiveFixSession.getStatus() == FixSessionStatus.DELETED) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Deleting: {}",
+                                       sessionRow);
+                if(sessionRow == null) {
+                    // don't expect this, but, I guess nothing to do
+                } else {
+                    sessionRows.remove(inActiveFixSession.getFixSession().getBrokerId());
+                    removeComponent(sessionRow.fixSessionLayout);
+                }
+            } else {
+                if(sessionRow == null) {
+                    sessionRow = new SessionRow(inActiveFixSession);
+                    addComponent(sessionRow.fixSessionLayout);
+                    sessionRows.put(inActiveFixSession.getFixSession().getBrokerId(),
+                                    sessionRow);
+                    System.out.println("COCO: adding new session row: " + sessionRow);
+                }
+                sessionRow.setFixSession(inActiveFixSession);
+            }
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to handle update: {}",
+                                  inActiveFixSession);
+        }
+    }
+    /**
+     * Holds the data for a session image displayed in the view.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private class SessionRow
     {
         /**
@@ -131,9 +167,63 @@ public class SessionStatusView
          */
         private void setFixSession(ActiveFixSession inFixSession)
         {
+            FixSessionStatus oldStatus = null;
+            if(fixSession != null) {
+                oldStatus = fixSession.getStatus();
+            }
             fixSession = inFixSession;
-            FixSessionStatus fixSessionStatus = inFixSession.getStatus();
-            statusLabel.setDescription(fixSessionStatus.name());
+            FixSessionStatus fixSessionStatus = fixSession.getStatus();
+            if(fixSessionStatus != oldStatus) {
+                UI currentUi = UI.getCurrent();
+                if(currentUi == null) {
+                    return;
+                }
+                currentUi.access(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        try {
+                            ThemeResource brokerImageResource;
+                            switch(fixSessionStatus) {
+                                case AFFINITY_MISMATCH:
+                                case BACKUP:
+                                case DELETED:
+                                case STOPPED:
+                                case UNKNOWN:
+                                default:
+                                    brokerImageResource = new ThemeResource("broker-red.png");
+                                    break;
+                                case CONNECTED:
+                                    brokerImageResource = new ThemeResource("broker-green.png");
+                                    break;
+                                case DISABLED:
+                                    brokerImageResource = new ThemeResource("broker-gray.png");
+                                    break;
+                                case DISCONNECTED:
+                                    brokerImageResource = new ThemeResource("broker-yellow.png");
+                                    break;
+                                case NOT_CONNECTED:
+                                    brokerImageResource = new ThemeResource("broker-orange.png");
+                                    break;
+                            }
+                            fixSessionLayout.removeAllComponents();
+                            brokerStatusImage = new Image(null,
+                                                          brokerImageResource);
+                            brokerStatusImage.setDescription(fixSessionStatus.name());
+                            brokerStatusLabel.setCaption(fixSession.getFixSession().getName());
+                            brokerStatusImage.setId(getClass().getCanonicalName() + ".brokerStatusImage");
+                            styleService.addStyle(brokerStatusImage);
+                            fixSessionLayout.addComponents(brokerStatusImage,
+                                                           brokerStatusLabel);
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(SessionStatusView.this,
+                                                  e,
+                                                  "Unable to handle update: {}",
+                                                  inFixSession);
+                        }
+                    }}
+                );
+            }
         }
         /**
          * Create a new SessionRow instance.
@@ -142,45 +232,54 @@ public class SessionStatusView
          */
         private SessionRow(ActiveFixSession inActiveFixSession)
         {
-            fixSession = inActiveFixSession;
-            statusGrid = new Grid();
-            statusGrid.addColumn("status",Image.class);
-            statusGrid.addColumn("name",String.class);
-            styleService.addStyle(statusGrid);
-//            fixSessionLabel = new Label(fixSession.getFixSession().getName());
-//            statusLabel = new Image(null,
-//                                    new ThemeResource("green.png"));
-            fixSessionLayout = new HorizontalLayout();
-//            fixSessionLayout.addComponents(fixSessionLabel,
-//                                           statusLabel);
-//            styleService.addStyle(fixSessionLabel);
-//            styleService.addStyle(statusLabel);
+            fixSessionLayout = new VerticalLayout();
+            fixSessionLayout.setId(getClass().getCanonicalName() + ".fixSessionLayout");
             styleService.addStyle(fixSessionLayout);
-            fixSessionLayout.addComponent(statusGrid);
+            setFixSession(inActiveFixSession);
+            brokerStatusLabel = new Label();
+            brokerStatusLabel.setId(getClass().getCanonicalName() + ".brokerStatusLabel");
+            styleService.addStyle(brokerStatusLabel);
         }
-        private final Grid statusGrid;
-        private final HorizontalLayout fixSessionLayout;
-        private Label fixSessionLabel;
-        private Image statusLabel;
+        /**
+         * layout for a single session
+         */
+        private final VerticalLayout fixSessionLayout;
+        /**
+         * image of the session
+         */
+        private Image brokerStatusImage;
+        /**
+         * label which holds the name of the session
+         */
+        private Label brokerStatusLabel;
+        /**
+         * fix session - should be up-to-date
+         */
         private ActiveFixSession fixSession;
     }
+    /**
+     * holds the session row values - one per session currently being displayed
+     */
     private final Map<String,SessionRow> sessionRows = Maps.newHashMap();
     /**
      * parent window opened for the content
      */
+    @SuppressWarnings("unused")
     private final Window parent;
     /**
      * new window event that caused the view to be opened
      */
+    @SuppressWarnings("unused")
     private final NewWindowEvent event;
     /**
      * properties that initialize this view
      */
+    @SuppressWarnings("unused")
     private final Properties viewProperties;
     /**
      * global name of this view
      */
-    private static final String NAME = "Session Status View";
+    private static final String NAME = "FIX Session Status View";
     /**
      * provides access to style services
      */
