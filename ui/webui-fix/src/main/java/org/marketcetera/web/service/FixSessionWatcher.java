@@ -1,4 +1,4 @@
-package org.marketcetera.web.fixadmin;
+package org.marketcetera.web.service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -10,9 +10,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.LoginEvent;
 import org.marketcetera.web.events.LogoutEvent;
-import org.marketcetera.web.service.ServiceManager;
-import org.marketcetera.web.service.WebMessageService;
-import org.marketcetera.web.service.admin.AdminClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
@@ -66,7 +63,7 @@ public class FixSessionWatcher
             currentUser.setAttribute(FixSessionWatcherSubscriber.class,
                                      subscriber);
         }
-        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(subscriber);
+        serviceManager.getService(FixAdminClientService.class).addBrokerStatusListener(subscriber);
     }
     /**
      * Notify on logout events.
@@ -85,7 +82,7 @@ public class FixSessionWatcher
         }
         FixSessionWatcherSubscriber subscriber = currentUser.getAttribute(FixSessionWatcherSubscriber.class);
         if(subscriber != null) {
-            serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(subscriber);
+            serviceManager.getService(FixAdminClientService.class).removeBrokerStatusListener(subscriber);
         }
     }
     /**

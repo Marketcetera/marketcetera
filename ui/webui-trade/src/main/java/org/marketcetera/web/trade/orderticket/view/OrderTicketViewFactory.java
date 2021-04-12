@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.core.Pair;
+import org.marketcetera.fix.FixPermissions;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.web.trade.openorders.view.OpenOrderView;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
@@ -96,5 +97,5 @@ public class OrderTicketViewFactory
     /**
      * permission(s) required to execute order ticket view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,TradePermissions.ViewBrokerStatusAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,FixPermissions.ViewBrokerStatusAction));
 }

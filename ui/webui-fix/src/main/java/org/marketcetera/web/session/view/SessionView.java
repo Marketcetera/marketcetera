@@ -24,8 +24,8 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.entity.DisplayFixSession;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.service.WebMessageService;
-import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.view.AbstractPagedGridView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -191,7 +191,7 @@ public class SessionView
                               getViewName(),
                               action,
                               selectedItem.getName());
-        AdminClientService adminClientService = AdminClientService.getInstance();
+        FixAdminClientService adminClientService = FixAdminClientService.getInstance();
         switch(action) {
             case ACTION_START:
                 adminClientService.startSession(selectedItem.getName());
@@ -273,7 +273,7 @@ public class SessionView
         // prepare data
         final SortedMap<String,DecoratedDescriptor> sortedDescriptors = new TreeMap<>();
         final String incomingName = inFixSession.getFixSession().getName();
-        Collection<FixSessionAttributeDescriptor> descriptors = AdminClientService.getInstance().getFixSessionAttributeDescriptors();
+        Collection<FixSessionAttributeDescriptor> descriptors = FixAdminClientService.getInstance().getFixSessionAttributeDescriptors();
         for(FixSessionAttributeDescriptor descriptor : descriptors) {
             DecoratedDescriptor actualDescriptor = new DecoratedDescriptor(descriptor);
             sortedDescriptors.put(descriptor.getName(),
@@ -437,7 +437,7 @@ public class SessionView
                     private static final long serialVersionUID = -2219835238983724259L;
                 });
                 if(inFixSession.getFixSession().isAcceptor()) {
-                    FixSessionInstanceData instanceData = AdminClientService.getInstance().getFixSessionInstanceData(inFixSession.getFixSession().getAffinity());
+                    FixSessionInstanceData instanceData = FixAdminClientService.getInstance().getFixSessionInstanceData(inFixSession.getFixSession().getAffinity());
                     hostnameTextField.setValue(instanceData.getHostname());
                     hostnameTextField.setReadOnly(true);
                     hostnameTextField.setDescription("The acceptor hostname is determined by the server and is not modifiable");
@@ -505,7 +505,7 @@ public class SessionView
             private void initializeFields()
             {
                 if(inFixSession.getFixSession().isAcceptor()) {
-                    FixSessionInstanceData instanceData = AdminClientService.getInstance().getFixSessionInstanceData(inFixSession.getFixSession().getAffinity());
+                    FixSessionInstanceData instanceData = FixAdminClientService.getInstance().getFixSessionInstanceData(inFixSession.getFixSession().getAffinity());
                     hostnameTextField.setValue(instanceData.getHostname());
                     hostnameTextField.setReadOnly(true);
                     hostnameTextField.setDescription("The acceptor hostname is determined by the server and is not modifiable");
@@ -588,7 +588,7 @@ public class SessionView
             public Component getContent()
             {
                 // gather a list of the existing sessions, we'll use this to do some basic validation about session identity
-                final Collection<ActiveFixSession> existingSessions = AdminClientService.getInstance().getFixSessions();
+                final Collection<ActiveFixSession> existingSessions = FixAdminClientService.getInstance().getFixSessions();
                 FormLayout formLayout = new FormLayout();
                 formLayout.setMargin(true);
                 formLayout.setSizeFull();
@@ -1136,12 +1136,12 @@ public class SessionView
                         SLF4JLoggerProxy.debug(SessionView.this,
                                                "Submitting new fix session: {}",
                                                inFixSession);
-                        AdminClientService.getInstance().createFixSession(inFixSession.getFixSession());
+                        FixAdminClientService.getInstance().createFixSession(inFixSession.getFixSession());
                     } else {
                         SLF4JLoggerProxy.debug(SessionView.this,
                                                "Submitting fix session for update: {}",
                                                inFixSession);
-                        AdminClientService.getInstance().updateFixSession(incomingName,
+                        FixAdminClientService.getInstance().updateFixSession(incomingName,
                                                                           inFixSession.getFixSession());
                     }
                 } catch (Exception e) {
@@ -1228,16 +1228,16 @@ public class SessionView
                 // make rpc client call
                 if(senderChanged && targetChanged) {
                     // change both
-                    AdminClientService.getInstance().updateSequenceNumbers(inSelectedItem.getFixSession().getName(),
+                    FixAdminClientService.getInstance().updateSequenceNumbers(inSelectedItem.getFixSession().getName(),
                                                                            currentSenderSequenceNumber,
                                                                            currentTargetSequenceNumber);
                 } else {
                     if(senderChanged) {
-                        AdminClientService.getInstance().updateSenderSequenceNumber(inSelectedItem.getFixSession().getName(),
+                        FixAdminClientService.getInstance().updateSenderSequenceNumber(inSelectedItem.getFixSession().getName(),
                                                                                     currentSenderSequenceNumber);
                     }
                     if(targetChanged) {
-                        AdminClientService.getInstance().updateTargetSequenceNumber(inSelectedItem.getFixSession().getName(),
+                        FixAdminClientService.getInstance().updateTargetSequenceNumber(inSelectedItem.getFixSession().getName(),
                                                                                     currentTargetSequenceNumber);
                     }
                 }

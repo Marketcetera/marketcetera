@@ -6,7 +6,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.web.entity.DisplayFixSession;
-import org.marketcetera.web.service.admin.AdminClientService;
+import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.view.PagedDataContainer;
 import org.marketcetera.web.view.PagedViewProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -63,7 +63,7 @@ public class SessionPagedDataContainer
     @Override
     protected CollectionPageResponse<DisplayFixSession> getDataContainerContents(PageRequest inPageRequest)
     {
-        CollectionPageResponse<ActiveFixSession> activeFixSessions = AdminClientService.getInstance().getFixSessions(inPageRequest);
+        CollectionPageResponse<ActiveFixSession> activeFixSessions = FixAdminClientService.getInstance().getFixSessions(inPageRequest);
         CollectionPageResponse<DisplayFixSession> displayFixSessions = new CollectionPageResponse<>(activeFixSessions);
         activeFixSessions.getElements().forEach(activeFixSession -> displayFixSessions.getElements().add(new DisplayFixSession(activeFixSession)));
         return displayFixSessions;
