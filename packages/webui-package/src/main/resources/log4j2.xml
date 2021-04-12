@@ -19,7 +19,7 @@
     </Root>
     <logger name="com.marketcetera" level="info"/>
     <logger name="org.marketcetera" level="info"/>
-    <!-- logger name="org.marketcetera.web" level="debug"/-->
+    <logger name="org.marketcetera.web" level="debug"/>
     <!-- logger name="org.marketcetera.web.fixadmin.FixSessionWatcher" level="trace"/-->
     <!-- logger name="org.marketcetera.web.service.StyleService" level="trace"/-->
   </Loggers>

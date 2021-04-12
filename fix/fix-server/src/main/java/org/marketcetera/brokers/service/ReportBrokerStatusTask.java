@@ -26,10 +26,9 @@ public class ReportBrokerStatusTask
     {
         if(status == FixSessionStatus.DELETED) {
             removeBrokerStatus();
-        } else {
-            brokerService.reportBrokerStatus(new BrokerID(session.getBrokerId()),
-                                             status);
         }
+        brokerService.reportBrokerStatus(new BrokerID(session.getBrokerId()),
+                                         status);
     }
     /**
      * Create a new ReportBrokerStatusTask instance.

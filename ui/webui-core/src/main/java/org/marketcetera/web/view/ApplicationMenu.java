@@ -9,6 +9,9 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.AuthorizationHelperService;
@@ -322,7 +325,38 @@ public class ApplicationMenu
         @Override
         public int compareTo(MenuItemMetaData inO)
         {
-            return new Integer(getMenuContent().getWeight()).compareTo(inO.getMenuContent().getWeight());
+            return new CompareToBuilder().append(getMenuContent().getWeight(),inO.getMenuContent().getWeight())
+                    .append(getMenuContent().getMenuCaption(),inO.getMenuContent().getMenuCaption()).toComparison();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return new HashCodeBuilder()
+                    .append(getWeight())
+                    .append(getMenuCaption()).toHashCode();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof MenuItemMetaData)) {
+                return false;
+            }
+            MenuItemMetaData other = (MenuItemMetaData) obj;
+            if(!getEnclosingInstance().equals(other.getEnclosingInstance())) {
+                return false;
+            }
+            return new EqualsBuilder()
+                    .append(getWeight(),other.getWeight())
+                    .append(getMenuCaption(),other.getMenuCaption()).isEquals();
         }
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -389,6 +423,10 @@ public class ApplicationMenu
          * child menu items, may be empty but will never be <code>null</code>
          */
         private final SortedSet<MenuItemMetaData> childItems = new TreeSet<>();
+        private ApplicationMenu getEnclosingInstance()
+        {
+            return ApplicationMenu.this;
+        }
     }
     /**
      * top level content, sorted by menu item precedence

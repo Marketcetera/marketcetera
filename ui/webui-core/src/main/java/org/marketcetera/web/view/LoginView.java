@@ -59,17 +59,24 @@ public class LoginView
         password.setValue("");
         password.setNullRepresentation("");
         // Create login button
-        loginButton = new Button("Login", this);
+        loginButton = new Button("Login",
+                                 this);
         // Add both to a panel
-        fields = new VerticalLayout(user, password, loginButton);
+        fields = new VerticalLayout(user,
+                                    password,
+                                    loginButton);
         fields.setCaption("Please login to access the application");
         fields.setSpacing(true);
-        fields.setMargin(new MarginInfo(true, true, true, false));
+        fields.setMargin(new MarginInfo(true,
+                                        true,
+                                        true,
+                                        false));
         fields.setSizeUndefined();
         // The view root layout
         VerticalLayout viewLayout = new VerticalLayout(fields);
         viewLayout.setSizeFull();
-        viewLayout.setComponentAlignment(fields, Alignment.MIDDLE_CENTER);
+        viewLayout.setComponentAlignment(fields,
+                                         Alignment.MIDDLE_CENTER);
         viewLayout.setStyleName(ValoTheme.LAYOUT_CARD);
         setCompositionRoot(viewLayout);
     }

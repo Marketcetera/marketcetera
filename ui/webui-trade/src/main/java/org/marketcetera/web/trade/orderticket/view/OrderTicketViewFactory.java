@@ -94,7 +94,7 @@ public class OrderTicketViewFactory
         return OrderTicketViewFactory.class;
     }
     /**
-     * permission(s) required to execute open order view
+     * permission(s) required to execute order ticket view
      */
     private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,TradePermissions.ViewBrokerStatusAction));
 }

@@ -1,4 +1,4 @@
-package org.marketcetera.web.view.sessions;
+package org.marketcetera.web.session.view;
 
 import java.util.Collections;
 import java.util.Set;
@@ -11,8 +11,6 @@ import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
@@ -33,10 +31,9 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * @since $Release$
  */
 @SpringComponent
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionViewFactory
         extends AbstractContentViewFactory
-        implements ContentViewFactory,MenuContent
+        implements MenuContent
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
@@ -60,7 +57,7 @@ public class SessionViewFactory
     @Override
     public MenuContent getCategory()
     {
-        return null;
+        return SessionContentCategory.instance;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
