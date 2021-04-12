@@ -120,10 +120,8 @@ public class SessionStatusView
         SLF4JLoggerProxy.debug(this,
                                "Incoming broker status: {}",
                                inActiveFixSession);
-        System.out.println("COCO: incoming broker status: " + inActiveFixSession);
         try {
             SessionRow sessionRow = sessionRows.get(inActiveFixSession.getFixSession().getBrokerId());
-            System.out.println("COCO: session row: " + sessionRow);
             if(inActiveFixSession.getStatus() == FixSessionStatus.DELETED) {
                 SLF4JLoggerProxy.debug(this,
                                        "Deleting: {}",
@@ -140,7 +138,6 @@ public class SessionStatusView
                     addComponent(sessionRow.fixSessionLayout);
                     sessionRows.put(inActiveFixSession.getFixSession().getBrokerId(),
                                     sessionRow);
-                    System.out.println("COCO: adding new session row: " + sessionRow);
                 }
                 sessionRow.setFixSession(inActiveFixSession);
             }
@@ -160,6 +157,16 @@ public class SessionStatusView
      */
     private class SessionRow
     {
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("SessionRow [").append(fixSession.getFixSession().getName()).append(" ").append(fixSession.getStatus()).append("]");
+            return builder.toString();
+        }
         /**
          * Sets the fixSession value.
          *
@@ -235,10 +242,10 @@ public class SessionStatusView
             fixSessionLayout = new VerticalLayout();
             fixSessionLayout.setId(getClass().getCanonicalName() + ".fixSessionLayout");
             styleService.addStyle(fixSessionLayout);
-            setFixSession(inActiveFixSession);
             brokerStatusLabel = new Label();
             brokerStatusLabel.setId(getClass().getCanonicalName() + ".brokerStatusLabel");
             styleService.addStyle(brokerStatusLabel);
+            setFixSession(inActiveFixSession);
         }
         /**
          * layout for a single session
