@@ -1,4 +1,4 @@
-package org.marketcetera.web.trade.view;
+package org.marketcetera.web.session.view;
 
 import java.util.Map;
 import java.util.Properties;

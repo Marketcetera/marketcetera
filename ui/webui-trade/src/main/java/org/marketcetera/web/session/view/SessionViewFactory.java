@@ -1,4 +1,4 @@
-package org.marketcetera.web.view.sessions;
+package org.marketcetera.web.session.view;
 
 import java.util.Collections;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class SessionViewFactory
     @Override
     public MenuContent getCategory()
     {
-        return null;
+        return SessionContentCategory.instance;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
