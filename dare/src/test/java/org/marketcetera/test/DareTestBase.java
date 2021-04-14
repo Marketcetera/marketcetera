@@ -1783,7 +1783,7 @@ public class DareTestBase
         return message;
     }
     /**
-     * Waits for the next message to be received by the receiver and verifies it is of the given type. 
+     * Waits for the next application message to be received by the receiver and verifies it is of the given type. 
      *
      * @param inMsgType a <code>String</code> value
      * @return a <code>quickfix.Message</code> value
@@ -1793,13 +1793,36 @@ public class DareTestBase
                                                              String inMsgType)
             throws Exception
     {
-        quickfix.Message senderMessage = receiver.getNextApplicationMessage(inSessionId);
+        quickfix.Message senderMessage = receiver.getNextFromApplicationMessage(inSessionId);
         assertEquals(inMsgType,
                      senderMessage.getHeader().getString(MsgType.FIELD));
         return senderMessage;
     }
     /**
-     * Waits for the next message to be received by the sender and verifies it is of the given type.
+     * Waits for the next admin message to be received by the receiver and verifies it is of the given type. 
+     *
+     * @param inMsgType a <code>String</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected quickfix.Message waitForAndVerifySenderAdminMessage(quickfix.SessionID inSessionId,
+                                                                  String inMsgType)
+            throws Exception
+    {
+        long start = System.currentTimeMillis();
+        quickfix.Message senderMessage = null;
+        while(senderMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
+            senderMessage = receiver.getNextFromAdminMessage(inSessionId);
+            Thread.sleep(100);
+        }
+        assertNotNull("No admin message received for " + inSessionId + " in " + waitPeriod + "ms",
+                      senderMessage);
+        assertEquals(inMsgType,
+                     senderMessage.getHeader().getString(MsgType.FIELD));
+        return senderMessage;
+    }
+    /**
+     * Waits for the next application message to be received by the sender and verifies it is of the given type.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMsgType a <code>String</code> value
@@ -1817,10 +1840,42 @@ public class DareTestBase
         Validate.notNull(sender,
                          "No sender for " + inSessionId + " in " + senders.keySet());
         while(receiverMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
-            receiverMessage = sender.getNextApplicationMessage(inSessionId);
+            receiverMessage = sender.getNextFromApplicationMessage(inSessionId);
             Thread.sleep(100);
         }
         assertNotNull("No application message received for " + inSessionId + " in " + waitPeriod + "ms",
+                      receiverMessage);
+        assertEquals(inMsgType,
+                     receiverMessage.getHeader().getString(MsgType.FIELD));
+        return receiverMessage;
+    }
+    /**
+     * Waits for the next admin message to be received by the sender and verifies it is of the given type.
+     *
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @param inMsgType a <code>String</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected quickfix.Message waitForAndVerifyReceiverAdminMessage(quickfix.SessionID inSessionId,
+                                                                    String inMsgType)
+            throws Exception
+    {
+        long start = System.currentTimeMillis();
+        quickfix.Message receiverMessage = null;
+        quickfix.SessionID reversedSessionId = FIXMessageUtil.getReversedSessionId(inSessionId);
+        Sender sender = senders.get(reversedSessionId);
+        while(receiverMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
+            if(sender == null) {
+                sender = senders.get(reversedSessionId);
+            } else {
+                receiverMessage = sender.getNextFromAdminMessage(inSessionId);
+            }
+            Thread.sleep(100);
+        }
+        assertNotNull("No sender for " + inSessionId + " in " + senders.keySet(),
+                      sender);
+        assertNotNull("No admin message received for " + inSessionId + " in " + waitPeriod + "ms",
                       receiverMessage);
         assertEquals(inMsgType,
                      receiverMessage.getHeader().getString(MsgType.FIELD));
@@ -1850,7 +1905,7 @@ public class DareTestBase
                 Validate.notNull(sender,
                                  "No sender for " + inSessionId + " in " + senders.keySet());
                 while(receiverMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
-                    receiverMessage = sender.getNextApplicationMessage(inSessionId);
+                    receiverMessage = sender.getNextFromApplicationMessage(inSessionId);
                     Thread.sleep(100);
                 }
                 assertNotNull("No application message received for " + inSessionId + " in " + waitPeriod + "ms",

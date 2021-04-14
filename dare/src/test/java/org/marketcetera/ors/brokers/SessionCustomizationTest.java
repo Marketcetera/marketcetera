@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.brokers.BrokerConstants;
 import org.marketcetera.brokers.MessageModifier;
@@ -48,11 +49,10 @@ public class SessionCustomizationTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Ignore@Test
     public void testOrderModifiers()
             throws Exception
     {
-        // create a new broker with a session customization
         int sessionIndex = counter.incrementAndGet();
         createRemoteReceiverSession(sessionIndex);
         quickfix.SessionID senderSessionId = createInitiatorSession(sessionIndex);
@@ -61,12 +61,14 @@ public class SessionCustomizationTest
         FixSession session = brokerService.getActiveFixSession(senderSessionId).getFixSession();
         BrokerID brokerId = new BrokerID(session.getBrokerId());
         verifySessionLoggedOn(brokerId);
-        TextModifier orderModifier = new TextModifier();
-        TextModifier responseModifier = new TextModifier();
+        MockMessageModifier orderModifier = new MockMessageModifier();
+        orderModifier.setModifyText(true);
+        MockMessageModifier responseModifier = new MockMessageModifier();
+        responseModifier.setModifyText(true);
         testSessionCustomization.getOrderModifiers().add(orderModifier);
         testSessionCustomization.getResponseModifiers().add(responseModifier);
         modifyFixSession(session,
-                     testSessionCustomization);
+                         testSessionCustomization);
         Instrument inInstrument = generateInstrument();
         BigDecimal inOrderQty = new BigDecimal(20);
         OrderSingle order = Factory.getInstance().createOrderSingle();
@@ -128,6 +130,34 @@ public class SessionCustomizationTest
         assertEquals(responseModifier.getTextValue(),
                      executionReport.getString(quickfix.field.Text.FIELD));
     }
+    @Test
+    public void testIncomingAdminMessages()
+            throws Exception
+    {
+        int sessionIndex = counter.incrementAndGet();
+        createRemoteReceiverSession(sessionIndex);
+        quickfix.SessionID senderSessionId = createInitiatorSession(sessionIndex);
+        FIXVersion senderFixVersion = FIXVersion.getFIXVersion(senderSessionId);
+        quickfix.SessionID targetSessionId = FIXMessageUtil.getReversedSessionId(senderSessionId);
+        FixSession session = brokerService.getActiveFixSession(senderSessionId).getFixSession();
+        BrokerID brokerId = new BrokerID(session.getBrokerId());
+        verifySessionLoggedOn(brokerId);
+        MockMessageModifier logonModifier = new MockMessageModifier();
+        logonModifier.setModifyUsername(true);
+        testSessionCustomization.getOrderModifiers().add(logonModifier);
+        modifyFixSession(session,
+                         testSessionCustomization);
+        quickfix.Message logonMessage = waitForAndVerifySenderAdminMessage(targetSessionId,
+                                                                           quickfix.field.MsgType.LOGON);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.test.DareTestBase#getFixVersion()
+     */
+    @Override
+    protected FIXVersion getFixVersion()
+    {
+        return FIXVersion.FIX50SP2;
+    }
     // TODO test incoming admin message
     // TODO test outgoing admin message
     // TODO test intercepted outgoing app message
@@ -160,7 +190,7 @@ public class SessionCustomizationTest
      * @version $Id$
      * @since $Release$
      */
-    private static class TextModifier
+    private static class MockMessageModifier
             implements MessageModifier
     {
         /* (non-Javadoc)
@@ -170,10 +200,18 @@ public class SessionCustomizationTest
         public boolean modify(ServerFixSession inServerFixSession,
                               quickfix.Message inMessage)
         {
-            if(FIXMessageUtil.isOrderSingle(inMessage) || FIXMessageUtil.isExecutionReport(inMessage)) {
-                inMessage.setString(quickfix.field.Text.FIELD,
-                                    textValue);
-                return true;
+            if(isModifyText()) {
+                if(FIXMessageUtil.isOrderSingle(inMessage) || FIXMessageUtil.isExecutionReport(inMessage)) {
+                    inMessage.setString(quickfix.field.Text.FIELD,
+                                        textValue);
+                    return true;
+                }
+            }
+            if(isModifyUsername()) {
+                if(FIXMessageUtil.isLogon(inMessage)) {
+                    inMessage.getHeader().setString(quickfix.field.Username.FIELD,
+                                                    "COCO - username goes here");
+                }
             }
             return false;
         }
@@ -186,6 +224,50 @@ public class SessionCustomizationTest
         {
             return textValue;
         }
+        /**
+         * Get the modifyText value.
+         *
+         * @return a <code>boolean</code> value
+         */
+        private boolean isModifyText()
+        {
+            return modifyText;
+        }
+        /**
+         * Sets the modifyText value.
+         *
+         * @param inModifyText a <code>boolean</code> value
+         */
+        private void setModifyText(boolean inModifyText)
+        {
+            modifyText = inModifyText;
+        }
+        /**
+         * Get the modifyUsername value.
+         *
+         * @return a <code>boolean</code> value
+         */
+        private boolean isModifyUsername()
+        {
+            return modifyUsername;
+        }
+        /**
+         * Sets the modifyUsername value.
+         *
+         * @param inModifyUsername a <code>boolean</code> value
+         */
+        private void setModifyUsername(boolean inModifyUsername)
+        {
+            modifyUsername = inModifyUsername;
+        }
+        /**
+         * indicate if the username field should be modified
+         */
+        private boolean modifyUsername = false;
+        /**
+         * indicate if the text field should be modified
+         */
+        private boolean modifyText = false;
         /**
          * text value to apply to messages
          */
