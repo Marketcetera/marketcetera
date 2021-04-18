@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 
@@ -48,7 +48,7 @@ public class OpenOrderViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.MONEY;
+        return MarketceteraFont.Open_Orders;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()

@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -190,7 +191,7 @@ public class SessionStatusView
                     public void run()
                     {
                         try {
-                            ThemeResource brokerImageResource;
+                            Resource brokerImageResource;
                             switch(fixSessionStatus) {
                                 case AFFINITY_MISMATCH:
                                 case BACKUP:
@@ -214,6 +215,7 @@ public class SessionStatusView
                                     break;
                             }
                             fixSessionLayout.removeAllComponents();
+//                            brokerStatusLabel.setIcon(brokerImageResource);
                             brokerStatusImage = new Image(null,
                                                           brokerImageResource);
                             brokerStatusImage.setDescription(fixSessionStatus.name());

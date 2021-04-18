@@ -1,5 +1,7 @@
 // mytheme.scss
 @import "../valo/valo.scss";
+@include font(Metc, '../../mytheme/fonts/metc');
+
 .mytheme {
    @include valo;
 

@@ -2,9 +2,10 @@ package org.marketcetera.web.view;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.web.font.MarketceteraFont;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.CssLayout;
@@ -69,7 +70,7 @@ public class MainView
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.HOME;
+        return MarketceteraFont.Workspace;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()

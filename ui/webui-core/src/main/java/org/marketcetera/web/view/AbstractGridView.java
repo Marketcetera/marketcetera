@@ -5,11 +5,11 @@ import java.util.Properties;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.grid.ColumnResizeMode;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Button;
@@ -90,7 +90,7 @@ public abstract class AbstractGridView<DataClazz,DataContainerClazz extends Grid
         actionSelect.addValueChangeListener(getActionValueChangeListener());
         createNewButton = new Button("Create New " + getViewSubjectName());
         createNewButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        createNewButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        createNewButton.setIcon(MarketceteraFont.Plus);
         createNewButton.addClickListener(getCreateNewClickListener());
         aboveTheGridLayout.addComponents(actionSelect,
                                          createNewButton);
