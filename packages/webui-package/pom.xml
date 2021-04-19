@@ -148,6 +148,12 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
+      <resource>
+        <directory>src/main/WebContent</directory>
+        <includes>
+          <include>VAADIN/**/*</include>
+        </includes>
+      </resource>
     </resources>
     <plugins>
       <plugin>

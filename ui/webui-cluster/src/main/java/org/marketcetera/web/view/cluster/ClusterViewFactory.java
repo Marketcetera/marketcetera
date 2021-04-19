@@ -1,6 +1,7 @@
 package org.marketcetera.web.view.cluster;
 
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentViewFactory;
 import org.marketcetera.web.view.ContentView;
@@ -8,7 +9,6 @@ import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
@@ -59,7 +59,7 @@ public class ClusterViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.SITEMAP;
+        return MarketceteraFont.Cluster_Data;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()

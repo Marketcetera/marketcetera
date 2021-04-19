@@ -1557,6 +1557,24 @@ div.v-layout.v-horizontal.v-widget {
 	vertical-align: top;
 }
 
+@font-face {
+	font-family: Metc;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/metc.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/metc.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/metc.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/metc.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/metc.svg#Metc) format("svg");
+}
+
+.Metc {
+	font-family: Metc;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
 .mytheme.v-app, .mytheme.v-app-loading {
 	font: 300 16px/1.55 "Open Sans", sans-serif;
 	color: #464646;

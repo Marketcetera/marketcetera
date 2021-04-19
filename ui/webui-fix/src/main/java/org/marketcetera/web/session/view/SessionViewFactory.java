@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.service.WebMessageService;
 import org.marketcetera.web.view.AbstractContentViewFactory;
 import org.marketcetera.web.view.ContentView;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
@@ -65,7 +65,7 @@ public class SessionViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.UNIVERSITY;
+        return MarketceteraFont.FIX_Sessions;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()

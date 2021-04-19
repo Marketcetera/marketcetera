@@ -1,12 +1,12 @@
 package org.marketcetera.web.marketdata.list.view;
 
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.view.AbstractContentViewFactory;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.web.view.MenuContent;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
@@ -83,7 +83,7 @@ public class MarketDataListViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.AREA_CHART;
+        return MarketceteraFont.Market_Data;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()

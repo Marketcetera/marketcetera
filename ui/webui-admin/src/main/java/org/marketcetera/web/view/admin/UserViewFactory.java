@@ -1,9 +1,9 @@
 package org.marketcetera.web.view.admin;
 
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.view.ContentView;
 import org.marketcetera.web.view.ContentViewFactory;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 
@@ -42,7 +42,7 @@ public class UserViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.USERS;
+        return MarketceteraFont.Users;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()
