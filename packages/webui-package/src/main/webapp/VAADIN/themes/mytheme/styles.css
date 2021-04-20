@@ -13267,3 +13267,7 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .layout-with-bottom-border {
 	border-bottom: 1px solid #bcbcbc;
 }
+
+.mytheme .grad {
+	background-image: linear, red, yellow;
+}

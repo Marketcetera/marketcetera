@@ -4,11 +4,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 
 /* $License$ */
 
@@ -190,6 +199,105 @@ public class SessionUser
             attributes.remove(name);
         }
     }
+    /**
+     * Establish the time update for the given user.
+     *
+     * @param inConsumer a <code>Consumer&lt;String&gt;</code> value
+     */
+    public void establishTimeUpdate(final Consumer<String> inConsumer)
+    {
+        cancelTimeUpdate();
+        setAttribute(TimeUpdateToken.class,
+                     new TimeUpdateToken(timeUpdateService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run()
+            {
+                try {
+                    UI currentUi = UI.getCurrent();
+                    if(currentUi == null) {
+                        return;
+                    }
+                    currentUi.access(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            try {
+                                inConsumer.accept(TIME_FORMAT.print(new DateTime()));
+                            } catch (Exception ignored) {}
+                        }}
+                    );
+                } catch (Exception ignored) {}
+            }},1,1,TimeUnit.SECONDS)));
+    }
+    /**
+     * Cancel the time update for the given user.
+     */
+    public void cancelTimeUpdate()
+    {
+        TimeUpdateToken token = getAttribute(TimeUpdateToken.class);
+        if(token == null) {
+            return;
+        }
+        if(token.getTimeUpdateToken() != null) {
+            token.getTimeUpdateToken().cancel(true);
+            token.setTimeUpdateToken(null);
+        }
+        setAttribute(TimeUpdateToken.class,
+                     null);
+    }
+    /**
+     * Provides a unique wrapper for the ScheduledFuture for the time update service to be stored in session attributes.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class TimeUpdateToken
+    {
+        /**
+         * Get the timeUpdateToken value.
+         *
+         * @return a <code>ScheduledFuture&lt;?&gt;</code> value
+         */
+        private ScheduledFuture<?> getTimeUpdateToken()
+        {
+            return timeUpdateToken;
+        }
+        /**
+         * Sets the timeUpdateToken value.
+         *
+         * @param inTimeUpdateToken a <code>ScheduledFuture&lt;?&gt;</code> value
+         */
+        private void setTimeUpdateToken(ScheduledFuture<?> inTimeUpdateToken)
+        {
+            timeUpdateToken = inTimeUpdateToken;
+        }
+        /**
+         * Create a new TimeUpdateToken instance.
+         *
+         * @param inTimeUpdateToken a <code>ScheduledFuture&lt;?&gt;</code> value
+         */
+        private TimeUpdateToken(ScheduledFuture<?> inTimeUpdateToken)
+        {
+            timeUpdateToken = inTimeUpdateToken;
+        }
+        /**
+         * holds the token for the time update service, if any
+         */
+        private ScheduledFuture<?> timeUpdateToken;
+    }
+    /**
+     * provides a single service to update all users' time receivers
+     */
+    private static final ScheduledExecutorService timeUpdateService = Executors.newSingleThreadScheduledExecutor();
+    /**
+     * time format for time receivers
+     */
+    private static final DateTimeFormatter TIME_FORMAT = new DateTimeFormatterBuilder().appendMonthOfYearShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
+            .appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).appendLiteral(' ').appendTimeZoneShortName().toFormatter();
+    /**
+     * holds the attributes for the user
+     */
     private final Map<String,Object> attributes = new HashMap<String, Object>();
     /**
      * holds permissions for this user
