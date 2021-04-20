@@ -11,7 +11,7 @@ import org.marketcetera.web.events.NewWindowEvent;
 import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
-import org.marketcetera.web.view.ContentView;
+import org.marketcetera.web.view.AbstractContentView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -21,7 +21,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -40,8 +39,8 @@ import com.vaadin.ui.Window;
 @SpringComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SessionStatusView
-        extends HorizontalLayout
-        implements ContentView,BrokerStatusListener
+        extends AbstractContentView
+        implements BrokerStatusListener
 {
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.AbstractGridView#attach()
@@ -107,9 +106,9 @@ public class SessionStatusView
                              NewWindowEvent inEvent,
                              Properties inProperties)
     {
-        parent = inParent;
-        event = inEvent;
-        viewProperties = inProperties;
+        super(inParent,
+              inEvent,
+              inProperties);
     }
     /**
      * Handle the update for the given FIX session.
@@ -270,21 +269,6 @@ public class SessionStatusView
      * holds the session row values - one per session currently being displayed
      */
     private final Map<String,SessionRow> sessionRows = Maps.newHashMap();
-    /**
-     * parent window opened for the content
-     */
-    @SuppressWarnings("unused")
-    private final Window parent;
-    /**
-     * new window event that caused the view to be opened
-     */
-    @SuppressWarnings("unused")
-    private final NewWindowEvent event;
-    /**
-     * properties that initialize this view
-     */
-    @SuppressWarnings("unused")
-    private final Properties viewProperties;
     /**
      * global name of this view
      */
