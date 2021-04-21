@@ -80,19 +80,22 @@ public class MainUI
         footerLayout = new CssLayout();
         footerLayout.setId(getClass().getSimpleName() + ".footerLayout");
         footerLayout.setWidth("100%");
-        footerLayout.setHeight("5%");
+        footerLayout.setHeightUndefined();
+        footerLayout.addStyleName("layout-with-top-border");
         styleService.addStyle(footerLayout);
         userLabel = new Label();
         userLabel.setId(getClass().getSimpleName() + ".userLabel");
-        userLabel.setWidth("10%");
+        userLabel.setWidthUndefined();
+        userLabel.addStyleName("widget-margin");
         styleService.addStyle(userLabel);
         timeLabel = new Label();
         timeLabel.setId(getClass().getSimpleName() + ".timeLabel");
-        timeLabel.setWidth("10%");
+        timeLabel.setWidthUndefined();
+        timeLabel.addStyleName("widget-margin");
         styleService.addStyle(timeLabel);
         brokerSessionLayout = new CssLayout();
         brokerSessionLayout.setId(getClass().getSimpleName() + ".brokerSessionLayout");
-        brokerSessionLayout.setWidth("80%");
+        brokerSessionLayout.setWidth("85%");
         brokerSessionLayout.setHeight("100%");
         styleService.addStyle(brokerSessionLayout);
         footerLayout.addComponents(userLabel,

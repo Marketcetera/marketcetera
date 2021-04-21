@@ -7,10 +7,16 @@ import javax.annotation.PreDestroy;
 
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.web.BrokerStatusLayoutProvider;
 import org.marketcetera.web.WidgetProvider;
 import org.marketcetera.web.events.LoginEvent;
-import org.marketcetera.web.font.MarketceteraFont;
+import org.marketcetera.web.fonts.MarketceteraSessionStatusConnectedFont;
+import org.marketcetera.web.fonts.MarketceteraSessionStatusDisabledFont;
+import org.marketcetera.web.fonts.MarketceteraSessionStatusDisconnectedFont;
+import org.marketcetera.web.fonts.MarketceteraSessionStatusNotConnectedFont;
+import org.marketcetera.web.fonts.MarketceteraSessionStatusStoppedFont;
+import org.marketcetera.web.fonts.MarketceteraSessionStatusUnknownFont;
 import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.WebMessageService;
@@ -20,6 +26,7 @@ import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
@@ -28,7 +35,7 @@ import com.vaadin.ui.UI;
 /* $License$ */
 
 /**
- *
+ * Provides a session status display in the workspace footer.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -62,6 +69,12 @@ public class SessionStatusWidget
     @Override
     public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
     {
+        if(inActiveFixSession.getStatus() == FixSessionStatus.DELETED) {
+            activeFixSessions.remove(inActiveFixSession.getFixSession().getName());
+        } else {
+            activeFixSessions.put(inActiveFixSession.getFixSession().getName(),
+                                  inActiveFixSession);
+        }
         UI currentUi = UI.getCurrent();
         if(currentUi == null || !currentUi.isAttached()) {
             return;
@@ -73,19 +86,44 @@ public class SessionStatusWidget
                 try {
                     Layout brokerStatusLayout = brokerStatusLayoutProvider.getBrokerStatusLayout();
                     brokerStatusLayout.removeAllComponents();
-                    activeFixSessions.put(inActiveFixSession.getFixSession().getName(),
-                                          inActiveFixSession);
                     for(ActiveFixSession activeFixSession : activeFixSessions.values()) {
-                        Label brokerStatus = new Label();
-                        brokerStatus.setValue(" ");
-                        brokerStatus.setIcon(MarketceteraFont.Session_Status_Green);
-                        brokerStatus.addStyleName("green");
-                        brokerStatus.setDescription(activeFixSession.getFixSession().getName() + " " + activeFixSession.getStatus().name().toLowerCase());
-                        brokerStatusLayout.addComponent(brokerStatus);
+                        FixSessionStatus fixSessionStatus = activeFixSession.getStatus();
+                        String description = activeFixSession.getFixSession().getName() + " " + activeFixSession.getStatus().name().toLowerCase();
+                        String statusStyleName = "status-" + fixSessionStatus.name();
+                        Label brokerStatusLabel = new Label();
+                        brokerStatusLabel.setSizeUndefined();
+                        brokerStatusLabel.setValue("");
+                        Resource sessionStatusGlyph;
+                        switch(fixSessionStatus) {
+                            case AFFINITY_MISMATCH:
+                            case BACKUP:
+                            case DELETED:
+                            case UNKNOWN:
+                            default:
+                                sessionStatusGlyph = MarketceteraSessionStatusUnknownFont.SESSION_STATUS_UNKNOWN;
+                                break;
+                            case STOPPED:
+                                sessionStatusGlyph = MarketceteraSessionStatusStoppedFont.SESSION_STATUS_STOPPED;
+                                break;
+                            case CONNECTED:
+                                sessionStatusGlyph = MarketceteraSessionStatusConnectedFont.SESSION_STATUS_CONNECTED;
+                                break;
+                            case DISABLED:
+                                sessionStatusGlyph = MarketceteraSessionStatusDisabledFont.SESSION_STATUS_DISABLED;
+                                break;
+                            case DISCONNECTED:
+                                sessionStatusGlyph = MarketceteraSessionStatusDisconnectedFont.SESSION_STATUS_DISCONNECTED;
+                                break;
+                            case NOT_CONNECTED:
+                                sessionStatusGlyph = MarketceteraSessionStatusNotConnectedFont.SESSION_STATUS_NOT_CONNECTED;
+                                break;
+                        }
+                        brokerStatusLabel.setIcon(sessionStatusGlyph);
+                        brokerStatusLabel.addStyleName(statusStyleName);
+                        brokerStatusLabel.setDescription(description);
+                        brokerStatusLayout.addComponent(brokerStatusLabel);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                } catch (Exception ignored) {}
             }}
         );
     }

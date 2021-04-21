@@ -1,6 +1,12 @@
 // mytheme.scss
 @import "../valo/valo.scss";
 @include font(Metc, '../../mytheme/fonts/metc');
+@include font(MetcSessionStatusConnected, '../../mytheme/fonts/session-status-connected');
+@include font(MetcSessionStatusDisabled, '../../mytheme/fonts/session-status-disabled');
+@include font(MetcSessionStatusDisconnected, '../../mytheme/fonts/session-status-disconnected');
+@include font(MetcSessionStatusNotConnected, '../../mytheme/fonts/session-status-not-connected');
+@include font(MetcSessionStatusStopped, '../../mytheme/fonts/session-status-stopped');
+@include font(MetcSessionStatusUnknown, '../../mytheme/fonts/session-status-unknown');
 
 .mytheme {
    @include valo;
@@ -20,7 +26,33 @@
   .layout-with-bottom-border {
     border-bottom: 1px solid #bcbcbc;
   }
+  .layout-with-top-border {
+    border-top-style: solid;
+    border-top-color: #0d7edf;
+  }
+  .widget-margin {
+    margin-left: 1em;
+    margin-right: 1em;
+  }
   .grad {
     background-image: linear-gradient(red, yellow);
+  }
+  .MetcSessionStatusConnected {
+    color: green;
+  }
+  .MetcSessionStatusDisabled {
+    color: gray;
+  }
+  .MetcSessionStatusDisconnected {
+    color: yellow;
+  }
+  .MetcSessionStatusNotConnected {
+    color: orange;
+  }
+  .MetcSessionStatusStopped {
+    color: red;
+  }
+  .MetcSessionStatusUnknown {
+    color: black;
   }
 }
