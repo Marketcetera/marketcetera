@@ -1,5 +1,7 @@
 package org.marketcetera.web;
 
+import java.util.Map;
+
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.service.StyleService;
@@ -18,7 +20,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringNavigator;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
@@ -41,7 +42,16 @@ import com.vaadin.ui.themes.ValoTheme;
 @Title("Marketcetera Automated Trading Platform")
 public class MainUI
         extends UI
+        implements BrokerStatusLayoutProvider
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.BrokerStatusLayoutProvider#getBrokerStatusLayout()
+     */
+    @Override
+    public Layout getBrokerStatusLayout()
+    {
+        return brokerSessionLayout;
+    }
     /* (non-Javadoc)
      * @see com.vaadin.ui.UI#init(com.vaadin.server.VaadinRequest)
      */
@@ -80,7 +90,7 @@ public class MainUI
         timeLabel.setId(getClass().getSimpleName() + ".timeLabel");
         timeLabel.setWidth("10%");
         styleService.addStyle(timeLabel);
-        brokerSessionLayout = new HorizontalLayout();
+        brokerSessionLayout = new CssLayout();
         brokerSessionLayout.setId(getClass().getSimpleName() + ".brokerSessionLayout");
         brokerSessionLayout.setWidth("80%");
         brokerSessionLayout.setHeight("100%");
@@ -152,6 +162,10 @@ public class MainUI
                     menuLayout.setVisible(true);
                     footerLayout.setVisible(true);
                     brokerSessionLayout.setVisible(true);
+                    Map<String,WidgetProvider> widgetProviders = applicationContext.getBeansOfType(WidgetProvider.class,
+                                                                                                   true,
+                                                                                                   true);
+                    System.out.println("COCO: found widget providers: " + widgetProviders);
                 }
             }
             private static final long serialVersionUID = 7868495691502830440L;
@@ -160,7 +174,7 @@ public class MainUI
     /**
      * holds broker session glyphs in the footer
      */
-    private HorizontalLayout brokerSessionLayout;
+    private CssLayout brokerSessionLayout;
     /**
      * holds the logged-in user name
      */
