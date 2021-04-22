@@ -368,11 +368,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>webui-dataflow</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>webui-fix</artifactId>
         <version>${project.version}</version>
       </dependency>
