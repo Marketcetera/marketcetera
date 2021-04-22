@@ -103,7 +103,6 @@
     <module>webui-admin</module>
     <module>webui-core</module>
     <module>webui-cluster</module>
-    <module>webui-dataflow</module>
     <module>webui-fix</module>
     <module>webui-marketdata</module>
     <module>webui-trade</module>
