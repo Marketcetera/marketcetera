@@ -89,6 +89,11 @@ public enum FixSessionStatus
     {
         return CONNECTED.equals(this);
     }
+    /**
+     * Get a human-readable version of the status value.
+     *
+     * @return a <code>String</code> value
+     */
     public String getHumanReadable()
     {
         String name = name();
