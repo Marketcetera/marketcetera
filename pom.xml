@@ -453,6 +453,11 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
+        <groupId>com.oblac</groupId>
+        <artifactId>nomen-est-omen</artifactId>
+        <version>2.1.0</version>
+      </dependency>
+      <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>2.10.8</version>
@@ -797,10 +802,10 @@
       </dependency>
       <!-- Runtime: Vaadin -->
       <dependency>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-push</artifactId>
-	<scope>runtime</scope>
-	<version>${vaadin.version}</version>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-push</artifactId>
+        <scope>runtime</scope>
+        <version>${vaadin.version}</version>
       </dependency>
       <!-- Testing: local modules. -->
       <dependency>

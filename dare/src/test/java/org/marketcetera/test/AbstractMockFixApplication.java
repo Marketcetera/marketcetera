@@ -8,21 +8,25 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.fix.FixSettingsProviderFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-
-import quickfix.Application;
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.CellStyle;
+import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
 
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for FIX {@link quickfix.Application} implementations.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public abstract class AbstractMockFixApplication
-        implements Application
+        implements quickfix.Application
 {
     /**
      * Validates and starts the object.
@@ -90,9 +94,14 @@ public abstract class AbstractMockFixApplication
                                "{} sending admin message {}",
                                inSessionId,
                                inMessage);
-        addMessageToContainer(inSessionId,
-                              inMessage,
-                              toAdminMessages);
+        try {
+            addMessageToContainer("toAdmin",
+                                  inSessionId,
+                                  inMessage,
+                                  toAdminMessages);
+        } catch (quickfix.FieldNotFound e) {
+            throw new RuntimeException(e);
+        }
     }
     /* (non-Javadoc)
      * @see quickfix.Application#fromAdmin(quickfix.Message, quickfix.SessionID)
@@ -106,7 +115,8 @@ public abstract class AbstractMockFixApplication
                                "{} received admin message {}",
                                inSessionId,
                                inMessage);
-        addMessageToContainer(inSessionId,
+        addMessageToContainer("fromAdmin",
+                              inSessionId,
                               inMessage,
                               fromAdminMessages);
     }
@@ -122,9 +132,14 @@ public abstract class AbstractMockFixApplication
                                "{} sending app message {}",
                                inSessionId,
                                inMessage);
-        addMessageToContainer(inSessionId,
-                              inMessage,
-                              toAppMessages);
+        try {
+            addMessageToContainer("toApp",
+                                  inSessionId,
+                                  inMessage,
+                                  toAppMessages);
+        } catch (quickfix.FieldNotFound e) {
+            throw new RuntimeException(e);
+        }
     }
     /* (non-Javadoc)
      * @see quickfix.Application#fromApp(quickfix.Message, quickfix.SessionID)
@@ -138,7 +153,8 @@ public abstract class AbstractMockFixApplication
                                "{} received app message {}",
                                inSessionId,
                                inMessage);
-        addMessageToContainer(inSessionId,
+        addMessageToContainer("fromApp",
+                              inSessionId,
                               inMessage,
                               fromAppMessages);
     }
@@ -178,12 +194,9 @@ public abstract class AbstractMockFixApplication
     public quickfix.Message getNextFromAdminMessage(quickfix.SessionID inSessionId)
             throws Exception
     {
-        quickfix.SessionID reversedSessionId = new quickfix.SessionID(inSessionId.getBeginString(),
-                                                                      inSessionId.getTargetCompID(),
-                                                                      inSessionId.getSenderCompID());
         BlockingDeque<quickfix.Message> messages;
         synchronized(fromAdminMessages) {
-            messages = fromAdminMessages.get(reversedSessionId);
+            messages = fromAdminMessages.get(inSessionId);
         }
         if(messages == null) {
             return null;
@@ -310,16 +323,20 @@ public abstract class AbstractMockFixApplication
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMessage a <code>quickfix.Message</code> value
      * @param inMessageContainers a <code>Map&lt;quickfix.SessionID,BlockingDeque&lt;quickfix.Message&gt;&gt;
+     * @throws quickfix.FieldNotFound if the message could not be added
      */
-    protected void addMessageToContainer(quickfix.SessionID inSessionId,
+    protected void addMessageToContainer(String inLabel,
+                                         quickfix.SessionID inSessionId,
                                          quickfix.Message inMessage,
                                          final Map<quickfix.SessionID,BlockingDeque<quickfix.Message>> inMessageContainers)
+            throws quickfix.FieldNotFound
     {
         synchronized(inMessageContainers) {
             BlockingDeque<quickfix.Message> messages = inMessageContainers.get(inSessionId);
-            System.out.println("COCO: adding " + inMessage.toString().replaceAll('\1'+""," ") + " to " + inSessionId + " for " + getClass().getSimpleName());
             messages.add(inMessage);
             inMessageContainers.notifyAll();
+            logMessageContainer(inMessageContainers,
+                                inLabel);
         }
     }
     /**
@@ -336,6 +353,57 @@ public abstract class AbstractMockFixApplication
             inMessageContainer.clear();
         }
     }
+    /**
+     * Log the message containers of the given type.
+     *
+     * @param inMessageContainer a Map&lt;quickfix.SessionID,BlockingDeque&lt;quickfix.Message&gt;&gt; value
+     * @param inLabel a <code>String</code> value
+     * @throws quickfix.FieldNotFound if the messages could not be logged
+     */
+    protected void logMessageContainer(Map<quickfix.SessionID,BlockingDeque<quickfix.Message>> inMessageContainer,
+                                       String inLabel)
+            throws quickfix.FieldNotFound
+    {
+        Table table = new Table(4,
+                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                ShownBorders.ALL,
+                                false);
+        table.addCell(inLabel + " Messages",
+                      cellStyle,
+                      4);
+        for(Map.Entry<quickfix.SessionID,BlockingDeque<quickfix.Message>> entry : inMessageContainer.entrySet()) {
+            String sessionIdValue = entry.getKey().toString();
+            table.addCell(sessionIdValue,
+                          cellStyle,
+                          4);
+            table.addCell("MsgType",
+                          cellStyle);
+            table.addCell("SeqNum",
+                          cellStyle);
+            table.addCell("SendTime",
+                          cellStyle);
+            table.addCell("Msg",
+                          cellStyle);
+            for(quickfix.Message message : entry.getValue()) {
+                String msgType = message.getHeader().getString(quickfix.field.MsgType.FIELD);
+                String seqValue = message.getHeader().getString(quickfix.field.MsgSeqNum.FIELD);
+                String sendingTime = message.getHeader().getUtcTimeStamp(quickfix.field.SendingTime.FIELD).toString();
+                String messageValue = FIXMessageUtil.toHumanDelimitedString(message);
+                table.addCell(msgType);
+                table.addCell(seqValue);
+                table.addCell(sendingTime);
+                table.addCell(messageValue);
+            }
+        }
+        SLF4JLoggerProxy.info(this,
+                              "{}{}",
+                              System.lineSeparator(),
+                              table.render());
+    }
+    /**
+     * describes the style of the table cell
+     */
+    private static final CellStyle cellStyle = new CellStyle(HorizontalAlign.center);
     /**
      * provides FIX provider settings
      */

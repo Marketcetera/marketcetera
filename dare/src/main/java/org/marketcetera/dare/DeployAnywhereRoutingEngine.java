@@ -407,8 +407,6 @@ public class DeployAnywhereRoutingEngine
                 throw new quickfix.RejectLogon(inSessionId + " logon is not allowed outside of session time");
             }
         }
-        modifyIncomingMessage(session,
-                              inMessage);
         addToQueue(new MessagePackage(inMessage,
                                       MessageType.FROM_ADMIN,
                                       inSessionId,
@@ -1352,16 +1350,32 @@ public class DeployAnywhereRoutingEngine
      *
      * @param inServerFixSession a <code>ServerFixSession</code> value
      * @param inMessage a <code>quickfix.Message</code> value
+     * @param inOriginator an <code>Originator</code> value
      */
-    private void modifyIncomingMessage(ServerFixSession inServerFixSession,
-                                       quickfix.Message inMessage)
+    private boolean modifyIncomingMessage(ServerFixSession inServerFixSession,
+                                          quickfix.Message inMessage,
+                                          Originator inOriginator)
     {
-        SessionCustomization sessionCustomization = brokerService.getSessionCustomization(inServerFixSession.getActiveFixSession().getFixSession());
-        if(sessionCustomization != null) {
-            modifyMessage(inServerFixSession,
-                          sessionCustomization.getResponseModifiers(),
-                          inMessage);
+        boolean orderIntercepted = false;
+        if((inOriginator == Originator.Broker) && (inServerFixSession.getResponseModifiers() != null)) {
+            for(MessageModifier responseModifier : inServerFixSession.getResponseModifiers()) {
+                try {
+                    responseModifier.modify(inServerFixSession,
+                                            inMessage);
+                } catch (OrderIntercepted e) {
+                    SLF4JLoggerProxy.info(this,
+                                          "{} intercepted",
+                                          inMessage);
+                    orderIntercepted = true;
+                } catch (I18NException ex) {
+                    Messages.QF_MODIFICATION_FAILED.warn(getCategory(inMessage),
+                                                         ex,
+                                                         inMessage,
+                                                         inServerFixSession);
+                }
+            }
         }
+        return orderIntercepted;
     }
     /**
      * Modify the given message using the given modifiers from the given session.
@@ -1824,25 +1838,9 @@ public class DeployAnywhereRoutingEngine
 //                                                        new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
 //        }
         // Apply message modifiers.
-        boolean orderIntercepted = false;
-        if((inOriginator == Originator.Broker) && (inServerFixSession.getResponseModifiers() != null)) {
-            for(MessageModifier responseModifier : inServerFixSession.getResponseModifiers()) {
-                try {
-                    responseModifier.modify(inServerFixSession,
-                                            inMessage);
-                } catch (OrderIntercepted e) {
-                    SLF4JLoggerProxy.info(this,
-                                          "{} intercepted",
-                                          inMessage);
-                    orderIntercepted = true;
-                } catch (I18NException ex) {
-                    Messages.QF_MODIFICATION_FAILED.warn(getCategory(inMessage),
-                                                         ex,
+        boolean orderIntercepted = modifyIncomingMessage(inServerFixSession,
                                                          inMessage,
-                                                         inServerFixSession);
-                }
-            }
-        }
+                                                         inOriginator);
 //        TradeMessage reply;
 //        try {
 //            reply = FIXConverter.fromQMessage(inMessage,

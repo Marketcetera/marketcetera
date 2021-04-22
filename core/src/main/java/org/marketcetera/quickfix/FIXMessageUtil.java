@@ -1263,7 +1263,16 @@ public class FIXMessageUtil {
                 inDict).toString());
         return fields.toString();
     }
-
+    /**
+     * Convert the given message fragment to a format that's easier to read.
+     *
+     * @param inMessage a <code>quickfix.FieldMap</code> value
+     * @return a <code>String</code> value
+     */
+    public static String toHumanDelimitedString(quickfix.FieldMap inMessage)
+    {
+        return inMessage.toString().replaceAll('\1'+""," ");
+    }
     /**
      * Converts the supplied FieldMap to a map with human readable field
      * names (based on the supplied dictionary) as keys and field values
