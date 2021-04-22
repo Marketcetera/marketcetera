@@ -89,6 +89,13 @@ public enum FixSessionStatus
     {
         return CONNECTED.equals(this);
     }
+    public String getHumanReadable()
+    {
+        String name = name();
+        name = name.toLowerCase();
+        name = name.replaceAll("_"," ");
+        return name;
+    }
     /**
      * contains the statuses that indicate if a session is started or not
      */

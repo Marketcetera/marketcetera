@@ -10,7 +10,6 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.web.BrokerStatusLayoutProvider;
 import org.marketcetera.web.WidgetProvider;
-import org.marketcetera.web.events.LoginEvent;
 import org.marketcetera.web.fonts.MarketceteraSessionStatusConnectedFont;
 import org.marketcetera.web.fonts.MarketceteraSessionStatusDisabledFont;
 import org.marketcetera.web.fonts.MarketceteraSessionStatusDisconnectedFont;
@@ -19,13 +18,11 @@ import org.marketcetera.web.fonts.MarketceteraSessionStatusStoppedFont;
 import org.marketcetera.web.fonts.MarketceteraSessionStatusUnknownFont;
 import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.service.ServiceManager;
-import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.Subscribe;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Label;
@@ -46,22 +43,23 @@ import com.vaadin.ui.UI;
 public class SessionStatusWidget
         implements BrokerStatusListener, WidgetProvider
 {
+    /**
+     * Validate and start the object.
+     */
     @PostConstruct
     public void start()
     {
-        webMessageService.register(this);
         FixAdminClientService adminClientService = serviceManager.getService(FixAdminClientService.class);
         adminClientService.addBrokerStatusListener(this);
     }
+    /**
+     * Stop the object.
+     */
     @PreDestroy
     public void stop()
     {
-        webMessageService.unregister(this);
-    }
-    @Subscribe
-    public void receiveLoginEvent(LoginEvent inLoginEvent)
-    {
-        
+        FixAdminClientService adminClientService = serviceManager.getService(FixAdminClientService.class);
+        adminClientService.removeBrokerStatusListener(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
@@ -88,8 +86,7 @@ public class SessionStatusWidget
                     brokerStatusLayout.removeAllComponents();
                     for(ActiveFixSession activeFixSession : activeFixSessions.values()) {
                         FixSessionStatus fixSessionStatus = activeFixSession.getStatus();
-                        String description = activeFixSession.getFixSession().getName() + " " + activeFixSession.getStatus().name().toLowerCase();
-                        String statusStyleName = "status-" + fixSessionStatus.name();
+                        String description = activeFixSession.getFixSession().getName() + " " + activeFixSession.getStatus().getHumanReadable();
                         Label brokerStatusLabel = new Label();
                         brokerStatusLabel.setSizeUndefined();
                         brokerStatusLabel.setValue("");
@@ -119,7 +116,6 @@ public class SessionStatusWidget
                                 break;
                         }
                         brokerStatusLabel.setIcon(sessionStatusGlyph);
-                        brokerStatusLabel.addStyleName(statusStyleName);
                         brokerStatusLabel.setDescription(description);
                         brokerStatusLayout.addComponent(brokerStatusLabel);
                     }
@@ -133,8 +129,9 @@ public class SessionStatusWidget
      */
     @Autowired
     private ServiceManager serviceManager;
+    /**
+     * provides access to the broker status layout to place the widget
+     */
     @Autowired
     private BrokerStatusLayoutProvider brokerStatusLayoutProvider;
-    @Autowired
-    private WebMessageService webMessageService;
 }
