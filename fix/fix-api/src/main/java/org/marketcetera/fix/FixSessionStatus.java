@@ -90,6 +90,18 @@ public enum FixSessionStatus
         return CONNECTED.equals(this);
     }
     /**
+     * Get a human-readable version of the status value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getHumanReadable()
+    {
+        String name = name();
+        name = name.toLowerCase();
+        name = name.replaceAll("_"," ");
+        return name;
+    }
+    /**
      * contains the statuses that indicate if a session is started or not
      */
     private static final Set<FixSessionStatus> started = EnumSet.of(CONNECTED,NOT_CONNECTED,DISCONNECTED);

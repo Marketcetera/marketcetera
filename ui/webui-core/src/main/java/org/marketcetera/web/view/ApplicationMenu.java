@@ -351,9 +351,6 @@ public class ApplicationMenu
                 return false;
             }
             MenuItemMetaData other = (MenuItemMetaData) obj;
-            if(!getEnclosingInstance().equals(other.getEnclosingInstance())) {
-                return false;
-            }
             return new EqualsBuilder()
                     .append(getWeight(),other.getWeight())
                     .append(getMenuCaption(),other.getMenuCaption()).isEquals();
@@ -423,10 +420,6 @@ public class ApplicationMenu
          * child menu items, may be empty but will never be <code>null</code>
          */
         private final SortedSet<MenuItemMetaData> childItems = new TreeSet<>();
-        private ApplicationMenu getEnclosingInstance()
-        {
-            return ApplicationMenu.this;
-        }
     }
     /**
      * top level content, sorted by menu item precedence

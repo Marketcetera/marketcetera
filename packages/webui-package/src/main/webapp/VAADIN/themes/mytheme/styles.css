@@ -1575,6 +1575,114 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center;
 }
 
+@font-face {
+	font-family: MetcSessionStatusConnected;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-connected.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-connected.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-connected.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-connected.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-connected.svg#MetcSessionStatusConnected) format("svg");
+}
+
+.MetcSessionStatusConnected {
+	font-family: MetcSessionStatusConnected;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
+@font-face {
+	font-family: MetcSessionStatusDisabled;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disabled.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disabled.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disabled.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disabled.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disabled.svg#MetcSessionStatusDisabled) format("svg");
+}
+
+.MetcSessionStatusDisabled {
+	font-family: MetcSessionStatusDisabled;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
+@font-face {
+	font-family: MetcSessionStatusDisconnected;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disconnected.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disconnected.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disconnected.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disconnected.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-disconnected.svg#MetcSessionStatusDisconnected) format("svg");
+}
+
+.MetcSessionStatusDisconnected {
+	font-family: MetcSessionStatusDisconnected;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
+@font-face {
+	font-family: MetcSessionStatusNotConnected;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-not-connected.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-not-connected.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-not-connected.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-not-connected.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-not-connected.svg#MetcSessionStatusNotConnected) format("svg");
+}
+
+.MetcSessionStatusNotConnected {
+	font-family: MetcSessionStatusNotConnected;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
+@font-face {
+	font-family: MetcSessionStatusStopped;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-stopped.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-stopped.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-stopped.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-stopped.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-stopped.svg#MetcSessionStatusStopped) format("svg");
+}
+
+.MetcSessionStatusStopped {
+	font-family: MetcSessionStatusStopped;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
+@font-face {
+	font-family: MetcSessionStatusUnknown;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-unknown.eot);
+	src: url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-unknown.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-unknown.woff) format("woff"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-unknown.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../mytheme/fonts/session-status-unknown.svg#MetcSessionStatusUnknown) format("svg");
+}
+
+.MetcSessionStatusUnknown {
+	font-family: MetcSessionStatusUnknown;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
 .mytheme.v-app, .mytheme.v-app-loading {
 	font: 300 16px/1.55 "Open Sans", sans-serif;
 	color: #464646;
@@ -13266,4 +13374,46 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .layout-with-bottom-border {
 	border-bottom: 1px solid #bcbcbc;
+}
+
+.mytheme .layout-with-top-border {
+	border-top-style: solid;
+	border-top-color: #197de1;
+}
+
+.mytheme .widget-margin {
+	margin-left: 1em;
+	margin-right: 1em;
+}
+
+.mytheme .grad {
+	background-image: linear, red, yellow;
+}
+
+.mytheme .MetcSessionStatusConnected {
+	color: green;
+}
+
+.mytheme .MetcSessionStatusDisabled {
+	color: gray;
+}
+
+.mytheme .MetcSessionStatusDisconnected {
+	color: yellow;
+}
+
+.mytheme .MetcSessionStatusNotConnected {
+	color: orange;
+}
+
+.mytheme .MetcSessionStatusStopped {
+	color: red;
+}
+
+.mytheme .MetcSessionStatusUnknown {
+	color: black;
+}
+
+.mytheme .theme-text-color {
+	color: #197de1;
 }

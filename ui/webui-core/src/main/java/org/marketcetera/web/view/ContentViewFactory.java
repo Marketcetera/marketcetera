@@ -23,7 +23,7 @@ public interface ContentViewFactory
      * @param inParent a <code>Window</code> value
      * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
-     * @return a <code>T</code> value
+     * @return a <code>ContentView</code> value
      */
     ContentView create(Window inParent,
                        NewWindowEvent inEvent,

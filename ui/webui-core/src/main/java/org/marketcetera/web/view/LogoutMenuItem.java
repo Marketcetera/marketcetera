@@ -81,6 +81,10 @@ public class LogoutMenuItem
                                           "Problem occurred while logging out: {}",
                                           ExceptionUtils.getRootCauseMessage(e));
                 }
+                SessionUser sessionUser = SessionUser.getCurrentUser();
+                if(sessionUser != null) {
+                    sessionUser.cancelTimeUpdate();
+                }
                 VaadinSession.getCurrent().setAttribute(SessionUser.class,
                                                         null);
                 UI.getCurrent().getNavigator().navigateTo(MainView.NAME);
