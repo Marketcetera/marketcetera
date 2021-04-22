@@ -13378,7 +13378,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .layout-with-top-border {
 	border-top-style: solid;
-	border-top-color: #0d7edf;
+	border-top-color: #197de1;
 }
 
 .mytheme .widget-margin {
@@ -13412,4 +13412,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .MetcSessionStatusUnknown {
 	color: black;
+}
+
+.mytheme .theme-text-color {
+	color: #197de1;
 }

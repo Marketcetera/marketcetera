@@ -87,11 +87,13 @@ public class MainUI
         userLabel.setId(getClass().getSimpleName() + ".userLabel");
         userLabel.setWidthUndefined();
         userLabel.addStyleName("widget-margin");
+        userLabel.addStyleName("theme-text-color");
         styleService.addStyle(userLabel);
         timeLabel = new Label();
         timeLabel.setId(getClass().getSimpleName() + ".timeLabel");
         timeLabel.setWidthUndefined();
         timeLabel.addStyleName("widget-margin");
+        timeLabel.addStyleName("theme-text-color");
         styleService.addStyle(timeLabel);
         brokerSessionLayout = new CssLayout();
         brokerSessionLayout.setId(getClass().getSimpleName() + ".brokerSessionLayout");
@@ -168,7 +170,9 @@ public class MainUI
                     Map<String,WidgetProvider> widgetProviders = applicationContext.getBeansOfType(WidgetProvider.class,
                                                                                                    true,
                                                                                                    true);
-                    System.out.println("COCO: found widget providers: " + widgetProviders);
+                    SLF4JLoggerProxy.info(MainUI.class,
+                                          "Found widget providers: {}",
+                                          widgetProviders);
                 }
             }
             private static final long serialVersionUID = 7868495691502830440L;
