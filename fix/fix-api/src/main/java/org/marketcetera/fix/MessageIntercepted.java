@@ -6,48 +6,48 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /* $License$ */
 
 /**
- * Indicates that an outgoing order was intercepted and should not be processed any further.
+ * Indicates that an incoming or outgoing message was intercepted and should not be processed any further.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class OrderIntercepted
+public class MessageIntercepted
         extends CoreException
 {
     /**
-     * Create a new OrderIntercepted instance.
+     * Create a new MessageIntercepted instance.
      */
-    public OrderIntercepted()
+    public MessageIntercepted()
     {
         super();
     }
     /**
-     * Create a new OrderIntercepted instance.
+     * Create a new MessageIntercepted instance.
      *
      * @param inNested a <code>Throwable</code> value
      */
-    public OrderIntercepted(Throwable inNested)
+    public MessageIntercepted(Throwable inNested)
     {
         super(inNested);
     }
     /**
-     * Create a new OrderIntercepted instance.
+     * Create a new MessageIntercepted instance.
      *
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
-    public OrderIntercepted(I18NBoundMessage inMessage)
+    public MessageIntercepted(I18NBoundMessage inMessage)
     {
         super(inMessage);
     }
     /**
-     * Create a new OrderIntercepted instance.
+     * Create a new MessageIntercepted instance.
      *
      * @param inNested a <code>Throwable</code> value
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
-    public OrderIntercepted(Throwable inNested,
-                            I18NBoundMessage inMessage)
+    public MessageIntercepted(Throwable inNested,
+                              I18NBoundMessage inMessage)
     {
         super(inNested,
               inMessage);

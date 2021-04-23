@@ -2,7 +2,7 @@ package org.marketcetera.trade.event.connector;
 
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.fix.MessageIntercepted;
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.TradeMessage;
@@ -84,7 +84,7 @@ public class IncomingTradeMessageConverterConnector
                                    tradeMessage);
             eventBusService.post(new TradeMessagePackage(serverFixSession,
                                                          tradeMessage));
-        } catch (OrderIntercepted e) {
+        } catch (MessageIntercepted e) {
             SLF4JLoggerProxy.info(this,
                                   "{} not re-emitted because it was intercepted",
                                   fixTradeMessage);

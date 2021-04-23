@@ -2,7 +2,7 @@ package org.marketcetera.trade.service;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.fix.MessageIntercepted;
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
@@ -38,7 +38,7 @@ public interface TradeService
      * @param inServerFixSession a <code>ServerFixSession</code> value
      * @return a <code>Message</code> value
      * @throws BrokerUnavailable if the broker is unavailable or unknown
-     * @throws OrderIntercepted if the order should not be sent on in the data flow
+     * @throws MessageIntercepted if the order should not be sent on in the data flow
      */
     Message convertOrder(Order inOrder,
                          ServerFixSession inServerFixSession);
@@ -48,7 +48,7 @@ public interface TradeService
      * @param inMessage a <code>HasFIXMessage</code> value
      * @param inServerFixSession a <code>ServerFixSession</code> value
      * @return a <code>TradeMessage</code> value
-     * @throws OrderIntercepted if the message should not be sent on in the data flow
+     * @throws MessageIntercepted if the message should not be sent on in the data flow
      * @throws MessageCreationException if the message could not be converted
      */
     TradeMessage convertResponse(HasFIXMessage inMessage,

@@ -89,7 +89,8 @@ import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
-import org.marketcetera.trade.event.IncomingOrderInterceptedEvent;
+import org.marketcetera.trade.event.IncomingMessageInterceptedEvent;
+import org.marketcetera.trade.event.OutgoingMessageInterceptedEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
@@ -173,7 +174,8 @@ public class DareTestBase
         remoteAcceptorPort = hostAcceptorPort + 1000;
         asyncExecutorService = Executors.newCachedThreadPool();
         clearOrderData();
-        resetIncomingOrderInterceptedEvents();
+        resetIncomingMessageInterceptedEvents();
+        resetOutgoingMessageInterceptedEvents();
         instrument = generateInstrument();
         SLF4JLoggerProxy.info(this,
                               "{} beginning",
@@ -224,58 +226,113 @@ public class DareTestBase
         }
     }
     /**
-     * Receive {@link IncomingOrderInterceptedEvent} values.
+     * Receive {@link IncomingMessageInterceptedEvent} values.
      *
-     * @param inEvent an <code>IncomingOrderInterceptedEvent</code> value
+     * @param inEvent an <code>IncomingMessageInterceptedEvent</code> value
      */
     @Subscribe
-    public void receiveIncomingOrderInterceptedEvent(IncomingOrderInterceptedEvent inEvent)
+    public void receiveIncomingMessageInterceptedEvent(IncomingMessageInterceptedEvent inEvent)
     {
-        incomingOrderInterceptedEvents.addLast(inEvent);
+        incomingMessageInterceptedEvents.addLast(inEvent);
     }
     /**
-     * Waits a reasonable amount of time for incoming order intercepted events.
+     * Waits a reasonable amount of time for incoming message intercepted events.
      *
-     * @return an <code>IncomingOrderInterceptedEvent</code> value
+     * @return an <code>IncomingMessageInterceptedEvent</code> value
      * @throws Exception if the event was not received
      */
-    protected IncomingOrderInterceptedEvent waitForIncomingOrderInterceptedEvent()
+    protected IncomingMessageInterceptedEvent waitForIncomingMessageInterceptedEvent()
             throws Exception
     {
-        return waitForOrderInterceptedEvent(10);
+        return waitForIncomingMessageInterceptedEvent(10);
     }
     /**
-     * Waits the given amount of time for incoming order intercepted events.
+     * Waits the given amount of time for incoming message intercepted events.
      *
      * @param inSeconds an <code>int</code> value
-     * @return an <code>IncomingOrderInterceptedEvent</code> value
+     * @return an <code>IncomingMessageInterceptedEvent</code> value
      * @throws Exception if the event was not received
      */
-    protected IncomingOrderInterceptedEvent waitForOrderInterceptedEvent(int inSeconds)
+    protected IncomingMessageInterceptedEvent waitForIncomingMessageInterceptedEvent(int inSeconds)
             throws Exception
     {
-        IncomingOrderInterceptedEvent event = null;
-        event = incomingOrderInterceptedEvents.pollFirst(inSeconds,
-                                                 TimeUnit.SECONDS);
-        assertNotNull("No incoming order intercepted event in " + inSeconds + "s at " + new DateTime(),
+        IncomingMessageInterceptedEvent event = null;
+        event = incomingMessageInterceptedEvents.pollFirst(inSeconds,
+                                                           TimeUnit.SECONDS);
+        assertNotNull("No incoming message intercepted event in " + inSeconds + "s at " + new DateTime(),
                       event);
         return event;
     }
     /**
-     * Verify that no incoming order intercepted events have occurred.
+     * Verify that no incoming message intercepted events have occurred.
      */
-    protected void verifyNoIncomingOrderInterceptedEvents()
+    protected void verifyNoIncomingMessageInterceptedEvents()
     {
-        assertTrue("Expected no order intercepted events, got: " + incomingOrderInterceptedEvents.size(),
-                   incomingOrderInterceptedEvents.isEmpty());
+        assertTrue("Expected no incoming message intercepted events, got: " + incomingMessageInterceptedEvents.size(),
+                   incomingMessageInterceptedEvents.isEmpty());
     }
     /**
-     * Clear all incoming order intercepted events.
+     * Clear all incoming message intercepted events.
      */
-    protected void resetIncomingOrderInterceptedEvents()
+    protected void resetIncomingMessageInterceptedEvents()
     {
-        synchronized(incomingOrderInterceptedEvents) {
-            incomingOrderInterceptedEvents.clear();
+        synchronized(incomingMessageInterceptedEvents) {
+            incomingMessageInterceptedEvents.clear();
+        }
+    }
+    /**
+     * Receive {@link OutgoingMessageInterceptedEvent} values.
+     *
+     * @param inEvent an <code>OutgoingMessageInterceptedEvent</code> value
+     */
+    @Subscribe
+    public void receiveOutgoingMessageInterceptedEvent(OutgoingMessageInterceptedEvent inEvent)
+    {
+        outgoingMessageInterceptedEvents.addLast(inEvent);
+    }
+    /**
+     * Waits a reasonable amount of time for outgoing message intercepted events.
+     *
+     * @return an <code>OutgoingMessageInterceptedEvent</code> value
+     * @throws Exception if the event was not received
+     */
+    protected OutgoingMessageInterceptedEvent waitForOutgoingMessageInterceptedEvent()
+            throws Exception
+    {
+        return waitForOutgoingMessageInterceptedEvent(10);
+    }
+    /**
+     * Waits the given amount of time for outgoing message intercepted events.
+     *
+     * @param inSeconds an <code>int</code> value
+     * @return an <code>OutgoingMessageInterceptedEvent</code> value
+     * @throws Exception if the event was not received
+     */
+    protected OutgoingMessageInterceptedEvent waitForOutgoingMessageInterceptedEvent(int inSeconds)
+            throws Exception
+    {
+        OutgoingMessageInterceptedEvent event = null;
+        event = outgoingMessageInterceptedEvents.pollFirst(inSeconds,
+                                                           TimeUnit.SECONDS);
+        assertNotNull("No outgoing message intercepted event in " + inSeconds + "s",
+                      event);
+        return event;
+    }
+    /**
+     * Verify that no outgoing message intercepted events have occurred.
+     */
+    protected void verifyNoOutgoingMessageInterceptedEvents()
+    {
+        assertTrue("Expected no outgoing message intercepted events, got: " + outgoingMessageInterceptedEvents.size(),
+                   outgoingMessageInterceptedEvents.isEmpty());
+    }
+    /**
+     * Clear all outgoing message intercepted events.
+     */
+    protected void resetOutgoingMessageInterceptedEvents()
+    {
+        synchronized(outgoingMessageInterceptedEvents) {
+            outgoingMessageInterceptedEvents.clear();
         }
     }
     /**
@@ -2881,7 +2938,11 @@ public class DareTestBase
     /**
      * holds received incoming order intercepted events
      */
-    private final BlockingDeque<IncomingOrderInterceptedEvent> incomingOrderInterceptedEvents = new LinkedBlockingDeque<>();
+    private final BlockingDeque<IncomingMessageInterceptedEvent> incomingMessageInterceptedEvents = new LinkedBlockingDeque<>();
+    /**
+     * holds received outgoing order intercepted events
+     */
+    private final BlockingDeque<OutgoingMessageInterceptedEvent> outgoingMessageInterceptedEvents = new LinkedBlockingDeque<>();
     /**
      * message factory value
      */
