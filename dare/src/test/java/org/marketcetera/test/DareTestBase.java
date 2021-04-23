@@ -174,8 +174,7 @@ public class DareTestBase
         remoteAcceptorPort = hostAcceptorPort + 1000;
         asyncExecutorService = Executors.newCachedThreadPool();
         clearOrderData();
-        resetIncomingMessageInterceptedEvents();
-        resetOutgoingMessageInterceptedEvents();
+        resetMessageInterceptedEvents();
         instrument = generateInstrument();
         SLF4JLoggerProxy.info(this,
                               "{} beginning",
@@ -325,6 +324,14 @@ public class DareTestBase
     {
         assertTrue("Expected no outgoing message intercepted events, got: " + outgoingMessageInterceptedEvents.size(),
                    outgoingMessageInterceptedEvents.isEmpty());
+    }
+    /**
+     * Reset all message intercepted events.
+     */
+    protected void resetMessageInterceptedEvents()
+    {
+        resetOutgoingMessageInterceptedEvents();
+        resetIncomingMessageInterceptedEvents();
     }
     /**
      * Clear all outgoing message intercepted events.
