@@ -1,0 +1,35 @@
+syntax = "proto3";
+option java_generic_services = true;
+option java_package = "org.marketcetera.rpc.event";
+option java_outer_classname = "EventRpc";
+
+import "rpc_base.proto";
+import "google/protobuf/timestamp.proto";
+
+message DataEvent {
+    int64 id = 1;
+    string type = 2;
+    EventAction action = 3;
+    google.protobuf.Timestamp timestamp = 4;
+    string body = 5;
+}
+
+enum EventAction {
+    ADD = 0;
+    CHANGE = 1;
+    DELETE = 2;
+}
+
+message DataEventRequest {
+    string type = 1;
+}
+
+message DataEventResponse {
+    repeated DataEvent events = 1;
+}
+
+service EventRpcService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+}
