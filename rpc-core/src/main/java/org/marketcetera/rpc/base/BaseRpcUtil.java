@@ -32,6 +32,38 @@ import io.grpc.stub.StreamObserver;
 public abstract class BaseRpcUtil
 {
     /**
+     * Get the class name value from the given class.
+     *
+     * @param inClass a <code>Class&lt;?&gt;</code> value
+     * @return an <code>Optional&lt;String&gt;</code> value
+     */
+    public static Optional<String> getClassnameValue(Class<?> inClass)
+    {
+        if(inClass == null) {
+            return Optional.empty();
+        }
+        return Optional.of(inClass.getCanonicalName());
+    }
+    /**
+     * Get the class value from the given class name.
+     *
+     * @param inClassname a <code>String</code> value
+     * @return an <code>Optional&lt;Class&lt;?&gt;&gt;</code> value
+     */
+    public static Optional<Class<?>> getClassValue(String inClassname)
+    {
+        if(inClassname == null) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(Class.forName(inClassname));
+        } catch (ClassNotFoundException e) {
+            SLF4JLoggerProxy.warn(BaseRpcUtil.class,
+                                  e);
+            return Optional.empty();
+        }
+    }
+    /**
      * Get the timestamp value from the given date.
      *
      * @param inTimestamp a <code>Date</code> value

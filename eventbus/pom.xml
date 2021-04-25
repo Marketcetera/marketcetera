@@ -18,6 +18,7 @@
     <module>eventbus-core</module>
     <module>eventbus-guava</module>
     <module>eventbus-rpc-core</module>
+    <module>eventbus-rpc-server</module>
     <module>eventbus-server</module>
   </modules>
 </project>
