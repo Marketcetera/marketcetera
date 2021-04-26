@@ -24,12 +24,25 @@ message DataEvent {
 // request data events
 message DataEventRequest {
     string sessionId = 1;
-    repeated string types = 2;
+    string requestId = 2;
+    repeated string types = 3;
 }
 
 // return data events
 message DataEventResponse {
-    repeated DataEvent dataEvents = 1;
+    string requestId = 1;
+    repeated DataEvent dataEvents = 2;
+}
+
+// cancels data event request
+message DataEventRequestCancel {
+    string sessionId = 1;
+    string requestId = 2;
+}
+
+// cancels data event request
+message DataEventCancelResponse {
+    string requestId = 1;
 }
 
 // services for data events
@@ -38,4 +51,5 @@ service DataEventRpcService {
     rpc logout(LogoutRequest) returns (LogoutResponse); // ends the session
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse); // keeps the session alive
     rpc subscribeToDataEvents(DataEventRequest) returns (stream DataEventResponse); // requests data events
+    rpc unSubscribeToDataEvents(DataEventRequestCancel) returns (DataEventCancelResponse); // cancels data event request
 }

@@ -342,18 +342,6 @@ public class MarketDataRpcService<SessionClazz>
                 inResponseObserver.onCompleted();
             }
         }
-        /**
-         * Build a request id from the given attributes.
-         *
-         * @param inSessionId a <code>String</code> value
-         * @param inRequestId a <code>String</code> value
-         * @return a <code>String</code> value
-         */
-        private String buildRequestId(String inSessionId,
-                                      String inRequestId)
-        {
-            return new StringBuilder().append(inSessionId).append('-').append(inRequestId).toString();
-        }
     }
     /**
      * Wraps a {@link MarketDataStatusListener} with the RPC call from the client.

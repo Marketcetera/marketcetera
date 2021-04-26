@@ -67,12 +67,25 @@
         <rpcMessage name="DataEventRequest" description="request data events">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="sessionId" type="string"/>
+            <rpcMessageAttribute name="requestId" type="string"/>
             <rpcMessageAttribute name="types" type="string" repeated="true"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="DataEventResponse" description="return data events">
           <rpcMessageAttributes>
+            <rpcMessageAttribute name="requestId" type="string"/>
             <rpcMessageAttribute name="dataEvents" type="DataEvent" repeated="true"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="DataEventRequestCancel" description="cancels data event request">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="sessionId" type="string"/>
+            <rpcMessageAttribute name="requestId" type="string"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="DataEventCancelResponse" description="cancels data event request">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="requestId" type="string"/>
           </rpcMessageAttributes>
         </rpcMessage>
       </rpcMessages>
@@ -82,8 +95,8 @@
           <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
           <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
           <rpcServiceEntry name="subscribeToDataEvents" description="requests data events" paramType="DataEventRequest" returnType="DataEventResponse"
-                           paged="false" serviceReturnType="org.marketcetera.eventbus.data.DataEvent" serverStream="true">
-          </rpcServiceEntry>
+                           paged="false" serviceReturnType="org.marketcetera.eventbus.data.DataEvent" serverStream="true"/>
+          <rpcServiceEntry name="unSubscribeToDataEvents" description="cancels data event request" paramType="DataEventRequestCancel" returnType="DataEventCancelResponse"/>
         </rpcServiceEntries>
       </rpcService>
     </rpcEntity>

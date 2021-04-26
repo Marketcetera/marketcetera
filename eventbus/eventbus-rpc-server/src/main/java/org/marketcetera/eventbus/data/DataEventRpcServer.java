@@ -3,6 +3,24 @@
 //
 package org.marketcetera.eventbus.data;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.eventbus.Subscribe;
+
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
+
 /* $License$ */
 
 /**
@@ -12,8 +30,9 @@ package org.marketcetera.eventbus.data;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class DataEventRpcServer<SessionClazz>
-        extends org.marketcetera.rpc.server.AbstractRpcService<SessionClazz,org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase>
+        extends AbstractRpcService<SessionClazz,DataEventRpcServiceGrpc.DataEventRpcServiceImplBase>
 {
     /* (non-Javadoc)
     * @see org.marketcetera.rpc.server.AbstractRpcService#getServiceDescription()
@@ -27,14 +46,14 @@ public class DataEventRpcServer<SessionClazz>
     * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
     */
     @Override
-    protected org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase getService()
+    protected DataEventRpcServiceGrpc.DataEventRpcServiceImplBase getService()
     {
         return service;
     }
     /**
      * Validate and start the object.
      */
-    @javax.annotation.PostConstruct
+    @PostConstruct
     public void start()
             throws Exception
     {
@@ -49,57 +68,153 @@ public class DataEventRpcServer<SessionClazz>
      * @since $Release$
      */
     private class Service
-            extends org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase
+            extends DataEventRpcServiceGrpc.DataEventRpcServiceImplBase
     {
         /* (non-Javadoc)
          * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void login(org.marketcetera.rpc.base.BaseRpc.LoginRequest inRequest,io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.LoginResponse> inResponseObserver)
+        public void login(BaseRpc.LoginRequest inRequest,
+                          StreamObserver<BaseRpc.LoginResponse> inResponseObserver)
         {
-            DataEventRpcServer.this.doLogin(inRequest,inResponseObserver);
+            DataEventRpcServer.this.doLogin(inRequest,
+                                            inResponseObserver);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest inRequest,io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.LogoutResponse> inResponseObserver)
+        public void logout(BaseRpc.LogoutRequest inRequest,
+                           StreamObserver<BaseRpc.LogoutResponse> inResponseObserver)
         {
-            DataEventRpcServer.this.doLogout(inRequest,inResponseObserver);
+            DataEventRpcServer.this.doLogout(inRequest,
+                                             inResponseObserver);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest inRequest,io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse> inResponseObserver)
+        public void heartbeat(BaseRpc.HeartbeatRequest inRequest,
+                              StreamObserver<BaseRpc.HeartbeatResponse> inResponseObserver)
         {
-            DataEventRpcServer.this.doHeartbeat(inRequest,inResponseObserver);
+            DataEventRpcServer.this.doHeartbeat(inRequest,
+                                                inResponseObserver);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#subscribeToDataEvents(org.marketcetera.eventbus.data.DataEventRpc.DataEventRequest ,io.grpc.stub.StreamObserver)
          */
         @Override
-        public void subscribeToDataEvents(org.marketcetera.eventbus.data.DataEventRpc.DataEventRequest inDataEventRequest,io.grpc.stub.StreamObserver<org.marketcetera.eventbus.data.DataEventRpc.DataEventResponse> inResponseObserver)
+        public void subscribeToDataEvents(DataEventRpc.DataEventRequest inDataEventRequest,
+                                          StreamObserver<DataEventRpc.DataEventResponse> inResponseObserver)
         {
             try {
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(DataEventRpcServer.this,"Received {}",inDataEventRequest);
-                org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inDataEventRequest.getSessionId());
-                org.marketcetera.eventbus.data.DataEventRpc.DataEventResponse.Builder responseBuilder = org.marketcetera.eventbus.data.DataEventRpc.DataEventResponse.newBuilder();
-                org.marketcetera.eventbus.data.DataEvent serviceData = dataEventService.subscribeToDataEvents();
-                org.marketcetera.eventbus.data.DataEventRpc.DataEventResponse response = responseBuilder.build();
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(DataEventRpcServer.this,"Responding {}",response);
-                inResponseObserver.onNext(response);
-                inResponseObserver.onCompleted();
+                SLF4JLoggerProxy.trace(DataEventRpcServer.this,
+                                       "Received {}",
+                                       inDataEventRequest);
+                validateAndReturnSession(inDataEventRequest.getSessionId());
+                // the client is obligated to provide a request id that is unique to her. we need to make sure that that uniqueness is guaranteed as long as she does her part,
+                //  so we're going to build a compound request id that includes the session id. however, the client doesn't know about that so we need to make sure that we
+                //  can deliver her original request id, too.
+                String clientRequestId = inDataEventRequest.getRequestId();
+                String serverRequestId = buildRequestId(inDataEventRequest.getSessionId(),
+                                                        clientRequestId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> dataEventListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
+                if(dataEventListenerProxy == null) {
+                    dataEventListenerProxy = new DataEventListenerProxy(serverRequestId,
+                                                                        clientRequestId,
+                                                                        inResponseObserver);
+                    listenerProxiesById.put(serverRequestId,
+                                            dataEventListenerProxy);
+                    eventBusService.register(dataEventListenerProxy);
+                } else {
+                    throw new IllegalArgumentException("Duplicate data event request id: " + clientRequestId);
+                }
             } catch (Exception e) {
-                handleError(e,inResponseObserver);
+                handleError(e,
+                            inResponseObserver);
             }
         }
     }
     /**
+     * Maps a {@link DataEvent} subscriber with the RPC call from the client.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class DataEventListenerProxy
+            extends BaseRpcUtil.AbstractServerListenerProxy<DataEventRpc.DataEventResponse>
+    {
+        /**
+         * Receive the data event value.
+         *
+         * @param inEvent a <code>DataEvent</code> value
+         */
+        @Subscribe
+        public void receiveEventData(DataEvent inEvent)
+        {
+            try {
+                // TODO need to factor in subscribed types
+                // could create a list of class types and try to match each class type to the event
+                // sounds expensive - maybe consider this for a queue processor
+                DataEventRpcUtil.getRpcDataEvent(inEvent).ifPresent(value->responseBuilder.addDataEvents(value));
+                responseBuilder.setRequestId(clientRequestId);
+                DataEventRpc.DataEventResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataEventRpcServer.class,
+                                       "{} received event {}, sending {}",
+                                       getId(),
+                                       inEvent,
+                                       response);
+                getObserver().onNext(response);
+                responseBuilder.clear();
+            } catch (StatusRuntimeException e) {
+                SLF4JLoggerProxy.info(DataEventRpcServer.class,
+                                      "Client disconnected, canceling data event listener: {}",
+                                      ExceptionUtils.getRootCauseMessage(e));
+                stop();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(DataEventRpcServer.class,
+                                      e,
+                                      "Unable to transmit data event to listener, closing client");
+                stop();
+            }
+        }
+        /**
+         * Stop the proxy.
+         */
+        private void stop()
+        {
+            try {
+                eventBusService.unregister(this);
+            } catch (Exception ignored) {}
+        }
+        /**
+         * Create a new DataEventListenerProxy instance.
+         *
+         * @param inObserver a <code>StreamObserver&lt;DataEventRpc.DataEventResponse&gt;</code> value
+         */
+        private DataEventListenerProxy(String inServerRequestId,
+                                       String inClientRequestId,
+                                       StreamObserver<DataEventRpc.DataEventResponse> inObserver)
+        {
+            super(inServerRequestId,
+                  inObserver);
+            clientRequestId = inClientRequestId;
+        }
+        /**
+         * identifies the request from the client
+         */
+        private final String clientRequestId;
+        /**
+         * builder used to construct messages
+         */
+        private final DataEventRpc.DataEventResponse.Builder responseBuilder = DataEventRpc.DataEventResponse.newBuilder();
+    }
+    /**
      * provides services for data events
      */
-    @org.springframework.beans.factory.annotation.Autowired
-    private org.marketcetera.eventbus.data.DataEventService dataEventService;
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * provides the RPC service
      */
@@ -108,4 +223,8 @@ public class DataEventRpcServer<SessionClazz>
      * description of this service
      */
     private final static String description = "DataEvent RPC Service";
+    /**
+     * holds trade message listeners by id
+     */
+    private final Cache<String,BaseRpcUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
 }

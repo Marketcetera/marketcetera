@@ -116,6 +116,18 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
      */
     protected abstract ServiceClazz getService();
     /**
+     * Build a request id from the given attributes.
+     *
+     * @param inSessionId a <code>String</code> value
+     * @param inRequestId a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    protected String buildRequestId(String inSessionId,
+                                    String inRequestId)
+    {
+        return new StringBuilder().append(inSessionId).append('-').append(inRequestId).toString();
+    }
+    /**
      * Execute the given login request.
      *
      * @param inRequest a <code>BaseRpc.LoginRequest</code> value
