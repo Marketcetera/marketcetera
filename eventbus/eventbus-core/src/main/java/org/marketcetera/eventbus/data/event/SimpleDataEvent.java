@@ -12,13 +12,25 @@ package org.marketcetera.eventbus.data.event;
  * @version $Id$
  * @since $Release$
  */
-public class SimpleDataChangeEvent
-        implements DataChangeEvent
+public class SimpleDataEvent
+        implements DataEvent
 {
     /**
-     * Create a new SimpleDataChangeEvent instance.
+     * Create a new SimpleDataEvent instance.
      */
-    public SimpleDataChangeEvent() {}
+    public SimpleDataEvent() {}
+    /**
+     * Create a new SimpleDataEvent instance.
+     *
+     * @param inDataEvent a <code>DataEvent</code> value
+     */
+    public SimpleDataEvent(DataEvent inDataEvent)
+    {
+        setId(inDataEvent.getId());
+        setTimestamp(inDataEvent.getTimestamp());
+        type = inDataEvent.getType();
+        setChangeType(inDataEvent.getChangeType());
+    }
     /**
      * Get the id value.
      *
@@ -34,6 +46,7 @@ public class SimpleDataChangeEvent
      *
      * @param inId a <code>long</code> value
      */
+    @Override
     public void setId(long inId)
     {
         id = inId;
@@ -53,6 +66,7 @@ public class SimpleDataChangeEvent
      *
      * @param inTimestamp a <code>java.util.Date</code> value
      */
+    @Override
     public void setTimestamp(java.util.Date inTimestamp)
     {
         timestamp = inTimestamp;
@@ -68,13 +82,24 @@ public class SimpleDataChangeEvent
         return type;
     }
     /**
-     * Set the type value.
+     * Get the changeType value.
      *
-     * @param inType a <code>java.lang.Class<?></code> value
+     * @return a <code>org.marketcetera.eventbus.data.event.DataEventChangeType</code> value
      */
-    public void setType(java.lang.Class<?> inType)
+    @Override
+    public org.marketcetera.eventbus.data.event.DataEventChangeType getChangeType()
     {
-        type = inType;
+        return changeType;
+    }
+    /**
+     * Set the changeType value.
+     *
+     * @param inChangeType a <code>org.marketcetera.eventbus.data.event.DataEventChangeType</code> value
+     */
+    @Override
+    public void setChangeType(org.marketcetera.eventbus.data.event.DataEventChangeType inChangeType)
+    {
+        changeType = inChangeType;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -83,10 +108,11 @@ public class SimpleDataChangeEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("DataChangeEvent [")
+        builder.append("DataEvent [")
             .append("id=").append(id)
             .append(", timestamp=").append(timestamp)
-            .append(", type=").append(type).append("]");
+            .append(", type=").append(type)
+            .append(", changeType=").append(changeType).append("]");
         return builder.toString();
     }
     /**
@@ -101,4 +127,8 @@ public class SimpleDataChangeEvent
      * type of the event
      */
     private java.lang.Class<?> type;
+    /**
+     * type of the change
+     */
+    private org.marketcetera.eventbus.data.event.DataEventChangeType changeType;
 }

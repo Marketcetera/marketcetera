@@ -3,7 +3,7 @@
 //
 syntax = "proto3";
 option java_generic_services = true;
-option java_package = "org.marketcetera.eventbus.data";
+option java_package = "org.marketcetera.eventbus.data.event";
 option java_outer_classname = "DataEventRpc";
 import "rpc_base.proto";
 import "google/protobuf/timestamp.proto";

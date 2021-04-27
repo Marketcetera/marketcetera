@@ -2,15 +2,15 @@
 <model>
   <modelEntities>
     <modelEntity name="DataEvent" description="indicates that a data object has been added, changed, or deleted" pojoProject="eventbus/eventbus-core"
-                 apiProject="eventbus/eventbus-api" packageName="org.marketcetera.eventbus.data" hasInterfaceProject="eventbus/eventbus-api">
+                 apiProject="eventbus/eventbus-api" packageName="org.marketcetera.eventbus.data.event" hasInterfaceProject="eventbus/eventbus-api">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEntityAttributes>
         <modelEntityAttribute name="id" description="id of the data object" type="long" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="timestamp" type="java.util.Date" useSetters="true" useGetters="true" description="time when the data changed" interfaceProvided="false"/>
-        <modelEntityAttribute name="type" type="java.lang.Class&lt;?&gt;" useSetters="true" useGetters="true" description="type of the event" interfaceProvided="false"/>
-        <modelEntityAttribute name="changeType" type="org.marketcetera.eventbus.data.DataEventChangeType" useSetters="true" useGetters="true" description="type of the change" interfaceProvided="false">
+        <modelEntityAttribute name="type" type="java.lang.Class&lt;?&gt;" useSetters="false" useGetters="true" description="type of the event" interfaceProvided="false"/>
+        <modelEntityAttribute name="changeType" type="org.marketcetera.eventbus.data.event.DataEventChangeType" useSetters="true" useGetters="true" description="type of the change" interfaceProvided="false">
           <enumDescriptor name="DataEventChangeType" description="describes the type of data event change">
             <enumAttributes>
               <enumAttribute name="ADD" description="data added"/>
@@ -23,22 +23,31 @@
     </modelEntity>
   </modelEntities>
   <modelEvents>
-    <modelEvent name="DataChangeEvent" description="indicates that a data object has been added, changed, or deleted"
+    <modelEvent name="DataEvent" description="indicates that a data object has been added, changed, or deleted"
                 pojoProject="eventbus/eventbus-core" apiProject="eventbus/eventbus-api" rpcEvent="true"
                 packageName="org.marketcetera.eventbus.data.event">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEventAttributes>
-        <modelEventAttribute name="id" description="id of the data object" apiType="long" pojoType="long" useGetters="true" useSetters="true" interfaceProvided="false" isCurrency="false"/>
-        <modelEventAttribute name="timestamp" apiType="java.util.Date" pojoType="java.util.Date" useSetters="true" useGetters="true" description="time when the data changed"/>
-        <modelEventAttribute name="type" apiType="java.lang.Class&lt;?&gt;" pojoType="java.lang.Class&lt;?&gt;" useSetters="true" useGetters="true" description="type of the event"/>
+        <modelEntityAttribute name="id" description="id of the data object" type="long" useGetters="true" useSetters="true" interfaceProvided="false"/>
+        <modelEntityAttribute name="timestamp" type="java.util.Date" useSetters="true" useGetters="true" description="time when the data changed" interfaceProvided="false"/>
+        <modelEntityAttribute name="type" type="java.lang.Class&lt;?&gt;" useSetters="false" useGetters="true" description="type of the event" interfaceProvided="false"/>
+        <modelEntityAttribute name="changeType" type="org.marketcetera.eventbus.data.event.DataEventChangeType" useSetters="true" useGetters="true" description="type of the change" interfaceProvided="false">
+          <enumDescriptor name="DataEventChangeType" description="describes the type of data event change">
+            <enumAttributes>
+              <enumAttribute name="ADD" description="data added"/>
+              <enumAttribute name="CHANGE" description="data changed"/>
+              <enumAttribute name="DELETE" description="data deleted"/>
+            </enumAttributes>
+          </enumDescriptor>
+        </modelEntityAttribute>
       </modelEventAttributes>
     </modelEvent>
   </modelEvents>
   <rpcEntities>
-    <rpcEntity project="eventbus/eventbus-rpc-core" protoPrefix="data_event" javaPackage="org.marketcetera.eventbus.data" javaClassName="DataEventRpc"
-               utilName="DataEvent" serverProject="eventbus/eventbus-rpc-server">
+    <rpcEntity project="eventbus/eventbus-rpc-core" protoPrefix="data_event" javaPackage="org.marketcetera.eventbus.data.event" javaClassName="DataEventRpc"
+               utilName="DataEvent" serverProject="eventbus/eventbus-rpc-server" apiProject="eventbus/eventbus-api" persistentProject="eventbus/eventbus-server">
       <imports>
         <import>rpc_base.proto</import>
         <import>google/protobuf/timestamp.proto</import>
@@ -47,7 +56,7 @@
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <rpcEnums>
-        <rpcEnum name="DataEventChangeType" description="indicates the type of data event change" javaType="org.marketcetera.eventbus.data.DataEventChangeType">
+        <rpcEnum name="DataEventChangeType" description="indicates the type of data event change" javaType="org.marketcetera.eventbus.data.event.DataEventChangeType">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="ADD" description="data added"/>
             <rpcMessageAttribute name="CHANGE" description="data changed"/>
@@ -56,8 +65,8 @@
         </rpcEnum>
       </rpcEnums>
       <rpcMessages>
-        <rpcMessage name="DataEvent" description="indicates that a data object has been added, changed, or deleted" javaType="org.marketcetera.eventbus.data.DataEvent"
-                    primaryFactory="org.marketcetera.eventbus.data.DataEventFactory">
+        <rpcMessage name="DataEvent" description="indicates that a data object has been added, changed, or deleted" javaType="org.marketcetera.eventbus.data.event.DataEvent"
+                    primaryFactory="org.marketcetera.eventbus.data.event.DataEventFactory">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="id" type="int64" description="id of the data object"/>
             <rpcMessageAttribute name="timestamp" type="google.protobuf.Timestamp" description="time when the data changed" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
@@ -94,9 +103,18 @@
           <rpcServiceEntry name="login" description="starts the session" paramType="LoginRequest" returnType="LoginResponse"/>
           <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
           <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
-          <rpcServiceEntry name="subscribeToDataEvents" description="requests data events" paramType="DataEventRequest" returnType="DataEventResponse"
-                           paged="false" serviceReturnType="org.marketcetera.eventbus.data.DataEvent" serverStream="true"/>
-          <rpcServiceEntry name="unSubscribeToDataEvents" description="cancels data event request" paramType="DataEventRequestCancel" returnType="DataEventCancelResponse"/>
+          <rpcServiceEntry name="subscribeToDataEvents" description="requests data events" paramType="DataEventRequest" returnType="DataEventResponse" serverStream="true">
+            <rpcMessageAttributes>
+              <rpcMessageAttribute name="requestId" type="String" description="unique identifier for the request"/>
+              <rpcMessageAttribute name="requestTypes" type="Class&lt;?&gt;" description="unique identifier for the request" repeated="true"/>
+              <rpcMessageAttribute name="consumer" type="java.util.function.Consumer&lt;DataEvent&gt;" description="listener for events"/>
+            </rpcMessageAttributes>
+          </rpcServiceEntry>
+          <rpcServiceEntry name="unSubscribeToDataEvents" description="cancels data event request" paramType="DataEventRequestCancel" returnType="DataEventCancelResponse">
+            <rpcMessageAttributes>
+              <rpcMessageAttribute name="requestId" type="String" description="unique identifier for the request"/>
+            </rpcMessageAttributes>
+          </rpcServiceEntry>
         </rpcServiceEntries>
       </rpcService>
     </rpcEntity>
