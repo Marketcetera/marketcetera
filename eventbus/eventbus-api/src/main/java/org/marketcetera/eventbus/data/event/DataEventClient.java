@@ -18,15 +18,15 @@ public interface DataEventClient
     /**
      * Requests data events.
      *
-     * @param inString a <code>String</code> value
-     * @param inClass<?s a <code>java.util.Collection&lt;Class<?>&gt;</code> value
-     * @param inConsumer<DataEvent a <code>java.util.function.Consumer<DataEvent></code> value
+     * @param inRequestId a <code>String</code> value
+     * @param inRequestTypes a <code>java.util.Collection&lt;Class&lt;?&gt;&gt;</code> value
+     * @param inConsumer a <code>java.util.function.Consumer&lt;DataEvent&gt;</code> value
      */
-    void subscribeToDataEvents(String inString,java.util.Collection<Class<?>> inClass,java.util.function.Consumer<DataEvent> inConsumer);
+    void subscribeToDataEvents(String inRequestId,java.util.Collection<Class<?>> inRequestTypes,java.util.function.Consumer<DataEvent> inConsumer);
     /**
      * Cancels data event request.
      *
-     * @param inString a <code>String</code> value
+     * @param inRequestId a <code>String</code> value
      */
-    void unSubscribeToDataEvents(String inString);
+    void unSubscribeToDataEvents(String inRequestId);
 }

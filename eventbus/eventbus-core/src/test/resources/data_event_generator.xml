@@ -9,7 +9,7 @@
       <modelEntityAttributes>
         <modelEntityAttribute name="id" description="id of the data object" type="long" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="timestamp" type="java.util.Date" useSetters="true" useGetters="true" description="time when the data changed" interfaceProvided="false"/>
-        <modelEntityAttribute name="type" type="java.lang.Class&lt;?&gt;" useSetters="false" useGetters="true" description="type of the event" interfaceProvided="false"/>
+        <modelEntityAttribute name="type" type="java.lang.Class&lt;?&gt;" useSetters="true" useGetters="true" description="type of the event" interfaceProvided="false"/>
         <modelEntityAttribute name="changeType" type="org.marketcetera.eventbus.data.event.DataEventChangeType" useSetters="true" useGetters="true" description="type of the change" interfaceProvided="false">
           <enumDescriptor name="DataEventChangeType" description="describes the type of data event change">
             <enumAttributes>
@@ -47,7 +47,8 @@
   </modelEvents>
   <rpcEntities>
     <rpcEntity project="eventbus/eventbus-rpc-core" protoPrefix="data_event" javaPackage="org.marketcetera.eventbus.data.event" javaClassName="DataEventRpc"
-               utilName="DataEvent" serverProject="eventbus/eventbus-rpc-server" apiProject="eventbus/eventbus-api" persistentProject="eventbus/eventbus-server">
+               utilName="DataEvent" serverProject="eventbus/eventbus-rpc-server" apiProject="eventbus/eventbus-api" persistentProject="eventbus/eventbus-server"
+               clientProject="eventbus/eventbus-rpc-client">
       <imports>
         <import>rpc_base.proto</import>
         <import>google/protobuf/timestamp.proto</import>

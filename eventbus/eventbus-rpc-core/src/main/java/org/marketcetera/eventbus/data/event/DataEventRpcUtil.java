@@ -72,7 +72,7 @@ public abstract class DataEventRpcUtil
         org.marketcetera.eventbus.data.event.DataEvent dataEvent = inDataEventFactory.create();
         dataEvent.setId(inDataEvent.getId());
         org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inDataEvent.getTimestamp()).ifPresent(value->dataEvent.setTimestamp(value));
-//        org.marketcetera.rpc.base.BaseRpcUtil.getClassValue(inDataEvent.getType()).ifPresent(value->dataEvent.setType(value));
+        org.marketcetera.rpc.base.BaseRpcUtil.getClassValue(inDataEvent.getType()).ifPresent(value->dataEvent.setType(value));
         return java.util.Optional.of(dataEvent);
     }
 }

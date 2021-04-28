@@ -28,7 +28,7 @@ public class SimpleDataEvent
     {
         setId(inDataEvent.getId());
         setTimestamp(inDataEvent.getTimestamp());
-        type = inDataEvent.getType();
+        setType(inDataEvent.getType());
         setChangeType(inDataEvent.getChangeType());
     }
     /**
@@ -74,12 +74,22 @@ public class SimpleDataEvent
     /**
      * Get the type value.
      *
-     * @return a <code>java.lang.Class<?></code> value
+     * @return a <code>java.lang.Class&lt;?&gt;</code> value
      */
     @Override
     public java.lang.Class<?> getType()
     {
         return type;
+    }
+    /**
+     * Set the type value.
+     *
+     * @param inType a <code>java.lang.Class&lt;?&gt;</code> value
+     */
+    @Override
+    public void setType(java.lang.Class<?> inType)
+    {
+        type = inType;
     }
     /**
      * Get the changeType value.

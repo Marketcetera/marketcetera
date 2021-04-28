@@ -41,9 +41,15 @@ public interface DataEvent
     /**
      * Get the type value.
      *
-     * @return a <code>java.lang.Class<?></code> value
+     * @return a <code>java.lang.Class&lt;?&gt;</code> value
      */
     java.lang.Class<?> getType();
+    /**
+     * Set the type value.
+     *
+     * @param inType a <code>java.lang.Class&lt;?&gt;</code> value
+     */
+    void setType(java.lang.Class<?> inType);
     /**
      * Get the changeType value.
      *
