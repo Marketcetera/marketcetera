@@ -20,12 +20,12 @@ public class DataEventServiceImpl
      * Requests data events.
      *
      * @param inRequestId a <code>String</code> value
-     * @param inRequestTypes a <code>java.util.Collection&lt;Class&lt;?&gt;&gt;</code> value
+     * @param inTypes a <code>java.util.Collection&lt;Class&lt;?&gt;&gt;</code> value
      * @param inConsumer a <code>java.util.function.Consumer&lt;DataEvent&gt;</code> value
      */
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
-    public void subscribeToDataEvents(String inRequestId,java.util.Collection<Class<?>> inRequestTypes,java.util.function.Consumer<DataEvent> inConsumer)
+    public void subscribeToDataEvents(String inRequestId,java.util.Collection<Class<?>> inTypes,java.util.function.Consumer<DataEvent> inConsumer)
     {
         throw new UnsupportedOperationException(); // TODO
     }
@@ -36,7 +36,7 @@ public class DataEventServiceImpl
      */
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
-    public void unSubscribeToDataEvents(String inRequestId)
+    public void unsubscribeToDataEvents(String inRequestId)
     {
         throw new UnsupportedOperationException(); // TODO
     }

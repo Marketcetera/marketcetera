@@ -151,10 +151,10 @@ public class DataEventRpcServer<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#unSubscribeToDataEvents(org.marketcetera.eventbus.data.DataEventRpc.DataEventRequestCancel, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#unsubscribeToDataEvents(org.marketcetera.eventbus.data.DataEventRpc.DataEventRequestCancel, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void unSubscribeToDataEvents(DataEventRequestCancel inRequest,
+        public void unsubscribeToDataEvents(DataEventRequestCancel inRequest,
                                             StreamObserver<DataEventCancelResponse> inResponseObserver)
         {
             throw new UnsupportedOperationException(); // TODO
@@ -205,7 +205,7 @@ public class DataEventRpcServer<SessionClazz>
          */
         private void stop()
         {
-            dataEventService.unSubscribeToDataEvents(getId());
+            dataEventService.unsubscribeToDataEvents(getId());
         }
         /**
          * Create a new DataEventListenerProxy instance.

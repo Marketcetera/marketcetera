@@ -104,14 +104,18 @@
           <rpcServiceEntry name="login" description="starts the session" paramType="LoginRequest" returnType="LoginResponse"/>
           <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
           <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
-          <rpcServiceEntry name="subscribeToDataEvents" description="requests data events" paramType="DataEventRequest" returnType="DataEventResponse" serverStream="true">
+          <rpcServiceEntry name="subscribeToDataEvents" description="requests data events" paramType="DataEventRequest" returnType="DataEventResponse"
+                           serverStream="true">
             <rpcMessageAttributes>
               <rpcMessageAttribute name="requestId" type="String" description="unique identifier for the request"/>
-              <rpcMessageAttribute name="requestTypes" type="Class&lt;?&gt;" description="unique identifier for the request" repeated="true"/>
-              <rpcMessageAttribute name="consumer" type="java.util.function.Consumer&lt;DataEvent&gt;" description="listener for events"/>
+              <rpcMessageAttribute name="types" type="Class&lt;?&gt;" description="unique identifier for the request" repeated="true"
+                                   javaConversionUsesOptional="true" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getClassnameValue"
+                                   javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getClassValue"/>
+              <rpcMessageAttribute name="consumer" type="java.util.function.Consumer&lt;DataEvent&gt;" description="listener for events"
+                                   includeJavaConversion="false" includeRpcConversion="false"/>
             </rpcMessageAttributes>
           </rpcServiceEntry>
-          <rpcServiceEntry name="unSubscribeToDataEvents" description="cancels data event request" paramType="DataEventRequestCancel" returnType="DataEventCancelResponse">
+          <rpcServiceEntry name="unsubscribeToDataEvents" description="cancels data event request" paramType="DataEventRequestCancel" returnType="DataEventCancelResponse">
             <rpcMessageAttributes>
               <rpcMessageAttribute name="requestId" type="String" description="unique identifier for the request"/>
             </rpcMessageAttributes>

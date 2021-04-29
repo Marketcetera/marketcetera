@@ -51,5 +51,5 @@ service DataEventRpcService {
     rpc logout(LogoutRequest) returns (LogoutResponse); // ends the session
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse); // keeps the session alive
     rpc subscribeToDataEvents(DataEventRequest) returns (stream DataEventResponse); // requests data events
-    rpc unSubscribeToDataEvents(DataEventRequestCancel) returns (DataEventCancelResponse); // cancels data event request
+    rpc unsubscribeToDataEvents(DataEventRequestCancel) returns (DataEventCancelResponse); // cancels data event request
 }
