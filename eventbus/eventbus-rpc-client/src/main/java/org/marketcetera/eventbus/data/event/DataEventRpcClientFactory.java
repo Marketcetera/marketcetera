@@ -3,6 +3,12 @@
 //
 package org.marketcetera.eventbus.data.event;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.rpc.client.RpcClientFactory;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 /* $License$ */
 
 /**
@@ -12,8 +18,9 @@ package org.marketcetera.eventbus.data.event;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class DataEventRpcClientFactory
-        implements DataEventClientFactory<DataEventRpcClientParameters>
+        implements DataEventClientFactory<DataEventRpcClientParameters>,RpcClientFactory<DataEventRpcClientParameters,DataEventRpcClient>
 {
     /* (non-Javadoc)
      * @see org.marketcetera.eventbus.data.event.DataEventClientFactory#create(java.lang.Object)
@@ -21,11 +28,20 @@ public class DataEventRpcClientFactory
     @Override
     public DataEventRpcClient create(DataEventRpcClientParameters inParameterClazz)
     {
-        return applicationContext.getBean(DataEventRpcClient.class,inParameterClazz);
+        try {
+            return applicationContext.getBean(DataEventRpcClient.class,
+                                              inParameterClazz);
+        } catch (BeanCreationException e) {
+            Throwable t = e.getCause();
+            if(t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            }
+            throw e;
+        }
     }
     /**
      * provides access to the application context
      */
-    @org.springframework.beans.factory.annotation.Autowired
-    private org.springframework.context.ApplicationContext applicationContext;
+    @Autowired
+    private ApplicationContext applicationContext;
 }

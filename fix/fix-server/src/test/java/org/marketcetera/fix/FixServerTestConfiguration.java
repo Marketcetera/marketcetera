@@ -78,7 +78,7 @@ public class FixServerTestConfiguration
         symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
         return symbolResolverService;
     }
-   /**
+    /**
      * Get the cluster data factory value.
      *
      * @return a <code>ClusterDataFactory</code> value
