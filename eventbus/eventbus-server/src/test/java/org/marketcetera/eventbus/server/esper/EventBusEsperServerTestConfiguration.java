@@ -1,8 +1,7 @@
-package org.marketcetera.eventbus.server;
+package org.marketcetera.eventbus.server.esper;
 
-import org.marketcetera.symbol.IterativeSymbolResolver;
-import org.marketcetera.symbol.PatternSymbolResolver;
-import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.eventbus.server.EsperEngine;
+import org.marketcetera.eventbus.server.EventBusEsperConnector;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -18,20 +17,8 @@ import org.springframework.context.annotation.Bean;
  */
 @SpringBootConfiguration
 @EnableAutoConfiguration
-public class EventBusServerTestConfiguration
+public class EventBusEsperServerTestConfiguration
 {
-    /**
-     * Get the symbol resolver service value.
-     *
-     * @return a <code>SymbolResolverService</code> value
-     */
-    @Bean
-    public SymbolResolverService getSymbolResolverService()
-    {
-        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
-        symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
-        return symbolResolverService;
-    }
     /**
      * Get the Esper Engine value.
      *

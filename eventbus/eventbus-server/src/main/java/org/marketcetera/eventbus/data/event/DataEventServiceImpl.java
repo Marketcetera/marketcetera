@@ -4,6 +4,7 @@
 package org.marketcetera.eventbus.data.event;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +23,12 @@ import com.google.common.eventbus.Subscribe;
 /* $License$ */
 
 /**
- * Provides DataEventServiceImpl services.
+ * Provides services for {@link DataEvent} actions.
+ * 
+ * <p>This service is intended to provide information about {@link DataEvent} objects. These objects
+ * provide updates when particular types of data change. The primary intent is for UI display: notifications
+ * about data being displayed will trigger update requests. There's no specific limitation for this to be
+ * user for UI.</p>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -33,43 +39,20 @@ import com.google.common.eventbus.Subscribe;
 public class DataEventServiceImpl
         implements DataEventService
 {
-    /**
-     * Requests data events.
-     *
-     * @param inRequestId a <code>String</code> value
-     * @param inTypes a <code>Collection&lt;Class&lt;?&gt;&gt;</code> value
-     * @param inConsumer a <code>Consumer&lt;DataEvent&gt;</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.eventbus.data.event.DataEventService#subscribeToDataEvents(java.lang.String, java.util.Date, java.util.Collection, java.util.function.Consumer)
      */
     @Override
     public void subscribeToDataEvents(String inRequestId,
+                                      Date inTimestamp,
                                       Collection<Class<?>> inTypes,
                                       Consumer<DataEvent> inConsumer)
     {
         // TODO duplicate request id
+        // TODO timestamp
         subscribersByRequestId.put(inRequestId,
                                    new DataEventSubscriber(inConsumer,
                                                            inTypes));
-    }
-    private Cache<String,DataEventSubscriber> subscribersByRequestId = CacheBuilder.newBuilder().build();
-    private static class DataEventSubscriber
-            implements Consumer<DataEvent>
-    {
-        /* (non-Javadoc)
-         * @see java.util.function.Consumer#accept(java.lang.Object)
-         */
-        @Override
-        public void accept(DataEvent inEvent)
-        {
-            consumer.accept(inEvent);
-        }
-        private DataEventSubscriber(Consumer<DataEvent> inConsumer,
-                                    Collection<Class<?>> inTypes)
-        {
-            consumer = inConsumer;
-            types = inTypes;
-        }
-        private final Collection<Class<?>> types;
-        private final Consumer<DataEvent> consumer;
     }
     /**
      * Cancels data event request.
@@ -96,7 +79,7 @@ public class DataEventServiceImpl
         // TODO efficiency
         Class<?> eventType = inDataEvent.getClass();
         for(DataEventSubscriber subscriber : subscribersByRequestId.asMap().values()) {
-            if(subscriber.types.isEmpty()) {
+            if(subscriber.types == null || subscriber.types.isEmpty()) {
                 subscriber.accept(inDataEvent);
             } else {
                 for(Class<?> type : subscriber.types) {
@@ -119,6 +102,30 @@ public class DataEventServiceImpl
                               PlatformServices.getServiceName(getClass()));
         eventBusService.register(this);
     }
+    private static class DataEventSubscriber
+            implements Consumer<DataEvent>
+    {
+        /* (non-Javadoc)
+         * @see java.util.function.Consumer#accept(java.lang.Object)
+         */
+        @Override
+        public void accept(DataEvent inEvent)
+        {
+            consumer.accept(inEvent);
+        }
+        private DataEventSubscriber(Consumer<DataEvent> inConsumer,
+                                    Collection<Class<?>> inTypes)
+        {
+            consumer = inConsumer;
+            types = inTypes;
+        }
+        private final Collection<Class<?>> types;
+        private final Consumer<DataEvent> consumer;
+    }
+    /**
+     * lists data event subscribers by request id
+     */
+    private final Cache<String,DataEventSubscriber> subscribersByRequestId = CacheBuilder.newBuilder().build();
     /**
      * provides access to event services
      */

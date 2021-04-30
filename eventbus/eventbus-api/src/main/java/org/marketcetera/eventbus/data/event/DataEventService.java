@@ -18,10 +18,11 @@ public interface DataEventService
      * Requests data events.
      *
      * @param inRequestId a <code>String</code> value
+     * @param inTimestamp a <code>java.util.Date</code> value
      * @param inTypes a <code>java.util.Collection&lt;Class&lt;?&gt;&gt;</code> value
      * @param inConsumer a <code>java.util.function.Consumer&lt;DataEvent&gt;</code> value
      */
-    void subscribeToDataEvents(String inRequestId,java.util.Collection<Class<?>> inTypes,java.util.function.Consumer<DataEvent> inConsumer);
+    void subscribeToDataEvents(String inRequestId,java.util.Date inTimestamp,java.util.Collection<Class<?>> inTypes,java.util.function.Consumer<DataEvent> inConsumer);
     /**
      * Cancels data event request.
      *

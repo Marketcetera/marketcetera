@@ -4,6 +4,7 @@
 package org.marketcetera.eventbus.data.event;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
@@ -41,13 +42,15 @@ public class DataEventRpcClient
         implements DataEventClient
 {
     /* (non-Javadoc)
-     * @see DataEventClient#subscribeToDataEvents(String,java.util.Collection,java.util.function.Consumer<DataEvent>)
+     * @see org.marketcetera.eventbus.data.event.DataEventClient#subscribeToDataEvents(java.lang.String, java.util.Date, java.util.Collection, java.util.function.Consumer)
      */
     @Override
     public void subscribeToDataEvents(String inRequestId,
+                                      Date inTimestamp,
                                       Collection<Class<?>> inTypes,
                                       Consumer<DataEvent> inConsumer)
     {
+        // TODO timestamp
         DataEventListenerProxy proxy = listenerProxiesById.getIfPresent(inRequestId);
         if(proxy != null) {
             throw new IllegalArgumentException("Duplicate data event request id: " + inRequestId);

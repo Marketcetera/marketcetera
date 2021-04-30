@@ -3,6 +3,7 @@
 //
 package org.marketcetera.eventbus.data.event;
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -134,12 +135,14 @@ public class DataEventRpcServer<SessionClazz>
                                                   type);
                         }
                     }
+                    Date timestamp = BaseRpcUtil.getDateValue(inDataEventRequest.getTimestamp()).orElse(new Date());
                     dataEventListenerProxy = new DataEventListenerProxy(serverRequestId,
                                                                         clientRequestId,
                                                                         inResponseObserver);
                     listenerProxiesById.put(serverRequestId,
                                             dataEventListenerProxy);
                     dataEventService.subscribeToDataEvents(serverRequestId,
+                                                           timestamp,
                                                            requestTypes,
                                                            dataEventListenerProxy);
                 } else {

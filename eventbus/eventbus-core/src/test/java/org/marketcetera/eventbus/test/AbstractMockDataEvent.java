@@ -1,4 +1,4 @@
-package org.marketcetera.eventbus.data.test.rpc;
+package org.marketcetera.eventbus.test;
 
 import java.util.concurrent.atomic.AtomicLong;
 

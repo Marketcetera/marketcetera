@@ -1,11 +1,8 @@
-package org.marketcetera.eventbus.server;
+package org.marketcetera.eventbus.server.esper;
 
 import java.util.UUID;
 
 import org.marketcetera.eventbus.EsperEvent;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -16,9 +13,7 @@ import org.springframework.stereotype.Component;
  * @version $Id$
  * @since $Release$
  */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class TestAutoregisteredEventBean
+public class TestManuallyRegisteredEventBean
         implements EsperEvent, HasId
 {
     /* (non-Javadoc)
@@ -36,7 +31,7 @@ public class TestAutoregisteredEventBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("TestAutoregisteredEventBean [id=").append(id).append("]");
+        builder.append("TestManuallyRegisteredEventBean [id=").append(id).append("]");
         return builder.toString();
     }
     /**
@@ -52,5 +47,5 @@ public class TestAutoregisteredEventBean
      * uniquely identifies an event
      */
     private final String id = UUID.randomUUID().toString();
-    private static final long serialVersionUID = -2451794740755514121L;
+    private static final long serialVersionUID = -227089668872938854L;
 }

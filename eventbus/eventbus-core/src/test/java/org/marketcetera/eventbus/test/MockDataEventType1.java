@@ -1,4 +1,4 @@
-package org.marketcetera.eventbus.data.test.rpc;
+package org.marketcetera.eventbus.test;
 
 public class MockDataEventType1
         extends AbstractMockDataEvent

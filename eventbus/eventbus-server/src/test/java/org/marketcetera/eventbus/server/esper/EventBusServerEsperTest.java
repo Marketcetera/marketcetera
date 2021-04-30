@@ -1,4 +1,4 @@
-package org.marketcetera.eventbus.server;
+package org.marketcetera.eventbus.server.esper;
 
 import java.util.Map;
 
@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.eventbus.server.EsperEngine;
+import org.marketcetera.eventbus.server.EsperQueryMetaData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +28,7 @@ import com.google.common.collect.Maps;
 @ExtendWith(SpringExtension.class)
 @EntityScan(basePackages={"org.marketcetera"})
 @ComponentScan(basePackages={"org.marketcetera"})
-@SpringBootTest(classes=EventBusServerTestConfiguration.class)
+@SpringBootTest(classes=EventBusEsperServerTestConfiguration.class)
 public class EventBusServerEsperTest
 {
     /**

@@ -44,6 +44,12 @@
       <artifactId>eventbus-guava</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
     <!-- spring test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

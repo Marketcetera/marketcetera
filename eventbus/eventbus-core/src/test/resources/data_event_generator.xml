@@ -76,9 +76,10 @@
         </rpcMessage>
         <rpcMessage name="DataEventRequest" description="request data events">
           <rpcMessageAttributes>
-            <rpcMessageAttribute name="sessionId" type="string"/>
-            <rpcMessageAttribute name="requestId" type="string"/>
-            <rpcMessageAttribute name="types" type="string" repeated="true"/>
+            <rpcMessageAttribute name="sessionId" type="string" description="RPC session id of the requester"/>
+            <rpcMessageAttribute name="requestId" type="string" description="uniquely identifies this request for this session"/>
+            <rpcMessageAttribute name="timestamp" type="google.protobuf.Timestamp" description="timestamp anchor for events for this request"/>
+            <rpcMessageAttribute name="types" type="string" repeated="true" description="optional types (class names of DateEvent subclasses)"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="DataEventResponse" description="return data events">
@@ -108,6 +109,8 @@
                            serverStream="true">
             <rpcMessageAttributes>
               <rpcMessageAttribute name="requestId" type="String" description="unique identifier for the request"/>
+              <rpcMessageAttribute name="timestamp" type="java.util.Date" description="timestamp from which to anchor id requests"
+                                   rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
               <rpcMessageAttribute name="types" type="Class&lt;?&gt;" description="unique identifier for the request" repeated="true"
                                    javaConversionUsesOptional="true" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getClassnameValue"
                                    javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getClassValue"/>

@@ -10,6 +10,6 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.eventbus.server" level="trace"/>
+    <logger name="org.marketcetera.eventbus" level="trace"/>
   </Loggers>
 </Configuration>

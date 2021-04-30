@@ -3,6 +3,7 @@ package org.marketcetera.eventbus.data.test.rpc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Date;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,9 @@ import org.marketcetera.eventbus.data.event.DataEventRpcClientFactory;
 import org.marketcetera.eventbus.data.event.DataEventRpcClientParameters;
 import org.marketcetera.eventbus.data.event.DataEventRpcServer;
 import org.marketcetera.eventbus.data.event.DataEventRpcServiceGrpc;
-import org.marketcetera.eventbus.test.EventBusTestConfiguration;
+import org.marketcetera.eventbus.test.AbstractMockDataEvent;
+import org.marketcetera.eventbus.test.EventBusRpcTestConfiguration;
+import org.marketcetera.eventbus.test.MockDataEventType1;
 import org.marketcetera.rpc.RpcTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.SessionId;
@@ -49,7 +52,7 @@ import junitparams.JUnitParamsRunner;
  * @since 2.4.0
  */
 @RunWith(JUnitParamsRunner.class)
-@SpringBootTest(classes=EventBusTestConfiguration.class)
+@SpringBootTest(classes=EventBusRpcTestConfiguration.class)
 @ComponentScan(basePackages={"org.marketcetera"})
 @EntityScan(basePackages={"org.marketcetera"})
 public class EventBusRpcServerTest
@@ -80,7 +83,9 @@ public class EventBusRpcServerTest
     {
         DataEventRpcClient client = createClient();
         String requestId = PlatformServices.generateId();
+        Date timestamp = new Date();
         client.subscribeToDataEvents(requestId,
+                                     timestamp,
                                      Lists.newArrayList(MockDataEventType1.class),
                                      this);
         Thread.sleep(5000);

@@ -23,9 +23,10 @@ message DataEvent {
 
 // request data events
 message DataEventRequest {
-    string sessionId = 1;
-    string requestId = 2;
-    repeated string types = 3;
+    string sessionId = 1; // RPC session id of the requester
+    string requestId = 2; // uniquely identifies this request for this session
+    google.protobuf.Timestamp timestamp = 3; // timestamp anchor for events for this request
+    repeated string types = 4; // optional types (class names of DateEvent subclasses)
 }
 
 // return data events

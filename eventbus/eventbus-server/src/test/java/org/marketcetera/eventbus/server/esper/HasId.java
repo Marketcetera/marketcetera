@@ -1,4 +1,4 @@
-package org.marketcetera.eventbus.server;
+package org.marketcetera.eventbus.server.esper;
 
 /* $License$ */
 

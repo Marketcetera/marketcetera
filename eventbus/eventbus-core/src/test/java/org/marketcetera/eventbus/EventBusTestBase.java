@@ -10,14 +10,26 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
+import org.marketcetera.eventbus.test.EventBusTestConfiguration;
 import org.marketcetera.metrics.MetricService;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Slf4jReporter;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+
+import junitparams.JUnitParamsRunner;
 
 /* $License$ */
 
@@ -28,6 +40,10 @@ import com.google.common.eventbus.Subscribe;
  * @version $Id$
  * @since $Release$
  */
+@RunWith(JUnitParamsRunner.class)
+@SpringBootTest(classes=EventBusTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera"})
 public abstract class EventBusTestBase<ServiceClazz extends EventBusService>
 {
     /**
@@ -232,4 +248,19 @@ public abstract class EventBusTestBase<ServiceClazz extends EventBusService>
      * holds test events
      */
     private final Deque<EventBusTestEvent> testEvents = Lists.newLinkedList();
+    /**
+     * test artifact used to identify the current test case
+     */
+    @Rule
+    public TestName name = new TestName();
+    /**
+     * rule used to load test context
+     */
+    @ClassRule
+    public static final SpringClassRule SCR = new SpringClassRule();
+    /**
+     * test spring method rule
+     */
+    @Rule
+    public final SpringMethodRule springMethodRule = new SpringMethodRule();
 }
