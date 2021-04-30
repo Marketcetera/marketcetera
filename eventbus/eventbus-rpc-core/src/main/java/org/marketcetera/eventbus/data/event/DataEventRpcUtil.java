@@ -3,6 +3,12 @@
 //
 package org.marketcetera.eventbus.data.event;
 
+import java.util.Optional;
+
+import org.marketcetera.core.Preserve;
+import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 /* $License$ */
 
 /**
@@ -12,67 +18,74 @@ package org.marketcetera.eventbus.data.event;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public abstract class DataEventRpcUtil
 {
     /**
      * Get the RPC object from the given value.
      *
-     * @param inDataEvent a <code>org.marketcetera.eventbus.data.event.DataEvent</code> value
-     * @return a java.util.Optional<DataEventRpc.DataEvent> value
+     * @param inDataEvent a <code>DataEvent</code> value
+     * @return an <code>Optional&lt;DataEventRpc.DataEvent&gt;</code> value
      */
-    public static java.util.Optional<DataEventRpc.DataEvent> getRpcDataEvent(org.marketcetera.eventbus.data.event.DataEvent inDataEvent)
+    public static Optional<DataEventRpc.DataEvent> getRpcDataEvent(DataEvent inDataEvent)
     {
         if(inDataEvent == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         DataEventRpc.DataEvent.Builder builder = DataEventRpc.DataEvent.newBuilder();
         builder.setId(inDataEvent.getId());
-        org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inDataEvent.getTimestamp()).ifPresent(value->builder.setTimestamp(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getClassnameValue(inDataEvent.getType()).ifPresent(value->builder.setType(value));
-        return java.util.Optional.of(builder.build());
+        BaseRpcUtil.getTimestampValue(inDataEvent.getTimestamp()).ifPresent(value->builder.setTimestamp(value));
+        BaseRpcUtil.getClassnameValue(inDataEvent.getClass()).ifPresent(value->builder.setType(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inDataEventChangeType a <code>org.marketcetera.eventbus.data.event.DataEventRpc.DataEventChangeType</code> value
-     * @return a org.marketcetera.eventbus.data.event.DataEventChangeType value
+     * @param inDataEventChangeType a <code>DataEventRpc.DataEventChangeType</code> value
+     * @return an <code>Optional&lt;DataEventChangeType&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.eventbus.data.event.DataEventChangeType> getDataEventChangeType(org.marketcetera.eventbus.data.event.DataEventRpc.DataEventChangeType inDataEventChangeType)
+    public static Optional<DataEventChangeType> getDataEventChangeType(DataEventRpc.DataEventChangeType inDataEventChangeType)
     {
         if(inDataEventChangeType == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        return java.util.Optional.of(org.marketcetera.eventbus.data.event.DataEventChangeType.values()[inDataEventChangeType.getNumber()]);
+        return Optional.of(DataEventChangeType.values()[inDataEventChangeType.getNumber()]);
     }
     /**
      * Get the RPC value from the given object.
      *
-     * @param inRpcDataEventChangeType a <code>org.marketcetera.eventbus.data.event.DataEventChangeType</code> value
-     * @return a org.marketcetera.eventbus.data.event.DataEventRpc.DataEventChangeType value
+     * @param inRpcDataEventChangeType a <code>DataEventChangeType</code> value
+     * @return an <code>Optional&lt;DataEventRpc.DataEventChangeType&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.eventbus.data.event.DataEventRpc.DataEventChangeType> getRpcDataEventChangeType(org.marketcetera.eventbus.data.event.DataEventChangeType inRpcDataEventChangeType)
+    public static Optional<DataEventRpc.DataEventChangeType> getRpcDataEventChangeType(DataEventChangeType inRpcDataEventChangeType)
     {
         if(inRpcDataEventChangeType == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        return java.util.Optional.of(org.marketcetera.eventbus.data.event.DataEventRpc.DataEventChangeType.forNumber(inRpcDataEventChangeType.ordinal()));
+        return Optional.of(DataEventRpc.DataEventChangeType.forNumber(inRpcDataEventChangeType.ordinal()));
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inDataEvent a <code>org.marketcetera.eventbus.data.event.DataEventRpc.DataEvent</code> value
-     * @param inDataEventFactory a <code>org.marketcetera.eventbus.data.event.DataEventFactory</code> value
-     * @return a org.marketcetera.eventbus.data.event.DataEvent value
+     * @param inDataEvent a <code>DataEventRpc.DataEvent</code> value
+     * @return an <code>Optional&lt;DataEvent&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.eventbus.data.event.DataEvent> getDataEvent(org.marketcetera.eventbus.data.event.DataEventRpc.DataEvent inDataEvent,org.marketcetera.eventbus.data.event.DataEventFactory inDataEventFactory)
+    public static Optional<DataEvent> getDataEvent(DataEventRpc.DataEvent inDataEvent)
     {
         if(inDataEvent == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.eventbus.data.event.DataEvent dataEvent = inDataEventFactory.create();
+        final DataEvent dataEvent;
+        try {
+            dataEvent = (DataEvent)Class.forName(inDataEvent.getType()).newInstance();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(DataEventRpcUtil.class,
+                                  e);
+            return Optional.empty();
+        }
         dataEvent.setId(inDataEvent.getId());
-        org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inDataEvent.getTimestamp()).ifPresent(value->dataEvent.setTimestamp(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getClassValue(inDataEvent.getType()).ifPresent(value->dataEvent.setType(value));
-        return java.util.Optional.of(dataEvent);
+        BaseRpcUtil.getDateValue(inDataEvent.getTimestamp()).ifPresent(value->dataEvent.setTimestamp(value));
+        BaseRpcUtil.getClassValue(inDataEvent.getType()).ifPresent(value->dataEvent.setType(value));
+        return Optional.of(dataEvent);
     }
 }

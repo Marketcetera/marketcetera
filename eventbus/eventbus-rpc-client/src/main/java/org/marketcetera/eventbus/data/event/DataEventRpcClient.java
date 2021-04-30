@@ -16,7 +16,6 @@ import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -188,8 +187,7 @@ public class DataEventRpcClient
         {
             Collection<DataEvent> dataEvents = Lists.newArrayList();
             for(DataEventRpc.DataEvent rpcDataEvent : inResponse.getDataEventsList()) {
-                DataEventRpcUtil.getDataEvent(rpcDataEvent,
-                                              dataEventFactory).ifPresent(dataEvent -> dataEvents.add(dataEvent));
+                DataEventRpcUtil.getDataEvent(rpcDataEvent).ifPresent(dataEvent -> dataEvents.add(dataEvent));
             }
             return dataEvents;
         }
@@ -223,11 +221,6 @@ public class DataEventRpcClient
      * holds report listeners by their id or the market data request id
      */
     private final Cache<String,DataEventListenerProxy> listenerProxiesById = CacheBuilder.newBuilder().build();
-    /**
-     * creates new {@link DataEvent} objects
-     */
-    @Autowired
-    private DataEventFactory dataEventFactory;
     /**
      * The client's application ID: the application name.
      */

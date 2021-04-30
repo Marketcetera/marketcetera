@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 /* $License$ */
 
 /**
- *
+ * Provides test configuration for Event Bus tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

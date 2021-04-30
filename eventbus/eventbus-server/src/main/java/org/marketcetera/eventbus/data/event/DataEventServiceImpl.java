@@ -3,6 +3,22 @@
 //
 package org.marketcetera.eventbus.data.event;
 
+import java.util.Collection;
+import java.util.function.Consumer;
+
+import javax.annotation.PostConstruct;
+
+import org.marketcetera.core.PlatformServices;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.eventbus.Subscribe;
+
 /* $License$ */
 
 /**
@@ -12,22 +28,48 @@ package org.marketcetera.eventbus.data.event;
  * @version $Id$
  * @since $Release$
  */
-@org.springframework.stereotype.Component
+@Preserve
+@Component
 public class DataEventServiceImpl
-        implements org.marketcetera.eventbus.data.event.DataEventService
+        implements DataEventService
 {
     /**
      * Requests data events.
      *
      * @param inRequestId a <code>String</code> value
-     * @param inTypes a <code>java.util.Collection&lt;Class&lt;?&gt;&gt;</code> value
-     * @param inConsumer a <code>java.util.function.Consumer&lt;DataEvent&gt;</code> value
+     * @param inTypes a <code>Collection&lt;Class&lt;?&gt;&gt;</code> value
+     * @param inConsumer a <code>Consumer&lt;DataEvent&gt;</code> value
      */
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
-    public void subscribeToDataEvents(String inRequestId,java.util.Collection<Class<?>> inTypes,java.util.function.Consumer<DataEvent> inConsumer)
+    public void subscribeToDataEvents(String inRequestId,
+                                      Collection<Class<?>> inTypes,
+                                      Consumer<DataEvent> inConsumer)
     {
-        throw new UnsupportedOperationException(); // TODO
+        // TODO duplicate request id
+        subscribersByRequestId.put(inRequestId,
+                                   new DataEventSubscriber(inConsumer,
+                                                           inTypes));
+    }
+    private Cache<String,DataEventSubscriber> subscribersByRequestId = CacheBuilder.newBuilder().build();
+    private static class DataEventSubscriber
+            implements Consumer<DataEvent>
+    {
+        /* (non-Javadoc)
+         * @see java.util.function.Consumer#accept(java.lang.Object)
+         */
+        @Override
+        public void accept(DataEvent inEvent)
+        {
+            consumer.accept(inEvent);
+        }
+        private DataEventSubscriber(Consumer<DataEvent> inConsumer,
+                                    Collection<Class<?>> inTypes)
+        {
+            consumer = inConsumer;
+            types = inTypes;
+        }
+        private final Collection<Class<?>> types;
+        private final Consumer<DataEvent> consumer;
     }
     /**
      * Cancels data event request.
@@ -35,31 +77,51 @@ public class DataEventServiceImpl
      * @param inRequestId a <code>String</code> value
      */
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
     public void unsubscribeToDataEvents(String inRequestId)
     {
         throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Accept incoming DataEvent values.
+     *
+     * @param inDataEvent a <code>DataEvent</code> value
      */
-    @com.google.common.eventbus.Subscribe
-    public void accept(org.marketcetera.eventbus.data.event.DataEvent inDataEvent)
+    @Subscribe
+    public void accept(DataEvent inDataEvent)
     {
-        throw new UnsupportedOperationException(); // TODO
+        SLF4JLoggerProxy.trace(this,
+                               "Received {} subscribers: {}",
+                               inDataEvent,
+                               subscribersByRequestId.asMap());
+        // TODO efficiency
+        Class<?> eventType = inDataEvent.getClass();
+        for(DataEventSubscriber subscriber : subscribersByRequestId.asMap().values()) {
+            if(subscriber.types.isEmpty()) {
+                subscriber.accept(inDataEvent);
+            } else {
+                for(Class<?> type : subscriber.types) {
+                    if(type.isAssignableFrom(eventType)) {
+                        subscriber.accept(inDataEvent);
+                        break;
+                    }
+                }
+            }
+        }
     }
     /**
      * Validate and start the object.
      */
-    @javax.annotation.PostConstruct
+    @PostConstruct
     public void start()
     {
-        org.marketcetera.util.log.SLF4JLoggerProxy.info(this,"Starting {}",org.marketcetera.core.PlatformServices.getServiceName(getClass()));
+        SLF4JLoggerProxy.info(this,
+                              "Starting {}",
+                              PlatformServices.getServiceName(getClass()));
         eventBusService.register(this);
     }
     /**
      * provides access to event services
      */
-    @org.springframework.beans.factory.annotation.Autowired
-    private org.marketcetera.eventbus.EventBusService eventBusService;
+    @Autowired
+    private EventBusService eventBusService;
 }
