@@ -3,6 +3,8 @@
 //
 package org.marketcetera.eventbus.data.event;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ package org.marketcetera.eventbus.data.event;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface DataEvent
 {
     /**
@@ -44,12 +47,6 @@ public interface DataEvent
      * @return a <code>java.lang.Class&lt;?&gt;</code> value
      */
     java.lang.Class<?> getType();
-    /**
-     * Set the type value.
-     *
-     * @param inType a <code>java.lang.Class&lt;?&gt;</code> value
-     */
-    void setType(java.lang.Class<?> inType);
     /**
      * Get the changeType value.
      *

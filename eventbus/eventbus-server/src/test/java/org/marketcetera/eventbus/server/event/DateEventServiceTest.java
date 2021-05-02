@@ -1,5 +1,6 @@
 package org.marketcetera.eventbus.server.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Date;
@@ -61,8 +62,16 @@ public class DateEventServiceTest
         assertNotNull(nextEvent);
         return nextEvent;
     }
+    // TODO -subscribe to any event-
+    // TODO subscribe to this event not that event
+    // TODO subscribe to superclass event
+    // TODO subscribe to multiple events
+    // TODO subscribe to multiple events with overlap (single notification)
+    // TODO subscribe with duplicate id
+    // TODO subscribe and pick up previous event via timestamp
+    // TODO unsubscribe
     @Test
-    public void testAllDataEvents()
+    public void testNoFiltering()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
@@ -74,6 +83,24 @@ public class DateEventServiceTest
         DataEvent submittedEvent = generateAndSubmitEvent();
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
+        assertSameEvent(submittedEvent,
+                        eventBusEvent,
+                        consumerEvent);
+    }
+    @Test
+    public void testSingleSpecificType()
+            throws Exception
+    {
+        
+    }
+    private void assertSameEvent(DataEvent inExpectedEvent,
+                                 DataEvent...inActualEvents)
+            throws Exception
+    {
+        for(DataEvent actualEvent : inActualEvents) {
+            assertEquals(inExpectedEvent.getId(),
+                         actualEvent.getId());
+        }
     }
     private DataEvent generateAndSubmitEvent()
     {
@@ -117,14 +144,6 @@ public class DateEventServiceTest
          */
         private final BlockingDeque<DataEvent> events = new LinkedBlockingDeque<>();
     }
-    // TODO subscribe to any event
-    // TODO subscribe to this event not that event
-    // TODO subscribe to superclass event
-    // TODO subscribe to multiple events
-    // TODO subscribe to multiple events with overlap (single notification)
-    // TODO subscribe with duplicate id
-    // TODO subscribe and pick up previous event via timestamp
-    // TODO unsubscribe
     private final BlockingDeque<DataEvent> eventBusEvents = new LinkedBlockingDeque<DataEvent>();
     @Autowired
     private EventBusService eventBusService;

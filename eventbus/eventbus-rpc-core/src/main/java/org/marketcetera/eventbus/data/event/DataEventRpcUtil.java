@@ -85,7 +85,6 @@ public abstract class DataEventRpcUtil
         }
         dataEvent.setId(inDataEvent.getId());
         BaseRpcUtil.getDateValue(inDataEvent.getTimestamp()).ifPresent(value->dataEvent.setTimestamp(value));
-        BaseRpcUtil.getClassValue(inDataEvent.getType()).ifPresent(value->dataEvent.setType(value));
         return Optional.of(dataEvent);
     }
 }

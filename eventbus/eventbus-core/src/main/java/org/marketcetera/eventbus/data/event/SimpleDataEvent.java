@@ -3,6 +3,8 @@
 //
 package org.marketcetera.eventbus.data.event;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,13 +14,17 @@ package org.marketcetera.eventbus.data.event;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimpleDataEvent
         implements DataEvent
 {
     /**
      * Create a new SimpleDataEvent instance.
      */
-    public SimpleDataEvent() {}
+    public SimpleDataEvent()
+    {
+        type = getClass();
+    }
     /**
      * Create a new SimpleDataEvent instance.
      *
@@ -28,7 +34,7 @@ public class SimpleDataEvent
     {
         setId(inDataEvent.getId());
         setTimestamp(inDataEvent.getTimestamp());
-        setType(inDataEvent.getType());
+        type = inDataEvent.getClass();
         setChangeType(inDataEvent.getChangeType());
     }
     /**
@@ -80,16 +86,6 @@ public class SimpleDataEvent
     public java.lang.Class<?> getType()
     {
         return type;
-    }
-    /**
-     * Set the type value.
-     *
-     * @param inType a <code>java.lang.Class&lt;?&gt;</code> value
-     */
-    @Override
-    public void setType(java.lang.Class<?> inType)
-    {
-        type = inType;
     }
     /**
      * Get the changeType value.
