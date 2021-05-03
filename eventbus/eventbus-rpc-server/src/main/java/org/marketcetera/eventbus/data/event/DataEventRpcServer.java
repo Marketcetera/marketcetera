@@ -143,8 +143,8 @@ public class DataEventRpcServer<SessionClazz>
                                             dataEventListenerProxy);
                     dataEventService.subscribeToDataEvents(serverRequestId,
                                                            timestamp,
-                                                           requestTypes,
-                                                           dataEventListenerProxy);
+                                                           dataEventListenerProxy,
+                                                           requestTypes.toArray(new Class<?>[requestTypes.size()]));
                 } else {
                     throw new IllegalArgumentException("Duplicate data event request id: " + clientRequestId);
                 }
