@@ -50,7 +50,6 @@ public class DataEventRpcClient
                                       Collection<Class<?>> inTypes,
                                       Consumer<DataEvent> inConsumer)
     {
-        // TODO timestamp
         DataEventListenerProxy proxy = listenerProxiesById.getIfPresent(inRequestId);
         if(proxy != null) {
             throw new IllegalArgumentException("Duplicate data event request id: " + inRequestId);
@@ -67,7 +66,10 @@ public class DataEventRpcClient
                 DataEventRpc.DataEventRequest.Builder requestBuilder = DataEventRpc.DataEventRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setRequestId(inRequestId);
-                inTypes.forEach(javaValue->BaseRpcUtil.getClassnameValue(javaValue).ifPresent(rpcValue->requestBuilder.addTypes(rpcValue)));
+                BaseRpcUtil.getTimestampValue(inTimestamp).ifPresent(rpcTimestamp -> requestBuilder.setTimestamp(rpcTimestamp));
+                if(inTypes != null) {
+                    inTypes.forEach(javaValue->BaseRpcUtil.getClassnameValue(javaValue).ifPresent(rpcValue->requestBuilder.addTypes(rpcValue)));
+                }
                 DataEventRpc.DataEventRequest request = requestBuilder.build();
                 SLF4JLoggerProxy.trace(DataEventRpcClient.this,
                                        "{} sending {}",

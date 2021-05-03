@@ -5,10 +5,13 @@ package org.marketcetera.eventbus.data.event;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.eventbus.EventBusService;
@@ -18,7 +21,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+
+import io.netty.util.internal.ConcurrentSet;
+
 
 /* $License$ */
 
@@ -49,10 +58,29 @@ public class DataEventServiceImpl
                                       Consumer<DataEvent> inConsumer)
     {
         // TODO duplicate request id
-        // TODO timestamp
+        // TODO timestamp - start sending all cached events that match the types and are before the timestamp
+        Collection<Class<?>> expandedTypes = Lists.newArrayList();
+        if(inTypes == null) {
+            expandedTypes.add(DataEvent.class);
+        } else {
+            for(Class<?> type : inTypes) {
+                expandedTypes.add(type);
+                expandedTypes.addAll(ClassUtils.getAllInterfaces(type));
+                expandedTypes.addAll(ClassUtils.getAllSuperclasses(type));
+            }
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "{} expands to {} class(es): {}",
+                               inTypes,
+                               expandedTypes.size(),
+                               expandedTypes);
+        DataEventSubscriber subscriber = new DataEventSubscriber(inConsumer,
+                                                                 expandedTypes);
         subscribersByRequestId.put(inRequestId,
-                                   new DataEventSubscriber(inConsumer,
-                                                           inTypes));
+                                   subscriber);
+        expandedTypes.forEach(type -> {
+            subscribersByClass.getUnchecked(type).add(subscriber);
+        });
     }
     /**
      * Cancels data event request.
@@ -76,19 +104,12 @@ public class DataEventServiceImpl
                                "Received {} subscribers: {}",
                                inDataEvent,
                                subscribersByRequestId.asMap());
-        // TODO efficiency
+        dataEventTimeCache.put(inDataEvent.getId(),
+                               inDataEvent);
         Class<?> eventType = inDataEvent.getClass();
-        for(DataEventSubscriber subscriber : subscribersByRequestId.asMap().values()) {
-            if(subscriber.types == null || subscriber.types.isEmpty()) {
-                subscriber.accept(inDataEvent);
-            } else {
-                for(Class<?> type : subscriber.types) {
-                    if(type.isAssignableFrom(eventType)) {
-                        subscriber.accept(inDataEvent);
-                        break;
-                    }
-                }
-            }
+        Set<DataEventSubscriber> subscribers = subscribersByClass.getUnchecked(eventType);
+        for(DataEventSubscriber subscriber : subscribers) {
+            subscriber.accept(inDataEvent);
         }
     }
     /**
@@ -101,6 +122,7 @@ public class DataEventServiceImpl
                               "Starting {}",
                               PlatformServices.getServiceName(getClass()));
         eventBusService.register(this);
+        dataEventTimeCache = CacheBuilder.newBuilder().expireAfterWrite(dataEventTtlSeconds, TimeUnit.SECONDS).build();
     }
     private static class DataEventSubscriber
             implements Consumer<DataEvent>
@@ -122,6 +144,16 @@ public class DataEventServiceImpl
         private final Collection<Class<?>> types;
         private final Consumer<DataEvent> consumer;
     }
+    private int dataEventTtlSeconds = 10;
+    private Cache<Long,DataEvent> dataEventTimeCache;
+    private final LoadingCache<Class<?>,Set<DataEventSubscriber>> subscribersByClass = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>,Set<DataEventSubscriber>>(){
+        @Override
+        public Set<DataEventSubscriber> load(Class<?> inKey)
+                throws Exception
+        {
+            return new ConcurrentSet<>();
+        }}
+    );
     /**
      * lists data event subscribers by request id
      */
