@@ -47,8 +47,13 @@ import com.google.common.eventbus.Subscribe;
 @EntityScan(basePackages={"org.marketcetera"})
 @ComponentScan(basePackages={"org.marketcetera"})
 @SpringBootTest(classes=EventBusEventServerTestConfiguration.class)
-public class DateEventServiceTest
+public class DataEventServiceTest
 {
+    /**
+     * Runs before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @BeforeEach
     public void setup()
             throws Exception
@@ -56,26 +61,29 @@ public class DateEventServiceTest
         eventBusService.register(this);
         eventBusEvents.clear();
     }
+    /**
+     * Receives {@link DataEvent} types directly from the system event bus.
+     *
+     * @param inDataEvent a <code>DataEvent</code> value
+     */
     @Subscribe
     public void accept(DataEvent inDataEvent)
     {
         eventBusEvents.addLast(inDataEvent);
     }
-    private DataEvent waitForEventBusEvent()
-            throws Exception
-    {
-        DataEvent nextEvent = eventBusEvents.pollFirst(10,
-                                                       TimeUnit.SECONDS);
-        assertNotNull(nextEvent);
-        return nextEvent;
-    }
     // TODO unsubscribe
     // TODO consumer throws exception during accept
+    // TODO subscribe for non-DataEvent type
+    /**
+     * Tests that events generated after the anchor timestamp are delivered.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testEventRaceCondition()
             throws Exception
     {
-        int serviceTtl = ((DataEventServiceImpl)dataEventService).getDataEventTtlSeconds();
+        int serviceTtl = ((DataEventServiceImpl)dataEventService).getDataEventCacheTtlSeconds();
         DataEvent event0 = generateAndSubmitEvent(1);
         waitForEventBusEvent();
         Thread.sleep(serviceTtl+1);
@@ -110,6 +118,11 @@ public class DateEventServiceTest
         assertTrue(event0.getClass().isAssignableFrom(event3.getClass()));
         consumer.assertNoEvents();
     }
+    /**
+     * Tests handling of a duplicate request id.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testDuplicateId()
             throws Exception
@@ -130,8 +143,13 @@ public class DateEventServiceTest
             }
         };
     }
+    /**
+     * Tests handling of requests with no filter types.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void testAnyEvent()
+    public void testAllEvents()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
@@ -152,7 +170,7 @@ public class DateEventServiceTest
     {
         String requestId = PlatformServices.generateId();
         DataEventConsumer consumer = new DataEventConsumer();
-        DataEvent generatedEvent = generateEvent();
+        DataEvent generatedEvent = generateEvent(0);
         dataEventService.subscribeToDataEvents(requestId,
                                                new Date(),
                                                consumer,
@@ -160,6 +178,23 @@ public class DateEventServiceTest
         submitEvent(generatedEvent);
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
+        assertSameEvent(generatedEvent,
+                        eventBusEvent,
+                        consumerEvent);
+        consumer.reset();
+        // generate an event of another type
+        generatedEvent = generateEvent(1);
+        submitEvent(generatedEvent);
+        eventBusEvent = waitForEventBusEvent();
+        assertSameEvent(generatedEvent,
+                        eventBusEvent);
+        consumer.assertNoEvents();
+        eventBusEvents.clear();
+        consumer.reset();
+        // receive another event from the same type
+        generatedEvent = generateAndSubmitEvent(0);
+        eventBusEvent = waitForEventBusEvent();
+        consumerEvent = consumer.waitForEvent();
         assertSameEvent(generatedEvent,
                         eventBusEvent,
                         consumerEvent);
@@ -275,6 +310,21 @@ public class DateEventServiceTest
             assertEquals(inExpectedEvent.getId(),
                          actualEvent.getId());
         }
+    }
+    /**
+     * Wait a reasonable amount of time for the next {@link DataEvent} to be received on the system
+     * event bus and return it.
+     *
+     * @return a <code>DataEvent</code>
+     * @throws Exception if the event has not been received
+     */
+    private DataEvent waitForEventBusEvent()
+            throws Exception
+    {
+        DataEvent nextEvent = eventBusEvents.pollFirst(10,
+                                                       TimeUnit.SECONDS);
+        assertNotNull(nextEvent);
+        return nextEvent;
     }
     private DataEvent generateEvent()
     {

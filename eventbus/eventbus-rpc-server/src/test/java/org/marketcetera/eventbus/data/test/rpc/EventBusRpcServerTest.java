@@ -59,6 +59,11 @@ public class EventBusRpcServerTest
         extends RpcTestBase<DataEventRpcClientParameters,DataEventRpcClient,SessionId,DataEventRpcServiceGrpc.DataEventRpcServiceImplBase,DataEventRpcServer<SessionId>>
         implements Consumer<DataEvent>
 {
+    /**
+     * Runs before each test.
+     * 
+     * @throws Exception if an unexpected error occurs
+     */
     @Before
     public void setup()
             throws Exception
@@ -68,6 +73,11 @@ public class EventBusRpcServerTest
         rpcEvents.clear();
         busEvents.clear();
     }
+    /**
+     * Runs after each test.
+     * 
+     * @throws Exception if an unexpected error occurs
+     */
     @After
     public void cleanup()
             throws Exception

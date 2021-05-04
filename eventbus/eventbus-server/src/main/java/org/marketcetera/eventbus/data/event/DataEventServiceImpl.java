@@ -48,7 +48,7 @@ import com.google.common.eventbus.Subscribe;
  * after the request is generated but before the bookkeeping is done for the request, which would allow
  * an update to never be sent to the requester, even though it happened after the request was submitted.
  * To address this race condition, a cache of {@link DataEvent} objects is stored with a TTL defined 
- * {@link #dataEventTtlSeconds here}. Any event that occurred after the request was made but before
+ * {@link #dataEventCacheTtlSeconds here}. Any event that occurred after the request was made but before
  * the bookkeeping is finalized will be sent to the requester, before the {@link #subscribeToDataEvents(String, Date, Consumer, Class...) request}
  * returns.</p>
  *
@@ -71,71 +71,60 @@ public class DataEventServiceImpl
                                       Consumer<DataEvent> inConsumer,
                                       Class<?>...inTypes)
     {
+        // the caller supplies the request id in order to prevent a race condition: events may be returned before the call returns
+        // however, this requires that the caller be aware enough to create a universally unique id among all callers
+        // verify this contract
         if(subscribersByRequestId.asMap().containsKey(inRequestId)) {
             throw new IllegalArgumentException("Duplicate request id: '" + inRequestId + "'");
         }
-        Set<Class<?>> expandedTypes = Sets.newHashSet();
+        // the given types, if any, indicate which DataEvent types the caller is interested in
+        // the types have to match exactly without expansion in order to distinguish between different subclasses of DataEvent
+        Set<Class<?>> allTypes = Sets.newHashSet();
         if(inTypes == null || inTypes.length == 0) {
-            expandedTypes.add(DataEvent.class);
+            // if no types are specified, that means send events for all DataEvent subclasses
+            allTypes.add(DataEvent.class);
         } else {
             for(Class<?> type : inTypes) {
-                expandedTypes.add(type);
+                // TODO verify that the type is assignable from DataEvent
+                allTypes.add(type);
             }
         }
-        SLF4JLoggerProxy.debug(this,
-                               "{} expands to {} class(es): {}",
-                               inTypes,
-                               expandedTypes.size(),
-                               expandedTypes);
         // as soon as the new subscriber gets added to the subscriber collection, it's eligible to receive new events. probably want
         //  to send the old events *before* adding the new subscriber to the collection
         SortedSet<DataEvent> previousEvents = Sets.newTreeSet(DataEventTimestampComparator.instance);
         dataEventTimeCache.asMap().values().forEach(event-> {
-            if(expandedTypes.contains(event.getClass()) && event.getTimestamp().compareTo(inTimestamp) != -1) {
+            if(allTypes.contains(event.getClass()) && event.getTimestamp().compareTo(inTimestamp) != -1) {
                 previousEvents.add(event);
             }
         });
+        previousEvents.forEach(event -> inConsumer.accept(event));
+        // create the new subscriber
         DataEventSubscriber subscriber = new DataEventSubscriber(inRequestId,
                                                                  inConsumer);
+        // store the subscriber both by its requestId and by each of its requested types
         subscribersByRequestId.put(inRequestId,
                                    subscriber);
-        expandedTypes.forEach(type -> {
+        allTypes.forEach(type -> {
             subscribersByClass.getUnchecked(type).add(subscriber);
         });
-        previousEvents.forEach(event -> inConsumer.accept(event));
     }
     /**
      * Get the dataEventTtlSeconds value.
      *
      * @return an <code>int</code> value
      */
-    public int getDataEventTtlSeconds()
+    public int getDataEventCacheTtlSeconds()
     {
-        return dataEventTtlSeconds;
+        return dataEventCacheTtlSeconds;
     }
-    private static class DataEventTimestampComparator
-            implements Comparator<DataEvent>
+    /**
+     * Get the classLookupCacheTtlSeconds value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getClassLookupCacheTtlSeconds()
     {
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        public int compare(DataEvent inO1,
-                           DataEvent inO2)
-        {
-            return new CompareToBuilder().append(inO1.getTimestamp(),inO2.getTimestamp()).append(inO1.getId(),inO2.getId()).toComparison();
-        }
-        private static final DataEventTimestampComparator instance = new DataEventTimestampComparator();
-    }
-    private Collection<Class<?>> getExpandedTypes(Class<?>...inTypes)
-    {
-        Collection<Class<?>> expandedTypes = Lists.newArrayList();
-        for(Class<?> type : inTypes) {
-            expandedTypes.add(type);
-            expandedTypes.addAll(ClassUtils.getAllInterfaces(type));
-            expandedTypes.addAll(ClassUtils.getAllSuperclasses(type));
-        }
-        return expandedTypes;
+        return classLookupCacheTtlSeconds;
     }
     /**
      * Cancels data event request.
@@ -162,20 +151,6 @@ public class DataEventServiceImpl
                                inEvent);
         doAcceptEvent(inEvent);
     }
-    private void doAcceptEvent(DataEvent inEvent)
-    {
-        Class<?> eventType = inEvent.getClass();
-        // this gets all the class types that this event might match
-        Collection<Class<?>> expandedTypes = getExpandedTypes(eventType);
-        // subscribers will hold all the subscribers to whom this event will be sent - made a set in order to avoid duplicate notifications
-        Set<DataEventSubscriber> subscribers = Sets.newHashSet();
-        // go through all the class types that apply to the event and grab all the subscribers that are interested in each type in the expanded list
-        for(Class<?> type : expandedTypes) {
-            subscribers.addAll(subscribersByClass.getUnchecked(type));
-        }
-        // now, subscribers holds the unique set of subscribers interested in the event we just received
-        subscribers.forEach(subscriber -> subscriber.accept(inEvent));
-    }
     /**
      * Validate and start the object.
      */
@@ -186,8 +161,71 @@ public class DataEventServiceImpl
                               "Starting {}",
                               PlatformServices.getServiceName(getClass()));
         eventBusService.register(this);
-        dataEventTimeCache = CacheBuilder.newBuilder().expireAfterWrite(dataEventTtlSeconds, TimeUnit.SECONDS).build();
+        dataEventTimeCache = CacheBuilder.newBuilder().expireAfterWrite(dataEventCacheTtlSeconds, TimeUnit.SECONDS).build();
+        expandedClassesByClass = CacheBuilder.newBuilder().expireAfterAccess(classLookupCacheTtlSeconds,TimeUnit.SECONDS)
+                .build(new CacheLoader<Class<?>,Collection<Class<?>>>() {
+            @Override
+            public Collection<Class<?>> load(Class<?> inKey)
+                    throws Exception
+            {
+                return determineExpandedTypes(inKey);
+            }}
+        );
     }
+    /**
+     * Get the cached expanded types for the given types.
+     *
+     * @param inTypes a <code>Class&lt;?&gt;[]</code> value
+     * @return a <code>Collection&lt;Class&lt;?&gt;&gt;</code> value
+     */
+    private Collection<Class<?>> getCachedExpandedTypes(Class<?>...inTypes)
+    {
+        Collection<Class<?>> expandedTypes = Lists.newArrayList();
+        for(Class<?> type : inTypes) {
+            expandedTypes.addAll(expandedClassesByClass.getUnchecked(type));
+        }
+        return expandedTypes;
+    }
+    /**
+     * Determine the expanded types for the given single type, explicitly not using the cache.
+     *
+     * @param inType a <code>Class&lt;?&gt;</code> value
+     * @return a <code>Collection&lt;Class&lt;?&gt;&gt;</code> value
+     */
+    private Collection<Class<?>> determineExpandedTypes(Class<?> inType)
+    {
+        Collection<Class<?>> expandedTypes = Lists.newArrayList();
+        expandedTypes.add(inType);
+        expandedTypes.addAll(ClassUtils.getAllInterfaces(inType));
+        expandedTypes.addAll(ClassUtils.getAllSuperclasses(inType));
+        return expandedTypes;
+    }
+    /**
+     * Accept the given event and notify all interested subscribers.
+     *
+     * @param inEvent a <code>DataEvent</code> value
+     */
+    private void doAcceptEvent(DataEvent inEvent)
+    {
+        Class<?> eventType = inEvent.getClass();
+        // this gets all the class types that this event might match
+        Collection<Class<?>> expandedTypes = getCachedExpandedTypes(eventType);
+        // subscribers will hold all the subscribers to whom this event will be sent - made a set in order to avoid duplicate notifications
+        Set<DataEventSubscriber> subscribers = Sets.newHashSet();
+        // go through all the class types that apply to the event and grab all the subscribers that are interested in each type in the expanded list
+        for(Class<?> type : expandedTypes) {
+            subscribers.addAll(subscribersByClass.getUnchecked(type));
+        }
+        // now, subscribers holds the unique set of subscribers interested in the event we just received
+        subscribers.forEach(subscriber -> subscriber.accept(inEvent));
+    }
+    /**
+     * Manages a data event subscription request.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private static class DataEventSubscriber
             implements Consumer<DataEvent>
     {
@@ -235,10 +273,47 @@ public class DataEventServiceImpl
             requestId = inRequestId;
             consumer = inConsumer;
         }
+        /**
+         * universally unique identifier for this request
+         */
         private final String requestId;
+        /**
+         * event consumer provided by the caller
+         */
         private final Consumer<DataEvent> consumer;
     }
+    /**
+     * Compares to {@link DataEvent} objects and compares them by timestamp, maintaining event uniqueness.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class DataEventTimestampComparator
+            implements Comparator<DataEvent>
+    {
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(DataEvent inO1,
+                           DataEvent inO2)
+        {
+            return new CompareToBuilder().append(inO1.getTimestamp(),inO2.getTimestamp()).append(inO1.getId(),inO2.getId()).toComparison();
+        }
+        /**
+         * static instance for easy use
+         */
+        private static final DataEventTimestampComparator instance = new DataEventTimestampComparator();
+    }
+    /**
+     * caches {@link DataEvent} values received from the system event bus allowing them to expire over time in order to make
+     * sure no events are missed on new subscriptions
+     */
     private Cache<Long,DataEvent> dataEventTimeCache;
+    /**
+     * holds subscribers for a particular class type - note that the value is thread-safe
+     */
     private final LoadingCache<Class<?>,Set<DataEventSubscriber>> subscribersByClass = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>,Set<DataEventSubscriber>>(){
         @Override
         public Set<DataEventSubscriber> load(Class<?> inKey)
@@ -252,6 +327,10 @@ public class DataEventServiceImpl
      */
     private final Cache<String,DataEventSubscriber> subscribersByRequestId = CacheBuilder.newBuilder().build();
     /**
+     * caches expanded type lookups by class
+     */
+    private LoadingCache<Class<?>,Collection<Class<?>>> expandedClassesByClass;
+    /**
      * provides access to event services
      */
     @Autowired
@@ -259,6 +338,11 @@ public class DataEventServiceImpl
     /**
      * number of seconds for data events to survive in the cache
      */
-    @Value("${metc.data.event.ttl.seconds:10}")
-    private int dataEventTtlSeconds = 10;
+    @Value("${metc.data.event.cache.ttl.seconds:10}")
+    private int dataEventCacheTtlSeconds;
+    /**
+     * number of seconds for expanded class lookups to survive in the cache
+     */
+    @Value("${metc.data.event.class.lookup.cache.ttl.seconds:600}")
+    private int classLookupCacheTtlSeconds;
 }
