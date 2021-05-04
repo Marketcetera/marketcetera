@@ -34,10 +34,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.eventbus.Subscribe;
 
+import junit.framework.AssertionFailedError;
+
 /* $License$ */
 
 /**
- *
+ * Tests {@link DataEventServiceImpl}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -69,11 +71,45 @@ public class DataEventServiceTest
     @Subscribe
     public void accept(DataEvent inDataEvent)
     {
+        SLF4JLoggerProxy.info(this,
+                              "Received {}",
+                              inDataEvent);
         eventBusEvents.addLast(inDataEvent);
     }
     // TODO unsubscribe
-    // TODO consumer throws exception during accept
     // TODO subscribe for non-DataEvent type
+    /**
+     * Tests that consumers that throw exceptions are handled correctly.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testConsumerException()
+            throws Exception
+    {
+        Date timestamp = new Date();
+        String requestId1 = PlatformServices.generateId();
+        String requestId2 = PlatformServices.generateId();
+        MockDataEventConsumer consumer1 = new MockDataEventConsumer();
+        MockDataEventConsumer consumer2 = new MockDataEventConsumer();
+        RuntimeException testException = new RuntimeException("this exception is expected");
+        consumer1.setConsumerException(testException);
+        consumer2.setConsumerException(testException);
+        dataEventService.subscribeToDataEvents(requestId1,
+                                               timestamp,
+                                               consumer1);
+        dataEventService.subscribeToDataEvents(requestId2,
+                                               timestamp,
+                                               consumer2);
+        DataEvent submittedEvent = generateAndSubmitEvent();
+        DataEvent eventBusEvent = waitForEventBusEvent();
+        DataEvent consumerEvent1 = consumer1.waitForEvent();
+        DataEvent consumerEvent2 = consumer2.waitForEvent();
+        assertEventsEqual(submittedEvent,
+                          eventBusEvent,
+                          consumerEvent1,
+                          consumerEvent2);
+    }
     /**
      * Tests that events generated after the anchor timestamp are delivered.
      *
@@ -95,7 +131,7 @@ public class DataEventServiceTest
         Thread.sleep(1000);
         DataEvent event3 = generateAndSubmitEvent(1);
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         Thread.sleep(1000);
         consumer.assertNoEvents();
         dataEventService.subscribeToDataEvents(requestId,
@@ -104,15 +140,15 @@ public class DataEventServiceTest
                                                event1.getClass());
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
-        assertSameEvent(event1,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(event1,
+                          eventBusEvent,
+                          consumerEvent);
         eventBusEvent = waitForEventBusEvent();
         eventBusEvent = waitForEventBusEvent();
         consumerEvent = consumer.waitForEvent();
-        assertSameEvent(event3,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(event3,
+                          eventBusEvent,
+                          consumerEvent);
         assertTrue(event0.getClass().isAssignableFrom(event1.getClass()));
         assertFalse(event0.getClass().isAssignableFrom(event2.getClass()));
         assertTrue(event0.getClass().isAssignableFrom(event3.getClass()));
@@ -128,7 +164,7 @@ public class DataEventServiceTest
             throws Exception
     {
         final String requestId = PlatformServices.generateId();
-        final DataEventConsumer consumer = new DataEventConsumer();
+        final MockDataEventConsumer consumer = new MockDataEventConsumer();
         dataEventService.subscribeToDataEvents(requestId,
                                                new Date(),
                                                consumer);
@@ -153,23 +189,28 @@ public class DataEventServiceTest
             throws Exception
     {
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         dataEventService.subscribeToDataEvents(requestId,
                                                new Date(),
                                                consumer);
         DataEvent submittedEvent = generateAndSubmitEvent();
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
-        assertSameEvent(submittedEvent,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(submittedEvent,
+                          eventBusEvent,
+                          consumerEvent);
     }
+    /**
+     * Tests subscription to a single type of event.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testSingleSpecificType()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         DataEvent generatedEvent = generateEvent(0);
         dataEventService.subscribeToDataEvents(requestId,
                                                new Date(),
@@ -178,7 +219,7 @@ public class DataEventServiceTest
         submitEvent(generatedEvent);
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent,
+        assertEventsEqual(generatedEvent,
                         eventBusEvent,
                         consumerEvent);
         consumer.reset();
@@ -186,8 +227,8 @@ public class DataEventServiceTest
         generatedEvent = generateEvent(1);
         submitEvent(generatedEvent);
         eventBusEvent = waitForEventBusEvent();
-        assertSameEvent(generatedEvent,
-                        eventBusEvent);
+        assertEventsEqual(generatedEvent,
+                          eventBusEvent);
         consumer.assertNoEvents();
         eventBusEvents.clear();
         consumer.reset();
@@ -195,16 +236,21 @@ public class DataEventServiceTest
         generatedEvent = generateAndSubmitEvent(0);
         eventBusEvent = waitForEventBusEvent();
         consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(generatedEvent,
+                          eventBusEvent,
+                          consumerEvent);
     }
+    /**
+     * Tests that consumers are not notified of the wrong type of event.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testIgnoreWrongType()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         DataEvent generatedEvent0 = generateEvent(0);
         DataEvent generatedEvent1 = generateEvent(1);
         assertNotEquals(generatedEvent0.getClass().getSimpleName(),
@@ -216,16 +262,21 @@ public class DataEventServiceTest
                                                generatedEvent0.getClass());
         submitEvent(generatedEvent1);
         DataEvent eventBusEvent = waitForEventBusEvent();
-        assertSameEvent(generatedEvent1,
-                        eventBusEvent);
+        assertEventsEqual(generatedEvent1,
+                          eventBusEvent);
         consumer.assertNoEvents();
     }
+    /**
+     * Tests that consumers can subscribe to an event superclass and get notified properly.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testSubscribeToSuperclass()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         DataEvent generatedEvent0 = generateEvent(0);
         DataEvent generatedEvent1 = generateEvent(1);
         consumer.assertNoEvents();
@@ -238,7 +289,7 @@ public class DataEventServiceTest
         submitEvent(generatedEvent0);
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent0,
+        assertEventsEqual(generatedEvent0,
                         eventBusEvent,
                         consumerEvent);
         consumer.reset();
@@ -246,16 +297,21 @@ public class DataEventServiceTest
         submitEvent(generatedEvent1);
         eventBusEvent = waitForEventBusEvent();
         consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent1,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(generatedEvent1,
+                          eventBusEvent,
+                          consumerEvent);
     }
+    /**
+     * Tests that consumers can subscribe to multiple event types at once.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testSubscribeToMultipleTypes()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         DataEvent generatedEvent0 = generateEvent(0);
         DataEvent generatedEvent1 = generateEvent(1);
         assertFalse(generatedEvent0.getClass().isAssignableFrom(generatedEvent1.getClass()));
@@ -269,24 +325,29 @@ public class DataEventServiceTest
         submitEvent(generatedEvent0);
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent0,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(generatedEvent0,
+                          eventBusEvent,
+                          consumerEvent);
         consumer.reset();
         eventBusEvents.clear();
         submitEvent(generatedEvent1);
         eventBusEvent = waitForEventBusEvent();
         consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent1,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(generatedEvent1,
+                          eventBusEvent,
+                          consumerEvent);
     }
+    /**
+     * Tests that consumers can subscribe to multiple overlapping event types and get notified only once per event.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void testSubscribeToMultipleOverlappingTypes()
             throws Exception
     {
         String requestId = PlatformServices.generateId();
-        DataEventConsumer consumer = new DataEventConsumer();
+        MockDataEventConsumer consumer = new MockDataEventConsumer();
         DataEvent generatedEvent0 = generateEvent(0);
         consumer.assertNoEvents();
         dataEventService.subscribeToDataEvents(requestId,
@@ -297,14 +358,21 @@ public class DataEventServiceTest
         submitEvent(generatedEvent0);
         DataEvent eventBusEvent = waitForEventBusEvent();
         DataEvent consumerEvent = consumer.waitForEvent();
-        assertSameEvent(generatedEvent0,
-                        eventBusEvent,
-                        consumerEvent);
+        assertEventsEqual(generatedEvent0,
+                          eventBusEvent,
+                          consumerEvent);
         consumer.assertNoEvents();
     }
-    private void assertSameEvent(DataEvent inExpectedEvent,
-                                 DataEvent...inActualEvents)
-            throws Exception
+    /**
+     * Assert that the given expected event is equal to all the given actual events.
+     *
+     * @param inExpectedEvent a <code>DataEvent</code> value
+     * @param inActualEvents a <code>DataEvent[]</code> value
+     * @throws AssertionFailedError if the events are not equal
+     */
+    private void assertEventsEqual(DataEvent inExpectedEvent,
+                                   DataEvent...inActualEvents)
+            throws AssertionFailedError
     {
         for(DataEvent actualEvent : inActualEvents) {
             assertEquals(inExpectedEvent.getId(),
@@ -325,13 +393,6 @@ public class DataEventServiceTest
                                                        TimeUnit.SECONDS);
         assertNotNull(nextEvent);
         return nextEvent;
-    }
-    private DataEvent generateEvent()
-    {
-        DataEvent event = new AbstractMockDataEvent() {};
-        event.setChangeType(DataEventChangeType.ADD);
-        event.setTimestamp(new Date());
-        return event;
     }
     private DataEvent generateEvent(int inType)
     {
@@ -374,7 +435,14 @@ public class DataEventServiceTest
     {
         eventBusService.post(inEvent);
     }
-    private class DataEventConsumer
+    /**
+     * Provides a test {@link DataEvent} {@link Consumer} implementation.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class MockDataEventConsumer
             implements Consumer<DataEvent>
     {
         /* (non-Javadoc)
@@ -384,14 +452,29 @@ public class DataEventServiceTest
         public void accept(DataEvent inEvent)
         {
             events.addLast(inEvent);
+            if(getConsumerException() != null) {
+                throw getConsumerException();
+            }
         }
+        /**
+         * Asserts that no events have been received.
+         *
+         * @throws AssertionFailedError if some unconsumed events exist
+         */
         private void assertNoEvents()
-                throws Exception
+                throws AssertionFailedError
         {
             assertTrue(events.isEmpty());
         }
+        /**
+         * Waits a reasonable amount of time for the next event to be received.
+         *
+         * @return a <code>DataEvent</code> value
+         * @throws AssertionFailedError if an unconsumed event has not been received in a reasonable amount of time
+         * @throws InterruptedException if the method is interrupted while waiting to receive an event
+         */
         private DataEvent waitForEvent()
-                throws Exception
+                throws AssertionFailedError, InterruptedException
         {
             DataEvent event = events.pollFirst(10,
                                                TimeUnit.SECONDS);
@@ -399,18 +482,47 @@ public class DataEventServiceTest
             return event;
         }
         /**
-         * Reset the recorded data for this object.
+         * Reset the state of this consumer, including received events and exceptions to throw.
          */
         private void reset()
         {
             events.clear();
+            consumerException = null;
         }
         /**
-         * holds all events
+         * Get the consumerException value.
+         *
+         * @return a <code>RuntimeException</code> value
+         */
+        private RuntimeException getConsumerException()
+        {
+            return consumerException;
+        }
+        /**
+         * Sets the consumerException value.
+         *
+         * @param inConsumerException a <code>RuntimeException</code> value
+         */
+        private void setConsumerException(RuntimeException inConsumerException)
+        {
+            consumerException = inConsumerException;
+        }
+        /**
+         * optional exception to throw during {@link #accept(DataEvent)}
+         */
+        private RuntimeException consumerException;
+        /**
+         * holds all events received by this consumer
          */
         private final BlockingDeque<DataEvent> events = new LinkedBlockingDeque<>();
     }
+    /**
+     * stores system event bus events
+     */
     private final BlockingDeque<DataEvent> eventBusEvents = new LinkedBlockingDeque<DataEvent>();
+    /**
+     * provides access to system event bus services
+     */
     @Autowired
     private EventBusService eventBusService;
     /**

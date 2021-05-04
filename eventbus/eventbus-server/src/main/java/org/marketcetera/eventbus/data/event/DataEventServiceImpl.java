@@ -217,7 +217,14 @@ public class DataEventServiceImpl
             subscribers.addAll(subscribersByClass.getUnchecked(type));
         }
         // now, subscribers holds the unique set of subscribers interested in the event we just received
-        subscribers.forEach(subscriber -> subscriber.accept(inEvent));
+        subscribers.forEach(subscriber -> {
+            try {
+                subscriber.accept(inEvent);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(DataEventServiceImpl.this,
+                                      e);
+            }
+        });
     }
     /**
      * Manages a data event subscription request.
