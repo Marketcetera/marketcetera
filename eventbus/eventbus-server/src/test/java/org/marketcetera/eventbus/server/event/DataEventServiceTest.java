@@ -76,8 +76,79 @@ public class DataEventServiceTest
                               inDataEvent);
         eventBusEvents.addLast(inDataEvent);
     }
-    // TODO unsubscribe
-    // TODO subscribe for non-DataEvent type
+    /**
+     * Tests handling unsubscribe requests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testUnsubscribe()
+            throws Exception
+    {
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                dataEventService.unsubscribeToDataEvents(PlatformServices.generateId());
+            }
+        };
+        String requestId1 = PlatformServices.generateId();
+        String requestId2 = PlatformServices.generateId();
+        MockDataEventConsumer consumer1 = new MockDataEventConsumer();
+        MockDataEventConsumer consumer2 = new MockDataEventConsumer();
+        Date timestamp = new Date();
+        dataEventService.subscribeToDataEvents(requestId1,
+                                               timestamp,
+                                               consumer1);
+        dataEventService.subscribeToDataEvents(requestId2,
+                                               timestamp,
+                                               consumer2);
+        DataEvent submittedEvent = generateAndSubmitEvent();
+        DataEvent eventBusEvent = waitForEventBusEvent();
+        DataEvent consumer1Event = consumer1.waitForEvent();
+        DataEvent consumer2Event = consumer2.waitForEvent();
+        assertEventsEqual(submittedEvent,
+                          eventBusEvent,
+                          consumer1Event,
+                          consumer2Event);
+        dataEventService.unsubscribeToDataEvents(requestId1);
+        submittedEvent = generateAndSubmitEvent();
+        eventBusEvent = waitForEventBusEvent();
+        consumer2Event = consumer2.waitForEvent();
+        assertEventsEqual(submittedEvent,
+                          eventBusEvent,
+                          consumer2Event);
+        consumer1.assertNoEvents();
+        dataEventService.unsubscribeToDataEvents(requestId2);
+        submittedEvent = generateAndSubmitEvent();
+        eventBusEvent = waitForEventBusEvent();
+        consumer1.assertNoEvents();
+        consumer2.assertNoEvents();
+    }
+    /**
+     * Tests handling of subscriptions to class types not assignable from {@link DataEvent}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testOtherEventType()
+            throws Exception
+    {
+        final String requestId = PlatformServices.generateId();
+        final MockDataEventConsumer consumer = new MockDataEventConsumer();
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                dataEventService.subscribeToDataEvents(requestId,
+                                                       new Date(),
+                                                       consumer,
+                                                       getClass());
+            }
+        };
+    }
     /**
      * Tests that consumers that throw exceptions are handled correctly.
      *
@@ -394,6 +465,12 @@ public class DataEventServiceTest
         assertNotNull(nextEvent);
         return nextEvent;
     }
+    /**
+     * Generate a test data event of a type distinguished by the given index value.
+     *
+     * @param inType an <code>int</code> value
+     * @return a <code>DataEvent</code> value
+     */
     private DataEvent generateEvent(int inType)
     {
         DataEvent event;
@@ -413,15 +490,21 @@ public class DataEventServiceTest
         event.setTimestamp(new Date());
         return event;
     }
+    /**
+     * Generated and submit a test event.
+     *
+     * @return a <code>DataEvent</code> value
+     */
     private DataEvent generateAndSubmitEvent()
     {
-        DataEvent event = generateEvent(2);
-        SLF4JLoggerProxy.debug(this,
-                               "Generating and submitting: {}",
-                               event);
-        submitEvent(event);
-        return event;
+        return generateAndSubmitEvent(2);
     }
+    /**
+     * Generate and submit a test event of a type distinguished by the given value.
+     *
+     * @param inEventType an <code>int</code> value
+     * @return a <code>DataEvent</code> value
+     */
     private DataEvent generateAndSubmitEvent(int inEventType)
     {
         DataEvent event = generateEvent(inEventType);
@@ -431,6 +514,11 @@ public class DataEventServiceTest
         submitEvent(event);
         return event;
     }
+    /**
+     * Submit the given event to the system event bus.
+     *
+     * @param inEvent a <code>DateEvent</code> value
+     */
     private void submitEvent(DataEvent inEvent)
     {
         eventBusService.post(inEvent);

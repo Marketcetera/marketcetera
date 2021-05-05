@@ -17,6 +17,7 @@ import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
@@ -109,24 +110,24 @@ public class DataEventRpcServer<SessionClazz>
          * @see org.marketcetera.eventbus.data.DataEventRpcServiceGrpc.DataEventRpcServiceImplBase#subscribeToDataEvents(org.marketcetera.eventbus.data.DataEventRpc.DataEventRequest ,io.grpc.stub.StreamObserver)
          */
         @Override
-        public void subscribeToDataEvents(DataEventRpc.DataEventRequest inDataEventRequest,
+        public void subscribeToDataEvents(DataEventRpc.DataEventRequest inRequest,
                                           StreamObserver<DataEventRpc.DataEventResponse> inResponseObserver)
         {
             try {
                 SLF4JLoggerProxy.trace(DataEventRpcServer.this,
                                        "Received {}",
-                                       inDataEventRequest);
-                validateAndReturnSession(inDataEventRequest.getSessionId());
+                                       inRequest);
+                validateAndReturnSession(inRequest.getSessionId());
                 // the client is obligated to provide a request id that is unique to her. we need to make sure that that uniqueness is guaranteed as long as she does her part,
                 //  so we're going to build a compound request id that includes the session id. however, the client doesn't know about that so we need to make sure that we
                 //  can deliver her original request id, too.
-                String clientRequestId = inDataEventRequest.getRequestId();
-                String serverRequestId = buildRequestId(inDataEventRequest.getSessionId(),
+                String clientRequestId = inRequest.getRequestId();
+                String serverRequestId = buildRequestId(inRequest.getSessionId(),
                                                         clientRequestId);
                 DataEventListenerProxy dataEventListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
                 if(dataEventListenerProxy == null) {
                     List<Class<?>> requestTypes = Lists.newArrayList();
-                    for(String type : inDataEventRequest.getTypesList()) {
+                    for(String type : inRequest.getTypesList()) {
                         try {
                             requestTypes.add(Class.forName(type));
                         } catch (ClassNotFoundException e) {
@@ -135,7 +136,7 @@ public class DataEventRpcServer<SessionClazz>
                                                   type);
                         }
                     }
-                    Date timestamp = BaseRpcUtil.getDateValue(inDataEventRequest.getTimestamp()).orElse(new Date());
+                    Date timestamp = BaseRpcUtil.getDateValue(inRequest.getTimestamp()).orElse(new Date());
                     dataEventListenerProxy = new DataEventListenerProxy(serverRequestId,
                                                                         clientRequestId,
                                                                         inResponseObserver);
@@ -160,7 +161,37 @@ public class DataEventRpcServer<SessionClazz>
         public void unsubscribeToDataEvents(DataEventRequestCancel inRequest,
                                             StreamObserver<DataEventCancelResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(DataEventRpcServer.this,
+                                       "Received market data cancel request {}",
+                                       inRequest);
+//                authzService.authorize(sessionHolder.getUser(),
+//                                       MarketDataPermissions.RequestMarketDataAction.name());
+                DataEventRpc.DataEventCancelResponse.Builder responseBuilder = DataEventRpc.DataEventCancelResponse.newBuilder();
+                String clientRequestId = inRequest.getRequestId();
+                String serverRequestId = buildRequestId(inRequest.getSessionId(),
+                                                        clientRequestId);
+                BaseRpcUtil.AbstractServerListenerProxy<?> marketDataListenerProxy = listenerProxiesById.getIfPresent(serverRequestId);
+                if(marketDataListenerProxy == null) {
+                    throw new IllegalArgumentException("Unknown data event request id: " + clientRequestId);
+                }
+                listenerProxiesById.invalidate(serverRequestId);
+                dataEventService.unsubscribeToDataEvents(serverRequestId);
+                if(marketDataListenerProxy != null) {
+                    marketDataListenerProxy.close();
+                }
+                DataEventRpc.DataEventCancelResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(DataEventRpcServer.this,
+                                       "Sending response: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
+            }
         }
     }
     /**

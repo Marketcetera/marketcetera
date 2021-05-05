@@ -85,8 +85,11 @@ public class DataEventServiceImpl
             allTypes.add(DataEvent.class);
         } else {
             for(Class<?> type : inTypes) {
-                // TODO verify that the type is assignable from DataEvent
-                allTypes.add(type);
+                if(DataEvent.class.isAssignableFrom(type)) {
+                    allTypes.add(type);
+                } else {
+                    throw new IllegalArgumentException(type.getSimpleName() + " is not assignable from DataEvent");
+                }
             }
         }
         // as soon as the new subscriber gets added to the subscriber collection, it's eligible to receive new events. probably want
@@ -100,6 +103,7 @@ public class DataEventServiceImpl
         previousEvents.forEach(event -> inConsumer.accept(event));
         // create the new subscriber
         DataEventSubscriber subscriber = new DataEventSubscriber(inRequestId,
+                                                                 allTypes,
                                                                  inConsumer);
         // store the subscriber both by its requestId and by each of its requested types
         subscribersByRequestId.put(inRequestId,
@@ -109,24 +113,6 @@ public class DataEventServiceImpl
         });
     }
     /**
-     * Get the dataEventTtlSeconds value.
-     *
-     * @return an <code>int</code> value
-     */
-    public int getDataEventCacheTtlSeconds()
-    {
-        return dataEventCacheTtlSeconds;
-    }
-    /**
-     * Get the classLookupCacheTtlSeconds value.
-     *
-     * @return an <code>int</code> value
-     */
-    public int getClassLookupCacheTtlSeconds()
-    {
-        return classLookupCacheTtlSeconds;
-    }
-    /**
      * Cancels data event request.
      *
      * @param inRequestId a <code>String</code> value
@@ -134,7 +120,18 @@ public class DataEventServiceImpl
     @Override
     public void unsubscribeToDataEvents(String inRequestId)
     {
-        throw new UnsupportedOperationException(); // TODO
+        DataEventSubscriber subscriber = subscribersByRequestId.getIfPresent(inRequestId);
+        if(subscriber == null) {
+            throw new IllegalArgumentException("No subscriber with request id '" + inRequestId + "'");
+        }
+        subscribersByRequestId.invalidate(inRequestId);
+        subscriber.getTypes().forEach(type-> {
+            Set<DataEventSubscriber> subscribersForType = subscribersByClass.getIfPresent(type);
+            subscribersForType.remove(subscriber);
+            if(subscribersForType.isEmpty()) {
+                subscribersByClass.invalidate(type);
+            }
+        });
     }
     /**
      * Accept incoming DataEvent values.
@@ -171,6 +168,24 @@ public class DataEventServiceImpl
                 return determineExpandedTypes(inKey);
             }}
         );
+    }
+    /**
+     * Get the dataEventTtlSeconds value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getDataEventCacheTtlSeconds()
+    {
+        return dataEventCacheTtlSeconds;
+    }
+    /**
+     * Get the classLookupCacheTtlSeconds value.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getClassLookupCacheTtlSeconds()
+    {
+        return classLookupCacheTtlSeconds;
     }
     /**
      * Get the cached expanded types for the given types.
@@ -269,17 +284,33 @@ public class DataEventServiceImpl
                                   other.requestId);
         }
         /**
+         * Get the types value.
+         *
+         * @return a <code>Set&lt;Class&lt;?&gt;&gt;</code> value
+         */
+        private Set<Class<?>> getTypes()
+        {
+            return types;
+        }
+        /**
          * Create a new DataEventSubscriber instance.
          *
          * @param inRequestId a <code>String</code> value
+         * @param inTypes a <code>Set&lt;Class&lt;?&gt;&gt;</code> value
          * @param inConsumer a <code>Consumer&lt;DataEvent&gt;</code> value
          */
         private DataEventSubscriber(String inRequestId,
+                                    Set<Class<?>> inTypes,
                                     Consumer<DataEvent> inConsumer)
         {
             requestId = inRequestId;
             consumer = inConsumer;
+            types = inTypes;
         }
+        /**
+         * holds the types to which this subscriber is subscribed
+         */
+        private final Set<Class<?>> types;
         /**
          * universally unique identifier for this request
          */

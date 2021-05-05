@@ -87,8 +87,16 @@ public class EventBusRpcServerTest
         } catch (Exception ignored) {}
         super.cleanup();
     }
+    // TODO request for non-existent class
+    // TODO duplicate request id
+    // TODO unsubscribe
+    /**
+     * Tests subscribing to a request with a single type.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void testFilteredRequest()
+    public void testSubscribeSingleType()
             throws Exception
     {
         DataEventRpcClient client = createClient();
@@ -112,6 +120,34 @@ public class EventBusRpcServerTest
         assertEquals(((AbstractMockDataEvent)event1).getId(),
                      ((AbstractMockDataEvent)event2).getId());
     }
+    /**
+     * Tests subscribing to a request with a bad type.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testSubscribeBadType()
+            throws Exception
+    {
+        DataEventRpcClient client = createClient();
+        String requestId = PlatformServices.generateId();
+        Date timestamp = new Date();
+        Thread.sleep(1000);
+        client.subscribeToDataEvents(requestId,
+                                     timestamp,
+                                     Lists.newArrayList(getClass()),
+                                     this);
+        MockDataEventType1 sentEvent1 = new MockDataEventType1();
+        eventBusService.post(sentEvent1);
+        busEvents.pollFirst(10,
+                            TimeUnit.SECONDS);
+        assertTrue(rpcEvents.isEmpty());
+    }
+    /**
+     * Receives {@link DataEvent} values from the system event bus.
+     *
+     * @param inEvent a <code>DateEvent</code> value
+     */
     @Subscribe
     public void acceptEvent(DataEvent inEvent)
     {
@@ -119,9 +155,7 @@ public class EventBusRpcServerTest
                               "{} received {} via data bus",
                               PlatformServices.getServiceName(getClass()),
                               inEvent);
-        if(inEvent instanceof AbstractMockDataEvent) {
-            busEvents.addLast((AbstractMockDataEvent)inEvent);
-        }
+        busEvents.addLast(inEvent);
     }
     /* (non-Javadoc)
      * @see java.util.function.Consumer#accept(java.lang.Object)
