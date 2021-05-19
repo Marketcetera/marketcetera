@@ -653,55 +653,62 @@ public class PersistentFixSessionProvider
     private void createFixSessionsFromConfig()
     {
         SLF4JLoggerProxy.info(PersistentFixSessionProvider.this,
-                              "Begining FIX session provisioning");
+                              "Beginning FIX session provisioning");
         Map<String,FixSession> fixSessionsByName = Maps.newHashMap();
         FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
         for(FixSessionsConfiguration.FixSessionDescriptor fixSessionsDescriptor : fixSessionsConfiguration.getSessionDescriptors()) {
             Map<String,String> globalSettings = fixSessionsDescriptor.getSettings();
             for(FixSessionsConfiguration.Session fixSessionDescriptor : fixSessionsDescriptor.getSessions()) {
-                Map<String,String> sessionSettings = Maps.newHashMap();
-                sessionSettings.putAll(globalSettings);
-                sessionSettings.putAll(fixSessionDescriptor.getSettings());
-                String fixSessionName = fixSessionDescriptor.getName();
-                FixSession existingFixSession = findFixSessionByName(fixSessionName);
-                if(existingFixSession != null) {
+                try {
+                    Map<String,String> sessionSettings = Maps.newHashMap();
+                    sessionSettings.putAll(globalSettings);
+                    sessionSettings.putAll(fixSessionDescriptor.getSettings());
+                    String fixSessionName = fixSessionDescriptor.getName();
+                    FixSession existingFixSession = findFixSessionByName(fixSessionName);
+                    if(existingFixSession != null) {
+                        SLF4JLoggerProxy.info(this,
+                                              "Skipping existing FIX session: {}",
+                                              fixSessionName);
+                        continue;
+                    }
+                    MutableFixSession fixSession = fixSessionFactory.create();
+                    fixSession.setAffinity(fixSessionDescriptor.getAffinity());
+                    fixSession.setBrokerId(fixSessionDescriptor.getBrokerId());
+                    if(fixSessionDescriptor.getMappedBrokerId() != null) {
+                        fixSession.setMappedBrokerId(fixSessionDescriptor.getMappedBrokerId());
+                    }
+                    fixSession.setDescription(fixSessionDescriptor.getDescription());
+                    String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
+                    fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
+                    fixSession.setIsEnabled(fixSessionDescriptor.isEnabled());
+                    if(fixSession.isAcceptor()) {
+                        fixSession.setHost(fixSettingsProvider.getAcceptorHost());
+                        fixSession.setPort(fixSettingsProvider.getAcceptorPort());
+                    } else {
+                        fixSession.setHost(fixSessionDescriptor.getHost());
+                        fixSession.setPort(fixSessionDescriptor.getPort());
+                    }
+                    fixSession.setName(fixSessionName);
+                    SessionID sessionId = new SessionID(sessionSettings.get(SessionSettings.BEGINSTRING),
+                                                        sessionSettings.get(SessionSettings.SENDERCOMPID),
+                                                        sessionSettings.get(SessionSettings.TARGETCOMPID));
+                    fixSession.setSessionId(sessionId.toString());
+                    fixSession.getSessionSettings().putAll(sessionSettings);
+                    save(fixSession);
+                    fixSessionsByName.put(fixSession.getName(),
+                                          fixSession);
+                    if(fixSessionDescriptor.isEnabled()) {
+                        enableSession(new SessionID(fixSession.getSessionId()));
+                    }
                     SLF4JLoggerProxy.info(this,
-                                          "Skipping existing FIX session: {}",
-                                          fixSessionName);
-                    continue;
+                                          "Created: {}",
+                                          fixSession.getName());
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.info(PersistentFixSessionProvider.this,
+                                          e,
+                                          "Unable to create session: {}",
+                                          fixSessionDescriptor.getName());
                 }
-                MutableFixSession fixSession = fixSessionFactory.create();
-                fixSession.setAffinity(fixSessionDescriptor.getAffinity());
-                fixSession.setBrokerId(fixSessionDescriptor.getBrokerId());
-                if(fixSessionDescriptor.getMappedBrokerId() != null) {
-                    fixSession.setMappedBrokerId(fixSessionDescriptor.getMappedBrokerId());
-                }
-                fixSession.setDescription(fixSessionDescriptor.getDescription());
-                String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
-                fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
-                fixSession.setIsEnabled(fixSessionDescriptor.isEnabled());
-                if(fixSession.isAcceptor()) {
-                    fixSession.setHost(fixSettingsProvider.getAcceptorHost());
-                    fixSession.setPort(fixSettingsProvider.getAcceptorPort());
-                } else {
-                    fixSession.setHost(fixSessionDescriptor.getHost());
-                    fixSession.setPort(fixSessionDescriptor.getPort());
-                }
-                fixSession.setName(fixSessionName);
-                SessionID sessionId = new SessionID(sessionSettings.get(SessionSettings.BEGINSTRING),
-                                                    sessionSettings.get(SessionSettings.SENDERCOMPID),
-                                                    sessionSettings.get(SessionSettings.TARGETCOMPID));
-                fixSession.setSessionId(sessionId.toString());
-                fixSession.getSessionSettings().putAll(sessionSettings);
-                save(fixSession);
-                fixSessionsByName.put(fixSession.getName(),
-                                      fixSession);
-                if(fixSessionDescriptor.isEnabled()) {
-                    enableSession(new SessionID(fixSession.getSessionId()));
-                }
-                SLF4JLoggerProxy.info(this,
-                                      "Created: {}",
-                                      fixSession.getName());
             }
         }
     }
