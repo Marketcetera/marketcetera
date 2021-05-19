@@ -277,6 +277,24 @@ public class ExsimFeedConfig
                                            targetCompId);
     }
     /**
+     * Get the non-stop session value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isNonStopSession()
+    {
+        return nonStopSession;
+    }
+    /**
+     * Sets the non-stop session value.
+     *
+     * @param inNonStopSession a <code>boolean</code> value
+     */
+    public void setNonStopSession(boolean inNonStopSession)
+    {
+        nonStopSession = inNonStopSession;
+    }
+    /**
      * Populates the given session settings value with the settings established for this config.
      *
      * @param inSessionSettings a <code>quickfix.SessionSettings</code> value
@@ -292,6 +310,9 @@ public class ExsimFeedConfig
         inSessionSettings.setLong(sessionId,
                                   quickfix.Session.SETTING_HEARTBTINT,
                                   heartBtInt);
+        inSessionSettings.setBool(sessionId,
+                                  quickfix.Session.SETTING_NON_STOP_SESSION,
+                                  nonStopSession);
         inSessionSettings.setString(sessionId,
                                     quickfix.Session.SETTING_START_TIME,
                                     startTime);
@@ -416,4 +437,9 @@ public class ExsimFeedConfig
      */
     @Value("${metc.marketdata.exsim.feedAvailableTimeout:10000}")
     private long feedAvailableTimeout;
+    /**
+     * indicates a non-stop session
+     */
+    @Value("${metc.marketdata.non.stop.session:false}")
+    private boolean nonStopSession;
 }
