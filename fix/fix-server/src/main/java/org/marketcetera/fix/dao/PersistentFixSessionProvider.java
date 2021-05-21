@@ -307,6 +307,7 @@ public class PersistentFixSessionProvider
             existingSession.setIsEnabled(false);
             existingSession = fixSessionDao.save(existingSession);
             txManager.commit(status);
+            clearCache(existingSession);
         } catch (Exception e) {
             // unable to commit the initial change, rollback
             if(status != null) {
@@ -340,6 +341,7 @@ public class PersistentFixSessionProvider
                         "Cannot delete enabled session " + inSessionId);
         existingSession.delete();
         existingSession = fixSessionDao.save(existingSession);
+        clearCache(existingSession);
         ReportBrokerStatusTask reportStatusTask = new ReportBrokerStatusTask(existingSession,
                                                                              FixSessionStatus.DELETED);
         clusterService.execute(reportStatusTask);
@@ -373,6 +375,7 @@ public class PersistentFixSessionProvider
             disabledSession.setIsEnabled(false);
             disabledSession = fixSessionDao.save(disabledSession);
             txManager.commit(status);
+            clearCache(disabledSession);
         } catch (Exception e) {
             // unable to commit the initial change, rollback
             if(status != null) {
@@ -460,6 +463,7 @@ public class PersistentFixSessionProvider
             enabledSession.setIsEnabled(true);
             enabledSession = fixSessionDao.save(enabledSession);
             txManager.commit(status);
+            clearCache(enabledSession);
         } catch (Exception e) {
             // unable to commit the initial change, rollback
             if(status != null) {
@@ -552,7 +556,7 @@ public class PersistentFixSessionProvider
         SLF4JLoggerProxy.debug(this,
                                "Stopping {}",
                                inSessionId);
-        FixSession stoppedSession = fixSessionDao.findBySessionIdAndIsDeletedFalse(inSessionId.toString());
+        FixSession stoppedSession = findFixSessionBySessionId(inSessionId);
         if(stoppedSession == null) {
             // somebody went and deleted this session, nothing to do, just slink away quietly
             SLF4JLoggerProxy.debug(this,
@@ -593,7 +597,7 @@ public class PersistentFixSessionProvider
         SLF4JLoggerProxy.debug(this,
                                "Starting {}",
                                inSessionId);
-        FixSession startedSession = fixSessionDao.findBySessionIdAndIsDeletedFalse(inSessionId.toString());
+        FixSession startedSession = findFixSessionBySessionId(inSessionId);
         if(startedSession == null) {
             // somebody went and deleted this session, nothing to do, just slink away quietly
             SLF4JLoggerProxy.debug(this,
@@ -649,6 +653,17 @@ public class PersistentFixSessionProvider
         } else {
             createFixSessionsFromConfig();
         }
+    }
+    /**
+     * Clear the given session from all session caches.
+     *
+     * @param inFixSession a <code>FixSession</code> value
+     */
+    private void clearCache(FixSession inFixSession)
+    {
+        fixSessionsByBrokerId.invalidate(new BrokerID(inFixSession.getBrokerId()));
+        fixSessionsBySessionId.invalidate(new quickfix.SessionID(inFixSession.getSessionId()));
+        fixSessionsByName.invalidate(inFixSession.getName());
     }
     /**
      * Process FIX session info provided from config
