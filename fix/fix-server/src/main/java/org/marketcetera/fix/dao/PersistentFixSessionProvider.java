@@ -49,6 +49,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.querydsl.core.BooleanBuilder;
@@ -77,7 +80,7 @@ public class PersistentFixSessionProvider
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public FixSession findFixSessionByName(String inFixSessionName)
     {
-        return fixSessionDao.findByNameAndIsDeletedFalse(inFixSessionName);
+        return fixSessionsByName.getUnchecked(inFixSessionName);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessionBySessionId(quickfix.SessionID)
@@ -86,7 +89,7 @@ public class PersistentFixSessionProvider
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public FixSession findFixSessionBySessionId(SessionID inSessionId)
     {
-        return fixSessionDao.findBySessionIdAndIsDeletedFalse(inSessionId.toString());
+        return fixSessionsBySessionId.getUnchecked(inSessionId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#getFixSessionAttributeDescriptors()
@@ -181,7 +184,7 @@ public class PersistentFixSessionProvider
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public FixSession findFixSessionByBrokerId(BrokerID inBrokerId)
     {
-        return fixSessionDao.findByBrokerIdAndIsDeletedFalse(inBrokerId.getValue());
+        return fixSessionsByBrokerId.getUnchecked(inBrokerId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessions(boolean, int, int)
@@ -744,6 +747,39 @@ public class PersistentFixSessionProvider
                                                                              inStatusToReport);
         clusterService.execute(reportStatusTask);
     }
+    /**
+     * stores fix sessions by session id
+     */
+    private final LoadingCache<SessionID,FixSession> fixSessionsBySessionId = CacheBuilder.newBuilder().build(new CacheLoader<SessionID,FixSession>() {
+        @Override
+        public FixSession load(SessionID inKey)
+                throws Exception
+        {
+            return fixSessionDao.findBySessionIdAndIsDeletedFalse(inKey.toString());
+        }}
+    );
+    /**
+     * stores fix sessions by name
+     */
+    private final LoadingCache<String,FixSession> fixSessionsByName = CacheBuilder.newBuilder().build(new CacheLoader<String,FixSession>() {
+        @Override
+        public FixSession load(String inKey)
+                throws Exception
+        {
+            return fixSessionDao.findByNameAndIsDeletedFalse(inKey);
+        }}
+    );
+    /**
+     * stores fix sessions by broker id
+     */
+    private final LoadingCache<BrokerID,FixSession> fixSessionsByBrokerId = CacheBuilder.newBuilder().build(new CacheLoader<BrokerID,FixSession>() {
+        @Override
+        public FixSession load(BrokerID inKey)
+                throws Exception
+        {
+            return fixSessionDao.findByBrokerIdAndIsDeletedFalse(inKey.getValue());
+        }}
+    );
     /**
      * FIX session config provided in application start up
      */
