@@ -51,6 +51,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -80,7 +81,11 @@ public class PersistentFixSessionProvider
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public FixSession findFixSessionByName(String inFixSessionName)
     {
-        return fixSessionsByName.getUnchecked(inFixSessionName);
+        try {
+            return fixSessionsByName.getUnchecked(inFixSessionName);
+        } catch (InvalidCacheLoadException e) {
+            return null;
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessionBySessionId(quickfix.SessionID)
@@ -89,7 +94,11 @@ public class PersistentFixSessionProvider
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public FixSession findFixSessionBySessionId(SessionID inSessionId)
     {
-        return fixSessionsBySessionId.getUnchecked(inSessionId);
+        try {
+            return fixSessionsBySessionId.getUnchecked(inSessionId);
+        } catch (InvalidCacheLoadException e) {
+            return null;
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#getFixSessionAttributeDescriptors()
@@ -184,7 +193,11 @@ public class PersistentFixSessionProvider
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public FixSession findFixSessionByBrokerId(BrokerID inBrokerId)
     {
-        return fixSessionsByBrokerId.getUnchecked(inBrokerId);
+        try {
+            return fixSessionsByBrokerId.getUnchecked(inBrokerId);
+        } catch (InvalidCacheLoadException e) {
+            return null;
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#findFixSessions(boolean, int, int)
