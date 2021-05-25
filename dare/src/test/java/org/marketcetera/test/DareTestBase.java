@@ -1601,7 +1601,7 @@ public class DareTestBase
                     throws Exception
             {
                 ActiveFixSession status = brokerService.getActiveFixSession(inBrokerId);
-                return status == null || status.getStatus() == FixSessionStatus.DELETED;
+                return status == null || status.getStatus() == FixSessionStatus.DELETED || status.getStatus() == FixSessionStatus.UNKNOWN;
             }
         });
     }
