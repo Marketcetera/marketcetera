@@ -9,7 +9,6 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,
  org.marketcetera.modules.mdata.bogus;resolution:=optional,
  org.marketcetera.client,
- org.marketcetera.modules.cep.esper,
  org.marketcetera.modules.cep.system,
  org.marketcetera.modules.mdata.core
 Eclipse-RegisterBuddy: org.marketcetera.core
