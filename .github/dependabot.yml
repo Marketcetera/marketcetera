@@ -16,4 +16,4 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 100
-    target-branch: "branches/4.0.x"
+    target-branch: "branches/4.1.x"
