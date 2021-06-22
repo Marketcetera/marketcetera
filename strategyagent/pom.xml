@@ -154,7 +154,6 @@
               <overWriteSnapshots>false</overWriteSnapshots>
               <overWriteIfNewer>true</overWriteIfNewer>
               <includeScope>runtime</includeScope>
-              <excludeScope>test</excludeScope>
             </configuration>
           </execution>
         </executions>
