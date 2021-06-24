@@ -1284,7 +1284,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
+        <version>3.1.2</version>
       </plugin>
     </plugins>
   </reporting>
