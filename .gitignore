@@ -38,3 +38,7 @@ maven-eclipse.xml
 
 # Vaadin Generated Artifacts
 **/VAADIN/widgetsets/
+
+# tMarketcetera artifacts
+instances
+.metc_host.txt
