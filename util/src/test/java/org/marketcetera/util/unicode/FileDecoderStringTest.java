@@ -1,5 +1,7 @@
 package org.marketcetera.util.unicode;
 
+import org.junit.Ignore;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
@@ -8,6 +10,7 @@ package org.marketcetera.util.unicode;
 
 /* $License$ */
 
+@Ignore
 public class FileDecoderStringTest
     extends FileDecoderTestBase
 {

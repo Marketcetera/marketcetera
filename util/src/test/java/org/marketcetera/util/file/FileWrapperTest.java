@@ -3,6 +3,7 @@ package org.marketcetera.util.file;
 import java.io.File;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.unicode.DecodingStrategy;
 import org.marketcetera.util.unicode.SignatureCharset;
@@ -18,6 +19,7 @@ import static org.marketcetera.util.test.UnicodeData.*;
 
 /* $License$ */
 
+@Ignore
 public class FileWrapperTest
     extends WrapperTestBase
 {

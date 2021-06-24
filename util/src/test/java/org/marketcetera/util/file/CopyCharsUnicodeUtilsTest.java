@@ -2,6 +2,7 @@ package org.marketcetera.util.file;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -20,6 +21,7 @@ import static org.marketcetera.util.test.UnicodeData.*;
 
 /* $License$ */
 
+@Ignore
 public class CopyCharsUnicodeUtilsTest
     extends CopyUtilsTestBase
 {

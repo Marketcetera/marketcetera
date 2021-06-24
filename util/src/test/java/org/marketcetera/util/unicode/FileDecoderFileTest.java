@@ -2,6 +2,8 @@ package org.marketcetera.util.unicode;
 
 import java.io.File;
 
+import org.junit.Ignore;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
@@ -10,6 +12,7 @@ import java.io.File;
 
 /* $License$ */
 
+@Ignore
 public class FileDecoderFileTest
     extends FileDecoderTestBase
 {
