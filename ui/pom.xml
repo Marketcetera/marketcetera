@@ -100,7 +100,7 @@
       <dependency>
         <groupId>com.google.web.bindery</groupId>
         <artifactId>requestfactory-server</artifactId>
-        <version>2.6.1</version>
+        <version>2.9.0</version>
         <scope>runtime</scope>
       </dependency>
       <!-- included as dependencies for dcharts end -->
