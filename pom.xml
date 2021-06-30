@@ -535,12 +535,6 @@
         <version>1.7.8</version>
       </dependency>
       <dependency>
-        <groupId>cglib</groupId>
-        <artifactId>cglib</artifactId>
-        <version>3.1</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
         <version>7.1.0</version>
@@ -589,10 +583,6 @@
           <exclusion>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -883,7 +873,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>6.5.3</version>
+          <version>7.10.0</version>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -1268,12 +1258,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.3</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.1.2</version>
       </plugin>
     </plugins>
   </reporting>
