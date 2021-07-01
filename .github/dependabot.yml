@@ -10,3 +10,16 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 100
+    target-branch: "master"
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 100
+    target-branch: "branches/4.1.x"
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 100
+    target-branch: "tags/4.0.1"
