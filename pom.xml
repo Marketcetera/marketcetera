@@ -604,12 +604,12 @@
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-runtime</artifactId>
-        <version>8.6.0</version>
+        <version>8.7.0</version>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-compiler</artifactId>
-        <version>8.6.0</version>
+        <version>8.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
