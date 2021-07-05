@@ -14,6 +14,7 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -142,7 +143,7 @@ public class MarketDataRecorderModule
                                sessionResetTimestamp);
         currentOrdinal.clear();
         snapshotsInProgress.clear();
-        MetricRegistry metrics = MetricService.getInstance().getMetrics();
+        MetricRegistry metrics = metricService.getMetrics();
         eventCounterMetricName = name(getURN().getValue(),
                                       "recordedEvents", //$NON-NLS-1$
                                       "count"); //$NON-NLS-1$
@@ -157,7 +158,7 @@ public class MarketDataRecorderModule
     {
         snapshotsInProgress.clear();
         currentOrdinal.clear();
-        MetricRegistry metrics = MetricService.getInstance().getMetrics();
+        MetricRegistry metrics = metricService.getMetrics();
         metrics.remove(eventCounterMetricName);
         super.preStop();
     }
@@ -188,6 +189,7 @@ public class MarketDataRecorderModule
                         builder);
         FileUtils.write(outputFile,
                         builder.toString(),
+                        Charset.defaultCharset(),
                         true);
         builder.setLength(0);
         eventCounterMetric.update(1);
@@ -354,6 +356,11 @@ public class MarketDataRecorderModule
      */
     @Autowired
     private MarketDataRecorderModuleConfiguration config;
+    /**
+     * provides access to metrics services
+     */
+    @Autowired
+    private MetricService metricService;
     /**
      * caches current filenames in use for symbol keys
      */

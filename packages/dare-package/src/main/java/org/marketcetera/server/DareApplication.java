@@ -33,6 +33,7 @@ import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.fix.rpc.FixAdminRpcService;
 import org.marketcetera.fix.store.HibernateMessageStoreConfiguration;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
+import org.marketcetera.metrics.MetricServiceLogReporter;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
@@ -234,6 +235,18 @@ public class DareApplication
     public QuickFIXSender getQuickFixSender()
     {
         return new QuickFIXSenderImpl();
+    }
+    /**
+     * Get the metric service log reporter value.
+     *
+     * @return a <code>MetricServiceLogReporter</code> value
+     */
+    @Bean
+    public MetricServiceLogReporter getMetricServiceLogReporter()
+    {
+        MetricServiceLogReporter metricServiceLogReporter = new MetricServiceLogReporter();
+        metricServiceLogReporter.setReportInterval(metricServiceLogReporterInterval);
+        return metricServiceLogReporter;
     }
     /**
      * Create the Swagger API component.
@@ -552,4 +565,9 @@ public class DareApplication
      */
     @Value("${metc.rpc.port}")
     private int rpcPort;
+    /**
+     * interval at which to report metrics
+     */
+    @Value("${metc.metric.service.log.reporter.interval:10}")
+    private int metricServiceLogReporterInterval;
 }

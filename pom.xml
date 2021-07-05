@@ -86,6 +86,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>metrics-log</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>metrics-db</artifactId>
+	<scope>runtime</scope>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1187,6 +1198,7 @@
     <module>fix</module>
     <module>fork</module>
     <module>marketdata</module>
+    <module>metrics</module>
     <module>modules</module>
     <module>packages</module>
     <module>rpc-core</module>
