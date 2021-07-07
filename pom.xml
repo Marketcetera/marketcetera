@@ -92,7 +92,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>metrics-db</artifactId>
-	<scope>runtime</scope>
         <version>${project.version}</version>
       </dependency>
       <dependency>

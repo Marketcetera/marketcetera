@@ -14,5 +14,6 @@ public enum MetricType
     HISTOGRAM,
     COUNTER,
     TIMER,
-    METER;
+    METER,
+    GAUGE;
 }

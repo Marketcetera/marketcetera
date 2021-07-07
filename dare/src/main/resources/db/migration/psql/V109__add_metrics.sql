@@ -2,7 +2,7 @@ CREATE TABLE metrics (
     id bigint NOT NULL,
     last_updated timestamp without time zone NOT NULL,
     update_count integer NOT NULL,
-    count integer,
+    count bigint,
     duration_unit character varying(255),
     hour integer NOT NULL,
     m1 numeric(19,2),
@@ -25,7 +25,8 @@ CREATE TABLE metrics (
     second integer NOT NULL,
     std_dev numeric(19,2),
     metric_timestamp timestamp without time zone NOT NULL,
-    type character varying(255) NOT NULL
+    type character varying(255) NOT NULL,
+    value character varying(255)
 );
 
 ALTER TABLE ONLY metrics

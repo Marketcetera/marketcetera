@@ -68,6 +68,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>metrics-log</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>metrics-db</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>io.springfox</groupId>

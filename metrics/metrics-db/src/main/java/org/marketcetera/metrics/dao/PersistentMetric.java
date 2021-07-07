@@ -82,20 +82,38 @@ public class PersistentMetric
     /**
      * Get the count value.
      *
-     * @return an <code>int</code> value
+     * @return a <code>long</code> value
      */
-    public int getCount()
+    public long getCount()
     {
         return count;
     }
     /**
      * Sets the count value.
      *
-     * @param an <code>int</code> value
+     * @param a <code>long</code> value
      */
-    public void setCount(int inCount)
+    public void setCount(long inCount)
     {
         count = inCount;
+    }
+    /**
+     * Get the value value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getValue()
+    {
+        return value;
+    }
+    /**
+     * Sets the value value.
+     *
+     * @param inValue a <code>String</code> value
+     */
+    public void setValue(String inValue)
+    {
+        value = inValue;
     }
     /**
      * Get the mean value.
@@ -457,6 +475,24 @@ public class PersistentMetric
     {
         millis = inMillis;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PersistentMetric [name=").append(name).append(", timestamp=").append(timestamp)
+                .append(", type=").append(type).append(", count=").append(count).append(", value=").append(value)
+                .append(", mean=").append(mean).append(", m1=").append(m1).append(", m5=").append(m5).append(", m15=")
+                .append(m15).append(", min=").append(min).append(", max=").append(max).append(", stdDev=")
+                .append(stdDev).append(", median=").append(median).append(", p75=").append(p75).append(", p95=")
+                .append(p95).append(", p98=").append(p98).append(", p99=").append(p99).append(", p999=").append(p999)
+                .append(", meanRate=").append(meanRate).append(", rateUnit=").append(rateUnit).append(", durationUnit=")
+                .append(durationUnit).append(", hour=").append(hour).append(", minute=").append(minute)
+                .append(", second=").append(second).append(", millis=").append(millis).append("]");
+        return builder.toString();
+    }
     /**
      * metric name value
      */
@@ -477,7 +513,12 @@ public class PersistentMetric
      * metric count value
      */
     @Column(name="count",nullable=true)
-    private int count;
+    private long count;
+    /**
+     * metric gauge value
+     */
+    @Column(name="value",nullable=true)
+    private String value;
     /**
      * metric mean value
      */
