@@ -42,3 +42,4 @@ maven-eclipse.xml
 # tMarketcetera artifacts
 instances
 .metc_host.txt
+**/cmd_exec/instances/
