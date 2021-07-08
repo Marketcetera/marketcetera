@@ -807,10 +807,10 @@
       </dependency>
       <!-- Runtime: Vaadin -->
       <dependency>
-	<groupId>com.vaadin</groupId>
-	<artifactId>vaadin-push</artifactId>
-	<scope>runtime</scope>
-	<version>${vaadin.version}</version>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-push</artifactId>
+        <scope>runtime</scope>
+        <version>${vaadin.version}</version>
       </dependency>
       <!-- Testing: local modules. -->
       <dependency>
