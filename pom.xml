@@ -39,8 +39,8 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <vaadin.version>7.7.13</vaadin.version>
     <vaadin.theme>mytheme</vaadin.theme>
-    <gwt.version>2.8.2</gwt.version>
-    <gwt.plugin.version>2.8.2</gwt.plugin.version>
+    <gwt.version>2.9.0</gwt.version>
+    <gwt.plugin.version>2.9.0</gwt.plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -485,7 +485,7 @@
       <dependency>
         <groupId>com.github.jnr</groupId>
         <artifactId>jnr-process</artifactId>
-        <version>0.2</version>
+        <version>0.4.5</version>
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
@@ -661,7 +661,6 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <!--version>3.6.0</version-->
         <version>3.17.3</version>
       </dependency>
       <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
@@ -1162,7 +1161,7 @@
       <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.2</version>
+        <version>1.7.0</version>
       </extension>
     </extensions>
     <resources>
