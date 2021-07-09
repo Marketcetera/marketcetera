@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @NotThreadSafe
 @ClassVersion("$Id$")
-abstract class AbstractEventBuilderImpl<E extends Event>
+public abstract class AbstractEventBuilderImpl<E extends Event>
         implements EventBuilder<E>
 {
     /**
