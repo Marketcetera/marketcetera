@@ -250,11 +250,11 @@ public class DareApplication
      * @return a <code>MetricServiceDbReporter</code> value
      */
     @Bean
-    public MetricServiceDbReporter getMetricServiceLogReporter()
+    public MetricServiceDbReporter getMetricServiceReporter()
     {
-        MetricServiceDbReporter metricServiceLogReporter = new MetricServiceDbReporter();
-        metricServiceLogReporter.setReportInterval(metricServiceLogReporterInterval);
-        return metricServiceLogReporter;
+        MetricServiceDbReporter metricServiceReporter = new MetricServiceDbReporter();
+        metricServiceReporter.setReportInterval(metricServiceLogReporterInterval);
+        return metricServiceReporter;
     }
     /**
      * Create the Swagger API component.
