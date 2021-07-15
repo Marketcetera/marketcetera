@@ -196,20 +196,38 @@ public class FIXMessageFactory {
                 oldMessage, onlyCopyRequiredFields);
     }
     /**
-     * Create a new market data snapshow (35=W) message.
+     * Create a new market data snapshot (35=W) message.
      *
      * @param inRequestId a <code>String</code> value
      * @param inInstrument an <code>Instrument</code> value
-     * @return a <code>Message</code> value
-     * @throws FieldNotFound if the message could not be built
+     * @return a <code>quickfix.Message</code> value
+     * @throws quickfix.FieldNotFound if the message could not be built
      */
-    public Message newMarketDataSnapshot(String inRequestId,
-                                         Instrument inInstrument)
-            throws FieldNotFound
+    public quickfix.Message newMarketDataSnapshot(String inRequestId,
+                                                  Instrument inInstrument)
+            throws quickfix.FieldNotFound
     {
-        Message snapshot = msgFactory.create(beginString,
-                                             MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
-        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(snapshot);
+        return newMarketDataSnapshot(inRequestId,
+                                     inInstrument,
+                                     FIXVersion.getFIXVersion(beginString));
+    }
+    /**
+     * Create a new market data snapshot (35=W) message.
+     *
+     * @param inRequestId a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inFixVersion a <code>FIXVersion</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws quickfix.FieldNotFound if the message could not be built
+     */
+    public quickfix.Message newMarketDataSnapshot(String inRequestId,
+                                                  Instrument inInstrument,
+                                                  FIXVersion inFixVersion)
+            throws quickfix.FieldNotFound
+    {
+        quickfix.Message snapshot = msgFactory.create(beginString,
+                                                      MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
+        quickfix.DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(inFixVersion);
         InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
         instrumentFunction.set(inInstrument,
                                fixDictionary,
@@ -307,21 +325,49 @@ public class FIXMessageFactory {
      * @param inExchange a <code>String</code> value, may be <code>null</code> for "all exchanges"
      * @param inContent a <code>List&lt;Content&gt;</code> value
      * @param inSubscriptionType a <code>char</code> value
-     * @return a <code>Message</code> value
-     * @throws FieldNotFound if the message could not be constructed
+     * @return a <code>quickfix.Message</code> value
+     * @throws quickfix.FieldNotFound if the message could not be constructed
      * @throws IllegalArgumentException if the provided content is contradictory, eg. aggregated depth and unaggregated depth or top of book and bbo10
      */
-    public Message newMarketDataRequest(String inRequestId,
-                                        List<Instrument> inInstruments,
-                                        String inExchange,
-                                        List<Content> inContent,
-                                        char inSubscriptionType)
-            throws FieldNotFound
+    public quickfix.Message newMarketDataRequest(String inRequestId,
+                                                 List<Instrument> inInstruments,
+                                                 String inExchange,
+                                                 List<Content> inContent,
+                                                 char inSubscriptionType)
+            throws quickfix.FieldNotFound
+    {
+        return newMarketDataRequest(inRequestId,
+                                    inInstruments,
+                                    inExchange,
+                                    inContent,
+                                    inSubscriptionType,
+                                    FIXVersion.getFIXVersion(beginString));
+    }
+    /**
+     * Create a new market data request with the given parameters.
+     *
+     * @param inRequestId a <code>String</code> value
+     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value, may be empty for "all instruments"
+     * @param inExchange a <code>String</code> value, may be <code>null</code> for "all exchanges"
+     * @param inContent a <code>List&lt;Content&gt;</code> value
+     * @param inSubscriptionType a <code>char</code> value
+     * @param inFixVersion a <code>FIXVersion</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws quickfix.FieldNotFound if the message could not be constructed
+     * @throws IllegalArgumentException if the provided content is contradictory, eg. aggregated depth and unaggregated depth or top of book and bbo10
+     */
+    public quickfix.Message newMarketDataRequest(String inRequestId,
+                                                 List<Instrument> inInstruments,
+                                                 String inExchange,
+                                                 List<Content> inContent,
+                                                 char inSubscriptionType,
+                                                 FIXVersion inFixVersion)
+            throws quickfix.FieldNotFound
     {
         // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
-        Message request = msgFactory.create(beginString,
-                                            MsgType.MARKET_DATA_REQUEST);
-        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
+        quickfix.Message request = msgFactory.create(beginString,
+                                                     MsgType.MARKET_DATA_REQUEST);
+        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(inFixVersion);
         request.setField(new MDReqID(inRequestId));
         int contentCount = 0;
         Integer maxDepth = null;
@@ -751,11 +797,12 @@ public class FIXMessageFactory {
         return reject;
     }
 
-    /** Creates a new order message and poopulates it with current {@link TransactTime}
+    /** Creates a new order message and populates it with current {@link TransactTime}
      * @return  new order single
      */
-    public Message newBasicOrder() {
-        Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
+    public quickfix.Message newBasicOrder() {
+        quickfix.Message msg =  msgFactory.create(beginString,
+                                                  MsgType.ORDER_SINGLE);
         addHandlingInst(msg);
         addTransactionTimeIfNeeded(msg);
         return msg;
