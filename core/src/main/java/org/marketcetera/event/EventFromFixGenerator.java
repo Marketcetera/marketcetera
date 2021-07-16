@@ -24,10 +24,6 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.time.DateService;
 
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.Message;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -73,21 +69,21 @@ public class EventFromFixGenerator
     /**
      * Produce events from the given message.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      * @param inIsSnapshot a <code>boolean</code> value
      * @param inReceivedTimestamp a <code>long</code> value
      * @return a <code>List&lt;Event&gt;</code> value
-     * @throws FieldNotFound
+     * @throws quickfix.FieldNotFound if the events could not be generated because an expected field is missing
      */
-    public List<Event> events(Message inMessage,
+    public List<Event> events(quickfix.Message inMessage,
                               boolean inIsSnapshot,
                               long inReceivedTimestamp)
-            throws FieldNotFound
+            throws quickfix.FieldNotFound
     {
         FIXVersion version = FIXVersion.getFIXVersion(inMessage);
         FIXMessageFactory messageFactory = version.getMessageFactory();
         String requestId = inMessage.getString(quickfix.field.MDReqID.FIELD);
-        List<Group> mdEntries = messageFactory.getMdEntriesFromMessage(inMessage);
+        List<quickfix.Group> mdEntries = messageFactory.getMdEntriesFromMessage(inMessage);
         List<Event> events = Lists.newArrayList();
         boolean marketstat = false;
         MarketstatEventBuilder marketstatBuilder = null;
@@ -106,7 +102,7 @@ public class EventFromFixGenerator
         if(inMessage.isSetField(quickfix.field.TotalVolumeTraded.FIELD)) {
             volume = inMessage.getDecimal(quickfix.field.TotalVolumeTraded.FIELD);
         }
-        for(Group mdEntry : mdEntries) {
+        for(quickfix.Group mdEntry : mdEntries) {
             SLF4JLoggerProxy.debug(this,
                                    "Examining group {}", //$NON-NLS-1$
                                    mdEntry);
@@ -142,11 +138,11 @@ public class EventFromFixGenerator
                         throw new UnsupportedOperationException();
                 }
             }
-            Date date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
-            Date time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
-            Date eventDate = new Date(date.getTime()+time.getTime());
             switch(entryType) {
                 case quickfix.field.MDEntryType.BID:
+                    Date date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
+                    Date time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
+                    Date eventDate = new Date(date.getTime()+time.getTime());
                     QuoteEventBuilder<BidEvent> bidBuilder = QuoteEventBuilder.bidEvent(instrument);
                     bidBuilder.withAction(quoteAction);
                     bidBuilder.withCount(mdEntry.getInt(quickfix.field.NumberOfOrders.FIELD));
@@ -183,6 +179,9 @@ public class EventFromFixGenerator
                     events.add(bid);
                     break;
                 case quickfix.field.MDEntryType.OFFER:
+                    date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
+                    time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
+                    eventDate = new Date(date.getTime()+time.getTime());
                     QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(instrument);
                     askBuilder.withAction(quoteAction);
                     askBuilder.withCount(mdEntry.getInt(quickfix.field.NumberOfOrders.FIELD));
@@ -219,6 +218,9 @@ public class EventFromFixGenerator
                     events.add(ask);
                     break;
                 case quickfix.field.MDEntryType.TRADE:
+                    date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
+                    time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
+                    eventDate = new Date(date.getTime()+time.getTime());
                     TradeEventBuilder<? extends TradeEvent> tradeBuilder = TradeEventBuilder.tradeEvent(instrument);
                     tradeBuilder.withEventType(inIsSnapshot?EventType.SNAPSHOT_PART:EventType.UPDATE_PART);
                     tradeBuilder.withExchange(exchange);
@@ -262,11 +264,11 @@ public class EventFromFixGenerator
                 case quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE:
                     marketstat = true;
                     vwap = mdEntry.getDecimal(quickfix.field.MDEntryPx.FIELD);
+                case quickfix.field.MDEntryType.EMPTY_BOOK:
                     break;
                 case quickfix.field.MDEntryType.AUCTION_CLEARING_PRICE:
                 case quickfix.field.MDEntryType.COMPOSITE_UNDERLYING_PRICE:
                 case quickfix.field.MDEntryType.EARLY_PRICES:
-                case quickfix.field.MDEntryType.EMPTY_BOOK:
                 case quickfix.field.MDEntryType.IMBALANCE:
                 case quickfix.field.MDEntryType.INDEX_VALUE:
                 case quickfix.field.MDEntryType.MARGIN_RATE:

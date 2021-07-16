@@ -36,7 +36,6 @@ import quickfix.Group;
 import quickfix.Message;
 import quickfix.Message.Header;
 import quickfix.MessageUtils;
-import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
 import quickfix.StringField;
@@ -208,9 +207,9 @@ public class FIXMessageUtil {
     /**
      * Log the given message.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      */
-    public static void logMessage(Message inMessage)
+    public static void logMessage(quickfix.Message inMessage)
     {
         if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
             try {
@@ -226,11 +225,29 @@ public class FIXMessageUtil {
     /**
      * Log the given message.
      *
-     * @param inSessionId a <code>SessionID</code> value
-     * @param inMessage a <code>Message</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @param inFieldMap a <code>quickfix.Message</code> value
+     * @param inMsgType a <code>String</code> value
      */
-    public static void logMessage(SessionID inSessionId,
-                                  Message inMessage)
+    public static void logMessage(quickfix.SessionID inSessionId,
+                                  quickfix.FieldMap inFieldMap,
+                                  String inMsgType)
+    {
+        if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
+            SLF4JLoggerProxy.debug(FIXMessageUtil.prettyPrintCategory,
+                                   new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(inSessionId)),
+                                                       inFieldMap,
+                                                       inMsgType).toString());
+        }
+    }
+    /**
+     * Log the given message.
+     *
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     */
+    public static void logMessage(quickfix.SessionID inSessionId,
+                                  quickfix.Message inMessage)
     {
         if(SLF4JLoggerProxy.isDebugEnabled(FIXMessageUtil.prettyPrintCategory)) {
             SLF4JLoggerProxy.debug(FIXMessageUtil.prettyPrintCategory,
@@ -241,27 +258,27 @@ public class FIXMessageUtil {
     /**
      * Get the data dictionary for the given message.
      *
-     * @param inMessage a <code>Message</code> value
-     * @return a <code>DataDictionary</code> value
-     * @throws FieldNotFound if the FIX version could not be determined from the given message
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @return a <code>quickfix.DataDictionary</code> value
+     * @throws quickfix.FieldNotFound if the FIX version could not be determined from the given message
      */
-    public static DataDictionary getDataDictionary(Message inMessage)
-            throws FieldNotFound
+    public static quickfix.DataDictionary getDataDictionary(quickfix.Message inMessage)
+            throws quickfix.FieldNotFound
     {
         return getDataDictionary(FIXVersion.getFIXVersion(inMessage));
     }
     /**
      * Get the data dictionary for the given session.
      *
-     * @param inSessionId a <code>Message</code> value
-     * @return a <code>DataDictionary</code> value
-     * @throws FieldNotFound if the FIX version could not be determined from the given message
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @return a <code>quickfix.DataDictionary</code> value
+     * @throws quickfix.FieldNotFound if the FIX version could not be determined from the given message
      * @throws UnsupportedOperationException if the given session ID does not correspond to an active session
      */
-    public static DataDictionary getDataDictionary(SessionID inSessionId)
-            throws FieldNotFound
+    public static quickfix.DataDictionary getDataDictionary(quickfix.SessionID inSessionId)
+            throws quickfix.FieldNotFound
     {
-        Session session = Session.lookupSession(inSessionId);
+        quickfix.Session session = quickfix.Session.lookupSession(inSessionId);
         if(session == null) {
             throw new UnsupportedOperationException(Messages.MISSING_SESSION.getText(session));
         }
