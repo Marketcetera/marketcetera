@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -20,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
+
+import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
 
 /* $License$ */
 
@@ -123,7 +124,7 @@ public abstract class PlatformServices
      */
     public static String generateId()
     {
-        return UUID.randomUUID().toString();
+        return MobyNamesGenerator.getRandomName();
     }
     /**
      * Autowires the given object with the default application context.
