@@ -1,0 +1,13 @@
+
+[part="input-field"] {
+  box-shadow: inset 0 0 0 1px var(--lumo-contrast-30pct);
+  background-color: var(--lumo-base-color);
+}
+
+:host([focus-ring]) [part="input-field"] {
+  box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct), inset 0 0 0 1px var(--lumo-primary-color);
+}
+
+:host([invalid]) [part="input-field"] {
+  box-shadow: inset 0 0 0 1px var(--lumo-error-color);
+}
