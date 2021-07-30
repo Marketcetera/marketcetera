@@ -9,12 +9,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import org.marketcetera.webui.views.MainLayout;
 import com.vaadin.flow.router.RouteAlias;
-import javax.annotation.security.RolesAllowed;
+import javax.annotation.security.PermitAll;
 
 @PageTitle("Hello World")
 @Route(value = "hello", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
-@RolesAllowed("admin")
+@PermitAll
 public class HelloWorldView extends HorizontalLayout {
 
     private TextField name;

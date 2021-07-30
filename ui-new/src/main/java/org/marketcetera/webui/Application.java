@@ -18,8 +18,9 @@ import com.vaadin.flow.component.dependency.NpmPackage;
  *
  */
 @SpringBootApplication
-@Theme(value = "marketcetera", variant = Lumo.DARK)
-@PWA(name = "Marketcetera", shortName = "Marketcetera", offlineResources = {"images/logo.png"})
+@Theme(value = "marketceteraautomatedtradingplatform", variant = Lumo.DARK)
+@PWA(name = "Marketcetera Automated Trading Platform", shortName = "Marketcetera Automated Trading Platform", offlineResources = {
+        "images/logo.png"})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 

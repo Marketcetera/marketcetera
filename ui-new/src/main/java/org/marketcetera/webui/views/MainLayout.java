@@ -8,24 +8,27 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import org.marketcetera.webui.views.MainLayout;
 import org.marketcetera.webui.views.helloworld.HelloWorldView;
 import org.marketcetera.webui.views.about.AboutView;
+import org.marketcetera.webui.views.dashboard.DashboardView;
+import org.marketcetera.webui.views.masterdetail.MasterDetailView;
+import org.marketcetera.webui.views.personform.PersonFormView;
+import org.marketcetera.webui.views.imagelist.ImageListView;
 import org.marketcetera.webui.views.login.LoginView;
-import com.vaadin.flow.component.avatar.Avatar;
 import org.marketcetera.webui.data.entity.User;
 import org.marketcetera.webui.security.AuthenticatedUser;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
@@ -65,7 +68,6 @@ public class MainLayout extends AppLayout {
     }
 
     private final Tabs menu;
-    private H1 viewTitle;
 
     private AuthenticatedUser authenticatedUser;
     private AccessAnnotationChecker accessChecker;
@@ -74,22 +76,33 @@ public class MainLayout extends AppLayout {
         this.authenticatedUser = authenticatedUser;
         this.accessChecker = accessChecker;
 
-        setPrimarySection(Section.DRAWER);
-        addToNavbar(true, createHeaderContent());
-        menu = createMenu();
-        addToDrawer(createDrawerContent(menu));
+        HorizontalLayout header = createHeader();
+        menu = createMenuTabs();
+        addToNavbar(createTopBar(header, menu));
     }
 
-    private Component createHeaderContent() {
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setClassName("sidemenu-header");
-        layout.getThemeList().set("dark", true);
+    private VerticalLayout createTopBar(HorizontalLayout header, Tabs menu) {
+        VerticalLayout layout = new VerticalLayout();
+        layout.getThemeList().add("dark");
         layout.setWidthFull();
         layout.setSpacing(false);
+        layout.setPadding(false);
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
-        layout.add(new DrawerToggle());
-        viewTitle = new H1();
-        layout.add(viewTitle);
+        layout.add(header, menu);
+        return layout;
+    }
+
+    private HorizontalLayout createHeader() {
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setClassName("topmenu-header");
+        layout.setPadding(false);
+        layout.setSpacing(false);
+        layout.setWidthFull();
+        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+        Image logo = new Image("images/logo.png", "Marketcetera Automated Trading Platform logo");
+        logo.setId("logo");
+        layout.add(logo);
+        layout.add(new H1("Marketcetera Automated Trading Platform"));
 
         Optional<User> maybeUser = authenticatedUser.get();
         if (maybeUser.isPresent()) {
@@ -111,28 +124,9 @@ public class MainLayout extends AppLayout {
         return layout;
     }
 
-    private Component createDrawerContent(Tabs menu) {
-        VerticalLayout layout = new VerticalLayout();
-        layout.setClassName("sidemenu-menu");
-        layout.setSizeFull();
-        layout.setPadding(false);
-        layout.setSpacing(false);
-        layout.getThemeList().set("spacing-s", true);
-        layout.setAlignItems(FlexComponent.Alignment.STRETCH);
-        HorizontalLayout logoLayout = new HorizontalLayout();
-        logoLayout.setId("logo");
-        logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "Marketcetera logo"));
-        logoLayout.add(new H1("Marketcetera"));
-        layout.add(logoLayout, menu);
-        return layout;
-    }
-
-    private Tabs createMenu() {
+    private Tabs createMenuTabs() {
         final Tabs tabs = new Tabs();
-        tabs.setOrientation(Tabs.Orientation.VERTICAL);
-        tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
-        tabs.setId("tabs");
+        tabs.getStyle().set("max-width", "100%");
         for (Tab menuTab : createMenuItems()) {
             tabs.add(menuTab);
         }
@@ -145,6 +139,14 @@ public class MainLayout extends AppLayout {
 
                 new MenuItemInfo("About", "la la-file", AboutView.class), //
 
+                new MenuItemInfo("Dashboard", "la la-chart-area", DashboardView.class), //
+
+                new MenuItemInfo("Master-Detail", "la la-columns", MasterDetailView.class), //
+
+                new MenuItemInfo("Person Form", "la la-user", PersonFormView.class), //
+
+                new MenuItemInfo("Image List", "la la-th-list", ImageListView.class), //
+
         };
         List<Tab> tabs = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {
@@ -156,7 +158,7 @@ public class MainLayout extends AppLayout {
         return tabs;
     }
 
-    private static Tab createTab(MenuItemInfo menuItemInfo) {
+    private Tab createTab(MenuItemInfo menuItemInfo) {
         Tab tab = new Tab();
         RouterLink link = new RouterLink();
         link.setRoute(menuItemInfo.getView());
@@ -168,6 +170,7 @@ public class MainLayout extends AppLayout {
         link.add(iconElement, new Text(menuItemInfo.getText()));
         tab.add(link);
         ComponentUtil.setData(tab, Class.class, menuItemInfo.getView());
+
         return tab;
     }
 
@@ -175,16 +178,10 @@ public class MainLayout extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
-        viewTitle.setText(getCurrentPageTitle());
     }
 
     private Optional<Tab> getTabForComponent(Component component) {
         return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
                 .findFirst().map(Tab.class::cast);
-    }
-
-    private String getCurrentPageTitle() {
-        PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
-        return title == null ? "" : title.value();
     }
 }

@@ -1,7 +1,35 @@
 @import url('./main-layout.css');
 @import url('./views/hello-world-view.css');
 @import url('./views/about-view.css');
-@import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');
+@import url('./views/dashboard-view.css');
+@import url('./views/person-form-view.css');
+@import url('./views/image-list-view.css');
+@import url('line-awesome/dist/line-awesome/css/line-awesome.min.css');    html {
+      --lumo-font-size: 1rem;
+      --lumo-font-size-xxxl: 1.75rem;
+      --lumo-font-size-xxl: 1.375rem;
+      --lumo-font-size-xl: 1.125rem;
+      --lumo-font-size-l: 1rem;
+      --lumo-font-size-m: 0.875rem;
+      --lumo-font-size-s: 0.8125rem;
+      --lumo-font-size-xs: 0.75rem;
+      --lumo-font-size-xxs: 0.6875rem;
+      --lumo-line-height-m: 1.4;
+      --lumo-line-height-s: 1.2;
+      --lumo-line-height-xs: 1.1;
+      --lumo-size-xl: 3rem;
+      --lumo-size-l: 2.5rem;
+      --lumo-size-m: 2rem;
+      --lumo-size-s: 1.75rem;
+      --lumo-size-xs: 1.5rem;
+      --lumo-space-xl: 1.875rem;
+      --lumo-space-l: 1.25rem;
+      --lumo-space-m: 0.625rem;
+      --lumo-space-s: 0.3125rem;
+      --lumo-space-xs: 0.1875rem;
+
+    }
+
     [theme~="dark"] {
       --lumo-shade-5pct: rgba(33, 33, 33, 0.05);
       --lumo-shade-10pct: rgba(33, 33, 33, 0.1);

@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- Vaadin project from https://start.vaadin.com/project/309cb5fc-2054-4852-a31d-77ee72278774 -->
+    <!-- Vaadin project from https://start.vaadin.com/project/f494111b-9d6f-4777-9c9f-3e5a20485e4a -->
     <groupId>org.marketcetera.webui</groupId>
-    <artifactId>marketcetera</artifactId>
+    <artifactId>marketceteraautomatedtradingplatform</artifactId>
     <name>Project base for Spring Boot and Vaadin Flow</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
