@@ -5,7 +5,7 @@
     <!-- Vaadin project from https://start.vaadin.com/project/f494111b-9d6f-4777-9c9f-3e5a20485e4a -->
     <groupId>org.marketcetera</groupId>
     <artifactId>webui</artifactId>
-    <name>Project base for Spring Boot and Vaadin Flow</name>
+    <name>Web UI</name>
     <version>4.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
