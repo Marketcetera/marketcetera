@@ -49,3 +49,12 @@ maven-eclipse.xml
 # IntelliJ Artifacts
 *.iml
 .idea
+
+# Vaadin Artifacts
+package.json
+pnpm-lock.yaml
+frontend
+node_modules
+pnpmfile.js
+webpack.config.js
+webpack.generated.js
