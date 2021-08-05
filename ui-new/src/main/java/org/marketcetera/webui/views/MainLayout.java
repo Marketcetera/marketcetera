@@ -4,11 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.marketcetera.admin.User;
+import org.marketcetera.webui.security.AuthenticatedUser;
+import org.marketcetera.webui.views.about.AboutView;
+import org.marketcetera.webui.views.dashboard.DashboardView;
+import org.marketcetera.webui.views.helloworld.HelloWorldView;
+import org.marketcetera.webui.views.imagelist.ImageListView;
+import org.marketcetera.webui.views.masterdetail.MasterDetailView;
+import org.marketcetera.webui.views.personform.PersonFormView;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
@@ -16,31 +27,18 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
-import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
-import org.marketcetera.webui.views.MainLayout;
-import org.marketcetera.webui.views.helloworld.HelloWorldView;
-import org.marketcetera.webui.views.about.AboutView;
-import org.marketcetera.webui.views.dashboard.DashboardView;
-import org.marketcetera.webui.views.masterdetail.MasterDetailView;
-import org.marketcetera.webui.views.personform.PersonFormView;
-import org.marketcetera.webui.views.imagelist.ImageListView;
-import org.marketcetera.webui.views.login.LoginView;
-import org.marketcetera.webui.data.entity.User;
-import org.marketcetera.webui.security.AuthenticatedUser;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
-import com.vaadin.flow.component.contextmenu.ContextMenu;
-import com.vaadin.flow.component.html.Anchor;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
 @PageTitle("Main")
-public class MainLayout extends AppLayout {
-
+public class MainLayout
+        extends AppLayout
+{
     public static class MenuItemInfo {
 
         private String text;
@@ -107,8 +105,10 @@ public class MainLayout extends AppLayout {
         Optional<User> maybeUser = authenticatedUser.get();
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
-            Avatar avatar = new Avatar(user.getName(), user.getProfilePictureUrl());
-            avatar.addClassNames("ms-auto", "me-m");
+            Avatar avatar = new Avatar(user.getName(),
+                                       "https://www.marketcetera.com/display/MATP/Home?src=sidebar");
+            avatar.addClassNames("ms-auto",
+                                 "me-m");
             ContextMenu userMenu = new ContextMenu(avatar);
             userMenu.setOpenOnClick(true);
             userMenu.addItem("Logout", e -> {
@@ -184,4 +184,5 @@ public class MainLayout extends AppLayout {
         return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
                 .findFirst().map(Tab.class::cast);
     }
+    private static final long serialVersionUID = 2595899070645204631L;
 }

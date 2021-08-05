@@ -2,8 +2,8 @@ package org.marketcetera.webui.security;
 
 import java.util.Optional;
 
+import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.webui.data.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,14 +17,19 @@ import com.vaadin.flow.server.VaadinServletRequest;
 @Component
 public class AuthenticatedUser
 {
-
+    /**
+     * Get the underlying <code>User</code> value.
+     *
+     * @return an <code>Optional&lt;User&gt;</code> value
+     */
     public Optional<User> get()
     {
         UserDetails details = getAuthenticatedUser();
         if (details == null) {
             return Optional.empty();
         }
-        return Optional.of(userRepository.findByUsername(details.getUsername()));
+        User user = userService.findByName(details.getUsername());
+        return Optional.ofNullable(user);
     }
     /**
      * Logs the current user out.

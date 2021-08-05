@@ -2,39 +2,40 @@ package org.marketcetera.webui.views.masterdetail;
 
 import java.util.Optional;
 
+import javax.annotation.security.PermitAll;
+
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.service.UserService;
 import org.marketcetera.webui.data.entity.SamplePerson;
-import org.marketcetera.webui.data.service.SamplePersonService;
+import org.marketcetera.webui.views.MainLayout;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
-import org.marketcetera.webui.views.MainLayout;
-import javax.annotation.security.PermitAll;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.dependency.Uses;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 @PageTitle("Master-Detail")
 @Route(value = "master-detail/:samplePersonID?/:action?(edit)", layout = MainLayout.class)
@@ -45,7 +46,8 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
     private final String SAMPLEPERSON_ID = "samplePersonID";
     private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "master-detail/%d/edit";
 
-    private Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private Grid<User> grid = new Grid<>(User.class,
+            false);
 
     private TextField firstName;
     private TextField lastName;
@@ -60,12 +62,12 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
 
     private BeanValidationBinder<SamplePerson> binder;
 
-    private SamplePerson samplePerson;
+    private User samplePerson;
+    @Autowired
+    private UserService userService;
 
-    private SamplePersonService samplePersonService;
-
-    public MasterDetailView(@Autowired SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
+    public MasterDetailView()
+    {
         addClassNames("master-detail-view", "flex", "flex-col", "h-full");
 
         // Create UI
@@ -84,14 +86,11 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("occupation").setAutoWidth(true);
-        TemplateRenderer<SamplePerson> importantRenderer = TemplateRenderer.<SamplePerson>of(
-                "<vaadin-icon hidden='[[!item.important]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></vaadin-icon><vaadin-icon hidden='[[item.important]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></vaadin-icon>")
-                .withProperty("important", SamplePerson::isImportant);
+        TemplateRenderer<User> importantRenderer = TemplateRenderer.<User>of(
+                "<vaadin-icon hidden='[[!item.important]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></vaadin-icon><vaadin-icon hidden='[[item.important]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></vaadin-icon>");
         grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
 
-        grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.setItems(query -> userService.findAll().stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
