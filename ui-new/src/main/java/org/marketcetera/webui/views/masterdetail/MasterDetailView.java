@@ -1,15 +1,16 @@
 package org.marketcetera.webui.views.masterdetail;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.security.PermitAll;
 
+import org.apache.commons.compress.utils.Lists;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.service.UserService;
-import org.marketcetera.webui.data.entity.SamplePerson;
 import org.marketcetera.webui.views.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -35,7 +36,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 
 @PageTitle("Master-Detail")
 @Route(value = "master-detail/:samplePersonID?/:action?(edit)", layout = MainLayout.class)
@@ -60,11 +60,13 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
-    private BeanValidationBinder<SamplePerson> binder;
+    private BeanValidationBinder<User> binder;
 
     private User samplePerson;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserFactory userFactory;
 
     public MasterDetailView()
     {
@@ -90,7 +92,9 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
                 "<vaadin-icon hidden='[[!item.important]]' icon='vaadin:check' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-primary-text-color);'></vaadin-icon><vaadin-icon hidden='[[item.important]]' icon='vaadin:minus' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: var(--lumo-disabled-text-color);'></vaadin-icon>");
         grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
 
-        grid.setItems(query -> userService.findAll().stream());
+        List<User> userList = Lists.newArrayList();
+        userList.addAll(userService.findAll());
+        grid.setItems(query -> userList.stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.setHeightFull();
 
@@ -105,7 +109,7 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(SamplePerson.class);
+        binder = new BeanValidationBinder<>(User.class);
 
         // Bind fields. This where you'd define e.g. validation rules
 
@@ -119,11 +123,10 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         save.addClickListener(e -> {
             try {
                 if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                    this.samplePerson = userFactory.create();
                 }
                 binder.writeBean(this.samplePerson);
-
-                samplePersonService.update(this.samplePerson);
+                this.samplePerson = userService.save(this.samplePerson);
                 clearForm();
                 refreshGrid();
                 Notification.show("SamplePerson details stored.");
@@ -134,12 +137,11 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         });
 
     }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Integer> samplePersonId = event.getRouteParameters().getInteger(SAMPLEPERSON_ID);
         if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
+            Optional<User> samplePersonFromBackend = Optional.ofNullable(userService.findOne(samplePersonId.get()));
             if (samplePersonFromBackend.isPresent()) {
                 populateForm(samplePersonFromBackend.get());
             } else {
@@ -211,7 +213,7 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
+    private void populateForm(User value) {
         this.samplePerson = value;
         binder.readBean(this.samplePerson);
 

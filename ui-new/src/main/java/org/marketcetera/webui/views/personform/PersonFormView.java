@@ -1,36 +1,37 @@
 package org.marketcetera.webui.views.personform;
 
-import org.marketcetera.webui.data.entity.SamplePerson;
-import org.marketcetera.webui.data.service.SamplePersonService;
+import javax.annotation.security.PermitAll;
+
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.webui.views.MainLayout;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
-import org.marketcetera.webui.views.MainLayout;
-import javax.annotation.security.PermitAll;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.dependency.Uses;
-import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.router.Route;
 
 @PageTitle("Person Form")
 @Route(value = "person-form", layout = MainLayout.class)
 @PermitAll
 @Uses(Icon.class)
 public class PersonFormView extends Div {
-
     private TextField firstName = new TextField("First name");
     private TextField lastName = new TextField("Last name");
     private EmailField email = new EmailField("Email address");
@@ -41,9 +42,11 @@ public class PersonFormView extends Div {
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
-    private Binder<SamplePerson> binder = new Binder(SamplePerson.class);
+    private Binder<User> binder = new Binder<>(User.class);
+    @Autowired
+    private UserFactory userFactory;
 
-    public PersonFormView(SamplePersonService personService) {
+    public PersonFormView(UserService personService) {
         addClassName("person-form-view");
 
         add(createTitle());
@@ -55,14 +58,14 @@ public class PersonFormView extends Div {
 
         cancel.addClickListener(e -> clearForm());
         save.addClickListener(e -> {
-            personService.update(binder.getBean());
+            binder.setBean(personService.save(binder.getBean()));
             Notification.show(binder.getBean().getClass().getSimpleName() + " details stored.");
             clearForm();
         });
     }
 
     private void clearForm() {
-        binder.setBean(new SamplePerson());
+        binder.setBean(userFactory.create());
     }
 
     private Component createTitle() {
@@ -128,5 +131,5 @@ public class PersonFormView extends Div {
             }
         }
     }
-
+    private static final long serialVersionUID = 1258702802373936640L;
 }

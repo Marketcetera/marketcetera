@@ -16,6 +16,17 @@ public class PersistentUserFactory
         implements MutableUserFactory
 {
     /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create(java.lang.Object)
+     */
+    @Override
+    public PersistentUser create(User inUser)
+    {
+        return create(inUser.getName(),
+                      inUser.getHashedPassword(),
+                      inUser.getDescription(),
+                      inUser.isActive());
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.admin.UserFactory#create(java.lang.String, java.lang.String, java.lang.String, boolean)
      */
     @Override
