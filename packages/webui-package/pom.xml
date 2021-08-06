@@ -39,10 +39,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>dataflow-rpc-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-rpc-client</artifactId>
     </dependency>
     <dependency>
@@ -59,7 +55,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>webui-dataflow</artifactId>
+      <artifactId>webui-fix</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -142,6 +138,12 @@
       </resource>
       <resource>
         <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>src/main/WebContent</directory>
+        <includes>
+          <include>VAADIN/**/*</include>
+        </includes>
       </resource>
     </resources>
     <plugins>

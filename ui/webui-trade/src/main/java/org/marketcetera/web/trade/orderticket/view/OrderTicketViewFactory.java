@@ -4,14 +4,15 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.core.Pair;
+import org.marketcetera.fix.FixPermissions;
 import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.trade.openorders.view.OpenOrderView;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 
@@ -50,7 +51,7 @@ public class OrderTicketViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.BOOK;
+        return MarketceteraFont.Order_Ticket;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
@@ -94,7 +95,7 @@ public class OrderTicketViewFactory
         return OrderTicketViewFactory.class;
     }
     /**
-     * permission(s) required to execute open order view
+     * permission(s) required to execute order ticket view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,TradePermissions.ViewBrokerStatusAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,FixPermissions.ViewBrokerStatusAction));
 }

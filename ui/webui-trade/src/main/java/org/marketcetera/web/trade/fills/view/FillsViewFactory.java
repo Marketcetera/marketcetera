@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.trade.executionreport.view.AbstractExecutionReportViewFactory;
 import org.marketcetera.web.trade.view.AbstractTradeViewFactory;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.Sets;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 
@@ -49,7 +49,7 @@ public class FillsViewFactory
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.SHOPPING_BASKET;
+        return MarketceteraFont.Fills;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()

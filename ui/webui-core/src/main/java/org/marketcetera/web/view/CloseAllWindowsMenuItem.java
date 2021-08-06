@@ -1,10 +1,10 @@
 package org.marketcetera.web.view;
 
 import org.marketcetera.web.events.CloseWindowsEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kbdunn.vaadin.addons.fontawesome.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.MenuBar;
@@ -54,7 +54,7 @@ public class CloseAllWindowsMenuItem
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.TIMES_CIRCLE_O;
+        return MarketceteraFont.Close_All_Windows;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()

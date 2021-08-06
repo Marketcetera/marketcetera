@@ -429,10 +429,12 @@ public class BrokerServiceImpl
             }
             ActiveFixSession activeFixSession = generateBrokerStatus(fixSession,
                                                                      inFixSessionStatus);
-            String xmlStatus = marshall(activeFixSession);
-            String key = BrokerConstants.brokerStatusPrefix+inBrokerId+fixSession.getHost();
-            clusterService.setAttribute(key,
-                                        xmlStatus);
+            if(inFixSessionStatus != FixSessionStatus.DELETED) {
+                String xmlStatus = marshall(activeFixSession);
+                String key = BrokerConstants.brokerStatusPrefix+inBrokerId+fixSession.getHost();
+                clusterService.setAttribute(key,
+                                            xmlStatus);
+            }
             brokerStatusEventBus.post(activeFixSession);
         } catch (JAXBException e) {
             SLF4JLoggerProxy.warn(this,

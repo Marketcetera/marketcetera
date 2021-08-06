@@ -1,5 +1,7 @@
 package org.marketcetera.fix;
 
+import org.springframework.security.core.GrantedAuthority;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,18 @@ package org.marketcetera.fix;
  * @since $Release$
  */
 public enum FixPermissions
+        implements GrantedAuthority
 {
+    /**
+     * view the status of brokers
+     */
     ViewBrokerStatusAction;
+    /* (non-Javadoc)
+     * @see org.springframework.security.core.GrantedAuthority#getAuthority()
+     */
+    @Override
+    public String getAuthority()
+    {
+        return name();
+    }
 }

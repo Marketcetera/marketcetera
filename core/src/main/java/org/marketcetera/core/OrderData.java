@@ -30,7 +30,7 @@ import quickfix.field.MsgType;
 /* $License$ */
 
 /**
- *
+ * Tracks data for an order to produce metrics.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

@@ -4,10 +4,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.LogoutEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 import org.marketcetera.web.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -59,7 +59,7 @@ public class LogoutMenuItem
     @Override
     public Resource getMenuIcon()
     {
-        return FontAwesome.SIGN_OUT;
+        return MarketceteraFont.Logout;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()
@@ -80,6 +80,10 @@ public class LogoutMenuItem
                     SLF4JLoggerProxy.warn(LogoutMenuItem.this,
                                           "Problem occurred while logging out: {}",
                                           ExceptionUtils.getRootCauseMessage(e));
+                }
+                SessionUser sessionUser = SessionUser.getCurrentUser();
+                if(sessionUser != null) {
+                    sessionUser.cancelTimeUpdate();
                 }
                 VaadinSession.getCurrent().setAttribute(SessionUser.class,
                                                         null);

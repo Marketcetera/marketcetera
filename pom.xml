@@ -32,15 +32,15 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.4.1</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.5.3</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
-    <mvn.log4j.version>2.11.1</mvn.log4j.version>
+    <mvn.log4j.version>2.14.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <vaadin.version>7.7.13</vaadin.version>
     <vaadin.theme>mytheme</vaadin.theme>
-    <gwt.version>2.8.2</gwt.version>
-    <gwt.plugin.version>2.8.2</gwt.plugin.version>
+    <gwt.version>2.9.0</gwt.version>
+    <gwt.plugin.version>2.9.0</gwt.plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -86,6 +86,16 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>dataflow-rpc-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>metrics-log</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>metrics-db</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -368,7 +378,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>webui-dataflow</artifactId>
+        <artifactId>webui-fix</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -460,7 +470,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.10.8</version>
+        <version>2.10.10</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
@@ -480,18 +490,18 @@
       <dependency>
         <groupId>com.github.jnr</groupId>
         <artifactId>jnr-process</artifactId>
-        <version>0.2</version>
+        <version>0.4.5</version>
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20201115</version>
+        <version>20210307</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>9.0</version>
+        <version>9.2</version>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -506,7 +516,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.8.0</version>
+        <version>2.11.0</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
@@ -521,7 +531,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.11</version>
+        <version>3.12.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -609,12 +619,12 @@
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-runtime</artifactId>
-        <version>8.6.0</version>
+        <version>8.7.0</version>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-compiler</artifactId>
-        <version>8.6.0</version>
+        <version>8.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -624,7 +634,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>30.0-jre</version>
+        <version>30.1.1-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -656,8 +666,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <!--version>3.6.0</version-->
-        <version>3.14.0</version>
+        <version>3.17.3</version>
       </dependency>
       <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
       <dependency>
@@ -713,7 +722,7 @@
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.4.2</version>
+        <version>3.4.4</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -773,7 +782,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>4.18</version>
+        <version>4.20</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -797,7 +806,7 @@
       <dependency>
         <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
-        <version>2.5.1</version>
+        <version>2.6.0</version>
         <scope>runtime</scope>
       </dependency>
       <!-- Runtime: Vaadin -->
@@ -902,7 +911,7 @@
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>5.7.0</version>
+        <version>5.7.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -959,7 +968,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>7.3.1</version>
+          <version>7.12.1</version>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -1064,7 +1073,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>5.1.1</version>
+          <version>5.1.2</version>
         </plugin>
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
@@ -1107,7 +1116,7 @@
         <!-- mvn javadoc:* -->
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.0</version>
           <configuration>
             <!-- add this to disable checking -->
             <failOnError>false</failOnError>
@@ -1147,54 +1156,17 @@
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
       </plugin>
-      <!-- Adds the build number to each JAR -->
-      <plugin>
-        <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-        <artifactId>svn-revision-number-maven-plugin</artifactId>
-        <version>1.13</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <entries>
-            <entry>
-              <prefix>svn</prefix>
-            </entry>
-          </entries>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.tmatesoft.svnkit</groupId>
-            <artifactId>svnkit</artifactId>
-            <version>1.10.1</version>
-          </dependency>
-          <dependency>
-            <groupId>org.tmatesoft.sqljet</groupId>
-            <artifactId>sqljet</artifactId>
-            <version>1.1.13</version>
-          </dependency>
-          <dependency>
-            <groupId>de.regnis.q.sequence</groupId>
-            <artifactId>sequence-library</artifactId>
-            <version>1.0.4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
     </plugins>
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>3.4.2</version>
+        <version>3.4.3</version>
       </extension>
       <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.2</version>
+        <version>1.7.0</version>
       </extension>
     </extensions>
     <resources>
@@ -1228,7 +1200,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -1241,7 +1213,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.0.1</version>
+            <version>3.3.0</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -1276,6 +1248,7 @@
     <module>fix</module>
     <module>fork</module>
     <module>marketdata</module>
+    <module>metrics</module>
     <module>modules</module>
     <module>packages</module>
     <module>rpc-core</module>
@@ -1325,7 +1298,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.3.0</version>
         <configuration>
           <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
           <docletArtifact>
@@ -1345,7 +1318,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.1.2</version>
       </plugin>
     </plugins>
   </reporting>

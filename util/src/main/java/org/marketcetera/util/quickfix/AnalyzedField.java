@@ -7,13 +7,6 @@ import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
-import quickfix.DataDictionary;
-import quickfix.Field;
-import quickfix.FieldMap;
-import quickfix.FieldNotFound;
-import quickfix.FieldType;
-import quickfix.Group;
-
 /**
  * Analyzes a QuickFIX/J field, producing a human-readable
  * representation of its contents.
@@ -31,13 +24,12 @@ public class AnalyzedField
 
     // INSTANCE DATA.
 
-    private final Field<?> mQField;
-    private final FieldType mQType;
+    private final quickfix.Field<?> mQField;
+    private final quickfix.FieldType mQType;
     private final String mName;
     private final boolean mRequired;
     private final String mValue;
-    private final List<AnalyzedGroup> mGroups=
-        new LinkedList<AnalyzedGroup>();
+    private final List<AnalyzedGroup> mGroups = new LinkedList<AnalyzedGroup>();
 
 
     // CONSTRUCTOR.
@@ -58,12 +50,11 @@ public class AnalyzedField
      * @param qField The field.
      */
 
-    AnalyzedField
-        (DataDictionary nameQDict,
-         DataDictionary scopeQDict,
-         FieldMap qMap,
-         String msgType,
-         Field<?> qField)
+    AnalyzedField(quickfix.DataDictionary nameQDict,
+                  quickfix.DataDictionary scopeQDict,
+                  quickfix.FieldMap qMap,
+                  String msgType,
+                  quickfix.Field<?> qField)
     {
         mQField=qField;
         mQType = nameQDict.getFieldType(getQFieldTag());
@@ -86,22 +77,24 @@ public class AnalyzedField
 
         // Groups.
 
-        DataDictionary.GroupInfo info=scopeQDict.getGroup
-            (msgType,getQFieldTag());
-        if (info==null) {
+        quickfix.DataDictionary.GroupInfo info = scopeQDict.getGroup(msgType,getQFieldTag());
+        if(info==null) {
             return;
         }
         int count=Integer.valueOf(value);
-        for (int i=0;i<count;i++) {
-            Group group=new Group(getQFieldTag(),info.getDelimiterField());
+        for(int i=0;i<count;i++) {
+            quickfix.Group group = new quickfix.Group(getQFieldTag(),
+                                                      info.getDelimiterField());
             try {
                 qMap.getGroup(i+1,group);
-            } catch (FieldNotFound ex) {
+            } catch (quickfix.FieldNotFound ex) {
                 Messages.MISSING_GROUP.error(this,ex,i+1,qMap);
                 continue;
             }
-            mGroups.add(new AnalyzedGroup
-                        (nameQDict,info.getDataDictionary(),group,msgType));
+            mGroups.add(new AnalyzedGroup(nameQDict,
+                                          info.getDataDictionary(),
+                                          group,
+                                          msgType));
         }
     }
 
@@ -114,7 +107,7 @@ public class AnalyzedField
      * @return The field.
      */
 
-    public Field<?> getQField()
+    public quickfix.Field<?> getQField()
     {
         return mQField;
     }
@@ -125,7 +118,7 @@ public class AnalyzedField
      * @return The type.
      */
 
-    public FieldType getQType()
+    public quickfix.FieldType getQType()
     {
         return mQType;
     }
@@ -215,9 +208,8 @@ public class AnalyzedField
      * @param prefix The prefix.
      */
 
-    public void print
-        (PrintStream stream,
-         String prefix)
+    public void print(PrintStream stream,
+                      String prefix)
     {
         stream.print(prefix);
         stream.print(Messages.SINGLE_FIELD.getText
@@ -226,7 +218,7 @@ public class AnalyzedField
         prefix+=' '; //$NON-NLS-1$
         String groupPrefix=prefix+' '; //$NON-NLS-1$
         int i=0;
-        for (AnalyzedGroup group:getGroups()) {
+        for(AnalyzedGroup group:getGroups()) {
             stream.println();
             stream.print(prefix);
             stream.print(Messages.GROUP_TITLE.getText(++i));

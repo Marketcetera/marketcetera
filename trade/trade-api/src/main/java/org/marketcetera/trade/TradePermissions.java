@@ -15,7 +15,6 @@ public enum TradePermissions
         implements GrantedAuthority
 {
     SendOrderAction,
-    ViewBrokerStatusAction,
     ViewOpenOrdersAction,
     ViewReportAction,
     ViewPositionAction,

@@ -113,14 +113,11 @@ import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.OperationTimeoutException;
 
 import quickfix.ConfigError;
-import quickfix.DefaultSessionFactory;
 import quickfix.DynamicSessionThreadedSocketAcceptor;
 import quickfix.FieldNotFound;
 import quickfix.Session;
-import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
-import quickfix.SessionSettings;
 import quickfix.ThreadedSocketAcceptor;
 import quickfix.mina.acceptor.AcceptorSessionProvider;
 
@@ -697,7 +694,7 @@ public class DeployAnywhereRoutingEngine
                         }
                         // session doesn't exist yet, check to see if there's a session that matches in the DB
                         if(fixSession.isEnabled()) {
-                            quickfix.Session session = Session.lookupSession(newSessionId);
+                            quickfix.Session session = quickfix.Session.lookupSession(newSessionId);
                             if(session == null) {
                                 // session exists in the DB, generate FIX settings for it
                                 quickfix.SessionSettings newSettings = brokerService.generateSessionSettings(Lists.newArrayList(fixSession));
@@ -712,10 +709,10 @@ public class DeployAnywhereRoutingEngine
                                                                    key,
                                                                    value);
                                     }
-                                    SessionFactory factory = new DefaultSessionFactory(this,
-                                                                                       fixSettingsProvider.getMessageStoreFactory(existingSettings),
-                                                                                       fixSettingsProvider.getLogFactory(existingSettings),
-                                                                                       fixSettingsProvider.getMessageFactory());
+                                    quickfix.SessionFactory factory = new quickfix.DefaultSessionFactory(this,
+                                                                                                         fixSettingsProvider.getMessageStoreFactory(existingSettings),
+                                                                                                         fixSettingsProvider.getLogFactory(existingSettings),
+                                                                                                         fixSettingsProvider.getMessageFactory());
                                     // this will force the session to exist, which puts it back in the mix
                                     session = factory.create(newSessionId,
                                                              newSettings);
@@ -1467,7 +1464,7 @@ public class DeployAnywhereRoutingEngine
                                        "No sessions to initialize at this time");
                 return;
             }
-            SessionSettings fixSessionSettings = brokerService.generateSessionSettings(sessions);
+            quickfix.SessionSettings fixSessionSettings = brokerService.generateSessionSettings(sessions);
             fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_ADDRESS,
                                          String.valueOf(dareAcceptorHostname));
             fixSessionSettings.setString(quickfix.Acceptor.SETTING_SOCKET_ACCEPT_PORT,

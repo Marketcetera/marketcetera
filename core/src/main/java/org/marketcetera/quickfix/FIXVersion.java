@@ -14,12 +14,6 @@ import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_50;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_50SP1;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_50SP2;
 
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.MessageUtils;
-import quickfix.Session;
-import quickfix.SessionID;
-
 /**
  * An enum for all the supported FIX versions, with the default URL for the data dictionary file.
  * 
@@ -106,21 +100,21 @@ public enum FIXVersion
     /**
      * Get the <code>FIXVersion</code> of the given message.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      * @return a <code>FIXVersion</code> value
-     * @throws FieldNotFound if the given message is malformed and the version cannot be identified
+     * @throws quickfix.FieldNotFound if the given message is malformed and the version cannot be identified
      * @throws IllegalArgumentException if the FIX version of the given message is unsupported
      */
-    public static FIXVersion getFIXVersion(Message inMessage)
-            throws FieldNotFound
+    public static FIXVersion getFIXVersion(quickfix.Message inMessage)
+            throws quickfix.FieldNotFound
     {
-        SessionID sessionId = MessageUtils.getSessionID(inMessage);
+        quickfix.SessionID sessionId = quickfix.MessageUtils.getSessionID(inMessage);
         if(sessionId.isFIXT()) {
             if(inMessage.getHeader().isSetField(quickfix.field.ApplVerID.FIELD)) {
                 return doFixApplicationVersionLookup(inMessage.getHeader().getString(quickfix.field.ApplVerID.FIELD));
             }
             // this is a FIXT message _and_ ApplVerID is _not_ set, we need to know something about the session
-            Session session = Session.lookupSession(sessionId);
+            quickfix.Session session = quickfix.Session.lookupSession(sessionId);
             if(session == null) {
                 throw new UnsupportedOperationException(Messages.APPL_VERID_REQUIRED.getText());
             }
@@ -133,14 +127,14 @@ public enum FIXVersion
     /**
      * Get the FIX version from the given session ID.
      *
-     * @param inSessionId a <code>SessionID</code> value
+     * @param inSessionId a <code>quickfix.SessionID</code> value
      * @return a <code>FIXVersion</code> value
      */
-    public static FIXVersion getFIXVersion(SessionID inSessionId)
+    public static FIXVersion getFIXVersion(quickfix.SessionID inSessionId)
     {
         if(inSessionId.isFIXT()) {
             // this is a FIXT message _and_ ApplVerID is _not_ set, we need to know something about the session
-            Session session = Session.lookupSession(inSessionId);
+            quickfix.Session session = quickfix.Session.lookupSession(inSessionId);
             if(session == null) {
                 throw new UnsupportedOperationException(Messages.APPL_VERID_REQUIRED.getText());
             }
@@ -280,11 +274,11 @@ public enum FIXVersion
      *
      * @param inVersionString a <code>String</code> value
      * @return a <code>FIXVersion</code> value
-     * @throws FieldNotFound if the version could not be determined
+     * @throws quickfix.FieldNotFound if the version could not be determined
      * @throws IllegalArgumentException if the version cannot be found
      */
     private static FIXVersion doFixVersionLookup(String inVersionString)
-            throws FieldNotFound
+            throws quickfix.FieldNotFound
     {
         FIXVersion fixVersion = versionMap.get(inVersionString);
         if(fixVersion == null) {

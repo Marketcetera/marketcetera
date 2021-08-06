@@ -9,6 +9,9 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.service.AuthorizationHelperService;
@@ -322,7 +325,35 @@ public class ApplicationMenu
         @Override
         public int compareTo(MenuItemMetaData inO)
         {
-            return new Integer(getMenuContent().getWeight()).compareTo(inO.getMenuContent().getWeight());
+            return new CompareToBuilder().append(getMenuContent().getWeight(),inO.getMenuContent().getWeight())
+                    .append(getMenuContent().getMenuCaption(),inO.getMenuContent().getMenuCaption()).toComparison();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return new HashCodeBuilder()
+                    .append(getWeight())
+                    .append(getMenuCaption()).toHashCode();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof MenuItemMetaData)) {
+                return false;
+            }
+            MenuItemMetaData other = (MenuItemMetaData) obj;
+            return new EqualsBuilder()
+                    .append(getWeight(),other.getWeight())
+                    .append(getMenuCaption(),other.getMenuCaption()).isEquals();
         }
         /* (non-Javadoc)
          * @see java.lang.Object#toString()

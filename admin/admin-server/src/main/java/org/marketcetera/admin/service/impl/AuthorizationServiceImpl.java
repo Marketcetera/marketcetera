@@ -496,7 +496,7 @@ public class AuthorizationServiceImpl
             permissionAliases.put("description",
                                   QPersistentPermission.persistentPermission.description.getMetadata().getName());
         }
-        permissionMapsByUsername = CacheBuilder.newBuilder().expireAfterAccess(userPermissionCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<String,LoadingCache<String,Boolean>>() {
+        permissionMapsByUsername = CacheBuilder.newBuilder().expireAfterWrite(userPermissionCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<String,LoadingCache<String,Boolean>>() {
             @Override
             public LoadingCache<String,Boolean> load(String inUsername)
                     throws Exception
@@ -881,9 +881,9 @@ public class AuthorizationServiceImpl
     @Autowired(required=false)
     private AdminConfiguration adminConfiguration;
     /**
-     * length of time to cache user permissions
+     * length of time to cache user permissions in milliseconds
      */
-    private long userPermissionCacheTtl = 1000 * 60 * 5;
+    private long userPermissionCacheTtl = 1000 * 30;
     /**
      * caches permissions by username and permission name
      */

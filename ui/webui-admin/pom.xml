@@ -61,9 +61,5 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.vaadin.addons</groupId>
-      <artifactId>wizards-for-vaadin</artifactId>
-    </dependency>
   </dependencies>
 </project>

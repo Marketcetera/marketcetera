@@ -1,7 +1,6 @@
 package org.marketcetera.web.service.admin;
 
 import org.marketcetera.admin.AdminRpcClientFactory;
-import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.web.service.ConnectableServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,6 @@ public class AdminClientServiceFactory
     {
         AdminClientService adminClientService = new AdminClientService();
         adminClientService.setAdminClientFactory(adminClientFactory);
-        adminClientService.setFixAdminClientFactory(fixAdminClientFactory);
         return adminClientService;
     }
     /* (non-Javadoc)
@@ -43,9 +41,4 @@ public class AdminClientServiceFactory
      */
     @Autowired
     private AdminRpcClientFactory adminClientFactory;
-    /**
-     * creates a FIX admin client to connect to the fix admin server
-     */
-    @Autowired
-    private FixAdminRpcClientFactory fixAdminClientFactory;
 }

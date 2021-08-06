@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.vaadin.server.Resource;
@@ -69,7 +70,9 @@ public interface MenuContent
         public int compare(MenuContent inO1,
                            MenuContent inO2)
         {
-            return new Integer(inO1.getWeight()).compareTo(inO2.getWeight());
+            return new CompareToBuilder()
+                    .append(inO1.getWeight(),inO2.getWeight())
+                    .append(inO1.getMenuCaption(),inO2.getMenuCaption()).toComparison();
         }
     };
 }

@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Properties;
 
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.font.MarketceteraFont;
 
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
@@ -57,12 +57,12 @@ public abstract class AbstractPagedGridView<DataClazz>
         });
         firstPageButton = new Button();
         firstPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-        firstPageButton.setIcon(FontAwesome.FAST_BACKWARD);
+        firstPageButton.setIcon(MarketceteraFont.First);
         firstPageButton.addClickListener(inEvent -> {
             getDataContainer().firstPageClick();
         });
         prevPageButton = new Button();
-        prevPageButton.setIcon(FontAwesome.BACKWARD);
+        prevPageButton.setIcon(MarketceteraFont.Backward);
         prevPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
         prevPageButton.addClickListener(inEvent -> {
             getDataContainer().prevPageClick();
@@ -70,13 +70,13 @@ public abstract class AbstractPagedGridView<DataClazz>
         currentPageLabel = new Label();
         currentPageLabel.setWidthUndefined();
         nextPageButton = new Button();
-        nextPageButton.setIcon(FontAwesome.FORWARD);
+        nextPageButton.setIcon(MarketceteraFont.Forward);
         nextPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
         nextPageButton.addClickListener(inEvent -> {
             getDataContainer().nextPageClick();
         });
         lastPageButton = new Button();
-        lastPageButton.setIcon(FontAwesome.FAST_FORWARD);
+        lastPageButton.setIcon(MarketceteraFont.Last);
         lastPageButton.setStyleName(ValoTheme.BUTTON_BORDERLESS);
         lastPageButton.addClickListener(inEvent -> {
             getDataContainer().lastPageClick();

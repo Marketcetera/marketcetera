@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
@@ -22,7 +21,6 @@ import org.tensorflow.Graph;
  * @version $Id$
  * @since $Release$
  */
-@Ignore("Tensor flow causes core-dump with Open JDK 1.8.0")
 public class TensorFlowModelTest
         extends TensorFlowTestBase
 {

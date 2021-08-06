@@ -38,9 +38,9 @@ import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.SessionUser;
 import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.service.FixAdminClientService;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.StyleService;
-import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.web.service.trade.TradeClientService;
 import org.marketcetera.web.view.ContentView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +117,7 @@ public class OrderTicketView
             adjustSendButton();
         });
         styleService.addStyle(brokerComboBox);
-        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(this);
+        serviceManager.getService(FixAdminClientService.class).addBrokerStatusListener(this);
         // side combo
         sideComboBox = new ComboBox();
         sideComboBox.setCaption("Side");
@@ -515,7 +515,7 @@ public class OrderTicketView
                                "{} {} detach",
                                PlatformServices.getServiceName(getClass()),
                                hashCode());
-        serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
+        serviceManager.getService(FixAdminClientService.class).removeBrokerStatusListener(this);
     }
     /* (non-Javadoc)
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
