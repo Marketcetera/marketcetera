@@ -46,6 +46,8 @@ import com.google.common.collect.Lists;
 public class SessionCustomizationTest
         extends DareTestBase
 {
+    // TODO test modifiers that throw exceptions other than MessageIntercepted
+    // TODO test virtually mapped sessions (see TradeServiceImpl)
     /**
      * Runs before each test.
      * 
@@ -59,8 +61,13 @@ public class SessionCustomizationTest
         testSessionCustomization.getOrderModifiers().clear();
         testSessionCustomization.getResponseModifiers().clear();
     }
+    /**
+     * Test incoming and outgoing message customizations.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void testOutgoingMessages()
+    public void testMessageCustomization()
             throws Exception
     {
         doCustomizationTest(false,
@@ -72,6 +79,13 @@ public class SessionCustomizationTest
         doCustomizationTest(true,
                             true);
     }
+    /**
+     * Perform one iteration of the message customization test.
+     *
+     * @param inIsIntercepted a <code>boolean</code> value
+     * @param isThrowException a <code>boolean</code> value
+     * @throws Exception if an unexpected error occurs
+     */
     private void doCustomizationTest(boolean inIsIntercepted,
                                      boolean isThrowException)
             throws Exception
@@ -153,6 +167,13 @@ public class SessionCustomizationTest
     {
         return FIXVersion.FIX50SP2;
     }
+    /**
+     * Generate and send a report that acks an order.
+     *
+     * @param inTargetSessionId a <code>quickfix.SessionID</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if the message could not be generated and sent
+     */
     private quickfix.Message ackOrder(quickfix.SessionID inTargetSessionId)
             throws Exception
     {
