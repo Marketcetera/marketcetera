@@ -1,6 +1,5 @@
 package org.marketcetera.trade.service.impl;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -9,7 +8,6 @@ import javax.annotation.PostConstruct;
 import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.BrokerUnavailable;
-import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.PlatformServices;
@@ -45,7 +43,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
@@ -129,8 +126,6 @@ public class TradeServiceImpl
             }
             // TODO broker algos
             // TODO reprice
-            // construct the list of order modifiers to apply
-            Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inServerFixSession);
             // choose the broker to use
             ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
             // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
@@ -138,22 +133,6 @@ public class TradeServiceImpl
             fixMessage = FIXConverter.toQMessage(mappedServerFixSession.getFIXVersion().getMessageFactory(),
                                                  FIXMessageUtil.getDataDictionary(mappedServerFixSession.getFIXVersion()),
                                                  inOrder);
-            // apply modifiers
-            for(MessageModifier orderModifier : orderModifiers) {
-                try {
-                    orderModifier.modify(mappedServerFixSession,
-                                         fixMessage);
-                    SLF4JLoggerProxy.debug(this,
-                                           "Applied {} to {}",
-                                           orderModifier,
-                                           fixMessage);
-                } catch (Exception e) {
-                    // unable to modify the order, but the show must go on!
-                    PlatformServices.handleException(this,
-                                                     "Unable to modify order",
-                                                     e);
-                }
-            }
             return fixMessage;
         } catch (Exception e) {
             OrderID orderId = null;
@@ -200,23 +179,6 @@ public class TradeServiceImpl
             PlatformServices.handleException(this,
                                              "Unable to process trading session status message",
                                              e);
-        }
-        ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
-        Collection<MessageModifier> responseModifiers = getReportMessageModifiers(inServerFixSession);
-        for(MessageModifier responseModifier : responseModifiers) {
-            try {
-                responseModifier.modify(mappedServerFixSession,
-                                        fixMessage);
-                SLF4JLoggerProxy.debug(this,
-                                       "Applied {} to {}",
-                                       responseModifier,
-                                       fixMessage);
-            } catch (Exception e) {
-                Messages.MODIFICATION_FAILED.warn(this,
-                                                  e,
-                                                  fixMessage,
-                                                  inServerFixSession);
-            }
         }
         TradeMessage reply;
         try {
@@ -353,54 +315,6 @@ public class TradeServiceImpl
             }
         }
         return mappedServerFixSession;
-    }
-    /**
-     * Get the complete collection of order modifiers for the given broker.
-     *
-     * @param inSession a <code>ServerFixSession</code> value
-     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
-     */
-    private Collection<MessageModifier> getOrderMessageModifiers(ServerFixSession inSession)
-    {
-        return getMessageModifiers(inSession,
-                                   true);
-    }
-    /**
-     * Get the complete collection of report modifiers for the given broker.
-     *
-     * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
-     */
-    private Collection<MessageModifier> getReportMessageModifiers(ServerFixSession inServerFixSession)
-    {
-        return getMessageModifiers(inServerFixSession,
-                                   false);
-    }
-    /**
-     * Get the complete collection of message modifiers for the given broker.
-     *
-     * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @param inIsOrder a <code>boolean</code> value
-     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
-     */
-    private Collection<MessageModifier> getMessageModifiers(ServerFixSession inServerFixSession,
-                                                            boolean inIsOrder)
-    {
-        Collection<MessageModifier> modifiers = Lists.newArrayList();
-        if(inIsOrder) {
-            modifiers.addAll(inServerFixSession.getOrderModifiers());
-        } else {
-            modifiers.addAll(inServerFixSession.getResponseModifiers());
-        }
-        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
-            ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
-            if(inIsOrder) {
-                modifiers.addAll(mappedServerFixSession.getOrderModifiers());
-            } else {
-                modifiers.addAll(mappedServerFixSession.getResponseModifiers());
-            }
-        }
-        return modifiers;
     }
     /**
      * provides access to outgoing message services

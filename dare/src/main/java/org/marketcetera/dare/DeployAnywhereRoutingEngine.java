@@ -57,7 +57,7 @@ import org.marketcetera.fix.FixSessionAttributes;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.fix.FixSettingsProviderFactory;
-import org.marketcetera.fix.OrderIntercepted;
+import org.marketcetera.fix.MessageIntercepted;
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.SessionRestorePayload;
@@ -89,7 +89,8 @@ import org.marketcetera.trade.event.IncomingFixMessageEvent;
 import org.marketcetera.trade.event.OwnedMessage;
 import org.marketcetera.trade.event.SimpleIncomingFixAdminMessageEvent;
 import org.marketcetera.trade.event.SimpleIncomingFixAppMessageEvent;
-import org.marketcetera.trade.event.SimpleIncomingOrderInterceptedEvent;
+import org.marketcetera.trade.event.SimpleIncomingMessageInterceptedEvent;
+import org.marketcetera.trade.event.SimpleOutgoingMessageInterceptedEvent;
 import org.marketcetera.trade.event.SimpleOutgoingOrderStatusEvent;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.except.I18NException;
@@ -372,6 +373,9 @@ public class DeployAnywhereRoutingEngine
             }
             Session.lookupSession(inSessionId).setTargetDefaultApplicationVersionID(new quickfix.field.ApplVerID(defaultApplVerId));
         }
+        modifyOutgoingMessage(serverFixSession,
+                              inMessage,
+                              true);
         Messages.QF_TO_ADMIN.info(getCategory(inMessage),
                                   inMessage,
                                   serverFixSession);
@@ -389,9 +393,9 @@ public class DeployAnywhereRoutingEngine
         if(!isRunning.get()) {
             return;
         }
+        ServerFixSession session = brokerService.getServerFixSession(inSessionId);
         if(FIXMessageUtil.isLogon(inMessage)) {
             if(!brokerService.isSessionTime(inSessionId)) {
-                ServerFixSession session = brokerService.getServerFixSession(inSessionId);
                 if(session == null) {
                     throw new quickfix.RejectLogon(inSessionId + " is not a known session");
                 }
@@ -427,16 +431,28 @@ public class DeployAnywhereRoutingEngine
                                   brokerService.getSessionName(inSessionId));
             return;
         }
-        Messages.QF_TO_APP.info(getCategory(inMessage),
-                                inMessage,
-                                serverFixSession);
-        logMessage(inMessage,
-                   serverFixSession);
-        try {
-            rootOrderIdFactory.receiveOutgoingMessage(inMessage);
-        } catch (Exception e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e);
+        boolean messageIntercepted = modifyOutgoingMessage(serverFixSession,
+                                                           inMessage,
+                                                           false);
+        if(messageIntercepted) {
+            eventBusService.post(new SimpleOutgoingMessageInterceptedEvent(inSessionId,
+                                                                           inMessage));
+            SLF4JLoggerProxy.info(this,
+                                  "{} intercepted and not sent to broker",
+                                  FIXMessageUtil.toHumanDelimitedString(inMessage));
+            throw new quickfix.DoNotSend();
+        } else {
+            Messages.QF_TO_APP.info(getCategory(inMessage),
+                                    inMessage,
+                                    serverFixSession);
+            logMessage(inMessage,
+                       serverFixSession);
+            try {
+                rootOrderIdFactory.receiveOutgoingMessage(inMessage);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
         }
     }
     /* (non-Javadoc)
@@ -1323,6 +1339,98 @@ public class DeployAnywhereRoutingEngine
         sender = inSender;
     }
     /**
+     * Modify the given outgoing message using the settings in the given session, if appropriate.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inIsAdmin a <code>boolean</code> value
+     * @return a <code>boolean</code> value indicating if the message has been intercepted
+     */
+    private boolean modifyOutgoingMessage(ServerFixSession inServerFixSession,
+                                          quickfix.Message inMessage,
+                                          boolean inIsAdmin)
+    {
+        SessionCustomization sessionCustomization = brokerService.getSessionCustomization(inServerFixSession.getActiveFixSession().getFixSession());
+        if(sessionCustomization != null) {
+            // outgoing messages are always subject to modifiers and are considered to be originated "from the broker" for this purpose
+            return modifyMessage(inServerFixSession,
+                                 sessionCustomization.getOrderModifiers(),
+                                 inMessage,
+                                 Originator.Broker,
+                                 inIsAdmin);
+        }
+        return false;
+    }
+    /**
+     * Modify the given incoming message using the settings in the given session, if appropriate.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inIsAdmin a <code>boolean</code> value
+     * @return a <code>boolean</code> value indicating if the message has been intercepted
+     */
+    private boolean modifyIncomingMessage(ServerFixSession inServerFixSession,
+                                          quickfix.Message inMessage,
+                                          Originator inOriginator,
+                                          boolean inIsAdmin)
+    {
+        SessionCustomization sessionCustomization = brokerService.getSessionCustomization(inServerFixSession.getActiveFixSession().getFixSession());
+        if(sessionCustomization != null) {
+            return modifyMessage(inServerFixSession,
+                                 sessionCustomization.getResponseModifiers(),
+                                 inMessage,
+                                 inOriginator,
+                                 inIsAdmin);
+        }
+        return false;
+    }
+    /**
+     * Modify the given message using the given modifiers from the given session.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inModifiers a <code>List&lt;MessageModifier&gt;</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inIsAdmin a <code>boolean</code> value
+     * @return a <code>boolean</code> value
+     */
+    private boolean modifyMessage(ServerFixSession inServerFixSession,
+                                  List<MessageModifier> inModifiers,
+                                  quickfix.Message inMessage,
+                                  Originator inOriginator,
+                                  boolean inIsAdmin)
+    {
+        boolean messageIntercepted = false;
+        if((inOriginator == Originator.Broker) && (inModifiers != null)) {
+            for(MessageModifier modifier : inModifiers) {
+                try {
+                    modifier.modify(inServerFixSession,
+                                    inMessage);
+                } catch (MessageIntercepted e) {
+                    String humanReadableMessage = FIXMessageUtil.toHumanDelimitedString(inMessage);
+                    if(inIsAdmin) {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Cannot intercept '{}' because admin messages cannot be intercepted",
+                                              humanReadableMessage);
+                        messageIntercepted = false;
+                    } else {
+                        SLF4JLoggerProxy.info(this,
+                                              "{} intercepted",
+                                              humanReadableMessage);
+                        messageIntercepted = true;
+                    }
+                } catch (I18NException ex) {
+                    Messages.QF_MODIFICATION_FAILED.warn(getCategory(inMessage),
+                                                         ex,
+                                                         inMessage,
+                                                         inServerFixSession);
+                }
+            }
+        }
+        return messageIntercepted;
+    }
+    /**
      * Initializes the acceptor if necessary.
      *
      * @throws ConfigError if an error occurs initializing the session
@@ -1486,6 +1594,8 @@ public class DeployAnywhereRoutingEngine
         Messages.QF_FROM_APP.info(getCategory(inMessage),
                                   inMessage,
                                   fixSession);
+//        modifyIncomingMessage(fixSession,
+//                              inMessage);
         FIXMessageUtil.logMessage(inMessage);
         logMessage(inMessage,
                    fixSession);
@@ -1756,25 +1866,10 @@ public class DeployAnywhereRoutingEngine
 //                                                        new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getBrokerId()));
 //        }
         // Apply message modifiers.
-        boolean orderIntercepted = false;
-        if((inOriginator == Originator.Broker) && (inServerFixSession.getResponseModifiers() != null)) {
-            for(MessageModifier responseModifier : inServerFixSession.getResponseModifiers()) {
-                try {
-                    responseModifier.modify(inServerFixSession,
-                                            inMessage);
-                } catch (OrderIntercepted e) {
-                    SLF4JLoggerProxy.info(this,
-                                          "{} intercepted",
-                                          inMessage);
-                    orderIntercepted = true;
-                } catch (I18NException ex) {
-                    Messages.QF_MODIFICATION_FAILED.warn(getCategory(inMessage),
-                                                         ex,
-                                                         inMessage,
-                                                         inServerFixSession);
-                }
-            }
-        }
+        boolean messageIntercepted = modifyIncomingMessage(inServerFixSession,
+                                                           inMessage,
+                                                           inOriginator,
+                                                           inIsAdmin);
 //        TradeMessage reply;
 //        try {
 //            reply = FIXConverter.fromQMessage(inMessage,
@@ -1807,12 +1902,12 @@ public class DeployAnywhereRoutingEngine
                                        forwardMessages);
                 return;
             }
-            if(orderIntercepted) {
-                eventBusService.post(new SimpleIncomingOrderInterceptedEvent(fixMessageEvent.getSessionId(),
-                                                                             fixMessageEvent.getMessage()));
-                SLF4JLoggerProxy.debug(this,
-                                       "{} intercepted and not sent to client",
-                                       inMessage);
+            if(messageIntercepted) {
+                eventBusService.post(new SimpleIncomingMessageInterceptedEvent(fixMessageEvent.getSessionId(),
+                                                                               fixMessageEvent.getMessage()));
+                SLF4JLoggerProxy.info(this,
+                                      "{} intercepted and not sent to client",
+                                      FIXMessageUtil.toHumanDelimitedString(inMessage));
             } else {
                 // TODO this could go on a special channel...
                 eventBusService.post(fixMessageEvent);

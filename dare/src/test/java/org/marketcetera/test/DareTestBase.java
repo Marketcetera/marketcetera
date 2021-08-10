@@ -19,11 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,10 +44,12 @@ import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.brokers.service.FixSessionProvider;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.PriceQtyTuple;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.event.EventTestBase;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionStatus;
@@ -86,6 +89,8 @@ import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
 import org.marketcetera.trade.dao.PersistentReportDao;
+import org.marketcetera.trade.event.IncomingMessageInterceptedEvent;
+import org.marketcetera.trade.event.OutgoingMessageInterceptedEvent;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
@@ -106,6 +111,7 @@ import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 import junitparams.JUnitParamsRunner;
 import quickfix.Acceptor;
@@ -145,6 +151,7 @@ public class DareTestBase
         SLF4JLoggerProxy.info(this,
                               "{} beginning setup",
                               name.getMethodName());
+        eventBusService.register(this);
         fixSettingsProvider = fixSettingsProviderFactory.create();
         traderUser = userService.findByName("trader");
         DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
@@ -167,6 +174,7 @@ public class DareTestBase
         remoteAcceptorPort = hostAcceptorPort + 1000;
         asyncExecutorService = Executors.newCachedThreadPool();
         clearOrderData();
+        resetMessageInterceptedEvents();
         instrument = generateInstrument();
         SLF4JLoggerProxy.info(this,
                               "{} beginning",
@@ -210,9 +218,128 @@ public class DareTestBase
                 asyncExecutorService = null;
             }
         } finally {
+            eventBusService.unregister(this);
             SLF4JLoggerProxy.info(this,
                                   "{} done",
                                   name.getMethodName());
+        }
+    }
+    /**
+     * Receive {@link IncomingMessageInterceptedEvent} values.
+     *
+     * @param inEvent an <code>IncomingMessageInterceptedEvent</code> value
+     */
+    @Subscribe
+    public void receiveIncomingMessageInterceptedEvent(IncomingMessageInterceptedEvent inEvent)
+    {
+        incomingMessageInterceptedEvents.addLast(inEvent);
+    }
+    /**
+     * Waits a reasonable amount of time for incoming message intercepted events.
+     *
+     * @return an <code>IncomingMessageInterceptedEvent</code> value
+     * @throws Exception if the event was not received
+     */
+    protected IncomingMessageInterceptedEvent waitForIncomingMessageInterceptedEvent()
+            throws Exception
+    {
+        return waitForIncomingMessageInterceptedEvent(10);
+    }
+    /**
+     * Waits the given amount of time for incoming message intercepted events.
+     *
+     * @param inSeconds an <code>int</code> value
+     * @return an <code>IncomingMessageInterceptedEvent</code> value
+     * @throws Exception if the event was not received
+     */
+    protected IncomingMessageInterceptedEvent waitForIncomingMessageInterceptedEvent(int inSeconds)
+            throws Exception
+    {
+        IncomingMessageInterceptedEvent event = null;
+        event = incomingMessageInterceptedEvents.pollFirst(inSeconds,
+                                                           TimeUnit.SECONDS);
+        assertNotNull("No incoming message intercepted event in " + inSeconds + "s at " + new DateTime(),
+                      event);
+        return event;
+    }
+    /**
+     * Verify that no incoming message intercepted events have occurred.
+     */
+    protected void verifyNoIncomingMessageInterceptedEvents()
+    {
+        assertTrue("Expected no incoming message intercepted events, got: " + incomingMessageInterceptedEvents.size(),
+                   incomingMessageInterceptedEvents.isEmpty());
+    }
+    /**
+     * Clear all incoming message intercepted events.
+     */
+    protected void resetIncomingMessageInterceptedEvents()
+    {
+        synchronized(incomingMessageInterceptedEvents) {
+            incomingMessageInterceptedEvents.clear();
+        }
+    }
+    /**
+     * Receive {@link OutgoingMessageInterceptedEvent} values.
+     *
+     * @param inEvent an <code>OutgoingMessageInterceptedEvent</code> value
+     */
+    @Subscribe
+    public void receiveOutgoingMessageInterceptedEvent(OutgoingMessageInterceptedEvent inEvent)
+    {
+        outgoingMessageInterceptedEvents.addLast(inEvent);
+    }
+    /**
+     * Waits a reasonable amount of time for outgoing message intercepted events.
+     *
+     * @return an <code>OutgoingMessageInterceptedEvent</code> value
+     * @throws Exception if the event was not received
+     */
+    protected OutgoingMessageInterceptedEvent waitForOutgoingMessageInterceptedEvent()
+            throws Exception
+    {
+        return waitForOutgoingMessageInterceptedEvent(10);
+    }
+    /**
+     * Waits the given amount of time for outgoing message intercepted events.
+     *
+     * @param inSeconds an <code>int</code> value
+     * @return an <code>OutgoingMessageInterceptedEvent</code> value
+     * @throws Exception if the event was not received
+     */
+    protected OutgoingMessageInterceptedEvent waitForOutgoingMessageInterceptedEvent(int inSeconds)
+            throws Exception
+    {
+        OutgoingMessageInterceptedEvent event = null;
+        event = outgoingMessageInterceptedEvents.pollFirst(inSeconds,
+                                                           TimeUnit.SECONDS);
+        assertNotNull("No outgoing message intercepted event in " + inSeconds + "s",
+                      event);
+        return event;
+    }
+    /**
+     * Verify that no outgoing message intercepted events have occurred.
+     */
+    protected void verifyNoOutgoingMessageInterceptedEvents()
+    {
+        assertTrue("Expected no outgoing message intercepted events, got: " + outgoingMessageInterceptedEvents.size(),
+                   outgoingMessageInterceptedEvents.isEmpty());
+    }
+    /**
+     * Reset all message intercepted events.
+     */
+    protected void resetMessageInterceptedEvents()
+    {
+        resetOutgoingMessageInterceptedEvents();
+        resetIncomingMessageInterceptedEvents();
+    }
+    /**
+     * Clear all outgoing message intercepted events.
+     */
+    protected void resetOutgoingMessageInterceptedEvents()
+    {
+        synchronized(outgoingMessageInterceptedEvents) {
+            outgoingMessageInterceptedEvents.clear();
         }
     }
     /**
@@ -1390,7 +1517,7 @@ public class DareTestBase
     {
         File tmpDir = FileUtils.getTempDirectory();
         File fileStoreDir = new File(tmpDir,
-                                     UUID.randomUUID().toString());
+                                     PlatformServices.generateId());
         fileStoreDir.deleteOnExit();
         FileUtils.forceMkdir(fileStoreDir);
         return fileStoreDir;
@@ -1402,7 +1529,7 @@ public class DareTestBase
      */
     protected static String generateId()
     {
-        return UUID.randomUUID().toString();
+        return PlatformServices.generateId();
     }
     /**
      * Generates a random value.
@@ -1782,8 +1909,23 @@ public class DareTestBase
         }
         return message;
     }
+    protected void resetMessages()
+    {
+        resetSenderMessages();
+        resetReceiverMessages();
+    }
+    protected void resetSenderMessages()
+    {
+        for(Sender sender : senders.values()) {
+            sender.reset();
+        }
+    }
+    protected void resetReceiverMessages()
+    {
+        receiver.reset();
+    }
     /**
-     * Waits for the next message to be received by the receiver and verifies it is of the given type. 
+     * Waits for the next application message to be received by the receiver and verifies it is of the given type. 
      *
      * @param inMsgType a <code>String</code> value
      * @return a <code>quickfix.Message</code> value
@@ -1793,13 +1935,59 @@ public class DareTestBase
                                                              String inMsgType)
             throws Exception
     {
-        quickfix.Message senderMessage = receiver.getNextApplicationMessage(inSessionId);
+        quickfix.Message senderMessage = receiver.getNextFromApplicationMessage(inSessionId);
         assertEquals(inMsgType,
                      senderMessage.getHeader().getString(MsgType.FIELD));
         return senderMessage;
     }
     /**
-     * Waits for the next message to be received by the sender and verifies it is of the given type.
+     * Waits for the next admin message to be received by the receiver and verifies it is of the given type. 
+     *
+     * @param inMsgType a <code>String</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected quickfix.Message waitForAndVerifySenderFromAdminMessage(quickfix.SessionID inSessionId,
+                                                                      String inMsgType)
+            throws Exception
+    {
+        long start = System.currentTimeMillis();
+        quickfix.Message senderMessage = null;
+        while(senderMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
+            senderMessage = receiver.getNextFromAdminMessage(inSessionId);
+            Thread.sleep(100);
+        }
+        assertNotNull("No admin message received for " + inSessionId + " in " + waitPeriod + "ms",
+                      senderMessage);
+        assertEquals(inMsgType,
+                     senderMessage.getHeader().getString(MsgType.FIELD));
+        return senderMessage;
+    }
+    /**
+     * Waits for the next admin message to be sent by the receiver and verifies it is of the given type. 
+     *
+     * @param inMsgType a <code>String</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected quickfix.Message waitForAndVerifySenderToAdminMessage(quickfix.SessionID inSessionId,
+                                                                    String inMsgType)
+            throws Exception
+    {
+        long start = System.currentTimeMillis();
+        quickfix.Message senderMessage = null;
+        while(senderMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
+            senderMessage = receiver.getNextToAdminMessage(inSessionId);
+            Thread.sleep(100);
+        }
+        assertNotNull("No admin message received for " + inSessionId + " in " + waitPeriod + "ms",
+                      senderMessage);
+        assertEquals(inMsgType,
+                     senderMessage.getHeader().getString(MsgType.FIELD));
+        return senderMessage;
+    }
+    /**
+     * Waits for the next application message to be received by the sender and verifies it is of the given type.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMsgType a <code>String</code> value
@@ -1817,10 +2005,42 @@ public class DareTestBase
         Validate.notNull(sender,
                          "No sender for " + inSessionId + " in " + senders.keySet());
         while(receiverMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
-            receiverMessage = sender.getNextApplicationMessage(inSessionId);
+            receiverMessage = sender.getNextFromApplicationMessage(inSessionId);
             Thread.sleep(100);
         }
         assertNotNull("No application message received for " + inSessionId + " in " + waitPeriod + "ms",
+                      receiverMessage);
+        assertEquals(inMsgType,
+                     receiverMessage.getHeader().getString(MsgType.FIELD));
+        return receiverMessage;
+    }
+    /**
+     * Waits for the next admin message to be received by the sender and verifies it is of the given type.
+     *
+     * @param inSessionId a <code>quickfix.SessionID</code> value
+     * @param inMsgType a <code>String</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected quickfix.Message waitForAndVerifyReceiverAdminMessage(quickfix.SessionID inSessionId,
+                                                                    String inMsgType)
+            throws Exception
+    {
+        long start = System.currentTimeMillis();
+        quickfix.Message receiverMessage = null;
+        quickfix.SessionID reversedSessionId = FIXMessageUtil.getReversedSessionId(inSessionId);
+        Sender sender = senders.get(reversedSessionId);
+        while(receiverMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
+            if(sender == null) {
+                sender = senders.get(reversedSessionId);
+            } else {
+                receiverMessage = sender.getNextFromAdminMessage(inSessionId);
+            }
+            Thread.sleep(100);
+        }
+        assertNotNull("No sender for " + inSessionId + " in " + senders.keySet(),
+                      sender);
+        assertNotNull("No admin message received for " + inSessionId + " in " + waitPeriod + "ms",
                       receiverMessage);
         assertEquals(inMsgType,
                      receiverMessage.getHeader().getString(MsgType.FIELD));
@@ -1850,7 +2070,7 @@ public class DareTestBase
                 Validate.notNull(sender,
                                  "No sender for " + inSessionId + " in " + senders.keySet());
                 while(receiverMessage == null && System.currentTimeMillis()<(start+waitPeriod)) {
-                    receiverMessage = sender.getNextApplicationMessage(inSessionId);
+                    receiverMessage = sender.getNextFromApplicationMessage(inSessionId);
                     Thread.sleep(100);
                 }
                 assertNotNull("No application message received for " + inSessionId + " in " + waitPeriod + "ms",
@@ -2254,9 +2474,9 @@ public class DareTestBase
             }
             body.append(quickfix.field.Side.FIELD).append('=').append(side.getFIXValue()).append(',');
             quickfix.Message order = buildMessage("35="+MsgType.ORDER_SINGLE,
-                                         body.toString(),
-                                         MsgType.ORDER_SINGLE,
-                                         factory);
+                                                  body.toString(),
+                                                  MsgType.ORDER_SINGLE,
+                                                  factory);
             order.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date())));
             InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(inInstrument);
             DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(inSenderSessionId);
@@ -2363,9 +2583,9 @@ public class DareTestBase
             acceptorSessionIndex = inAcceptorSessionIndex;
             initiatorSessionIndex = inInitiatorSessionIndex;
             senderSessionId = remoteSenderSessions.get(acceptorSessionIndex);
+            assertNotNull("No remote sender session for session " + senderBase+inAcceptorSessionIndex,
+                          senderSessionId);
             acceptorSessionId = FIXMessageUtil.getReversedSessionId(senderSessionId);
-            Validate.notNull(senderSessionId,
-                             "No remote sender session for session " + senderBase+inAcceptorSessionIndex);
             receiverSessionId = remoteReceiverSessions.get(initiatorSessionIndex);
             initiatorSessionId = FIXMessageUtil.getReversedSessionId(receiverSessionId);
             Validate.notNull(receiverSessionId,
@@ -2402,8 +2622,16 @@ public class DareTestBase
                                                  ExecutionType.PartialFill);
             return fill;
         }
+        /**
+         * Generate and send an order cancel reject based on the given message and order status.
+         *
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @return a <code>quickfix.Message</code> value containing the message sent
+         * @throws Exception if the message could not be sent
+         */
         public quickfix.Message generateAndSendOrderCanceReject(quickfix.Message inMessage,
-                                                       OrderStatus inOrderStatus)
+                                                                OrderStatus inOrderStatus)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(receiverSessionId.getBeginString());
@@ -2424,33 +2652,31 @@ public class DareTestBase
             return report;
         }
         /**
-         * 
+         * Generate and send a replace ack based on the given replace request.
          *
-         *
-         * @param inMessage
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be sent
          */
         public quickfix.Message generateAndSendReplaceAck(quickfix.Message inMessage)
                 throws Exception
         {
             return generateAndSendReport(inMessage,
-                                      OrderStatus.Replaced,
-                                      ExecutionType.Replaced);
+                                         OrderStatus.Replaced,
+                                         ExecutionType.Replaced);
         }
         /**
-         * 
+         * Generate and send an execution report based on the incoming message.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be sent
          */
         public quickfix.Message generateAndSendReport(quickfix.Message inMessage,
-                                             OrderStatus inOrderStatus,
-                                             ExecutionType inExecutionType)
+                                                      OrderStatus inOrderStatus,
+                                                      ExecutionType inExecutionType)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(receiverSessionId.getBeginString());
@@ -2459,27 +2685,26 @@ public class DareTestBase
                 orderId = generateId();
             }
             quickfix.Message report = generateExecutionReport(orderMessages.getLast(),
-                                                     this,
-                                                     orderId,
-                                                     inMessage.isSetField(quickfix.field.ClOrdID.FIELD)?inMessage.getString(quickfix.field.ClOrdID.FIELD):null,
-                                                     inMessage.isSetField(quickfix.field.OrigClOrdID.FIELD)?inMessage.getString(quickfix.field.OrigClOrdID.FIELD):null,
-                                                     inOrderStatus,
-                                                     inExecutionType,
-                                                     factory);
+                                                              this,
+                                                              orderId,
+                                                              inMessage.isSetField(quickfix.field.ClOrdID.FIELD)?inMessage.getString(quickfix.field.ClOrdID.FIELD):null,
+                                                              inMessage.isSetField(quickfix.field.OrigClOrdID.FIELD)?inMessage.getString(quickfix.field.OrigClOrdID.FIELD):null,
+                                                              inOrderStatus,
+                                                              inExecutionType,
+                                                              factory);
             executionMessages.add(report);
             Session.sendToTarget(report,
                                  receiverSessionId);
             return report;
         }
         /**
-         * 
+         * Generate and send an ack for the given new order.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be sent
          */
         public quickfix.Message generateAndSendAck(quickfix.Message inMessage)
                 throws Exception
@@ -2564,11 +2789,11 @@ public class DareTestBase
             return cancel;
         }
         /**
-         * 
+         * Generate an order for the given instrument.
          *
-         * @param inInstrument
-         * @return
-         * @throws Exception
+         * @param inInstrument an <code>Instrument</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the order can not be generated
          */
         public quickfix.Message generateOrder(Instrument inInstrument)
                 throws Exception
@@ -2718,6 +2943,14 @@ public class DareTestBase
      */
     private static final Map<Integer,quickfix.SessionID> remoteReceiverSessions = Maps.newHashMap();
     /**
+     * holds received incoming order intercepted events
+     */
+    private final BlockingDeque<IncomingMessageInterceptedEvent> incomingMessageInterceptedEvents = new LinkedBlockingDeque<>();
+    /**
+     * holds received outgoing order intercepted events
+     */
+    private final BlockingDeque<OutgoingMessageInterceptedEvent> outgoingMessageInterceptedEvents = new LinkedBlockingDeque<>();
+    /**
      * message factory value
      */
     @Autowired
@@ -2806,6 +3039,11 @@ public class DareTestBase
      */
     @Autowired
     protected JpaTransactionManager txManager;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    protected EventBusService eventBusService;
     /**
      * default period of time to wait for a test condition to be true
      */

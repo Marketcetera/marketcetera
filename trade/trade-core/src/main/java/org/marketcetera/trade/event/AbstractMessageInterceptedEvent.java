@@ -3,14 +3,14 @@ package org.marketcetera.trade.event;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for {@link MessageInterceptedEvent} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class SimpleIncomingOrderInterceptedEvent
-        implements IncomingOrderInterceptedEvent
+public abstract class AbstractMessageInterceptedEvent
+        implements MessageInterceptedEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasFIXMessage#getMessage()
@@ -35,18 +35,18 @@ public class SimpleIncomingOrderInterceptedEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("IncomingOrderInterceptedEvent [sessionId=").append(sessionId).append(", message=")
+        builder.append(getClass().getSimpleName()).append(" [sessionId=").append(sessionId).append(", message=")
                 .append(message).append("]");
         return builder.toString();
     }
     /**
-     * Create a new SimpleIncomingOrderInterceptedEvent instance.
+     * Create a new AbstractMessageInterceptedEvent instance.
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMessage a <code>quickfix.Message</code> value
      */
-    public SimpleIncomingOrderInterceptedEvent(quickfix.SessionID inSessionId,
-                                               quickfix.Message inMessage)
+    protected AbstractMessageInterceptedEvent(quickfix.SessionID inSessionId,
+                                              quickfix.Message inMessage)
     {
         sessionId = inSessionId;
         message = inMessage;
