@@ -8,6 +8,8 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import com.google.common.collect.Lists;
 
 /* $License$ */
@@ -27,6 +29,10 @@ public class XmlService
     @PostConstruct
     public void start()
     {
+        SLF4JLoggerProxy.info(this,
+                              "Starting {} with context classes: {}",
+                              PlatformServices.getServiceName(getClass()),
+                              contextPath);
         try {
             context = JAXBContext.newInstance(contextPath.toArray(new Class<?>[contextPath.size()]));
         } catch (JAXBException e) {
