@@ -1301,8 +1301,6 @@ public class ReportServiceImpl
             permissionWhere = permissionWhere.and(permissionWhere.and(o.viewer.in(subjectUsers)).or(o.viewer.eq((PersistentUser)inViewer)));
         }
         primaryWhere = primaryWhere.and(permissionWhere);
-        SLF4JLoggerProxy.warn(this,"COCO: where clause is {}",
-                              primaryWhere);
         List<Tuple> results = jpaQueryFactory.select(o.cumulativeQuantity,o.symbol,o.expiry,o.strikePrice,o.optionType,o.account,o.actor.id).from(o).where(primaryWhere).fetch();
         Map<PositionKey<I>,BigDecimal> finalResults = new LinkedHashMap<PositionKey<I>,BigDecimal>();
         if(results != null) {
