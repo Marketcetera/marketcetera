@@ -1,5 +1,7 @@
 package org.marketcetera.admin.service;
 
+import java.util.Collection;
+
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
@@ -37,4 +39,11 @@ public interface UserAttributeService
      * @param inUserAttribute a <code>UserAttribute</code> value
      */
     void delete(UserAttribute inUserAttribute);
+    /**
+     * Gets the <code>UserAttribute</code> values for the given user.
+     *
+     * @param inUser a <code>User</code> value
+     * @return a <code>Collection&lt;UserAttribute&gt;</code> value
+     */
+    Collection<UserAttribute> getAllByUser(User inUser);
 }

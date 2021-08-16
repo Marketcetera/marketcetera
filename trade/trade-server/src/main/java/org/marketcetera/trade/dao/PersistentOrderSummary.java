@@ -107,8 +107,8 @@ public class PersistentOrderSummary
      * @param inRootOrderId an <code>OrderID</code> value
      */
     public PersistentOrderSummary(PersistentReport inReport,
-                                 ReportBase inReportBase,
-                                 OrderID inRootOrderId)
+                                  ReportBase inReportBase,
+                                  OrderID inRootOrderId)
     {
         setInstrumentFields(new Equity("unknown"));
         orderStatus = org.marketcetera.trade.OrderStatus.Unknown;

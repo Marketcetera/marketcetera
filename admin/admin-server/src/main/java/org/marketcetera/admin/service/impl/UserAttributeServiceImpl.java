@@ -1,5 +1,7 @@
 package org.marketcetera.admin.service.impl;
 
+import java.util.Collection;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -81,6 +83,14 @@ public class UserAttributeServiceImpl
     {
         return userAttributeDao.findByUserAndUserAttributeType(inUser,
                                                                inUserAttributeType);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserAttributeService#getAllByUser(org.marketcetera.admin.User)
+     */
+    @Override
+    public Collection<UserAttribute> getAllByUser(User inUser)
+    {
+        return userAttributeDao.findByUser(inUser);
     }
     /**
      * Get the userAttributeDao value.

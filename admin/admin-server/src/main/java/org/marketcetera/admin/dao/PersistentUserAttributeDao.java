@@ -1,6 +1,9 @@
 package org.marketcetera.admin.dao;
 
+import java.util.Collection;
+
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -26,4 +29,11 @@ public interface PersistentUserAttributeDao
      */
     PersistentUserAttribute findByUserAndUserAttributeType(User inUser,
                                                            UserAttributeType inType);
+    /**
+     * Find the user attributes for the given user.
+     *
+     * @param inUser a <code>User</code> value
+     * @return a <code>Collection&lt;UserAttribute&gt;</code> value
+     */
+    Collection<UserAttribute> findByUser(User inUser);
 }
