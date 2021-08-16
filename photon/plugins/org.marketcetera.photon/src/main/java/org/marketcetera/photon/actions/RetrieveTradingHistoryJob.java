@@ -79,7 +79,6 @@ public class RetrieveTradingHistoryJob
                         }
                     }
                     PhotonPlugin.getDefault().setSessionStartTime(lastOccurrence);
-                    positionDate = lastOccurrence;
                 }
             } else {
                 if(openReports != null) {
