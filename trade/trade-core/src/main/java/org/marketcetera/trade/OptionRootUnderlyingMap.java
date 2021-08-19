@@ -1,4 +1,4 @@
-package org.marketcetera.ors;
+package org.marketcetera.trade;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,9 @@ import com.google.common.collect.TreeMultimap;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class OptionRootUnderlyingMap implements InitializingBean {
+public class OptionRootUnderlyingMap
+        implements InitializingBean, OptionService
+{
     /**
      * Creates an instance.
      */
@@ -48,11 +50,12 @@ public class OptionRootUnderlyingMap implements InitializingBean {
      *
      * @return the underlying symbol, if a mapping is found. null otherwise.
      */
-    public String getUnderlying(String inOptionRoot) {
+    public String getUnderlying(String inOptionRoot)
+    {
         if(inOptionRoot == null) {
             return null;
         }
-        final Map<String, String> map = mRootToUnderlying;
+        final Map<String,String> map = mRootToUnderlying;
         return map == null ? null : map.get(inOptionRoot);
     }
 
@@ -158,7 +161,9 @@ public class OptionRootUnderlyingMap implements InitializingBean {
                     }
                 }
             } catch (IOException e) {
-                Messages.ORUM_LOG_ERROR_LOADING_FILE.error(this, e, filename);
+                Messages.ORUM_LOG_ERROR_LOADING_FILE.error(this,
+                                                           e,
+                                                           filename);
             } finally {
                 registry.close();
             }

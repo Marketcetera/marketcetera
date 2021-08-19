@@ -53,6 +53,8 @@ import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BasicSelector;
+import org.marketcetera.trade.OptionRootUnderlyingMap;
+import org.marketcetera.trade.OptionService;
 import org.marketcetera.trade.SimpleAverageFillPriceFactory;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
@@ -125,6 +127,18 @@ public class DareApplication
                               org.marketcetera.core.Version.build_time,
                               org.marketcetera.core.Version.build_repository,
                               org.marketcetera.core.Version.build_path);
+    }
+    /**
+     * Get the option service.
+     *
+     * @return an <code>OptionService</code> value
+     */
+    @Bean
+    public OptionService getOptionService()
+    {
+        OptionRootUnderlyingMap optionService = new OptionRootUnderlyingMap();
+        optionService.setFilename(optionRootFilename);
+        return optionService;
     }
     /**
      * Get the XmlService value.
@@ -657,4 +671,9 @@ public class DareApplication
      */
     @Value("${metc.xml.context.path.classes}")
     private List<String> contextPathClasses;
+    /**
+     * option root filename value
+     */
+    @Value("${metc.option.root.filename:conf/optionRootMapping.txt}")
+    private String optionRootFilename;
 }
