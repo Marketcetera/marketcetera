@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
+import org.assertj.core.util.Lists;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -88,9 +89,38 @@ public class UserAttributeServiceImpl
      * @see org.marketcetera.admin.service.UserAttributeService#getAllByUser(org.marketcetera.admin.User)
      */
     @Override
-    public Collection<UserAttribute> getAllByUser(User inUser)
+    public Collection<? extends UserAttribute> getAllByUser(User inUser)
     {
         return userAttributeDao.findByUser(inUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserAttributeService#deleteAllByUser(org.marketcetera.admin.User)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void deleteAllByUser(User inUser)
+    {
+        userAttributeDao.deleteAll(userAttributeDao.findByUser(inUser));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserAttributeService#saveAll(org.marketcetera.admin.User, java.util.Collection)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public Collection<? extends UserAttribute> saveAll(User inUser,
+                                                       Collection<UserAttribute> inUserAttributes)
+    {
+        Collection<PersistentUserAttribute> entities = Lists.newArrayList();
+        for(UserAttribute userAttribute : inUserAttributes) {
+            PersistentUserAttribute pUserAttribute;
+            if(userAttribute instanceof PersistentUserAttribute) {
+                pUserAttribute = (PersistentUserAttribute)userAttribute;
+            } else {
+                pUserAttribute = new PersistentUserAttribute(userAttribute);
+            }
+            entities.add(pUserAttribute);
+        }
+        return userAttributeDao.saveAll(entities);
     }
     /**
      * Get the userAttributeDao value.

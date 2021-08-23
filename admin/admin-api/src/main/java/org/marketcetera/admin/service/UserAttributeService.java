@@ -43,7 +43,22 @@ public interface UserAttributeService
      * Gets the <code>UserAttribute</code> values for the given user.
      *
      * @param inUser a <code>User</code> value
-     * @return a <code>Collection&lt;UserAttribute&gt;</code> value
+     * @return a <code>Collection&lt;? extends UserAttribute&gt;</code> value
      */
-    Collection<UserAttribute> getAllByUser(User inUser);
+    Collection<? extends UserAttribute> getAllByUser(User inUser);
+    /**
+     * Deletes all <code>UserAttribute</code> values for the given user.
+     *
+     * @param inUser a <code>User</code> value
+     */
+    void deleteAllByUser(User inUser);
+    /**
+     * Saves all the given <code>UserAttribute</code> values for the given user.
+     *
+     * @param inUser a <code>User</code> value
+     * @param inUserAttributes a <code>Collection&lt;UserAttribute&gt;</code> value
+     * @return a <code>Collection&lt;? extends UserAttribute&gt;</code> value
+     */
+    Collection<? extends UserAttribute> saveAll(User inUser,
+                                                Collection<UserAttribute> inUserAttributes);
 }
