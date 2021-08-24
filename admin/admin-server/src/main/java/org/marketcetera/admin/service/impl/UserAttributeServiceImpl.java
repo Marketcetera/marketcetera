@@ -16,6 +16,7 @@ import org.marketcetera.admin.service.UserAttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 
 /* $License$ */
