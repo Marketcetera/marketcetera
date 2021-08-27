@@ -10,18 +10,14 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.EventTestBase;
-import org.marketcetera.fix.FixSession;
-import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.test.DareTestBase;
-import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
@@ -44,7 +40,6 @@ import com.google.common.collect.Maps;
 
 import junitparams.Parameters;
 import quickfix.Session;
-import quickfix.SessionID;
 
 /* $License$ */
 
@@ -59,18 +54,6 @@ import quickfix.SessionID;
 public class PositionTest
         extends DareTestBase
 {
-    /**
-     * Run before each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Before
-    public void setup()
-            throws Exception
-    {
-        super.setup();
-        fixVersion = FIXVersion.FIX42;
-    }
     /**
      * Test retrieving a single position.
      *
@@ -260,24 +243,6 @@ public class PositionTest
         verifySinglePosition(otherInstrument,
                              expectedPosition,
                              positionDate);
-    }
-    /**
-     * Set up the FIX sessions to use for the current test.
-     *
-     * @param inFixVersion a <code>FIXVersion</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void setupSession(FIXVersion inFixVersion)
-            throws Exception
-    {
-        fixVersion = inFixVersion;
-        int sessionIndex = counter.incrementAndGet();
-        createRemoteReceiverSession(sessionIndex);
-        sender = createInitiatorSession(sessionIndex);
-        target = FIXMessageUtil.getReversedSessionId(sender);
-        messageFactory = FIXVersion.getFIXVersion(sender).getMessageFactory();
-        session = brokerService.getActiveFixSession(sender).getFixSession();
-        brokerId = new BrokerID(session.getBrokerId());
     }
     /**
      * Verify the position of the given instrument at the given time matches the given expected value.
@@ -470,7 +435,7 @@ public class PositionTest
         quickfix.Message orderPendingNew = buildMessage("35=8",
                                                         "58=pending new,6=0,11="+order.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.PendingNew.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.PendingNew.getFIXValue()+",151="+inOrderQty.toPlainString(),
                                                         quickfix.field.MsgType.EXECUTION_REPORT,
-                                                        messageFactory);
+                                                        fixMessageFactory);
         orderPendingNew.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
                                                                      FIXMessageUtil.getDataDictionary(receivedOrder),
@@ -487,7 +452,7 @@ public class PositionTest
         quickfix.Message orderNew = buildMessage("35=8",
                                                  "58=new,6=0,11="+order.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.New.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.New.getFIXValue()+",151="+inOrderQty.toPlainString(),
                                                  quickfix.field.MsgType.EXECUTION_REPORT,
-                                                 messageFactory);
+                                                 fixMessageFactory);
         orderNew.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
                                                                      FIXMessageUtil.getDataDictionary(receivedOrder),
@@ -506,7 +471,7 @@ public class PositionTest
         quickfix.Message orderFill1 = buildMessage("35=8",
                                                    "58=fill1,6="+order.getPrice().toPlainString()+",11="+order.getOrderID()+",14="+inFillQty.toPlainString()+",15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.PartiallyFilled.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.PartialFill.getFIXValue()+",151="+inOrderQty.subtract(inFillQty).toPlainString(),
                                                    quickfix.field.MsgType.EXECUTION_REPORT,
-                                                   messageFactory);
+                                                   fixMessageFactory);
         orderFill1.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
         InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
                                                                      FIXMessageUtil.getDataDictionary(receivedOrder),
@@ -558,28 +523,4 @@ public class PositionTest
         fail("Unsupported instrument: " + inInstrument);
         return null;
     }
-    /**
-     * sender session value
-     */
-    private SessionID sender;
-    /**
-     * target session value
-     */
-    private SessionID target;
-    /**
-     * message factory value
-     */
-    private FIXMessageFactory messageFactory;
-    /**
-     * test FIX session value
-     */
-    private FixSession session;
-    /**
-     * test broker id value
-     */
-    private BrokerID brokerId;
-    /**
-     * FIX version for this test
-     */
-    private FIXVersion fixVersion;
 }

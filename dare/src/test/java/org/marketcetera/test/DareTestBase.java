@@ -120,6 +120,7 @@ import quickfix.FixVersions;
 import quickfix.Initiator;
 import quickfix.MessageFactory;
 import quickfix.Session;
+import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.field.MsgType;
 
@@ -151,6 +152,7 @@ public class DareTestBase
         SLF4JLoggerProxy.info(this,
                               "{} beginning setup",
                               name.getMethodName());
+        fixVersion = FIXVersion.FIX42;
         eventBusService.register(this);
         fixSettingsProvider = fixSettingsProviderFactory.create();
         traderUser = userService.findByName("trader");
@@ -240,6 +242,24 @@ public class DareTestBase
     public void receiveIncomingMessageInterceptedEvent(IncomingMessageInterceptedEvent inEvent)
     {
         incomingMessageInterceptedEvents.addLast(inEvent);
+    }
+    /**
+     * Set up the FIX sessions to use for the current test.
+     *
+     * @param inFixVersion a <code>FIXVersion</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void setupSession(FIXVersion inFixVersion)
+            throws Exception
+    {
+        fixVersion = inFixVersion;
+        int sessionIndex = counter.incrementAndGet();
+        createRemoteReceiverSession(sessionIndex);
+        sender = createInitiatorSession(sessionIndex);
+        target = FIXMessageUtil.getReversedSessionId(sender);
+        fixMessageFactory = FIXVersion.getFIXVersion(sender).getMessageFactory();
+        session = brokerService.getActiveFixSession(sender).getFixSession();
+        brokerId = new BrokerID(session.getBrokerId());
     }
     /**
      * Waits a reasonable amount of time for incoming message intercepted events.
@@ -3071,6 +3091,30 @@ public class DareTestBase
     protected static final String receiverBase = "RECEIVER";
     protected static final String defaultHostBase = "MATP";
     protected static final FIXVersion defaultFixVersion = FIXVersion.FIX42;
+    /**
+     * test FIX session value
+     */
+    protected FixSession session;
+    /**
+     * FIX version for this test
+     */
+    protected FIXVersion fixVersion;
+    /**
+     * sender session value
+     */
+    protected SessionID sender;
+    /**
+     * target session value
+     */
+    protected SessionID target;
+    /**
+     * message factory value
+     */
+    protected FIXMessageFactory fixMessageFactory;
+    /**
+     * test broker id value
+     */
+    protected BrokerID brokerId;
     /**
      * manages asynchronous tasks
      */
