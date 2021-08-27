@@ -154,6 +154,13 @@ public class DareTestBase
         eventBusService.register(this);
         fixSettingsProvider = fixSettingsProviderFactory.create();
         traderUser = userService.findByName("trader");
+        adminUser = userService.findByName("traderAdmin");
+        normalUser = userService.findByName("trader");
+        otherUser = userService.findByName("test");
+        assertNotNull(traderUser);
+        assertNotNull(adminUser);
+        assertNotNull(normalUser);
+        assertNotNull(otherUser);
         DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
         tradeClientParameters.setUsername(traderUser.getName());
         client = tradeClientFactory.create(tradeClientParameters);
@@ -3080,6 +3087,18 @@ public class DareTestBase
      * test user
      */
     protected User traderUser;
+    /**
+     * user with admin over {@link #normalUser}
+     */
+    protected User adminUser;
+    /**
+     * user with which to conduct trading activities
+     */
+    protected User normalUser;
+    /**
+     * unrelated user with no authority over {@link #normalUser}
+     */
+    protected User otherUser;
     /**
      * RPC services port
      */

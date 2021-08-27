@@ -70,12 +70,6 @@ public class PositionTest
     {
         super.setup();
         fixVersion = FIXVersion.FIX42;
-        adminUser = userService.findByName("traderAdmin");
-        normalUser = userService.findByName("trader");
-        otherUser = userService.findByName("test");
-        assertNotNull(adminUser);
-        assertNotNull(normalUser);
-        assertNotNull(otherUser);
     }
     /**
      * Test retrieving a single position.
@@ -564,18 +558,6 @@ public class PositionTest
         fail("Unsupported instrument: " + inInstrument);
         return null;
     }
-    /**
-     * user with admin over {@link #normalUser}
-     */
-    private User adminUser;
-    /**
-     * user with which to conduct trading activities
-     */
-    private User normalUser;
-    /**
-     * unrelated user with no authority over {@link #normalUser}
-     */
-    private User otherUser;
     /**
      * sender session value
      */
