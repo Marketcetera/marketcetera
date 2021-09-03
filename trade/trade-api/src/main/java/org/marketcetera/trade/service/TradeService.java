@@ -9,8 +9,6 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessagePublisher;
 
-import quickfix.Message;
-
 /* $License$ */
 
 /**
@@ -36,12 +34,12 @@ public interface TradeService
      *
      * @param inOrder an <code>Order</code> value
      * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @return a <code>Message</code> value
+     * @return a <code>quickfix.Message</code> value
      * @throws BrokerUnavailable if the broker is unavailable or unknown
      * @throws MessageIntercepted if the order should not be sent on in the data flow
      */
-    Message convertOrder(Order inOrder,
-                         ServerFixSession inServerFixSession);
+    quickfix.Message convertOrder(Order inOrder,
+                                  ServerFixSession inServerFixSession);
     /**
      * Convert the given message from the given broker to a <code>TradeMessage</code>.
      *

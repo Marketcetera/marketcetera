@@ -243,13 +243,6 @@
         </excludes>
         <filtering>false</filtering>
       </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <includes>
-          <include>META-INF/metc_version.properties</include>
-        </includes>
-        <filtering>true</filtering>
-      </resource>
     </resources>
     <plugins>
       <plugin>
