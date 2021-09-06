@@ -70,17 +70,20 @@ import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionTransType;
 import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.DirectTradeClientFactory;
@@ -2200,13 +2203,26 @@ public class DareTestBase
                             MsgType.EXECUTION_REPORT,
                             inFactory);
     }
+    /**
+     * Generates an order cancel reject with the given attributes.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @param inPriceQtyInfo an <code>OrderData</code> value
+     * @param inOrderId a <code>String</code> value
+     * @param inClOrdId a <code>String</code> value
+     * @param inOrigClOrdId a <code>String</code> value
+     * @param inOrderStatus an <code>org.marketcetera.trade.OrderStatus</code> value
+     * @param inFactory a <code>FIXMessageFactory</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws Exception if the message cannot be generated
+     */
     protected static quickfix.Message generateOrderCancelReject(quickfix.Message inMessage,
-                                                       OrderData inPriceQtyInfo,
-                                                       String inOrderId,
-                                                       String inClOrdId,
-                                                       String inOrigClOrdId,
-                                                       org.marketcetera.trade.OrderStatus inOrderStatus,
-                                                       FIXMessageFactory inFactory)
+                                                                OrderData inPriceQtyInfo,
+                                                                String inOrderId,
+                                                                String inClOrdId,
+                                                                String inOrigClOrdId,
+                                                                org.marketcetera.trade.OrderStatus inOrderStatus,
+                                                                FIXMessageFactory inFactory)
             throws Exception
     {
         boolean commaNeeded = false;
@@ -2280,6 +2296,86 @@ public class DareTestBase
                          actualOrderIds);
             throw e;
         }
+    }
+    /**
+     * Generate the given position for the given instrument with the given original order quantity.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inOrderQty a <code>BigDecimal</code> value
+     * @param inFillQty a <code>BigDecimal</code> value or <code>BigDecimal.ZERO</code> to leave the order at <code>NEW</code> status
+     * @return an <code>OrderSingle</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected OrderSingle generatePosition(Instrument inInstrument,
+                                           BigDecimal inOrderQty,
+                                           BigDecimal inFillQty)
+            throws Exception
+    {
+        String orderId = generateId();
+        OrderSingle order = Factory.getInstance().createOrderSingle();
+        BigDecimal orderPrice = new BigDecimal(100);
+        order.setBrokerID(brokerId);
+        order.setInstrument(inInstrument);
+        order.setOrderType(OrderType.Limit);
+        order.setPrice(orderPrice);
+        order.setQuantity(inOrderQty);
+        order.setSide(Side.Buy);
+        client.sendOrder(order);
+        quickfix.Message receivedOrder = waitForAndVerifySenderMessage(sender,
+                                                                       quickfix.field.MsgType.ORDER_SINGLE);
+        // send a pending new
+        quickfix.Message orderPendingNew = buildMessage("35=8",
+                                                        "58=pending new,6=0,11="+order.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.PendingNew.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.PendingNew.getFIXValue()+",151="+inOrderQty.toPlainString(),
+                                                        quickfix.field.MsgType.EXECUTION_REPORT,
+                                                        fixMessageFactory);
+        orderPendingNew.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
+        InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
+                                                                     FIXMessageUtil.getDataDictionary(receivedOrder),
+                                                                     quickfix.field.MsgType.EXECUTION_REPORT,
+                                                                     orderPendingNew);
+        orderPendingNew = fixVersion.getMessageFactory().getMsgAugmentor().executionReportAugment(orderPendingNew);
+        Session.sendToTarget(orderPendingNew,
+                             target);
+        verifyOrderStatus(order.getOrderID(),
+                          order.getOrderID(),
+                          OrderStatus.PendingNew);
+        reports.clear();
+        // send new
+        quickfix.Message orderNew = buildMessage("35=8",
+                                                 "58=new,6=0,11="+order.getOrderID()+",14=0,15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.New.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.New.getFIXValue()+",151="+inOrderQty.toPlainString(),
+                                                 quickfix.field.MsgType.EXECUTION_REPORT,
+                                                 fixMessageFactory);
+        orderNew.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
+        InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
+                                                                     FIXMessageUtil.getDataDictionary(receivedOrder),
+                                                                     quickfix.field.MsgType.EXECUTION_REPORT,
+                                                                     orderNew);
+        orderNew = fixVersion.getMessageFactory().getMsgAugmentor().executionReportAugment(orderNew);
+        Session.sendToTarget(orderNew,
+                             target);
+        verifyOrderStatus(order.getOrderID(),
+                          order.getOrderID(),
+                          OrderStatus.New);
+        if(inFillQty.compareTo(BigDecimal.ZERO) != 1) {
+            return order;
+        }
+        // send partial fill
+        quickfix.Message orderFill1 = buildMessage("35=8",
+                                                   "58=fill1,6="+order.getPrice().toPlainString()+",11="+order.getOrderID()+",14="+inFillQty.toPlainString()+",15=USD,17="+generateId()+",20=0,21=3,22=1,31=0,32=0,37="+orderId+",38="+inOrderQty.toPlainString()+",39="+OrderStatus.PartiallyFilled.getFIXValue()+",40="+OrderType.Limit.getFIXValue()+",44="+orderPrice.toPlainString()+",54="+Side.Buy.getFIXValue()+",59="+TimeInForce.GoodTillCancel.getFIXValue()+",60=20141210-15:04:55.098,150="+ExecutionType.PartialFill.getFIXValue()+",151="+inOrderQty.subtract(inFillQty).toPlainString(),
+                                                   quickfix.field.MsgType.EXECUTION_REPORT,
+                                                   fixMessageFactory);
+        orderFill1.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date(System.currentTimeMillis()-1000))));
+        InstrumentToMessage.SELECTOR.forInstrument(inInstrument).set(inInstrument,
+                                                                     FIXMessageUtil.getDataDictionary(receivedOrder),
+                                                                     quickfix.field.MsgType.EXECUTION_REPORT,
+                                                                     orderFill1);
+        orderFill1 = fixVersion.getMessageFactory().getMsgAugmentor().executionReportAugment(orderFill1);
+        Session.sendToTarget(orderFill1,
+                             target);
+        verifyOrderStatus(order.getOrderID(),
+                          order.getOrderID(),
+                          OrderStatus.PartiallyFilled);
+        return order;
     }
     /**
      * Provides a test artifact capable of tracking an order and its executions.
@@ -2545,13 +2641,28 @@ public class DareTestBase
          */
         protected BigDecimal orderQuantity;
         /**
-         * 
+         * order price value
          */
         protected BigDecimal orderPrice;
+        /**
+         * order id value
+         */
         protected String orderId;
+        /**
+         * order type value
+         */
         protected final OrderType orderType;
+        /**
+         * side value
+         */
         protected final Side side;
+        /**
+         * order messages value
+         */
         protected final Deque<quickfix.Message> orderMessages = Lists.newLinkedList();
+        /**
+         * execution messages value
+         */
         protected final List<quickfix.Message> executionMessages = Lists.newArrayList();
     }
     /**

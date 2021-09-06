@@ -1,6 +1,7 @@
 package org.marketcetera.trade.event;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 
@@ -88,7 +89,7 @@ public class SimpleOutgoingOrderStatusEvent
     {
         StringBuilder builder = new StringBuilder();
         builder.append("SimpleOutgoingOrderStatusEvent [message=").append(message).append(", failed=").append(failed)
-                .append(", fixMessage=").append(fixMessage).append(", order=").append(order).append(", orderId=")
+                .append(", fixMessage=").append(FIXMessageUtil.toHumanDelimitedString(fixMessage)).append(", order=").append(order).append(", orderId=")
                 .append(orderId).append("]");
         return builder.toString();
     }
