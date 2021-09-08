@@ -39,9 +39,6 @@ target-eclipse
 .externalToolBuilders
 maven-eclipse.xml
 
-# Vaadin Generated Artifacts
-**/VAADIN/widgetsets/
-
 # Marketcetera Artifacts
 .metc_host.txt
 **/cmd_exec/instances/
@@ -51,6 +48,7 @@ maven-eclipse.xml
 .idea
 
 # Vaadin Artifacts
+**/VAADIN/widgetsets/
 package.json
 pnpm-lock.yaml
 frontend
