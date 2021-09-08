@@ -250,9 +250,10 @@ public class DareTestBase
      * Set up the FIX sessions to use for the current test.
      *
      * @param inFixVersion a <code>FIXVersion</code> value
+     * @param an <code>int</code> value containing the session index
      * @throws Exception if an unexpected error occurs
      */
-    protected void setupSession(FIXVersion inFixVersion)
+    protected int setupSession(FIXVersion inFixVersion)
             throws Exception
     {
         fixVersion = inFixVersion;
@@ -263,6 +264,7 @@ public class DareTestBase
         fixMessageFactory = FIXVersion.getFIXVersion(sender).getMessageFactory();
         session = brokerService.getActiveFixSession(sender).getFixSession();
         brokerId = new BrokerID(session.getBrokerId());
+        return sessionIndex;
     }
     /**
      * Waits a reasonable amount of time for incoming message intercepted events.
@@ -2852,14 +2854,13 @@ public class DareTestBase
                                          ExecutionType.New);
         }
         /**
-         * 
+         * Generate and send a canceled execution report.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be generated or sent
          */
         public quickfix.Message generateAndSendCancelAck(quickfix.Message inMessage)
                 throws Exception
@@ -2869,18 +2870,17 @@ public class DareTestBase
                                          ExecutionType.Canceled);
         }
         /**
-         * 
+         * Generate and send a replaced execution report.
          *
-         *
-         * @param inMessage
-         * @param inOrderPrice
-         * @param inOrderQuantity
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @param inOrderPrice a <code>BigDecimal</code> value
+         * @param inOrderQuantity a <code>BigDecimal</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be generated or sent
          */
         public quickfix.Message generateAndSendReplace(quickfix.Message inMessage,
-                                              BigDecimal inOrderPrice,
-                                              BigDecimal inOrderQuantity)
+                                                       BigDecimal inOrderPrice,
+                                                       BigDecimal inOrderQuantity)
                 throws Exception
         {
             FIXVersion version = FIXVersion.getFIXVersion(senderSessionId.getBeginString());
@@ -2902,11 +2902,11 @@ public class DareTestBase
             return replace;
         }
         /**
+         * Generate and send a cancel based on the given message.
          *
-         *
-         * @param inMessage
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be generated or sent
          */
         public quickfix.Message generateAndSendCancel(quickfix.Message inMessage)
                 throws Exception

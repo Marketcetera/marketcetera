@@ -280,12 +280,12 @@ public class OrderData
     /**
      * Process the given message.
      *
-     * @param inReport a <code>Message</code> value
+     * @param inReport a <code>quickfix.Message</code> value
      * @return a <code>boolean</code> value if the overall state of the order changed
-     * @throws FieldNotFound if the report cannot be parsed
+     * @throws quickfix.FieldNotFound if the report cannot be parsed
      */
-    public boolean process(Message inReport)
-            throws FieldNotFound
+    public boolean process(quickfix.Message inReport)
+            throws quickfix.FieldNotFound
     {
         SLF4JLoggerProxy.debug(this,
                                "{} processing {}",
