@@ -32,6 +32,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -1509,33 +1511,90 @@ public class DareTestBase
     protected Instrument generateInstrument()
     {
         Instrument instrument;
-        String ticker1 = "MTC" + counter.incrementAndGet();
         switch(random.nextInt(5)) {
             case 0:
-                instrument = new Equity(ticker1);
+                instrument = generateEquity();
                 break;
             case 1:
-                instrument = org.marketcetera.trade.Future.fromString(ticker1+"-201710");
+                instrument = generateFuture();
                 break;
             case 2:
-                String ticker2 = "METC" + counter.incrementAndGet();
-                instrument = new Currency(ticker1,
-                                          ticker2,
-                                          "",
-                                          "");
+                instrument = generateCurrency();
                 break;
             case 3:
-                instrument = new Option(ticker1,
-                                        "20171001",
-                                        new BigDecimal(100),
-                                        random.nextBoolean()?OptionType.Put:OptionType.Call);
+                instrument = generateOption();
                 break;
             case 4:
-                instrument = new ConvertibleBond(ticker1 + " 2.54% 10/01/2017");
+                instrument = generateConvertibleBond();
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
+        return instrument;
+    }
+    /**
+     * Generates a test Convertible Bond instrument.
+     *
+     * @return a <code>ConvertibleBond</code> value
+     */
+    protected ConvertibleBond generateConvertibleBond()
+    {
+        ConvertibleBond instrument;
+        String ticker1 = "MTC" + counter.incrementAndGet();
+        instrument = new ConvertibleBond(ticker1 + " 2.54% " + convertibleBondTimestampFormatter.print(DateTime.now().plusMonths(1)));
+        return instrument;
+    }
+    /**
+     * Generate a test Option instrument.
+     *
+     * @return an <code>Option</code> value
+     */
+    protected Option generateOption()
+    {
+        Option instrument;
+        String ticker1 = "MTC" + counter.incrementAndGet();
+        instrument = new Option(ticker1,
+                                optionTimestampFormatter.print(DateTime.now().plusMonths(1)),
+                                new BigDecimal(100),
+                                random.nextBoolean()?OptionType.Put:OptionType.Call);
+        return instrument;
+    }
+    /**
+     * Generates a test Currency instrument.
+     *
+     * @return a <code>Currency</code> value
+     */
+    protected Currency generateCurrency()
+    {
+        Currency instrument;
+        String ticker1 = "MTC" + counter.incrementAndGet();
+        String ticker2 = "METC" + counter.incrementAndGet();
+        instrument = new Currency(ticker1,
+                                  ticker2,
+                                  "",
+                                  "");
+        return instrument;
+    }
+    /**
+     * Generate a test Future value.
+     *
+     * @return an <code>org.marketcetera.trade.Future</code> value
+     */
+    protected org.marketcetera.trade.Future generateFuture()
+    {
+        String ticker1 = "MTC" + counter.incrementAndGet();
+        org.marketcetera.trade.Future instrument = org.marketcetera.trade.Future.fromString(ticker1 + "-" + futureTimestampFormatter.print(DateTime.now().plusMonths(1)));
+        return instrument;
+    }
+    /**
+     * Generate a test Equity value.
+     *
+     * @return an <code>Equity</code> value
+     */
+    protected Equity generateEquity()
+    {
+        String ticker1 = "MTC" + counter.incrementAndGet();
+        Equity instrument = new Equity(ticker1);
         return instrument;
     }
     /**
@@ -3198,9 +3257,33 @@ public class DareTestBase
      * port on which remote systems will listen for FIX connections
      */
     protected int remoteAcceptorPort;
+    /**
+     * provides convertible bond instrument year/month format
+     */
+    private static final DateTimeFormatter convertibleBondTimestampFormatter = new DateTimeFormatterBuilder().append(TimeFactoryImpl.MONTH).append(TimeFactoryImpl.SLASH).append(TimeFactoryImpl.DAY).append(TimeFactoryImpl.SLASH).append(TimeFactoryImpl.YEAR).toFormatter();
+    /**
+     * provides option instrument year/month format
+     */
+    private static final DateTimeFormatter optionTimestampFormatter = new DateTimeFormatterBuilder().append(TimeFactoryImpl.YEAR).append(TimeFactoryImpl.MONTH).append(TimeFactoryImpl.DAY).toFormatter();
+    /**
+     * provides future instrument year/month format
+     */
+    private static final DateTimeFormatter futureTimestampFormatter = new DateTimeFormatterBuilder().append(TimeFactoryImpl.YEAR).append(TimeFactoryImpl.MONTH).toFormatter();
+    /**
+     * provides the base name for sender sessions
+     */
     protected static final String senderBase = "SENDER";
+    /**
+     * provides the base name for receiver sessions
+     */
     protected static final String receiverBase = "RECEIVER";
+    /**
+     * provides the base name for hosts
+     */
     protected static final String defaultHostBase = "MATP";
+    /**
+     * default FIX version to use for tests
+     */
     protected static final FIXVersion defaultFixVersion = FIXVersion.FIX42;
     /**
      * test FIX session value
