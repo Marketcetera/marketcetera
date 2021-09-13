@@ -1044,7 +1044,7 @@
         <!-- war generation. -->
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.1</version>
+          <version>3.3.2</version>
         </plugin>
         <!-- bundle generation. -->
         <plugin>
