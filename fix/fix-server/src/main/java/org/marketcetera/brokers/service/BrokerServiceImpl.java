@@ -678,6 +678,14 @@ public class BrokerServiceImpl
                 result = false;
                 return result;
             }
+            String rawNonStopSession = StringUtils.trimToNull(session.getSessionSettings().get(quickfix.Session.SETTING_NON_STOP_SESSION));
+            if(rawNonStopSession != null) {
+                boolean nonStopSession = StringUtils.equalsIgnoreCase(rawNonStopSession,"Y");
+                if(nonStopSession) {
+                    result = true;
+                    return result;
+                }
+            }
             String rawDaysValue = StringUtils.trimToNull(session.getSessionSettings().get(BrokerConstants.sessionDaysKey));
             if(rawDaysValue == null) {
                 SLF4JLoggerProxy.debug(this,
