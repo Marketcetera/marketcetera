@@ -608,7 +608,7 @@
       <dependency>
         <groupId>org.jruby</groupId>
         <artifactId>jruby</artifactId>
-        <version>1.7.8</version>
+        <version>9.3.0.0</version>
       </dependency>
       <!-- return old version of Esper until retirement of CEP-Esper module -->
       <dependency>
