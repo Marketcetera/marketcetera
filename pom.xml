@@ -396,6 +396,11 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+     <dependency>
+        <groupId>com.oblac</groupId>
+        <artifactId>nomen-est-omen</artifactId>
+        <version>2.1.0</version>
+      </dependency>
       <dependency>
         <groupId>info.schnatterer.moby-names-generator</groupId>
         <artifactId>moby-names-generator</artifactId>

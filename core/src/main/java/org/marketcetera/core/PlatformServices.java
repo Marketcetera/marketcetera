@@ -7,20 +7,25 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
-
-import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
+import com.oblac.nomen.Nomen;
 
 /* $License$ */
 
@@ -31,8 +36,20 @@ import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
  * @version $Id$
  * @since $Release$
  */
-public abstract class PlatformServices
+@Component
+public class PlatformServices
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        instance = this;
+        SLF4JLoggerProxy.info(this,
+                              "Starting {}",
+                              getServiceName(getClass()));
+    }
     /**
      * Split the given value into its components where each component starts with a capital letter.
      *
@@ -124,7 +141,7 @@ public abstract class PlatformServices
      */
     public static String generateId()
     {
-        return MobyNamesGenerator.getRandomName();
+        return Nomen.randomName();
     }
     /**
      * Autowires the given object with the default application context.
@@ -198,11 +215,26 @@ public abstract class PlatformServices
     }
     /**
      * Create a new EnterprisePlatformServices instance.
+     * Get the instrument for the given full symbol.
+     *
+     * @param inFullSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
      */
-    private PlatformServices()
+    public static Instrument getInstrument(String inFullSymbol)
     {
-        throw new UnsupportedOperationException();
+        Validate.notNull(instance,
+                         "Platform services must be initialized before use");
+        return instance.symbolResolverService.resolveSymbol(inFullSymbol);
     }
+    /**
+     * provides symbol resolver services
+     */
+    @Autowired
+    private SymbolResolverService symbolResolverService;
+    /**
+     * static instance
+     */
+    private static PlatformServices instance;
     /**
      * indicates that hazelcast is not active
      */
