@@ -1161,7 +1161,7 @@
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>3.4.3</version>
+        <version>3.5.1</version>
       </extension>
       <extension>
         <groupId>kr.motd.maven</groupId>
