@@ -2,8 +2,6 @@ package org.marketcetera.core;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.Pair;
-
 /* $License$ */
 
 /**
