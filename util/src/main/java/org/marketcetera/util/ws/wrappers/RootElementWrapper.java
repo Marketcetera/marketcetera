@@ -1,6 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

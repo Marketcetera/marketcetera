@@ -1,14 +1,35 @@
 package org.marketcetera.modules.async;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.ReflectionException;
+
+import org.marketcetera.module.DataEmitter;
+import org.marketcetera.module.DataEmitterSupport;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataReceiver;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.RequestID;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.module.*;
-
-import java.util.concurrent.*;
-import java.util.*;
-
-import javax.management.*;
 
 /* $License$ */
 /**
@@ -92,7 +113,7 @@ import javax.management.*;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SimpleAsyncProcessor extends Module
+public class SimpleAsyncProcessor extends org.marketcetera.module.Module
         implements DataEmitter, DataReceiver, DynamicMBean {
 
     /* Module Framework Methods */

@@ -31,7 +31,7 @@
     </developer>
   </developers>
   <properties>
-    <mvn.javase.version>8</mvn.javase.version>
+    <mvn.javase.version>11</mvn.javase.version>
     <mvn.spring.boot.version>2.5.6</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
@@ -1109,8 +1109,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.1</version>
           <configuration>
-            <source>1.${mvn.javase.version}</source>
-            <target>1.${mvn.javase.version}</target>
+            <source>${mvn.javase.version}</source>
+            <target>${mvn.javase.version}</target>
           </configuration>
         </plugin>
         <!-- mvn javadoc:* -->

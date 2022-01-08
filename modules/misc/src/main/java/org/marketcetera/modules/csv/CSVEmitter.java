@@ -1,27 +1,32 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
-import org.marketcetera.util.unicode.UnicodeInputStreamReader;
-import org.marketcetera.util.unicode.DecodingStrategy;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.module.*;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
+import org.marketcetera.module.DataEmitter;
+import org.marketcetera.module.DataEmitterSupport;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.RequestID;
+import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.util.unicode.DecodingStrategy;
+import org.marketcetera.util.unicode.UnicodeInputStreamReader;
 
 /* $License$ */
 /**
@@ -59,7 +64,7 @@ import org.apache.commons.csv.CSVStrategy;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class CSVEmitter extends Module implements DataEmitter {
+public class CSVEmitter extends org.marketcetera.module.Module implements DataEmitter {
     /**
      * Creates an instance.
      */
