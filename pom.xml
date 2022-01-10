@@ -41,6 +41,7 @@
     <vaadin.theme>mytheme</vaadin.theme>
     <gwt.version>2.9.0</gwt.version>
     <gwt.plugin.version>2.9.0</gwt.plugin.version>
+    <mvn.flyway.version>8.4.0</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -462,6 +463,12 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+	<groupId>org.flywaydb</groupId>
+	<artifactId>flyway-core</artifactId>
+	<version>${mvn.flyway.version}</version>
+	<scope>runtime</scope>
+      </dependency>
       <dependency>
         <groupId>com.oblac</groupId>
         <artifactId>nomen-est-omen</artifactId>
@@ -968,7 +975,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>8.0.2</version>
+          <version>${mvn.flyway.version}</version>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
