@@ -31,8 +31,8 @@
     </developer>
   </developers>
   <properties>
-    <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.5.6</mvn.spring.boot.version>
+    <mvn.javase.version>11</mvn.javase.version>
+    <mvn.spring.boot.version>2.6.2</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -41,6 +41,7 @@
     <vaadin.theme>mytheme</vaadin.theme>
     <gwt.version>2.9.0</gwt.version>
     <gwt.plugin.version>2.9.0</gwt.plugin.version>
+    <mvn.flyway.version>8.4.0</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -462,6 +463,12 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+	<groupId>org.flywaydb</groupId>
+	<artifactId>flyway-core</artifactId>
+	<version>${mvn.flyway.version}</version>
+	<scope>runtime</scope>
+      </dependency>
       <dependency>
         <groupId>com.oblac</groupId>
         <artifactId>nomen-est-omen</artifactId>
@@ -968,7 +975,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>8.0.2</version>
+          <version>${mvn.flyway.version}</version>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -1109,8 +1116,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.1</version>
           <configuration>
-            <source>1.${mvn.javase.version}</source>
-            <target>1.${mvn.javase.version}</target>
+            <source>${mvn.javase.version}</source>
+            <target>${mvn.javase.version}</target>
           </configuration>
         </plugin>
         <!-- mvn javadoc:* -->

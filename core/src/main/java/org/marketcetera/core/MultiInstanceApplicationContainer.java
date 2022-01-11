@@ -139,14 +139,19 @@ public class MultiInstanceApplicationContainer
     private static String getClasspath()
     {
         StringBuilder classpath = new StringBuilder();
-        boolean separatorNeeded = false;
-        String separator = getSystemProperty(PATH_SEPARATOR);
-        for(URL url : ((URLClassLoader)Thread.currentThread().getContextClassLoader()).getURLs()) {
-            if(separatorNeeded) {
-                classpath.append(separator);
+        ClassLoader systemClassLoader = Thread.currentThread().getContextClassLoader();
+        if(systemClassLoader instanceof URLClassLoader) {
+            boolean separatorNeeded = false;
+            String separator = getSystemProperty(PATH_SEPARATOR);
+            for(URL url : ((URLClassLoader)Thread.currentThread().getContextClassLoader()).getURLs()) {
+                if(separatorNeeded) {
+                    classpath.append(separator);
+                }
+                classpath.append(url.getPath());
+                separatorNeeded = true;
             }
-            classpath.append(url.getPath());
-            separatorNeeded = true;
+        } else {
+            classpath.append(System.getProperty("java.class.path"));
         }
         return classpath.toString();
     }

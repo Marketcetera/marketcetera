@@ -16,6 +16,7 @@ import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -175,7 +176,8 @@ public class I18NMessageProviderTest
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
     }
     
-    @Test
+    @Test@Ignore
+    // it is no longer possible to use custom ClassLoaders in this way as of Java9
     public void customClassLoader()
         throws Exception
     {

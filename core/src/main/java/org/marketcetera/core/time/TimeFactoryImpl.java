@@ -60,7 +60,8 @@ public class TimeFactoryImpl
            SECONDS_PATTERN.matcher(inValue).matches()) {
             value = value.plus(new LocalDate().toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis());
         }
-        Validate.notNull(value);
+        Validate.notNull(value,
+                         "No formatter available for '" + inValue + "'");
         return value;
     }
     /* (non-Javadoc)
@@ -105,10 +106,15 @@ public class TimeFactoryImpl
     public static final DateTimeFormatter FULL_MILLISECONDS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
             .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter().withZone(ZONE);
     /**
-     * full seconds: YYYYMMDD-HH:MM:SS.sss in local time zone
+     * full milliseconds: YYYYMMDD-HH:MM:SS.sss in local time zone
      */
     public static final DateTimeFormatter FULL_MILLISECONDS_LOCAL = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
             .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter();
+    /**
+     * full seconds: YYYYMMDD-HH:MM:SS in local time zone
+     */
+    public static final DateTimeFormatter FULL_SECONDS_LOCAL = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).append(DASH)
+            .append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter();
     /**
      * wallclock seconds: HH:MM:SS in UTC
      */

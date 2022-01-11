@@ -352,15 +352,7 @@
                   <value></value>
                 </systemProperty>
                 <systemProperty>
-                  <key>metc.instance.XX:+AggressiveOpts</key>
-                  <value></value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.instance.XX:+UseFastAccessorMethods</key>
-                  <value></value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.instance.Xloggc:target/logs/dare_gc.out</key>
+                  <key>metc.instance.Xlog:gc:target/logs/dare_gc.out</key>
                   <value></value>
                 </systemProperty>
                 <systemProperty>

@@ -64,6 +64,10 @@
       <artifactId>geronimo-jms_1.1_spec</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+    </dependency>
+    <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
@@ -114,7 +118,7 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-c3p0</artifactId>
       <scope>compile</scope>
-     </dependency>
+    </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-core</artifactId>
@@ -195,7 +199,7 @@
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
           </systemPropertyVariables>
         </configuration>
-        </plugin>
+      </plugin>
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>maven-replacer-plugin</artifactId>
