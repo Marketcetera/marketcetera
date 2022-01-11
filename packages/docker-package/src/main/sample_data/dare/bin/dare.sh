@@ -15,12 +15,12 @@ cd ${DARE_HOME}
 
 THE_CLASSPATH=./conf
 
-cd ${COMMON_HOME}
-
-for file in `ls -1 ${COMMON_HOME}/lib/*.jar`
-do
-    THE_CLASSPATH=${THE_CLASSPATH}:${file}
-done
+#cd ${COMMON_HOME}
+#
+#for file in `ls -1 ${COMMON_HOME}/lib/*.jar`
+#do
+#    THE_CLASSPATH=${THE_CLASSPATH}:${file}
+#done
 
 cd ${DARE_HOME}
 
@@ -70,8 +70,8 @@ INSTANCE_XMS=4096m
 # Set this to the max heap size for each instance
 INSTANCE_XMX=4096m
 #
-java -Xms384m -Xmx512m -Xloggc:${LOGDIR}/dare_gc.out -server -Dorg.marketcetera.appDir=${METC_HOME}/${APPLICATION_DIR}\
- -XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseFastAccessorMethods\
+java -Xms384m -Xmx512m -Xlog:gc:${LOGDIR}/dare_gc.out -server -Dorg.marketcetera.appDir=${METC_HOME}/${APPLICATION_DIR}\
+ -XX:+UseParallelGC\
  -Dlog.configurationFile=${METC_HOME}/${APPLICATION_DIR}/conf/logback.xml\
  -cp "${THE_CLASSPATH}"\
  -Dorg.marketcetera.app=org.marketcetera.server.DareApplication\
@@ -94,9 +94,7 @@ java -Xms384m -Xmx512m -Xloggc:${LOGDIR}/dare_gc.out -server -Dorg.marketcetera.
  -Dmetc.instance.METC.LOGBACK.APPENDERS=${METC_LOGBACK_APPENDERS}\
  -Dmetc.instance.METC.LOG.LEVEL=${METC_LOG_LEVEL}\
  -Dmetc.instance.XX:+UseParallelGC\
- -Dmetc.instance.XX:+AggressiveOpts\
- -Dmetc.instance.XX:+UseFastAccessorMethods\
- -Dmetc.instance.Xloggc:${LOGDIR}/dare_gc.out\
+ -Dmetc.instance.Xlog:gc:${LOGDIR}/dare_gc.out\
  -Dmetc.instance=0\
  org.marketcetera.core.MultiInstanceApplicationContainer $* &
 retval=$?
