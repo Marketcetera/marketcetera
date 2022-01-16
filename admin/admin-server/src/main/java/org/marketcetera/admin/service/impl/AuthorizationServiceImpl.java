@@ -378,11 +378,11 @@ public class AuthorizationServiceImpl
             }
         }
         for(AdminConfiguration.Permission permissionDescriptor : adminConfiguration.getPermissions()) {
-            if(authzService.findPermissionByName(permissionDescriptor.getName()) == null) {
+            if(findPermissionByName(permissionDescriptor.getName()) == null) {
                 SLF4JLoggerProxy.info(this,
                                       "Adding permission {}",
                                       permissionDescriptor);
-                authzService.save(permissionFactory.create(permissionDescriptor.getName(),
+                save(permissionFactory.create(permissionDescriptor.getName(),
                                                            permissionDescriptor.getDescription()));
             } else {
                 SLF4JLoggerProxy.debug(this,
@@ -391,11 +391,11 @@ public class AuthorizationServiceImpl
             }
         }
         for(AdminConfiguration.Role roleDescriptor : adminConfiguration.getRoles()) {
-            if(authzService.findRoleByName(roleDescriptor.getName()) == null) {
+            if(findRoleByName(roleDescriptor.getName()) == null) {
                 Role role = roleFactory.create(roleDescriptor.getName(),
                                                roleDescriptor.getDescription());
                 for(String permissionName : roleDescriptor.getPermissions()) {
-                    Permission permission = authzService.findPermissionByName(permissionName);
+                    Permission permission = findPermissionByName(permissionName);
                     if(permission != null) {
                         SLF4JLoggerProxy.info(this,
                                               "Adding role {}",
@@ -419,7 +419,7 @@ public class AuthorizationServiceImpl
                                               role);
                     }
                 }
-                authzService.save(role);
+                save(role);
             } else {
                 SLF4JLoggerProxy.debug(this,
                                        "Not adding or modifying role {} because a role by that name already exists",
@@ -427,7 +427,7 @@ public class AuthorizationServiceImpl
             }
         }
         for(AdminConfiguration.SupervisorPermission supervisorDescriptor: adminConfiguration.getSupervisorPermissions()) {
-            if(authzService.findSupervisorPermissionByName(supervisorDescriptor.getName()) == null) {
+            if(findSupervisorPermissionByName(supervisorDescriptor.getName()) == null) {
                 SupervisorPermission supervisorPermission = supervisorPermissionFactory.create(supervisorDescriptor.getName(),
                                                                                                supervisorDescriptor.getDescription());
                 User supervisor = userService.findByName(supervisorDescriptor.getSupervisorName());
@@ -441,7 +441,7 @@ public class AuthorizationServiceImpl
                     supervisorPermission.setSupervisor(supervisor);
                 }
                 for(String permissionName : supervisorDescriptor.getPermissions()) {
-                    Permission permission = authzService.findPermissionByName(permissionName);
+                    Permission permission = findPermissionByName(permissionName);
                     if(permission != null) {
                         SLF4JLoggerProxy.info(this,
                                               "Adding supervisor permission {}",
@@ -465,7 +465,7 @@ public class AuthorizationServiceImpl
                                               supervisorPermission);
                     }
                 }
-                authzService.save(supervisorPermission);
+                save(supervisorPermission);
             } else {
                 SLF4JLoggerProxy.info(this,
                                       "Not adding or modifying supervisor permission {} because a supervisor permission by that name already exists",
@@ -850,11 +850,6 @@ public class AuthorizationServiceImpl
      */
     @Autowired
     private UserService userService;
-    /**
-     * provides access to authorization services
-     */
-    @Autowired
-    private AuthorizationService authzService;
     /**
      * creates <code>Permission</code> objects
      */

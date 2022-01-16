@@ -1,18 +1,23 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.marketdata.DateUtils.*;
+import static org.marketcetera.marketdata.DateUtils.DAYS;
+import static org.marketcetera.marketdata.DateUtils.DAYS_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.MILLIS;
+import static org.marketcetera.marketdata.DateUtils.MILLIS_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.MINUTES;
+import static org.marketcetera.marketdata.DateUtils.MINUTES_WITH_TZ;
+import static org.marketcetera.marketdata.DateUtils.SECONDS;
+import static org.marketcetera.marketdata.DateUtils.SECONDS_WITH_TZ;
 import static org.marketcetera.marketdata.Messages.INVALID_DATE;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.module.ExpectedFailure;
 
 /* $License$ */
@@ -26,18 +31,6 @@ import org.marketcetera.module.ExpectedFailure;
  */
 public class DateUtilsTest
 {
-    private static DateFormat testDateFormat;
-    /**
-     * Initialization that needs to be run once for all tests.
-     */
-    @BeforeClass
-    public static void runOnce()
-    {
-        testDateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL,
-                                                        DateFormat.FULL,
-                                                        Locale.US);
-        testDateFormat.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-    }
     /**
      * Tests {@link DateUtils#stringToDate(String)}.
      * 
@@ -151,18 +144,15 @@ public class DateUtilsTest
             }
         }
         // check a few dates
-        // UTC date
         doDateTest("20090319T120000000Z",
                    "20090319T120000000Z",
-                   "Thursday, March 19, 2009 8:00:00 AM EDT");
-        // PST date
+                   "20090319-12:00:00");
         doDateTest("19700319T0800-0800",
                    "19700319T160000000Z",
-                   "Thursday, March 19, 1970 11:00:00 AM EST");
-        // no TZ (assumed to be UTC)
+                   "19700319-16:00:00");
         doDateTest("19880319T0000",
                    "19880319T000000000Z",
-                   "Friday, March 18, 1988 7:00:00 PM EST");
+                   "19880319-00:00:00");
     }
     /**
      * Tests that specifying a particular format returns the expected result.
@@ -209,7 +199,7 @@ public class DateUtilsTest
         Date date = DateUtils.stringToDate(inDateToTest);
         assertEquals(inExpectedUTCDate,
                      DateUtils.dateToString(date));
-        assertEquals(testDateFormat.parse(inExpectedEasternDate),
+        assertEquals(TimeFactoryImpl.FULL_SECONDS.parseDateTime(inExpectedEasternDate).toDate(),
                      date);
     }
 }

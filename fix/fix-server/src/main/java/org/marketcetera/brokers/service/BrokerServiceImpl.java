@@ -678,6 +678,14 @@ public class BrokerServiceImpl
                 result = false;
                 return result;
             }
+            String rawNonStopSession = StringUtils.trimToNull(session.getSessionSettings().get(quickfix.Session.SETTING_NON_STOP_SESSION));
+            if(rawNonStopSession != null) {
+                boolean nonStopSession = StringUtils.equalsIgnoreCase(rawNonStopSession,"Y");
+                if(nonStopSession) {
+                    result = true;
+                    return result;
+                }
+            }
             String rawDaysValue = StringUtils.trimToNull(session.getSessionSettings().get(BrokerConstants.sessionDaysKey));
             if(rawDaysValue == null) {
                 SLF4JLoggerProxy.debug(this,
@@ -729,11 +737,16 @@ public class BrokerServiceImpl
     @Override
     public SessionCustomization getSessionCustomization(FixSession inFixSession)
     {
-        String sessionCustomizationName = inFixSession.getSessionSettings().get(BrokerConstants.sessionCustomizationKey);
+        String sessionCustomizationName = StringUtils.trimToNull(inFixSession.getSessionSettings().get(BrokerConstants.sessionCustomizationKey));
         if(sessionCustomizationName == null) {
             return null;
         }
-        return sessionCustomizationsByName.getIfPresent(sessionCustomizationName);
+        SessionCustomization sessionCustomization = sessionCustomizationsByName.getIfPresent(sessionCustomizationName);
+        if(sessionCustomization == null) {
+            String sessionName = getSessionName(new quickfix.SessionID(inFixSession.getSessionId()));
+            throw new IllegalArgumentException(sessionName + " expected a session customization named '" + sessionCustomizationName + "' but no such customization exists");
+        }
+        return sessionCustomization;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.matp.service.ClusterListener#memberAdded(com.marketcetera.matp.service.ClusterMember)
@@ -818,6 +831,9 @@ public class BrokerServiceImpl
                 sessionCustomizationsByName.put(sessionCustomization.getName(),
                                                 sessionCustomization);
             }
+            SLF4JLoggerProxy.info(this,
+                                  "Found the following session customizations: {}",
+                                  sessionCustomizationsByName.asMap());
         }
         eventBusService.register(this);
         updateBrokerStatus();

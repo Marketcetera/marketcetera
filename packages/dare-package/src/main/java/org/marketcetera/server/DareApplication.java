@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.jms.ServerSession;
 
+import org.assertj.core.util.Lists;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -28,6 +29,7 @@ import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.rpc.ClusterRpcService;
 import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.eventbus.server.EsperEngine;
 import org.marketcetera.eventbus.server.EventBusEsperConnector;
@@ -123,6 +125,26 @@ public class DareApplication
                               org.marketcetera.core.Version.build_time,
                               org.marketcetera.core.Version.build_repository,
                               org.marketcetera.core.Version.build_path);
+    }
+    /**
+     * Get the XmlService value.
+     *
+     * @return an <code>XmlService</code> value
+     * @throws ClassNotFoundException if a context class path cannot be resolved
+     */
+    @Bean
+    public XmlService getXmlService()
+            throws ClassNotFoundException
+    {
+        XmlService xmlService = new XmlService();
+        List<Class<?>> contextPathClassEntries = Lists.newArrayList();
+        for(String contextPathEntry : contextPathClasses) {
+            contextPathClassEntries.add(Class.forName(contextPathEntry));
+        }
+        SLF4JLoggerProxy.info(this,
+                              "Using the");
+        xmlService.setContextPath(contextPathClassEntries);
+        return xmlService;
     }
     /**
      * Get the average fill price factory value.
@@ -630,4 +652,9 @@ public class DareApplication
      */
     @Value("${metc.metric.service.log.reporter.interval:10}")
     private int metricServiceLogReporterInterval;
+    /**
+     * context path classes used to marshal and unmarshal XML values
+     */
+    @Value("${metc.xml.context.path.classes}")
+    private List<String> contextPathClasses;
 }

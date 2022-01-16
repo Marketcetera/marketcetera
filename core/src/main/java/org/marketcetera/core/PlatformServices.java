@@ -6,7 +6,6 @@ import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -26,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
+import com.oblac.nomen.Nomen;
 
 /* $License$ */
 
@@ -141,7 +141,7 @@ public class PlatformServices
      */
     public static String generateId()
     {
-        return UUID.randomUUID().toString();
+        return Nomen.randomName();
     }
     /**
      * Autowires the given object with the default application context.

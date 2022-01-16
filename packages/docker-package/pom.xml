@@ -29,6 +29,19 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <configuration>
+          <user>${metc.jdbc.user}</user>
+          <password>${metc.jdbc.password}</password>
+          <url>${metc.jdbc.url}</url>
+          <driver>${metc.jdbc.driver}</driver>
+          <locations>
+            <location>classpath:db/migration/${metc.flyway.vendor}</location>
+          </locations>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.0.0</version>
@@ -50,7 +63,7 @@
                     <include name="dare-package-${project.version}.jar"/>
                   </fileset>
                 </copy>
-                <mkdir dir="${project.build.directory}/output-webui"/>
+                <!--mkdir dir="${project.build.directory}/output-webui"/>
                 <copy todir="${project.build.directory}/output-webui">
                   <fileset dir="../webui-package/target/output"/>
                 </copy>
@@ -64,19 +77,19 @@
                   <fileset dir="${project.build.directory}/output-dare">
                     <present targetdir="${project.build.directory}/output-webui" present="both"/>
                   </fileset>
-                </copy>
+                </copy-->
                 <delete>
                   <fileset dir="${project.build.directory}/output-dare" includes="**/*">
                     <present targetdir="${project.build.directory}/output-common"/>
                   </fileset>
                 </delete>
-                <delete>
+                <!--delete>
                   <fileset dir="${project.build.directory}/output-webui" includes="**/*">
                     <present targetdir="${project.build.directory}/output-common"/>
                   </fileset>
-                </delete>
+                </delete-->
               </target>
-            </configuration>                       
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -217,6 +230,8 @@
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
                 <argument>run</argument>
+                <argument>--add-host</argument>
+                <argument>host.docker.internal:host-gateway</argument>
                 <argument>-p</argument>
                 <argument>8080:8080</argument>
                 <argument>-p</argument>
