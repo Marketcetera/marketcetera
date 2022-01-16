@@ -37,10 +37,7 @@
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
-    <vaadin.version>7.7.13</vaadin.version>
-    <vaadin.theme>mytheme</vaadin.theme>
-    <gwt.version>2.9.0</gwt.version>
-    <gwt.plugin.version>2.9.0</gwt.plugin.version>
+    <vaadin.version>21.0.0.alpha10</vaadin.version>
     <mvn.flyway.version>8.4.0</mvn.flyway.version>
   </properties>
   <dependencyManagement>
@@ -403,32 +400,6 @@
         <version>${project.version}</version>
       </dependency>
       <!-- Compile: Vaadin -->
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-spring-boot-starter</artifactId>
-        <version>1.2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-client-compiled</artifactId>
-        <version>${vaadin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-server</artifactId>
-        <version>${vaadin.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-themes</artifactId>
-        <version>${vaadin.version}</version>
-      </dependency>
       <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>org.quickfixj</groupId>
@@ -817,12 +788,12 @@
         <scope>runtime</scope>
       </dependency>
       <!-- Runtime: Vaadin -->
-      <dependency>
+      <!--dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-push</artifactId>
         <scope>runtime</scope>
         <version>${vaadin.version}</version>
-      </dependency>
+      </dependency-->
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -1261,7 +1232,8 @@
     <module>rpc-core</module>
     <module>trade</module>
     <module>tools</module>
-    <module>ui</module>
+    <!--module>ui</module-->
+    <module>ui-new</module>
     <module>util</module>
     <module>util-test</module>
   </modules>
@@ -1286,6 +1258,19 @@
     <repository>
       <id>java.net</id>
       <url>https://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>vaadin-prereleases</id>
+      <url>
+        https://maven.vaadin.com/vaadin-prereleases/
+      </url>
+    </repository>
+    <repository>
+      <id>Vaadin Directory</id>
+      <url>https://maven.vaadin.com/vaadin-addons</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

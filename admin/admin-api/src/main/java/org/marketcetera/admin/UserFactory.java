@@ -1,5 +1,7 @@
 package org.marketcetera.admin;
 
+import org.marketcetera.core.Factory;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,7 @@ package org.marketcetera.admin;
  * @since $Release$
  */
 public interface UserFactory
+        extends Factory<User>
 {
     /**
      * Create user objects.
