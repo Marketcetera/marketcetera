@@ -717,7 +717,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>4.18</version>
+        <version>4.20</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
