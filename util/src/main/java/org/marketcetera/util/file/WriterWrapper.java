@@ -22,12 +22,12 @@ import static org.marketcetera.util.file.SpecialNames.*;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: WriterWrapper.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: WriterWrapper.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public class WriterWrapper
     implements Closeable
 {

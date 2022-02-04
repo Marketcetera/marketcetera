@@ -8,7 +8,7 @@ import java.util.Collection;
  * Indicates that the implementor consumes a port.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UsesPort.java 17872 2019-08-07 18:46:33Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface UsesPort

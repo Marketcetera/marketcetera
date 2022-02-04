@@ -16,12 +16,12 @@ import org.marketcetera.util.ws.tags.ValidSessionTagFilter;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: RemoteCall.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteCall.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public class RemoteCall<T>
     extends StatelessRemoteCall
 {

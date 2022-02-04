@@ -29,12 +29,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: RemoteException.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteException.java 17411 2017-04-28 14:50:38Z colin $")
+@ClassVersion("$Id$")
 public class RemoteException
     extends Exception
     implements Externalizable

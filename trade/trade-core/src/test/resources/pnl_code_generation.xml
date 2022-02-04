@@ -1,60 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <model>
-  <modelEvents>
-    <modelEvent name="PositionChangedEvent" apiProject="trade/trade-api" pojoProject="trade/trade-core" packageName="org.marketcetera.trade.pnl.event" description="Indicates that the position of an instrument has changed for a user">
-      <authors>
-        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
-      </authors>
-      <modelEventAttributes>
-        <modelEventAttribute name="position" apiType="org.marketcetera.trade.pnl.Position" pojoType="org.marketcetera.trade.pnl.SimplePosition" useSetters="true" useGetters="true" description="position which changed"/>
-      </modelEventAttributes>
-    </modelEvent>
-  </modelEvents>
   <modelEntities>
     <modelEntity name="Lot" description="Identifies a lot used to calculate profit and loss" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="HasPosition,HasTrade,org.marketcetera.admin.HasUser" sqlName="pnl_lots">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="HasPosition,HasTrade,org.marketcetera.admin.HasUser">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEntityAttributes>
-        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" isNullable="false" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
-        <modelEntityAttribute name="trade" description="trade which consumes lot, may be &lt;code&gt;null&lt;/code&gt;" type="Trade" useGetters="true" useSetters="true" interfaceProvided="true" isNullable="false" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="trade_id" persistentType="PersistentTrade"/>
-        <modelEntityAttribute name="position" description="position to which this lot contributes" type="Position" useGetters="true" useSetters="true" interfaceProvided="true" isNullable="false" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="position_id" persistentType="PersistentPosition"/>
-        <modelEntityAttribute name="quantity" description="size of lot" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isNullable="false"/>
-        <modelEntityAttribute name="allocatedQuantity" description="quantity of this lot that has been allocated to account for a sell trade" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isNullable="false"/>
-        <modelEntityAttribute name="effectiveDate" description="date lot was created" type="java.util.Date" useGetters="true" useSetters="true" isNullable="false"/>
-        <modelEntityAttribute name="basisPrice" description="basis price value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="gain" description="realized gain from this lot" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="tradePrice" description="trade price value of this lot" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
+        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="trade" description="trade which consumes lot, may be &lt;code&gt;null&lt;/code&gt;" type="Trade" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="position" description="position to which this lot contributes" type="Position" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="quantity" description="size of lot" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO"/>
+        <modelEntityAttribute name="allocatedQuantity" description="quantity of this lot that has been allocated to account for a sell trade" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO"/>
+        <modelEntityAttribute name="effectiveDate" description="date lot was created" type="java.util.Date" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="basisPrice" description="basis price value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
+        <modelEntityAttribute name="gain" description="realized gain from this lot" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
+        <modelEntityAttribute name="tradePrice" description="trade price value of this lot" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="Position" description="Describes position of a given instrument owned by a given user at a given point in time" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlName="pnl_positions">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEntityAttributes>
         <modelEntityAttribute name="instrument" description="position instrument value" type="org.marketcetera.trade.Instrument" useGetters="true" useSetters="true" interfaceProvided="true"/>
-        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" isNullable="false" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
-        <modelEntityAttribute name="position" description="position value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isNullable="false"/>
-        <modelEntityAttribute name="effectiveDate" description="date as of which position is effective" type="java.util.Date" useGetters="true" useSetters="true" isNullable="false"/>
-        <modelEntityAttribute name="weightedAverageCost" description="weighted average cost to attain this position" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-      </modelEntityAttributes>
-    </modelEntity>
-    <modelEntity name="CurrentPosition" description="Describes the current position of a given instrument owned by a given user" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlName="pnl_current_positions">
-      <authors>
-        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
-      </authors>
-      <modelEntityAttributes>
-        <modelEntityAttribute name="instrument" description="position instrument value" type="org.marketcetera.trade.Instrument" useGetters="true" useSetters="true" interfaceProvided="true"/>
-        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" isNullable="false" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
-        <modelEntityAttribute name="position" description="position value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isNullable="false"/>
-        <modelEntityAttribute name="weightedAverageCost" description="weighted average cost to attain this position" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
+        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="position" description="position value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO"/>
+        <modelEntityAttribute name="effectiveDate" description="date as of which position is effective" type="java.util.Date" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="weightedAverageCost" description="weighted average cost to attain this position" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
+        <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
+        <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="Trade" description="Indicates a trade that took place at a particular point in time for a particular amount and price" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
@@ -76,21 +52,21 @@
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEntityAttributes>
-        <modelEntityAttribute name="trade" description="underlying trade value" type="Trade" useGetters="true" useSetters="true" interfaceProvided="true" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="trade_id" persistentType="PersistentTrade"/>
-        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
-        <modelEntityAttribute name="side" description="side of this trade" type="org.marketcetera.trade.Side" useGetters="true" useSetters="true" isNullable="false"/>
-        <modelEntityAttribute name="profitAndLoss" description="profit and loss data for this trade" type="ProfitAndLoss" useGetters="true" useSetters="true" interfaceProvided="true" cardinality="@javax.persistence.OneToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="pnl_id" persistentType="PersistentProfitAndLoss"/>
-        <modelEntityAttribute name="orderId" description="order ID for this trade" type="org.marketcetera.trade.OrderID" useGetters="true" useSetters="true" interfaceProvided="true" isNullable="false"/>
+        <modelEntityAttribute name="trade" description="underlying trade value" type="Trade" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="side" description="side of this trade" type="org.marketcetera.trade.Side" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="profitAndLoss" description="profit and loss data for this trade" type="ProfitAndLoss" useGetters="true" useSetters="true" interfaceProvided="true"/>
+        <modelEntityAttribute name="orderId" description="order ID for this trade" type="org.marketcetera.trade.OrderID" useGetters="true" useSetters="true" interfaceProvided="true"/>
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="ProfitAndLoss" description="Indicates profit and loss for a user-instrument tuple" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlPlural="false">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEntityAttributes>
         <modelEntityAttribute name="instrument" description="position instrument value" type="org.marketcetera.trade.Instrument" useGetters="true" useSetters="true" interfaceProvided="true"/>
-        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
+        <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true"/>
         <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
         <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
         <modelEntityAttribute name="basisPrice" description="basis price value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
@@ -117,17 +93,6 @@
             <rpcMessageAttribute name="user" type="User" description="user that owns the position" factories="org.marketcetera.admin.UserFactory" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUser"/>
             <rpcMessageAttribute name="position" type="Qty" description="quantity of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="effectiveDate" type="google.protobuf.Timestamp" description="effective date of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
-            <rpcMessageAttribute name="weightedAverageCost" type="Qty" description="total cost of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
-            <rpcMessageAttribute name="realizedGain" type="Qty" description="realized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
-            <rpcMessageAttribute name="unrealizedGain" type="Qty" description="unrealized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
-          </rpcMessageAttributes>
-        </rpcMessage>
-        <rpcMessage name="CurrentPnlPosition" description="describes the position of a user of an instrument" javaType="org.marketcetera.trade.pnl.CurrentPosition"
-                    primaryFactory="org.marketcetera.trade.pnl.CurrentPositionFactory" factories="org.marketcetera.admin.UserFactory">
-          <rpcMessageAttributes>
-            <rpcMessageAttribute name="instrument" type="Instrument" description="instrument of the position" rpcConverter="org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument" javaConverter="org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument"/>
-            <rpcMessageAttribute name="user" type="User" description="user that owns the position" factories="org.marketcetera.admin.UserFactory" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUser"/>
-            <rpcMessageAttribute name="position" type="Qty" description="quantity of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="weightedAverageCost" type="Qty" description="total cost of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="realizedGain" type="Qty" description="realized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="unrealizedGain" type="Qty" description="unrealized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
@@ -180,10 +145,7 @@
         </rpcMessage>
       </rpcMessages>
     </rpcEntity>
-    <rpcEntity project="trade/trade-rpc-core" protoPrefix="pnl" javaPackage="org.marketcetera.trade.pnl" javaClassName="TradePnlRpc" serverProject="trade/trade-rpc-server" apiProject="trade/trade-api" persistentProject="trade/trade-server">
-      <subscribedEvents>
-        <subscribedEvent>org.marketcetera.trade.pnl.event.PositionChangedEvent</subscribedEvent>
-      </subscribedEvents>
+    <rpcEntity project="trade/trade-rpc-core" protoPrefix="pnl" javaPackage="org.marketcetera.trade.pnl" javaClassName="TradePnlRpc" serverProject="trade/trade-rpc-server" apiProject="trade/trade-api">
       <imports>
         <import>rpc_base.proto</import>
         <import>rpc_paging.proto</import>
@@ -207,7 +169,7 @@
         <rpcMessage name="CurrentPositionsResponse" description="return the current positions for a user">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="pageResponse" type="PageResponse"/>
-            <rpcMessageAttribute name="position" type="CurrentPnlPosition" repeated="true"/>
+            <rpcMessageAttribute name="position" type="PnlPosition" repeated="true"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="ProfitAndLossRequest" description="request the profit and loss data for the user with the given user id">
@@ -230,12 +192,13 @@
           <rpcServiceEntry name="login" description="starts the session" paramType="LoginRequest" returnType="LoginResponse"/>
           <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
           <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
-          <rpcServiceEntry name="getCurrentPositions" description="requests positions for a user" paramType="CurrentPositionsRequest" returnType="CurrentPositionsResponse" paged="true" serviceReturnType="org.marketcetera.trade.pnl.CurrentPosition">
+          <rpcServiceEntry name="getCurrentPositions" description="requests positions for a user" paramType="CurrentPositionsRequest" returnType="CurrentPositionsResponse" paged="true" serviceReturnType="org.marketcetera.trade.pnl.Position">
             <rpcMessageAttributes>
               <rpcMessageAttribute name="userId" type="org.marketcetera.trade.UserID" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUserId" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUserId"/>
             </rpcMessageAttributes>
             <requiredPermissions>
-              <requiredPermission>ReadCurrentPositions</requiredPermission>
+              <requiredPermission>"test1"</requiredPermission>
+              <requiredPermission>"test2"</requiredPermission>
             </requiredPermissions>
           </rpcServiceEntry>
           <rpcServiceEntry name="getProfitAndLoss" description="requests profit and loss for a user and an instrument" paramType="ProfitAndLossRequest" returnType="ProfitAndLossResponse" paged="true" serviceReturnType="org.marketcetera.trade.pnl.ProfitAndLoss">

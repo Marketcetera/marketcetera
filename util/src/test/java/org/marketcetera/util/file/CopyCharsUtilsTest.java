@@ -1,12 +1,5 @@
 package org.marketcetera.util.file;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.marketcetera.util.test.UnicodeData.HELLO_EN_CHARS;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -15,13 +8,17 @@ import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 
+import static org.junit.Assert.*;
+import static org.marketcetera.util.test.UnicodeData.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: CopyCharsUtilsTest.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
+
 @Ignore
 public class CopyCharsUtilsTest
     extends CopyUtilsTestBase

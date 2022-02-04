@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides access to a {@link Server} object.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ServerProvider.java 16901 2014-05-11 16:14:11Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: ServerProvider.java 16901 2014-05-11 16:14:11Z colin $")
+@ClassVersion("$Id$")
 public interface ServerProvider<T>
 {
     /**

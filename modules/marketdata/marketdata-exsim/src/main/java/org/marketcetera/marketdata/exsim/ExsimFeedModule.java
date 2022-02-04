@@ -59,7 +59,6 @@ import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.time.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.CacheBuilder;
@@ -350,7 +349,7 @@ public class ExsimFeedModule
                                                                                  requestedInstruments,
                                                                                  inPayload.getExchange(),
                                                                                  Lists.newArrayList(inPayload.getContent()),
-                                                                                 quickfix.field.SubscriptionRequestType.SNAPSHOT_UPDATES);
+                                                                                 quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
         SLF4JLoggerProxy.debug(this,
                                "Built {} for {} from {}", //$NON-NLS-1$
                                marketDataRequest,
@@ -387,7 +386,7 @@ public class ExsimFeedModule
                                                                                 inMarketDataRequestData.requestedInstruments,
                                                                                 inMarketDataRequestData.marketDataRequest.getExchange(),
                                                                                 Lists.newArrayList(inMarketDataRequestData.marketDataRequest.getContent()),
-                                                                                quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_UPDATE_REQUEST);
+                                                                                quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST);
         if(!quickfix.Session.sendToTarget(marketDataCancel,
                                           sessionId)) {
             throw new CoreException(new I18NBoundMessage2P(Messages.CANNOT_CANCEL_DATA,
@@ -529,8 +528,8 @@ public class ExsimFeedModule
                                                                        updateAction));
                 }
             }
-            Date date = DateService.toUtcDate(mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD));
-            Date time = DateService.toUtcDate(mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD));
+            Date date = mdEntry.getUtcDateOnly(quickfix.field.MDEntryDate.FIELD);
+            Date time = mdEntry.getUtcTimeOnly(quickfix.field.MDEntryTime.FIELD);
             Date eventDate = new Date(date.getTime()+time.getTime());
             switch(entryType) {
                 case quickfix.field.MDEntryType.BID:

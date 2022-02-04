@@ -13,12 +13,12 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SampleStatelessServiceImpl.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleStatelessServiceImpl.java 16154 2012-07-14 16:34:05Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SampleStatelessServiceImpl
     extends StatelessServiceBaseImpl
     implements SampleStatelessService

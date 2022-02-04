@@ -14,7 +14,7 @@ import org.marketcetera.util.test.CollectionAssert;
  * Tests {@link UnmodifiableDeque}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UnmodifiableDequeTest.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 public class UnmodifiableDequeTest

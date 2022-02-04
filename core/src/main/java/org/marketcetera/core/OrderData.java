@@ -17,7 +17,6 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.time.DateService;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -394,7 +393,7 @@ public class OrderData
         executionReport.setField(new quickfix.field.OrdStatus(orderStatus.getFIXValue()));
         executionReport.setField(new quickfix.field.ExecID(PlatformServices.generateId()));
         executionReport.setField(new quickfix.field.OrderID(getOrderId()));
-        executionReport.setField(new quickfix.field.TransactTime(DateService.toUtcDateTime(new Date())));
+        executionReport.setField(new quickfix.field.TransactTime(new Date()));
         return executionReport;
     }
     /**

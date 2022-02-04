@@ -16,12 +16,12 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: Client.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: Client.java 17411 2017-04-28 14:50:38Z colin $")
+@ClassVersion("$Id$")
 public class Client
     extends StatelessClient
 {

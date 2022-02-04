@@ -12,7 +12,7 @@ import org.tensorflow.Tensor;
  * @version $Id$
  * @since $Release$
  */
-public interface TensorFlowRunner<Clazz>
+public interface TensorFlowRunner
 {
     /**
      * Fetch an output object from the given Tensor for the given data flow request.
@@ -22,5 +22,5 @@ public interface TensorFlowRunner<Clazz>
      * @return an <code>Object</code> value
      */
     Object fetch(DataRequest inDataRequest,
-                 Tensor<Clazz> inInput);
+                 Tensor inInput);
 }

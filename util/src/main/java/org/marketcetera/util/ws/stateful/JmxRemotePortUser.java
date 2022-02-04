@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
  * Indicates the port in use for JMX Remote, if present.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: JmxRemotePortUser.java 17872 2019-08-07 18:46:33Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class JmxRemotePortUser
