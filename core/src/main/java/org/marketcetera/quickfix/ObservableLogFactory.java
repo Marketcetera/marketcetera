@@ -30,15 +30,6 @@ public class ObservableLogFactory
         super(inSettings);
     }
     /* (non-Javadoc)
-     * @see quickfix.SLF4JLogFactory#create()
-     */
-    @Override
-    public ObservableLog create()
-    {
-        unqualifiedLog = new ObservableLog(super.create());
-        return unqualifiedLog;
-    }
-    /* (non-Javadoc)
      * @see quickfix.SLF4JLogFactory#create(quickfix.SessionID, java.lang.String)
      */
     @Override
