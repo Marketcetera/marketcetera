@@ -24,14 +24,14 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.time.DateService;
 
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.Message;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+
+import quickfix.FieldNotFound;
+import quickfix.Group;
+import quickfix.Message;
 
 /* $License$ */
 

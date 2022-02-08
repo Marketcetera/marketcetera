@@ -12,12 +12,12 @@ import org.slf4j.spi.LocationAwareLogger;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: SLF4JLoggerProxy.java 17760 2018-11-14 14:54:11Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SLF4JLoggerProxy.java 17760 2018-11-14 14:54:11Z colin $")
+@ClassVersion("$Id$")
 public final class SLF4JLoggerProxy
 {
     /**

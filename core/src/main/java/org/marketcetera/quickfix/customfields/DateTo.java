@@ -1,11 +1,11 @@
 package org.marketcetera.quickfix.customfields;
 
+import java.util.Date;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.time.DateService;
 
 import quickfix.UtcTimeStampField;
-
-import java.util.Date;
 
 /**
  * Implementation of a custom field 9884: DateTo

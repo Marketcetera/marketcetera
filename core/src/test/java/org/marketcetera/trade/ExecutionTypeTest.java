@@ -1,7 +1,27 @@
 package org.marketcetera.trade;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.trade.ExecutionType.*;
+import static org.marketcetera.trade.ExecutionType.Calculated;
+import static org.marketcetera.trade.ExecutionType.Canceled;
+import static org.marketcetera.trade.ExecutionType.DoneForDay;
+import static org.marketcetera.trade.ExecutionType.Expired;
+import static org.marketcetera.trade.ExecutionType.Fill;
+import static org.marketcetera.trade.ExecutionType.New;
+import static org.marketcetera.trade.ExecutionType.OrderStatus;
+import static org.marketcetera.trade.ExecutionType.PartialFill;
+import static org.marketcetera.trade.ExecutionType.PendingCancel;
+import static org.marketcetera.trade.ExecutionType.PendingNew;
+import static org.marketcetera.trade.ExecutionType.PendingReplace;
+import static org.marketcetera.trade.ExecutionType.Rejected;
+import static org.marketcetera.trade.ExecutionType.Replaced;
+import static org.marketcetera.trade.ExecutionType.Restated;
+import static org.marketcetera.trade.ExecutionType.Stopped;
+import static org.marketcetera.trade.ExecutionType.Suspended;
+import static org.marketcetera.trade.ExecutionType.Trade;
+import static org.marketcetera.trade.ExecutionType.TradeCancel;
+import static org.marketcetera.trade.ExecutionType.TradeCorrect;
+import static org.marketcetera.trade.ExecutionType.Unknown;
+import static org.marketcetera.trade.ExecutionType.values;
 
 import java.util.Arrays;
 import java.util.EnumSet;

@@ -19,12 +19,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: ExceptUtils.java 16914 2014-06-24 21:27:56Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ExceptUtils.java 16914 2014-06-24 21:27:56Z colin $")
+@ClassVersion("$Id$")
 public final class ExceptUtils
 {
 

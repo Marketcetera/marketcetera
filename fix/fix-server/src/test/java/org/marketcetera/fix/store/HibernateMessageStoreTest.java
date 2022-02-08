@@ -1,14 +1,14 @@
 package org.marketcetera.fix.store;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.marketcetera.fix.FixServerTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import quickfix.SessionID;
 
@@ -21,7 +21,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
-@ExtendWith(SpringExtension.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes=FixServerTestConfiguration.class)
 @ComponentScan(basePackages={"org.marketcetera","com.marketcetera"})
 @EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
@@ -33,7 +33,7 @@ public class HibernateMessageStoreTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test(timeout=30000)
     public void testPerformance()
             throws Exception
     {

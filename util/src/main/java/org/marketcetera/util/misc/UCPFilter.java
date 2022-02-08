@@ -20,12 +20,12 @@ import java.util.HashMap;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: UCPFilter.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: UCPFilter.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public abstract class UCPFilter
 {
 
@@ -36,7 +36,7 @@ public abstract class UCPFilter
      * specific charset.
      */
 
-    @ClassVersion("$Id: UCPFilter.java 16154 2012-07-14 16:34:05Z colin $")
+    @ClassVersion("$Id$")
     private static final class UCPCharsetFilter
         extends UCPFilter
     {
