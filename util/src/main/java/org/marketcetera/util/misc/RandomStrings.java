@@ -9,12 +9,12 @@ import java.util.Random;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: RandomStrings.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: RandomStrings.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public final class RandomStrings
 {
 

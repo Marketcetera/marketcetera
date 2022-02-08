@@ -14,9 +14,9 @@ import org.marketcetera.util.ws.stateless.StatelessServer;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: Server.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Server.java 17411 2017-04-28 14:50:38Z colin $")
+@ClassVersion("$Id$")
 public class Server<SessionClazz>
         extends StatelessServer
         implements ServerProvider<SessionClazz>

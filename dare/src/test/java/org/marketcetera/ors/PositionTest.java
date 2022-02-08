@@ -11,7 +11,6 @@ import java.util.concurrent.Callable;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.instruments.InstrumentToMessage;
@@ -77,18 +76,6 @@ public class PositionTest
         assertNotNull(adminUser);
         assertNotNull(normalUser);
         assertNotNull(otherUser);
-    }
-    /**
-     * Tests single positions for a single instrument and FIX version.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test@Ignore
-    public void testSinglePositionNoParameterTest()
-            throws Exception
-    {
-        doSinglePositionTest(new Equity("METC"),
-                             FIXVersion.FIX50SP2);
     }
     /**
      * Test retrieving a single position.

@@ -9,7 +9,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * Indicates that a session is required.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SessionRequiredException.java 17411 2017-04-28 14:50:38Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class SessionRequiredException

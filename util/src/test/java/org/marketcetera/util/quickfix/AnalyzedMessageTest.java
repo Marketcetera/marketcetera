@@ -39,12 +39,11 @@ import quickfix.fix42.NewOrderSingle;
 
 /**
  * Tests message analyzation.
- * 
+ *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: AnalyzedMessageTest.java 18094 2020-09-11 18:09:58Z colin $
+ * @version $Id$
  */
-
 public class AnalyzedMessageTest
         extends AnalyzerTestBase
 {

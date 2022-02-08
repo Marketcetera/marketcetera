@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import junit.framework.Test;
-
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.ExpectedTestFailure;
@@ -22,6 +20,9 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.time.DateService;
 
+import com.google.common.collect.Lists;
+
+import junit.framework.Test;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -67,8 +68,6 @@ import quickfix.field.SymbolSfx;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
-
-import com.google.common.collect.Lists;
 /* $License$ */
 /**
  * @author Graham Miller

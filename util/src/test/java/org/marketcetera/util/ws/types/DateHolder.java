@@ -15,7 +15,7 @@ import org.apache.commons.lang.ArrayUtils;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: DateHolder.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

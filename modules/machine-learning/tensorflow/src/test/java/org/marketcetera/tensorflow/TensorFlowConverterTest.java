@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
@@ -27,7 +26,6 @@ import org.tensorflow.Tensor;
  * @version $Id$
  * @since $Release$
  */
-@Ignore("Tensor flow causes core-dump with Open JDK 1.8.0")
 public class TensorFlowConverterTest
         extends TensorFlowTestBase
 {

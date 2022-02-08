@@ -267,21 +267,26 @@ public class PersistentFixSession
                         "Port must be greater than 0 and less than 65536");
         Validate.notNull(sessionId,
                          "Session ID is required");
-        String startTime = sessionSettings.get(Session.SETTING_START_TIME);
-        Validate.notNull(startTime,
-                         "Start time is required");
-        String endTime = sessionSettings.get(Session.SETTING_END_TIME);
-        Validate.notNull(endTime,
-                         "End time is required");
-        try {
-            startEndTimeFormatter.parseDateTime(startTime);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid start time: " + startTime);
-        }
-        try {
-            startEndTimeFormatter.parseDateTime(endTime);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid end time: " + endTime);
+        String nonStopSession = sessionSettings.get(Session.SETTING_NON_STOP_SESSION);
+        if(nonStopSession != null && nonStopSession.toUpperCase().equals("Y")) {
+            // non-stop session, no validation of start/end time required
+        } else {
+            String startTime = sessionSettings.get(Session.SETTING_START_TIME);
+            Validate.notNull(startTime,
+                             "Start time is required");
+            String endTime = sessionSettings.get(Session.SETTING_END_TIME);
+            Validate.notNull(endTime,
+                             "End time is required");
+            try {
+                startEndTimeFormatter.parseDateTime(startTime);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid start time: " + startTime);
+            }
+            try {
+                startEndTimeFormatter.parseDateTime(endTime);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid end time: " + endTime);
+            }
         }
     }
     /**

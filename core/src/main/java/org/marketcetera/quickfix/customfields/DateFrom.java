@@ -1,11 +1,11 @@
 package org.marketcetera.quickfix.customfields;
 
+import java.util.Date;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.time.DateService;
 
 import quickfix.UtcTimeStampField;
-
-import java.util.Date;
 
 /**
  * Implementation of a custom field 9883: DateFrom
@@ -17,7 +17,8 @@ import java.util.Date;
 public class DateFrom extends UtcTimeStampField {
     public static final int FIELD = 9883;
     public DateFrom() {
-        super(FIELD, DateService.toUtcDateTime(new Date()));
+        super(FIELD,
+              DateService.toUtcDateTime(new Date()));
     }
 
     public DateFrom(Date date) {

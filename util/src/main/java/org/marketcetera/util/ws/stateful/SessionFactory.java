@@ -9,12 +9,12 @@ import org.marketcetera.util.ws.tags.SessionId;
  *
  * @author tlerios@marketcetera.com
  * @since 1.5.0
- * @version $Id: SessionFactory.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SessionFactory.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public interface SessionFactory<T>
 {
 

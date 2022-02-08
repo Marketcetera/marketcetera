@@ -18,10 +18,11 @@ import org.marketcetera.util.unicode.SignatureCharset;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: FileWrapperTest.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
+
 @Ignore
 public class FileWrapperTest
     extends WrapperTestBase

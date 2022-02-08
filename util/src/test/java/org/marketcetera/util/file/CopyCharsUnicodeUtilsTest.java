@@ -20,10 +20,11 @@ import org.marketcetera.util.unicode.SignatureCharset;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: CopyCharsUnicodeUtilsTest.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
+
 @Ignore
 public class CopyCharsUnicodeUtilsTest
     extends CopyUtilsTestBase

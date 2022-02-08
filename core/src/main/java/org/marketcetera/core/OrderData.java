@@ -30,7 +30,7 @@ import quickfix.field.MsgType;
 /* $License$ */
 
 /**
- *
+ * Provides a mechanism to track trade data history belonging to a particular order.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

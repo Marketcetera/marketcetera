@@ -12,13 +12,13 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: AuthService.java 16853 2014-03-06 02:10:11Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
 @WebService(targetNamespace="authentication")
-@ClassVersion("$Id: AuthService.java 16853 2014-03-06 02:10:11Z colin $")
+@ClassVersion("$Id$")
 public interface AuthService
     extends ServiceBase
 {
