@@ -62,8 +62,37 @@ $ mvn install
 
 ### IDE
 
-Eclipse:
+#### Eclipse
 
 ```
 $ mvn eclipse:eclipse
 ```
+File->Import Existing Projects
+
+#### IntelliJ
+
+#### VSCode
+
+### Run
+
+#### DARE (Deploy Anywhere Routing Engine)
+
+```
+$ cd packages/dare-package
+
+$ mvn -Pexecute exec:java &
+
+$ tail -f target/logs/dare-instance1.log
+```
+
+If it doesn't start properly, check target/logs/dareout1.log.
+
+#### Web UI
+
+```
+$ cd ui/web-package
+
+$ mvn spring-boot:run
+```
+
+Connect to `localhost:8080` and login as `admin/admin` to manage FIX sessions or `trader/trader` for order management.
