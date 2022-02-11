@@ -805,18 +805,17 @@ public class FIXMessageFactory {
         return msg;
     }
     /**
-     * 
+     * Generate a market data request with the given attributes.
      *
-     *
-     * @param inRequest
-     * @param inFixDictionary
-     * @param inRequestId
-     * @param inInstruments
-     * @param inExchange
-     * @param inContent
-     * @param inSubscriptionType
-     * @return
-     * @throws quickfix.FieldNotFound
+     * @param inRequest a <code>quickfix.Message</code> value
+     * @param inFixDictionary a <code>quickfix.DataDictionary</code> value
+     * @param inRequestId a <code>String</code> value
+     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value
+     * @param inExchange a <code>String</code> value
+     * @param inContent a <code>List&lt;Content&gt;</code> value
+     * @param inSubscriptionType a <code>char</code> value
+     * @return a <code>quickfix.Message</code> value
+     * @throws quickfix.FieldNotFound if the message cannot be constructed
      */
     private quickfix.Message doNewMarketDataRequest(quickfix.Message inRequest,
                                                     quickfix.DataDictionary inFixDictionary,
