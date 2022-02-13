@@ -2,7 +2,6 @@ package org.marketcetera.admin;
 
 import java.util.List;
 import java.util.Set;
-
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
