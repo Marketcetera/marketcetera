@@ -139,6 +139,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
+              <skip>${metc.docker.skip}</skip>
               <executable>docker</executable>
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
@@ -159,6 +160,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
+              <skip>${metc.docker.skip}</skip>
               <executable>docker</executable>
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
@@ -178,6 +180,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
+              <skip>${metc.docker.skip}</skip>
               <executable>docker</executable>
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
@@ -197,6 +200,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
+              <skip>${metc.docker.skip}</skip>
               <executable>docker</executable>
               <workingDirectory>${project.basedir}</workingDirectory>
               <arguments>
