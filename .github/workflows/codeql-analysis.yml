@@ -46,7 +46,8 @@ jobs:
       # manually (see below)
       #- name: Autobuild
       #  uses: github/codeql-action/autobuild@v1
-       - run: |
+      - name: Build
+      - run: |
          mvn -DskipTests -Dmetc.docker.skip=true install
 
       # ℹ️ Command-line programs to run using the OS shell.
