@@ -38,6 +38,7 @@
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <vaadin.version>21.0.0.alpha10</vaadin.version>
+    <esper.version>8.8.0</esper.version>
     <mvn.flyway.version>8.5.0</mvn.flyway.version>
   </properties>
   <dependencyManagement>
@@ -435,10 +436,10 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
-	<groupId>org.flywaydb</groupId>
-	<artifactId>flyway-core</artifactId>
-	<version>${mvn.flyway.version}</version>
-	<scope>runtime</scope>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>${mvn.flyway.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.oblac</groupId>
@@ -597,12 +598,18 @@
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-runtime</artifactId>
-        <version>8.7.0</version>
+        <version>${esper.version}</version>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-compiler</artifactId>
-        <version>8.7.0</version>
+        <version>${esper.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.espertech</groupId>
+        <artifactId>esper-common-avro</artifactId>
+        <version>${esper.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>

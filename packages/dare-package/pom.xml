@@ -158,11 +158,15 @@
       <artifactId>spring-boot-starter-log4j2</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- other runtime -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <!-- other runtime -->
+    <dependency>
+      <groupId>com.espertech</groupId>
+      <artifactId>esper-common-avro</artifactId>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

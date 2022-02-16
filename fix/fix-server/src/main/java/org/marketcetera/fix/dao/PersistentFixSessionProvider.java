@@ -655,13 +655,12 @@ public class PersistentFixSessionProvider
                 public void run()
                 {
                     try {
-                        
+                        createFixSessionsFromConfig();
                     } catch (Exception e) {
                         PlatformServices.handleException(PersistentFixSessionProvider.this,
                                                          "Unable to provision FIX messages",
                                                          e);
                     }
-                    createFixSessionsFromConfig();
                 }},fixSessionCreationDelay,TimeUnit.MILLISECONDS);
         } else {
             createFixSessionsFromConfig();
