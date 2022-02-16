@@ -38,7 +38,7 @@
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <vaadin.version>21.0.0.alpha10</vaadin.version>
-    <mvn.flyway.version>8.4.0</mvn.flyway.version>
+    <mvn.flyway.version>8.5.0</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>
