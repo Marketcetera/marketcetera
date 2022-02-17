@@ -51,6 +51,7 @@ These settings specify an existing Postgres database named `metc`. You may also 
 To just build:
 
 ```
+$ cd marketcetera
 $ mvn -DskipTests install
 ```
 
