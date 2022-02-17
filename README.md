@@ -1,6 +1,6 @@
 # Marketcetera Automated Trading Platform
 
-## Build Instructions
+## Build From Source
 
 ### Tools
 
@@ -46,7 +46,11 @@ $ cat ~/.m2/settings.xml
 
 These settings specify an existing Postgres database named `metc`. You may also use HSQLDB by uncommenting those properties and commenting out the Postgres properties. Other database vendors are also available.
 
-### Build
+### Build From Source
+
+Clone the repo:
+```
+$ git clone https://github.com/Marketcetera/marketcetera.git
 
 To just build:
 
