@@ -32,7 +32,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '8'
-          cache: 'maven'
       - name: Checkout repository
         uses: actions/checkout@v2
 
