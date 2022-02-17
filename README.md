@@ -51,6 +51,7 @@ These settings specify an existing Postgres database named `metc`. You may also 
 Clone the repo:
 ```
 $ git clone https://github.com/Marketcetera/marketcetera.git
+```
 
 To just build:
 
