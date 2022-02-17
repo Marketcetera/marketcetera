@@ -136,17 +136,6 @@ public class MainLayout
     private List<Tab> createMenuItems() {
         MenuItemInfo[] menuItems = new MenuItemInfo[]{ //
                 new MenuItemInfo("Hello World", "la la-globe", HelloWorldView.class), //
-
-                new MenuItemInfo("About", "la la-file", AboutView.class), //
-
-                new MenuItemInfo("Dashboard", "la la-chart-area", DashboardView.class), //
-
-                new MenuItemInfo("Master-Detail", "la la-columns", MasterDetailView.class), //
-
-                new MenuItemInfo("Person Form", "la la-user", PersonFormView.class), //
-
-                new MenuItemInfo("Image List", "la la-th-list", ImageListView.class), //
-
         };
         List<Tab> tabs = new ArrayList<>();
         for (MenuItemInfo menuItemInfo : menuItems) {

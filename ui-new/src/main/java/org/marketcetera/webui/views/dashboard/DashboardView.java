@@ -25,11 +25,12 @@ import com.vaadin.flow.router.PageTitle;
 import org.marketcetera.webui.views.MainLayout;
 import javax.annotation.security.PermitAll;
 
+@PermitAll
 @PageTitle("Dashboard")
 @Route(value = "dashboard", layout = MainLayout.class)
-@PermitAll
-public class DashboardView extends Div {
-
+public class DashboardView
+        extends Div
+{
     private Grid<HealthGridItem> grid = new Grid<>();
 
     private Chart monthlyVisitors = new Chart();
@@ -142,4 +143,5 @@ public class DashboardView extends Div {
         y.setMin(0);
         configuration.addyAxis(y);
     }
+    private static final long serialVersionUID = 5069220673837030128L;
 }

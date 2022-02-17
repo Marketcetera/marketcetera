@@ -200,10 +200,7 @@
             -Dspring.datasource.password=${metc.jdbc.password}
             -Dspring.datasource.driver-class-name=${metc.jdbc.driver}
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
-            -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
-            -Dmetc.instance=1
-            -Dserver.port=9000
-            -Dmetc.rpc.port=9010
+            -Dserver.port=8080
           </jvmArguments>
         </configuration>
       </plugin>
