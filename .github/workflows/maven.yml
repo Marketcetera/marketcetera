@@ -10,6 +10,12 @@ on:
   pull_request:
     branches:
       - master
+env:
+  metc.jdbc.user: metc
+  metc.jdbc.password: pw4metc
+  metc.jdbc.driver: org.hsqldb.jdbc.JDBCDriver
+  metc.jdbc.url: jdbc:hsqldb:file:./target/data/metc-hsqldb-data
+  
 jobs:
   build:
 
@@ -22,6 +28,11 @@ jobs:
       with:
           distribution: 'temurin'
           java-version: '8'
-          cache: 'maven'
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
     - name: Build with Maven
       run: mvn -B package -Dmetc.skip.docker=true --file pom.xml
