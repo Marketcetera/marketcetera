@@ -52,6 +52,10 @@
     </dependency>
     <!-- spring test -->
     <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <exclusions>
@@ -127,10 +131,6 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
-            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
-            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
-            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
           </systemPropertyVariables>
         </configuration>
       </plugin>

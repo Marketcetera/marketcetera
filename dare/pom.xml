@@ -282,10 +282,6 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
-            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
-            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
-            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
             <metc.jms.port>19600</metc.jms.port>
             <metc.ws.host>localhost</metc.ws.host>
             <metc.ws.port>19601</metc.ws.port>
