@@ -24,11 +24,15 @@ import org.marketcetera.tensorflow.model.TensorFlowRunner;
 import org.marketcetera.tensorflow.service.TensorFlowService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.google.common.collect.Lists;
+
+import junitparams.JUnitParamsRunner;
 
 /* $License$ */
 
@@ -39,8 +43,11 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/test.xml"})
+@RunWith(JUnitParamsRunner.class)
+@EntityScan(basePackages={"org.marketcetera"})
+@ComponentScan(basePackages={"org.marketcetera"})
+@EnableJpaRepositories(basePackages={"org.marketcetera"})
+@SpringBootTest(classes=TensorFlowTestConfiguration.class)
 public class TensorFlowTestBase
 {
     /**
@@ -197,6 +204,7 @@ public class TensorFlowTestBase
      */
     protected ModuleURN createHeadwaterModule()
     {
+        System.out.println("COCO: moduleManager is " + moduleManager);
         if(headwaterUrn == null) {
             headwaterInstance = "hw"+System.nanoTime();
             headwaterUrn = moduleManager.createModule(HeadwaterModuleFactory.PROVIDER_URN,

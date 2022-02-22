@@ -35,16 +35,7 @@
       <artifactId>querydsl-jpa</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <!-- test -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
@@ -54,9 +45,19 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
+    <!-- Testing. -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-server</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pl.pragmatists</groupId>
+      <artifactId>JUnitParams</artifactId>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -64,13 +65,39 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- spring test -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.vaadin.external.google</groupId>
+          <artifactId>android-json</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -101,10 +128,6 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
-            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
-            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
-            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
-            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
           </systemPropertyVariables>
         </configuration>
       </plugin>
