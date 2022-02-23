@@ -9,7 +9,6 @@ import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -367,7 +366,6 @@ public class PersistentUser
     /**
      * the user data associated with this used - may be <code>null</code>
      */
-    @Lob
     @Column(name="user_data",nullable=true,length=8096)
     private String userData;
     /**

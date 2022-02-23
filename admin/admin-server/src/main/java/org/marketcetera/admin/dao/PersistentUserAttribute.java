@@ -3,7 +3,6 @@ package org.marketcetera.admin.dao;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -137,7 +136,6 @@ public class PersistentUserAttribute
     /**
      * attribute value
      */
-    @Lob
     @Column(name="attribute",nullable=false,length=262144)
     private String attribute;
     private static final long serialVersionUID = 4409150813670715607L;
