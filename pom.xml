@@ -1263,13 +1263,6 @@
       <url>https://repository.springsource.com/maven/bundles/external</url>
     </repository>
     <repository>
-      <id>java.net</id>
-      <url>https://download.java.net/maven/2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>vaadin-prereleases</id>
       <url>
         https://maven.vaadin.com/vaadin-prereleases/
