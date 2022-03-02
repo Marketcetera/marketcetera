@@ -96,9 +96,53 @@ If it doesn't start properly, check target/logs/dareout1.log.
 #### Web UI
 
 ```
-$ cd ui/web-package
+$ cd ui/webui-package
 
 $ mvn spring-boot:run
 ```
 
 Connect to `localhost:8080` and login as `admin/admin` to manage FIX sessions or `trader/trader` for order management.
+
+#### Troubleshooting
+
+If you are unable to connect using the Web UI, make sure the server actually started properly. Open the server log file at packages/dare-package/target/logs/dare-instance1.log.
+
+Make sure you see no Java stack traces in the log. You should see an indication that the system started correctly. Look for the table that is the indication of the available broker sessions:
+
+```
++-----------+----------+
+! Sessions  ! host1-1  !
++-----------+----------+
+! acceptor1 ! disabled !
++-----------+----------+
+!  exsim1   ! disabled !
++-----------+----------+
+```
+These are the default sessions, yours may or may not be different. It doesn't really matter what the status is (`disabled` vs `available`, e.g.), just that the table is displayed. This indicates that all the services have started up properly.
+
+If you don't see this, stop the DARE server.
+
+```
+$ fg
+$^c
+```
+
+Check that the Java process for the DARE server is no longer running:
+
+```
+$ ps -ef java | grep MultiInstanceApplicationContainer
+$
+```
+
+Make sure you have the most recent code:
+
+```
+$ git pull
+```
+
+Rebuild:
+
+```
+$ mvn -DskipTests clean install
+```
+Try again.
