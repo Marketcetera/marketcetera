@@ -116,7 +116,8 @@ public class CustomAppender
         {
             super(inOutputStream,
                   inStreamName,
-                  inLayout);
+                  inLayout,
+                  true);
         }
         /**
          * Gets the <code>CustomAppenderManager</code> instance for the given stream name and layout.
@@ -189,5 +190,4 @@ public class CustomAppender
          */
         private OutputStream destination;
     }
-    private static final long serialVersionUID = -1612799097293634437L;
 }

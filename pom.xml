@@ -45,8 +45,8 @@
     <mvn.springdatajpa.version>1.7.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
-    <mvn.slf4j.version>1.7.10</mvn.slf4j.version>
-    <mvn.log4j.version>2.1</mvn.log4j.version>
+    <mvn.slf4j.version>1.7.36</mvn.slf4j.version>
+    <mvn.log4j.version>2.17.2</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
