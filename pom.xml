@@ -37,7 +37,7 @@
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
-    <vaadin.version>21.0.0.alpha10</vaadin.version>
+    <vaadin.version>22.0.2</vaadin.version>
     <esper.version>8.8.0</esper.version>
     <mvn.flyway.version>8.5.0</mvn.flyway.version>
   </properties>
@@ -982,7 +982,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.0</version>
           <executions>
             <execution>
               <id>add-source</id>
@@ -1263,13 +1263,6 @@
       <url>https://repository.springsource.com/maven/bundles/external</url>
     </repository>
     <repository>
-      <id>java.net</id>
-      <url>https://download.java.net/maven/2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>vaadin-prereleases</id>
       <url>
         https://maven.vaadin.com/vaadin-prereleases/
@@ -1312,7 +1305,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.10.0</version>
+        <version>3.11.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
