@@ -1,6 +1,11 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
 import java.io.File;
+
 import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
@@ -9,9 +14,6 @@ import org.marketcetera.util.exec.Exec;
 //import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
 
 /**
  * @author tlerios@marketcetera.com

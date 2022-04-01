@@ -1,16 +1,24 @@
 package org.marketcetera.util.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
+import static org.marketcetera.util.file.FileType.DIR;
+import static org.marketcetera.util.file.FileType.FILE;
+import static org.marketcetera.util.file.FileType.LINK_DIR;
+import static org.marketcetera.util.file.FileType.LINK_FILE;
+import static org.marketcetera.util.file.FileType.LINK_UNKNOWN;
+import static org.marketcetera.util.file.FileType.NONEXISTENT;
+import static org.marketcetera.util.file.FileType.UNKNOWN;
+import static org.marketcetera.util.file.FileType.get;
+
 import java.io.File;
+
 //import java.util.Locale;
 //import org.apache.log4j.Level;
 import org.junit.Test;
 //import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import static org.marketcetera.util.file.FileType.*;
 
 /**
  * @author tlerios@marketcetera.com
