@@ -13,10 +13,10 @@
 
 . "$(dirname $0)/setEnv.sh"
 
-mkdir -p ${DARE_HOME}/logs
+mkdir -p ${DARE_HOME}/logs ${UI_HOME}/logs
 
 cd ${DARE_HOME}
 ./bin/dare.sh
 
-#cd ${UI_HOME}
-#./bin/ui.sh > logs/uiout.log 2>&1
+cd ${UI_HOME}
+./bin/ui.sh > logs/uiout.log 2>&1

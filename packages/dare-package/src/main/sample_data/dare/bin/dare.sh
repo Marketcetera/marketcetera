@@ -15,13 +15,6 @@ cd ${DARE_HOME}
 
 THE_CLASSPATH=./conf
 
-#cd ${COMMON_HOME}
-#
-#for file in `ls -1 ${COMMON_HOME}/lib/*.jar`
-#do
-#    THE_CLASSPATH=${THE_CLASSPATH}:${file}
-#done
-
 cd ${DARE_HOME}
 
 for file in `ls -1 ${DARE_HOME}/lib/*.jar`
