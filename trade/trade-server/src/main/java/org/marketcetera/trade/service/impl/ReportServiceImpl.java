@@ -391,6 +391,55 @@ public class ReportServiceImpl
         return orderStatus;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#getExecutionReport(org.marketcetera.trade.OrderID, org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public Optional<ExecutionReport> getExecutionReport(OrderID inRootOrderId,
+                                                        OrderID inOrderId)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Searching for the execution report for {}/{}",
+                               inRootOrderId,
+                               inOrderId);
+        BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.rootOrderId.eq(inRootOrderId));
+        where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.orderId.eq(inOrderId));
+        Sort sort = Sort.by(Sort.Direction.DESC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        PageRequest page = PageRequest.of(0,
+                                          1,
+                                          sort);
+        Page<PersistentExecutionReport> executionReportPage = executionReportDao.findAll(where,
+                                                                                         page);
+        PersistentExecutionReport pExecutionReport = null;
+        if(executionReportPage.hasContent()) {
+            pExecutionReport = executionReportPage.getContent().iterator().next();
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Retrieved {} for {}/{}",
+                               pExecutionReport,
+                               inRootOrderId,
+                               inOrderId);
+        ExecutionReport executionReport = null;
+        if(pExecutionReport != null) {
+            quickfix.Message fixMessage;
+            try {
+                fixMessage = new quickfix.Message(pExecutionReport.getReport().getFixMessage());
+            } catch (InvalidMessage e) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Cannot construct a FIX message from {}: {}",
+                                      pExecutionReport.getReport().getFixMessage(),
+                                      PlatformServices.getMessage(e));
+                return Optional.empty();
+            }
+            executionReport = Factory.getInstance().createExecutionReport(fixMessage,
+                                                                          pExecutionReport.getReport().getBrokerID(),
+                                                                          pExecutionReport.getReport().getOriginator(),
+                                                                          pExecutionReport.getActor()==null?null:pExecutionReport.getActor().getUserID(),
+                                                                          pExecutionReport.getViewerID());
+        }
+        return Optional.ofNullable(executionReport);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.service.ReportService#getLatestExecutionReportForOrderChain(org.marketcetera.trade.OrderID)
      */
     @Override

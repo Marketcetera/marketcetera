@@ -69,11 +69,15 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -94,6 +98,7 @@ import quickfix.SessionSettings;
  * @since $Release$
  */
 @Service
+@EnableAutoConfiguration
 public class BrokerServiceImpl
         implements BrokerService,ClusterListener,SessionNameProvider
 {
@@ -231,15 +236,14 @@ public class BrokerServiceImpl
     @Override
     public ServerFixSession getServerFixSession(SessionID inSessionId)
     {
-        ActiveFixSession activeFixSession = getActiveFixSession(inSessionId);
-        if(activeFixSession == null) {
+        ServerFixSession serverFixSession = serverFixSessionsBySessionId.getUnchecked(inSessionId);
+        if(serverFixSession == null) {
             SLF4JLoggerProxy.warn(this,
                                   "No session for {}",
                                   inSessionId);
             return null;
         }
-        return serverFixSessionFactory.create(activeFixSession,
-                                              getSessionCustomization(activeFixSession.getFixSession()));
+        return serverFixSession;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getServerFixSession(org.marketcetera.trade.BrokerID)
@@ -809,6 +813,22 @@ public class BrokerServiceImpl
     @PostConstruct
     public void start()
     {
+        serverFixSessionsBySessionId = CacheBuilder.newBuilder().expireAfterAccess(serverFixSessionCache,TimeUnit.MILLISECONDS).build(new CacheLoader<SessionID,ServerFixSession>(){
+            @Override
+            public ServerFixSession load(SessionID inKey)
+                    throws Exception
+            {
+                ActiveFixSession activeFixSession = getActiveFixSession(inKey);
+                if(activeFixSession == null) {
+                    SLF4JLoggerProxy.warn(this,
+                                          "No session for {}",
+                                          inKey);
+                    return null;
+                }
+                return serverFixSessionFactory.create(activeFixSession,
+                                                      getSessionCustomization(activeFixSession.getFixSession()));
+            }}
+        );
         instanceData = clusterService.getInstanceData();
         ApplicationContextProvider tmpAppCxProvider = new ApplicationContextProvider();
         tmpAppCxProvider.setApplicationContext(applicationContext);
@@ -1215,6 +1235,15 @@ public class BrokerServiceImpl
      * caches session names by session id
      */
     private final Cache<SessionID,String> sessionNamesBySessionId = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
+    /**
+     * caches ServerFixSession values by SessionID
+     */
+    private LoadingCache<SessionID,ServerFixSession> serverFixSessionsBySessionId;
+    /**
+     * indicates how long to cache ServerFixSession values
+     */
+    @Value("${metc.dare.server.fix.session.cache.millis:60000}")
+    private long serverFixSessionCache;
     /**
      * Performs static initialization for this class
      * 
