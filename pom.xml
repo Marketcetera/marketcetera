@@ -611,42 +611,42 @@
         <artifactId>protobuf-java</artifactId>
         <version>3.20.1</version>
       </dependency>
-      <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
+      <!-- do not change versions of grpc and netty without reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-core</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-netty</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-tcnative-boringssl-static</artifactId>
-        <version>2.0.17.Final</version>
+        <version>2.0.46.Final</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-protobuf</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-stub</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-netty-shaded</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.1.30.Final</version>
+        <version>4.1.72.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
