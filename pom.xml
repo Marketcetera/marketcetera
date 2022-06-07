@@ -1029,7 +1029,7 @@
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M5</version>
+          <version>3.0.0-M7</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkCount>2.5C</forkCount>
