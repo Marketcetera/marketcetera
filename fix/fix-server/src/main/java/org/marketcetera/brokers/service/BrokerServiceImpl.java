@@ -30,6 +30,8 @@ import org.joda.time.DateTime;
 import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerConstants;
 import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.brokers.BrokerUnavailable;
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.AbstractCallableClusterTask;
 import org.marketcetera.cluster.ClusterData;
@@ -62,6 +64,7 @@ import org.marketcetera.fix.store.MessageStoreSessionDao;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -69,11 +72,15 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -94,6 +101,7 @@ import quickfix.SessionSettings;
  * @since $Release$
  */
 @Service
+@EnableAutoConfiguration
 public class BrokerServiceImpl
         implements BrokerService,ClusterListener,SessionNameProvider
 {
@@ -231,15 +239,14 @@ public class BrokerServiceImpl
     @Override
     public ServerFixSession getServerFixSession(SessionID inSessionId)
     {
-        ActiveFixSession activeFixSession = getActiveFixSession(inSessionId);
-        if(activeFixSession == null) {
+        ServerFixSession serverFixSession = serverFixSessionsBySessionId.getUnchecked(inSessionId);
+        if(serverFixSession == null) {
             SLF4JLoggerProxy.warn(this,
                                   "No session for {}",
                                   inSessionId);
             return null;
         }
-        return serverFixSessionFactory.create(activeFixSession,
-                                              getSessionCustomization(activeFixSession.getFixSession()));
+        return serverFixSession;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.BrokerService#getServerFixSession(org.marketcetera.trade.BrokerID)
@@ -739,7 +746,13 @@ public class BrokerServiceImpl
         if(sessionCustomizationName == null) {
             return null;
         }
-        return sessionCustomizationsByName.getIfPresent(sessionCustomizationName);
+        SessionCustomization sessionCustomization = sessionCustomizationsByName.getIfPresent(sessionCustomizationName);
+        SLF4JLoggerProxy.info(this,
+                              "{} using session customization name: {} which resolves to {}",
+                              getSessionName(new quickfix.SessionID(inFixSession.getSessionId())),
+                              sessionCustomizationName,
+                              sessionCustomization);
+        return sessionCustomization;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.matp.service.ClusterListener#memberAdded(com.marketcetera.matp.service.ClusterMember)
@@ -770,6 +783,66 @@ public class BrokerServiceImpl
                                "{} changed",
                                inChangedMember);
         updateBrokerStatus();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getOrderMessageModifiers(org.marketcetera.fix.ServerFixSession)
+     */
+    @Override
+    public Collection<MessageModifier> getOrderMessageModifiers(ServerFixSession inSession)
+    {
+        return getMessageModifiers(inSession,
+                                   true);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#getReportMessageModifiers(org.marketcetera.fix.ServerFixSession)
+     */
+    @Override
+    public Collection<MessageModifier> getReportMessageModifiers(ServerFixSession inServerFixSession)
+    {
+        return getMessageModifiers(inServerFixSession,
+                                   false);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.BrokerService#resolveVirtualServerFixSession(org.marketcetera.fix.ServerFixSession)
+     */
+    @Override
+    public ServerFixSession resolveVirtualServerFixSession(ServerFixSession inServerFixSession)
+    {
+        ServerFixSession mappedServerFixSession = inServerFixSession;
+        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
+            mappedServerFixSession = getServerFixSession(new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId()));
+            if(mappedServerFixSession == null) {
+                throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
+                                                                   inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId()));
+            }
+        }
+        return mappedServerFixSession;
+    }
+    /**
+     * Get the complete collection of message modifiers for the given broker.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @param inIsOrder a <code>boolean</code> value
+     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
+     */
+    private Collection<MessageModifier> getMessageModifiers(ServerFixSession inServerFixSession,
+                                                            boolean inIsOrder)
+    {
+        Collection<MessageModifier> modifiers = Lists.newArrayList();
+        if(inIsOrder) {
+            modifiers.addAll(inServerFixSession.getOrderModifiers());
+        } else {
+            modifiers.addAll(inServerFixSession.getResponseModifiers());
+        }
+        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
+            ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
+            if(inIsOrder) {
+                modifiers.addAll(mappedServerFixSession.getOrderModifiers());
+            } else {
+                modifiers.addAll(mappedServerFixSession.getResponseModifiers());
+            }
+        }
+        return modifiers;
     }
     /**
      * Receive FIX session status events.
@@ -809,6 +882,22 @@ public class BrokerServiceImpl
     @PostConstruct
     public void start()
     {
+        serverFixSessionsBySessionId = CacheBuilder.newBuilder().expireAfterAccess(serverFixSessionCache,TimeUnit.MILLISECONDS).build(new CacheLoader<SessionID,ServerFixSession>(){
+            @Override
+            public ServerFixSession load(SessionID inKey)
+                    throws Exception
+            {
+                ActiveFixSession activeFixSession = getActiveFixSession(inKey);
+                if(activeFixSession == null) {
+                    SLF4JLoggerProxy.warn(this,
+                                          "No session for {}",
+                                          inKey);
+                    return null;
+                }
+                return serverFixSessionFactory.create(activeFixSession,
+                                                      getSessionCustomization(activeFixSession.getFixSession()));
+            }}
+        );
         instanceData = clusterService.getInstanceData();
         ApplicationContextProvider tmpAppCxProvider = new ApplicationContextProvider();
         tmpAppCxProvider.setApplicationContext(applicationContext);
@@ -1215,6 +1304,15 @@ public class BrokerServiceImpl
      * caches session names by session id
      */
     private final Cache<SessionID,String> sessionNamesBySessionId = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
+    /**
+     * caches ServerFixSession values by SessionID
+     */
+    private LoadingCache<SessionID,ServerFixSession> serverFixSessionsBySessionId;
+    /**
+     * indicates how long to cache ServerFixSession values
+     */
+    @Value("${metc.dare.server.fix.session.cache.millis:60000}")
+    private long serverFixSessionCache;
     /**
      * Performs static initialization for this class
      * 

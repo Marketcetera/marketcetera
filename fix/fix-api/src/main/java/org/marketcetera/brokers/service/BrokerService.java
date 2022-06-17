@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerStatusPublisher;
+import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.brokers.SessionCustomization;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.fix.AcceptorSessionAttributes;
@@ -222,4 +223,25 @@ public interface BrokerService
      * @return a <code>String</code> value
      */
     String getSessionName(quickfix.SessionID inSessionId);
+    /**
+     * Get the complete collection of order modifiers for the given broker.
+     *
+     * @param inSession a <code>ServerFixSession</code> value
+     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
+     */
+    Collection<MessageModifier> getOrderMessageModifiers(ServerFixSession inSession);
+    /**
+     * Get the complete collection of report modifiers for the given broker.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
+     */
+    Collection<MessageModifier> getReportMessageModifiers(ServerFixSession inServerFixSession);
+    /**
+     * Resolve the given session into the appropriate virtual or physical session.
+     *
+     * @param inServerFixSession a <code>ServerFixSession</code> value
+     * @return a <code>ServerFixSession</code> value
+     */
+    ServerFixSession resolveVirtualServerFixSession(ServerFixSession inServerFixSession);
 }

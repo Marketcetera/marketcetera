@@ -35,7 +35,7 @@
     <mvn.spring.boot.version>2.6.7</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.17.2</mvn.log4j.version>
-    <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
+    <mvn.test.options>-Xmx2048m -Xms128m -XX:+UnlockCommercialFeatures -XX:+FlightRecorder</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
   <dependencyManagement>
@@ -910,6 +910,11 @@
           <groupId>com.google.code.maven-replacer-plugin</groupId>
           <artifactId>maven-replacer-plugin</artifactId>
           <version>1.4.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.flywaydb</groupId>
+          <artifactId>flyway-maven-plugin</artifactId>
+          <version>6.5.3</version>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>

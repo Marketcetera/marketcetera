@@ -35,6 +35,18 @@ import quickfix.MessageFactory;
 public class FixServerTestConfiguration
 {
     /**
+     * Get the symbol resolver service value.
+     *
+     * @return a <code>SymbolResolverService</code> value
+     */
+    @Bean
+    public SymbolResolverService getSymbolResolverService()
+    {
+        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
+        symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
+        return symbolResolverService;
+    }
+    /**
      * Get the Hibernate message store configuration value.
      *
      * @return a <code>HibernateMessageStoreConfiguration</code> value
