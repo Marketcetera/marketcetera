@@ -45,7 +45,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
@@ -130,9 +129,9 @@ public class TradeServiceImpl
             // TODO broker algos
             // TODO reprice
             // construct the list of order modifiers to apply
-            Collection<MessageModifier> orderModifiers = getOrderMessageModifiers(inServerFixSession);
+            Collection<MessageModifier> orderModifiers = brokerService.getOrderMessageModifiers(inServerFixSession);
             // choose the broker to use
-            ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
+            ServerFixSession mappedServerFixSession = brokerService.resolveVirtualServerFixSession(inServerFixSession);
             // create the FIX message (we can use only one message factory, so if the broker is a virtual broker, we defer to the mapped broker, otherwise the virtual broker would have to duplicate
             //  the entire mapped broker dictionary, etc)
             fixMessage = FIXConverter.toQMessage(mappedServerFixSession.getFIXVersion().getMessageFactory(),
@@ -201,8 +200,8 @@ public class TradeServiceImpl
                                              "Unable to process trading session status message",
                                              e);
         }
-        ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
-        Collection<MessageModifier> responseModifiers = getReportMessageModifiers(inServerFixSession);
+        ServerFixSession mappedServerFixSession = brokerService.resolveVirtualServerFixSession(inServerFixSession);
+        Collection<MessageModifier> responseModifiers = brokerService.getReportMessageModifiers(inServerFixSession);
         for(MessageModifier responseModifier : responseModifiers) {
             try {
                 responseModifier.modify(mappedServerFixSession,
@@ -335,72 +334,6 @@ public class TradeServiceImpl
         orderStatusEventsByOrderId = CacheBuilder.newBuilder().expireAfterAccess(orderStatusTimeout,
                                                                                  TimeUnit.SECONDS).build();
         eventBusService.register(this);
-    }
-    /**
-     * Resolve the given session into the appropriate virtual or physical session.
-     *
-     * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @return a <code>ServerFixSession</code> value
-     */
-    private ServerFixSession resolveVirtualServerFixSession(ServerFixSession inServerFixSession)
-    {
-        ServerFixSession mappedServerFixSession = inServerFixSession;
-        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
-            mappedServerFixSession = brokerService.getServerFixSession(new BrokerID(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId()));
-            if(mappedServerFixSession == null) {
-                throw new BrokerUnavailable(new I18NBoundMessage1P(Messages.UNKNOWN_BROKER_ID,
-                                                                   inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId()));
-            }
-        }
-        return mappedServerFixSession;
-    }
-    /**
-     * Get the complete collection of order modifiers for the given broker.
-     *
-     * @param inSession a <code>ServerFixSession</code> value
-     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
-     */
-    private Collection<MessageModifier> getOrderMessageModifiers(ServerFixSession inSession)
-    {
-        return getMessageModifiers(inSession,
-                                   true);
-    }
-    /**
-     * Get the complete collection of report modifiers for the given broker.
-     *
-     * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
-     */
-    private Collection<MessageModifier> getReportMessageModifiers(ServerFixSession inServerFixSession)
-    {
-        return getMessageModifiers(inServerFixSession,
-                                   false);
-    }
-    /**
-     * Get the complete collection of message modifiers for the given broker.
-     *
-     * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @param inIsOrder a <code>boolean</code> value
-     * @return a <code>Collection&lt;MessageModifier&gt;</code> value
-     */
-    private Collection<MessageModifier> getMessageModifiers(ServerFixSession inServerFixSession,
-                                                            boolean inIsOrder)
-    {
-        Collection<MessageModifier> modifiers = Lists.newArrayList();
-        if(inIsOrder) {
-            modifiers.addAll(inServerFixSession.getOrderModifiers());
-        } else {
-            modifiers.addAll(inServerFixSession.getResponseModifiers());
-        }
-        if(inServerFixSession.getActiveFixSession().getFixSession().getMappedBrokerId() != null) {
-            ServerFixSession mappedServerFixSession = resolveVirtualServerFixSession(inServerFixSession);
-            if(inIsOrder) {
-                modifiers.addAll(mappedServerFixSession.getOrderModifiers());
-            } else {
-                modifiers.addAll(mappedServerFixSession.getResponseModifiers());
-            }
-        }
-        return modifiers;
     }
     /**
      * provides access to outgoing message services

@@ -375,6 +375,25 @@ public class DeployAnywhereRoutingEngine
             }
             Session.lookupSession(inSessionId).setTargetDefaultApplicationVersionID(new quickfix.field.ApplVerID(defaultApplVerId));
         }
+        Collection<MessageModifier> orderModifiers = brokerService.getOrderMessageModifiers(serverFixSession);
+        // choose the broker to use
+        ServerFixSession mappedServerFixSession = brokerService.resolveVirtualServerFixSession(serverFixSession);
+        // apply modifiers
+        for(MessageModifier orderModifier : orderModifiers) {
+            try {
+                orderModifier.modify(mappedServerFixSession,
+                                     inMessage);
+                SLF4JLoggerProxy.debug(this,
+                                       "Applied {} to {}",
+                                       orderModifier,
+                                       inMessage);
+            } catch (Exception e) {
+                // unable to modify the order, but the show must go on!
+                PlatformServices.handleException(this,
+                                                 "Unable to modify order",
+                                                 e);
+            }
+        }
         Messages.QF_TO_ADMIN.info(getCategory(inMessage),
                                   inMessage,
                                   serverFixSession);
