@@ -21,6 +21,7 @@ import org.marketcetera.core.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -53,6 +54,8 @@ public class ProvisioningAgentTest
             assertEquals(0,
                          testComponent.getInvoked());
         }
+        provisioningAgent = applicationContext.getBean(ProvisioningAgent.class);
+        clusterService = applicationContext.getBean(ClusterService.class);
     }
     /**
      * Test provisioning a valid XML file.
@@ -180,11 +183,14 @@ public class ProvisioningAgentTest
     /**
      * bring in the {@link ProvisioningAgent} created in {{@link #getProvisioningAgent()}
      */
-    @Autowired
     private ProvisioningAgent provisioningAgent;
     /**
      * provides access to cluster services
      */
-    @Autowired
     private ClusterService clusterService;
+    /**
+     * application context value
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
 }

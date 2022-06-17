@@ -6,17 +6,18 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>webui-parent</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Web UI Parent</name>
   <properties>
     <!-- this version intentionally different from the top-level version -->
     <mvn.spring.boot.version>2.0.5.RELEASE</mvn.spring.boot.version>
-    <vaadin.version>7.7.13</vaadin.version>
+    <!-- do not increase the Vaadin version beyond 7.7.17 because this will cause commercial version checks -->
+    <vaadin.version>7.7.17</vaadin.version>
     <vaadin.theme>mytheme</vaadin.theme>
     <gwt.version>2.9.0</gwt.version>
     <gwt.plugin.version>2.9.0</gwt.plugin.version>

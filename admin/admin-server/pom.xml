@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>admin-parent</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.3-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>admin-server</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
   <name>Admin Server</name>
   <dependencies>
     <!-- compile local -->
@@ -70,6 +70,10 @@
         </exclusion>
       </exclusions>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
     </dependency>
   </dependencies>
   <build>

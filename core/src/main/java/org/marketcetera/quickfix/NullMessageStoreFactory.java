@@ -1,5 +1,7 @@
 package org.marketcetera.quickfix;
 
+import java.io.IOException;
+
 import quickfix.MessageStore;
 import quickfix.MessageStoreFactory;
 import quickfix.SessionID;
@@ -23,7 +25,11 @@ public class NullMessageStoreFactory
     @Override
     public MessageStore create(SessionID inSessionId)
     {
-        return new NullMessageStore(inSessionId);
+        try {
+            return new NullMessageStore(inSessionId);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     /**
      * Create a new NullMessageStoreFactory instance.
