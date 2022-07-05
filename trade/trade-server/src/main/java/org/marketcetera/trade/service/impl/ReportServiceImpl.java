@@ -402,7 +402,8 @@ public class ReportServiceImpl
                                inRootOrderId,
                                inOrderId);
         BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.rootOrderId.eq(inRootOrderId));
-        where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.orderId.eq(inOrderId));
+        where = where.and(QPersistentExecutionReport.persistentExecutionReport.orderId.eq(inOrderId));
+        where = where.and(QPersistentExecutionReport.persistentExecutionReport.orderStatus.notIn(OrderStatus.pendingOrderStatusValues));
         Sort sort = Sort.by(Sort.Direction.DESC,
                             QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
         PageRequest page = PageRequest.of(0,
