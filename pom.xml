@@ -904,7 +904,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>8.5.11</version>
+          <version>9.0.3</version>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -914,7 +914,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>6.5.3</version>
+          <version>9.0.3</version>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
