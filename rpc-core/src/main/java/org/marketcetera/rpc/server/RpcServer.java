@@ -121,6 +121,16 @@ public class RpcServer
         for(BindableService serverServiceDefinition : serverServiceDefinitions) {
             serverBuilder.addService(serverServiceDefinition);
         }
+//        serverBuilder.handshakeTimeout(timeout, unit)
+//        serverBuilder.keepAliveTime(keepAliveTime, timeUnit)
+//        serverBuilder.keepAliveTimeout(keepAliveTimeout, timeUnit)
+//        serverBuilder.maxConnectionAge(maxConnectionAge, timeUnit)
+//        serverBuilder.maxConnectionAgeGrace(maxConnectionAgeGrace, timeUnit)
+//        serverBuilder.maxConnectionIdle(maxConnectionIdle, timeUnit)
+//        serverBuilder.maxInboundMessageSize(bytes)
+//        serverBuilder.maxInboundMetadataSize(bytes)
+//        serverBuilder.permitKeepAliveTime(keepAliveTime, timeUnit)
+//        serverBuilder.permitKeepAliveWithoutCalls(permit)
         server = serverBuilder.build();
         Messages.SERVER_STARTING.info(this,
                                       description,
