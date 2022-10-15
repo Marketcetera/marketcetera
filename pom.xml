@@ -405,7 +405,7 @@
       <dependency>
         <groupId>org.quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>2.2.0-bd</version>
+        <version>2.3.2-bd</version>
       </dependency>
       <!-- Compile: CXF -->
       <dependency>
@@ -464,7 +464,7 @@
       <dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>tensorflow</artifactId>
-        <version>1.15.0</version>
+        <version>1.1.0-rc1</version>
       </dependency>
       <dependency>
         <groupId>com.github.jnr</groupId>
