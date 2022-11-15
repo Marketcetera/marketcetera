@@ -59,18 +59,6 @@ public class FixServerTestConfiguration
         return messageStoreConfiguration;
     }
     /**
-     * Get the symbol resolver service value.
-     *
-     * @return a <code>SymbolResolverService</code> value
-     */
-    @Bean
-    public SymbolResolverService getSymbolResolverService()
-    {
-        IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
-        symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
-        return symbolResolverService;
-    }
-    /**
      * Get the active FIX session factory value.
      *
      * @return a <code>MutableActiveFixSessionFactory</code> value
