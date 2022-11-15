@@ -268,14 +268,6 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return !multipleClients.isEmpty();
             }
         });
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return multipleClients.isEmpty();
-            }
-        });
         assertTrue(exceptions.isEmpty());
     }
     /**
