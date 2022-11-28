@@ -27,7 +27,7 @@ import org.marketcetera.persist.NDEntityBase;
  * @since 1.0.1
  */
 @Entity(name="Role")
-@Table(name="roles")
+@Table(name="metc_roles")
 public class PersistentRole
         extends NDEntityBase
         implements MutableRole
@@ -67,12 +67,13 @@ public class PersistentRole
     /**
      * subjects assigned to this role
      */
-    @JoinTable(name="roles_users")
+    @JoinTable(name="metc_roles_users")
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> subjects = new HashSet<>();
     /**
      * permissions granted to this role
      */
+    @JoinTable(name="metc_roles_permissions")
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class,cascade={ CascadeType.ALL })
     private Set<Permission> permissions = new HashSet<>();
     private static final long serialVersionUID = -562451840955411836L;

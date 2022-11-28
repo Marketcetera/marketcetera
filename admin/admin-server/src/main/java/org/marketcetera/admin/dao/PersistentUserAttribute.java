@@ -22,7 +22,7 @@ import org.marketcetera.persist.EntityBase;
  * @version $Id$
  * @since 1.2.0
  */
-@Table(name="user_attributes")
+@Table(name="metc_user_attributes")
 @Entity(name="UserAttribute")
 public class PersistentUserAttribute
         extends EntityBase

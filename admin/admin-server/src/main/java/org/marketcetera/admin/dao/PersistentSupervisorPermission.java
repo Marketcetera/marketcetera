@@ -28,7 +28,7 @@ import org.marketcetera.persist.NDEntityBase;
  * @since $Release$
  */
 @Entity(name="SupervisorPermission")
-@Table(name="supervisor_permissions")
+@Table(name="metc_supervisor_permissions")
 public class PersistentSupervisorPermission
         extends NDEntityBase
         implements SupervisorPermission
@@ -94,12 +94,13 @@ public class PersistentSupervisorPermission
     /**
      * subjects assigned to this supervisor
      */
-    @JoinTable(name="supervisor_permissions_users")
+    @JoinTable(name="metc_supervisor_permissions_users")
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> subjects = new HashSet<>();
     /**
      * permissions granted to this role
      */
+    @JoinTable(name="metc_supervisor_permissions_permissions")
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class,cascade={ CascadeType.ALL })
     private Set<Permission> permissions = new HashSet<>();
     private static final long serialVersionUID = 3776647081736905130L;

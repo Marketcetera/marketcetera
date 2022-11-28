@@ -21,7 +21,7 @@ import org.marketcetera.persist.NDEntityBase;
  * @since 1.0.1
  */
 @Entity(name="Permission")
-@Table(name="permissions")
+@Table(name="metc_permissions")
 public class PersistentPermission
         extends NDEntityBase
         implements MutablePermission

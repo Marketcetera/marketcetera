@@ -1,0 +1,10 @@
+alter table users rename to metc_users;
+alter table metc_users rename constraint users_pkey to metc_users_pkey;
+alter table roles rename to metc_roles;
+alter table permissions rename to metc_permissions;
+alter table roles_users rename to metc_roles_users;
+alter table roles_permissions rename to metc_roles_permissions;
+alter table supervisor_permissions rename to metc_supervisor_permissions;
+alter table supervisor_permissions_permissions rename to metc_supervisor_permissions_permissions;
+alter table supervisor_permissions_users rename to metc_supervisor_permissions_users;
+alter table user_attributes rename to metc_user_attributes;
