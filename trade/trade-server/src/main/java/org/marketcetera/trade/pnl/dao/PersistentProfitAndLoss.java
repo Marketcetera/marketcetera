@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="ProfitAndLoss")
-@javax.persistence.Table(name="profit_and_loss")
+@javax.persistence.Table(name="metc_profit_and_loss")
 public class PersistentProfitAndLoss
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.ProfitAndLoss

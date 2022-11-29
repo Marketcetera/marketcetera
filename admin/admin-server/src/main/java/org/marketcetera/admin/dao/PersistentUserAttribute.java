@@ -125,8 +125,8 @@ public class PersistentUserAttribute
     /**
      * owning user value
      */
-    @ManyToOne(targetEntity=PersistentUser.class)
     @JoinColumn(name="user_id")
+    @ManyToOne(targetEntity=PersistentUser.class)
     private User user;
     /**
      * attribute type value

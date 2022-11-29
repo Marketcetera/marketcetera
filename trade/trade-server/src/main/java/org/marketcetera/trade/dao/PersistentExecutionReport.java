@@ -52,7 +52,7 @@ import quickfix.InvalidMessage;
  * @since 1.0.0
  */
 @Entity
-@Table(name="exec_reports")
+@Table(name="metc_exec_reports")
 @ClassVersion("$Id$")
 public class PersistentExecutionReport
         extends EntityBase

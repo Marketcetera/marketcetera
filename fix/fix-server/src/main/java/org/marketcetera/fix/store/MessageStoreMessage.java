@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * @since $Release$
  */
 @Entity
-@Table(name="message_store_messages")
+@Table(name="metc_message_store_messages")
 public class MessageStoreMessage
         extends AbstractMessageStoreEntity
 {

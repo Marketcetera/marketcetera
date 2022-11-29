@@ -62,7 +62,7 @@ public interface OrderSummaryDao
      * @param inPageRequest a <code>Pageable</code> value
      * @return a <code>Page&lt;OrderSummary&gt;</code> value
      */
-    @Query("select o1 from OrderStatus o1 where o1.orderStatus in ?1")
+    @Query("select o1 from OrderSummary o1 where o1.orderStatus in ?1")
     Page<OrderSummary> findOpenOrders(Set<OrderStatus> inOpenOrderStatuses,
                                       Pageable inPageRequest);
 }

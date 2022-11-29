@@ -32,7 +32,7 @@ import quickfix.field.SendingTime;
  * @version $Id$
  * @since $Release$
  */
-@Table(name="incoming_fix_messages")
+@Table(name="metc_incoming_fix_messages")
 @Entity(name="IncomingMessage")
 public class PersistentIncomingMessage
         implements IncomingMessage, Serializable

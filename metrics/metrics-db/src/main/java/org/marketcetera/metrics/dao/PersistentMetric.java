@@ -21,7 +21,7 @@ import org.marketcetera.persist.EntityBase;
  * @since $Release$
  */
 @Entity(name="Metric")
-@Table(name="metrics")
+@Table(name="metc_metrics")
 public class PersistentMetric
         extends EntityBase
 {

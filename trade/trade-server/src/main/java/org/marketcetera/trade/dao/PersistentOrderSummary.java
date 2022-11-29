@@ -59,8 +59,8 @@ import quickfix.field.TransactTime;
  * @version $Id$
  * @since $Release$
  */
-@Entity(name="OrderStatus")
-@Table(name="order_status")
+@Entity(name="OrderSummary")
+@Table(name="metc_order_summaries")
 public class PersistentOrderSummary
         extends EntityBase
         implements OrderSummary

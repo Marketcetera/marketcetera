@@ -63,7 +63,7 @@ import quickfix.field.TargetCompID;
  * @since 1.0.0
  */
 @Entity
-@Table(name="reports")
+@Table(name="metc_reports")
 @ClassVersion("$Id$")
 public class PersistentReport
         extends EntityBase
