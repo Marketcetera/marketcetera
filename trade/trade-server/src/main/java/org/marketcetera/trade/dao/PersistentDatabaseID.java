@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.4.2
  */
 @Entity
-@Table(name="id_repository")
+@Table(name="metc_id_repository")
 @NamedQuery(name="getNextId",query="select e from PersistentDatabaseID e")
 @ClassVersion("$Id$")
 public class PersistentDatabaseID

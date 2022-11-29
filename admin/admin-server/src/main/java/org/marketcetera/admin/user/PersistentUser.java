@@ -41,7 +41,7 @@ import org.marketcetera.util.log.I18NMessage0P;
  * @author anshul@marketcetera.com
  */
 @Entity(name="user")
-@Table(name = "users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "metc_users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @AttributeOverride(name = "name", column = @Column(nullable = false))
 @ClassVersion("$Id$")
 public class PersistentUser

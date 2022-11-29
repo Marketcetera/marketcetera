@@ -18,7 +18,7 @@ import org.joda.time.DateTime;
  * @since $Release$
  */
 @Entity
-@Table(name="message_store_sessions")
+@Table(name="metc_message_store_sessions")
 public class MessageStoreSession
         extends AbstractMessageStoreEntity
 {

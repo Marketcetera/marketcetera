@@ -16,7 +16,7 @@ import org.marketcetera.persist.EntityBase;
  * @version $Id$
  * @since $Release$
  */
-@Table(name="fix_session_attr_dscrptrs")
+@Table(name="metc_fix_session_attr_dscrptrs")
 @Entity(name="FixSessionAttributeDescriptor")
 public class PersistentFixSessionAttributeDescriptor
         extends EntityBase

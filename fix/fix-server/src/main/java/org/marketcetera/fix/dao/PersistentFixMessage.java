@@ -18,7 +18,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 2.5.0
  */
-@Table(name="fix_messages")
+@Table(name="metc_fix_messages")
 @Entity(name="FixMessage")
 public class PersistentFixMessage
         extends EntityBase

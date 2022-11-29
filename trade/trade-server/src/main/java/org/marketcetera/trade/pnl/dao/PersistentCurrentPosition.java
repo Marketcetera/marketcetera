@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="CurrentPosition")
-@javax.persistence.Table(name="pnl_current_positions")
+@javax.persistence.Table(name="metc_pnl_current_positions")
 public class PersistentCurrentPosition
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.CurrentPosition

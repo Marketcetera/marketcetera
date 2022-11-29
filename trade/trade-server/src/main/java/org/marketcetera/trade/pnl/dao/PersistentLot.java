@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="Lot")
-@javax.persistence.Table(name="pnl_lots")
+@javax.persistence.Table(name="metc_pnl_lots")
 public class PersistentLot
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.Lot

@@ -23,7 +23,7 @@ import org.tensorflow.Graph;
  * @since $Release$
  */
 @Entity
-@Table(name="tf_graph_data")
+@Table(name="metc_tf_graph_data")
 public class PersistentGraphContainer
         extends NDEntityBase
         implements GraphContainer

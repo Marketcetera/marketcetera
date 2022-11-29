@@ -39,7 +39,7 @@ import quickfix.field.TargetCompID;
  * @since $Release$
  */
 @Entity(name="OutgoingMessage")
-@Table(name="outgoing_messages")
+@Table(name="metc_outgoing_messages")
 public class PersistentOutgoingMessage
         extends EntityBase
         implements OutgoingMessage

@@ -39,7 +39,7 @@ import quickfix.Session;
  */
 @XmlRootElement
 @Entity(name="FixSession")
-@Table(name="fix_sessions")
+@Table(name="metc_fix_sessions")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PersistentFixSession
         extends NDEntityBase
@@ -350,7 +350,7 @@ public class PersistentFixSession
     @Column(name="value")
     @MapKeyColumn(name="name")
     @ElementCollection(fetch=FetchType.EAGER)
-    @CollectionTable(name="fix_session_attributes", joinColumns=@JoinColumn(name="fix_session_id"))
+    @CollectionTable(name="metc_fix_session_attributes", joinColumns=@JoinColumn(name="fix_session_id"))
     private final Map<String,String> sessionSettings = new HashMap<>();
     /**
      * validates the format of the start and end time value
