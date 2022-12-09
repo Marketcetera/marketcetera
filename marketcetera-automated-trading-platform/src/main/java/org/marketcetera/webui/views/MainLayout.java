@@ -1,8 +1,13 @@
 package org.marketcetera.webui.views;
 
+import java.util.Optional;
+
+import org.marketcetera.admin.User;
+import org.marketcetera.webui.security.AuthenticatedUser;
+import org.marketcetera.webui.views.helloworld.HelloWorldView;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.html.Anchor;
@@ -16,13 +21,7 @@ import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
-import java.io.ByteArrayInputStream;
-import java.util.Optional;
-import org.marketcetera.webui.data.entity.User;
-import org.marketcetera.webui.security.AuthenticatedUser;
-import org.marketcetera.webui.views.helloworld.HelloWorldView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -96,20 +95,21 @@ public class MainLayout extends AppLayout {
         Optional<User> maybeUser = authenticatedUser.get();
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
-
-            Avatar avatar = new Avatar(user.getName());
-            StreamResource resource = new StreamResource("profile-pic",
-                    () -> new ByteArrayInputStream(user.getProfilePicture()));
-            avatar.setImageResource(resource);
-            avatar.setThemeName("xsmall");
-            avatar.getElement().setAttribute("tabindex", "-1");
+            // TODO
+//            Avatar avatar = new Avatar(user.getName());
+//            StreamResource resource = new StreamResource("profile-pic",
+//                    () -> new ByteArrayInputStream(user.getProfilePicture()));
+//            avatar.setImageResource(resource);
+//            avatar.setThemeName("xsmall");
+//            avatar.getElement().setAttribute("tabindex", "-1");
 
             MenuBar userMenu = new MenuBar();
             userMenu.setThemeName("tertiary-inline contrast");
 
             MenuItem userName = userMenu.addItem("");
             Div div = new Div();
-            div.add(avatar);
+            // TODO
+//            div.add(avatar);
             div.add(user.getName());
             div.add(new Icon("lumo", "dropdown"));
             div.getElement().getStyle().set("display", "flex");
