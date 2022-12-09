@@ -2,11 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- Project from https://start.vaadin.com/project/3967926c-d14f-481c-88dc-e114e688f7a3 -->
-    <groupId>org.marketcetera.webui</groupId>
+      <groupId>org.marketcetera</groupId>
     <artifactId>marketceteraautomatedtradingplatform</artifactId>
     <name>marketceteraautomatedtradingplatform</name>
-    <version>1.0-SNAPSHOT</version>
+      <version>4.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -17,9 +16,9 @@
     </properties>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+      <groupId>org.marketcetera</groupId>
+      <artifactId>public-parent</artifactId>
+      <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <repositories>
@@ -79,6 +78,11 @@
     </dependencyManagement>
 
     <dependencies>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
@@ -93,11 +97,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -146,13 +150,39 @@
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+              <outputFile>${project.build.directory}/local.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <!-- Clean build and startup time for Vaadin apps sometimes may exceed
                      the default Spring Boot's 30sec timeout.  -->
                 <configuration>
-                    <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5431</jvmArguments>
+                    <jvmArguments>-Xdebug
+                    -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5431
+            -Dspring.datasource.url=${metc.jdbc.url}
+            -Dspring.datasource.username=${metc.jdbc.user}
+            -Dspring.datasource.password=${metc.jdbc.password}
+            -Dspring.datasource.driver-class-name=${metc.jdbc.driver}
+            -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
+            -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
+            -Dmetc.instance=1
+            -Dserver.port=9000
+            -Dmetc.rpc.port=9010
+          </jvmArguments>
                     <wait>500</wait>
                     <maxAttempts>240</maxAttempts>
                 </configuration>
