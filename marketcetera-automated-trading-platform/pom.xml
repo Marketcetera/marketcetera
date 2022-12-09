@@ -80,7 +80,17 @@
     <dependencies>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>admin-server</artifactId>
+        <artifactId>admin-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>admin-rpc-client</artifactId>
         <version>${project.version}</version>
       </dependency>
         <dependency>
@@ -101,23 +111,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-	    <exclusions>
-              <exclusion>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-logging</artifactId>
-              </exclusion>
-	    </exclusions>
-        </dependency>
-
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
 	    <exclusions>
               <exclusion>
 		<groupId>org.springframework.boot</groupId>
@@ -209,13 +202,9 @@
                 <configuration>
                     <jvmArguments>-Xdebug
                     -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5431
-            -Dspring.datasource.url=${metc.jdbc.url}
-            -Dspring.datasource.username=${metc.jdbc.user}
-            -Dspring.datasource.password=${metc.jdbc.password}
-            -Dspring.datasource.driver-class-name=${metc.jdbc.driver}
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
-            -Dmetc.instance=1
-            -Dserver.port=9000
+            -Dserver.port=8080
+            -Dmetc.rpc.hostname=localhost
             -Dmetc.rpc.port=9010
           </jvmArguments>
                     <wait>500</wait>

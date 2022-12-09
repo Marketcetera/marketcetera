@@ -320,6 +320,10 @@
                   <value>1000</value>
                 </systemProperty>
                 <systemProperty>
+                  <key>metc.instance.exsim.sendercompid</key>
+                  <value>${metc.exsim.sendercompid}</value>
+                </systemProperty>
+                <systemProperty>
                   <key>metc.instance.spring.datasource.url</key>
                   <value>${metc.jdbc.url}</value>
                 </systemProperty>
