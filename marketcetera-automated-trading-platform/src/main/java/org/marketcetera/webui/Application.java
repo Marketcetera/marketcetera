@@ -9,6 +9,15 @@ import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.cluster.ClusterDataFactory;
+import org.marketcetera.cluster.SimpleClusterDataFactory;
+import org.marketcetera.fix.FixAdminRpcClientFactory;
+import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
+import org.marketcetera.fix.MutableActiveFixSessionFactory;
+import org.marketcetera.fix.MutableFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
+import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -21,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.spring.annotation.EnableVaadin;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
@@ -32,16 +42,25 @@ import com.vaadin.flow.theme.lumo.Lumo;
  *
  */
 @EnableAutoConfiguration
-@SpringBootApplication(scanBasePackages={"org.marketcetera","com.marketcetera"})
-@Theme(value = "marketceteraautomatedtradingplatform", variant = Lumo.DARK)
-@PWA(name = "Marketcetera Automated Trading Platform", shortName = "Marketcetera Automated Trading Platform", offlineResources = {})
-@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
+@EnableVaadin({"org.marketcetera","com.marketcetera"})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
+@EntityScan(basePackages={"org.marketcetera","com.marketcetera"})
+@Theme(value = "marketceteraautomatedtradingplatform", variant = Lumo.DARK)
+@SpringBootApplication(scanBasePackages={"org.marketcetera","com.marketcetera"})
+@PWA(name = "Marketcetera Automated Trading Platform", shortName = "Marketcetera Automated Trading Platform", offlineResources = {})
 public class Application
         implements AppShellConfigurator
 {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    /**
+     * Entry point of the application.
+     *
+     *
+     * @param inArgs a <cod>String[]</code> value
+     */
+    public static void main(String[] inArgs)
+    {
+        SpringApplication.run(Application.class,
+                              inArgs);
     }
     /**
      * Get the admin client factory value.
@@ -54,9 +73,59 @@ public class Application
         return new AdminRpcClientFactory();
     }
     /**
+     * Get the FIX admin client factory value.
+     *
+     * @return a <code>FixAdminClientFactory</code> value
+     */
+    @Bean
+    public FixAdminRpcClientFactory getFixAdminClientFactory()
+    {
+        return new FixAdminRpcClientFactory();
+    }
+    /**
+     * Get the FIX session attribute descriptor factory value.
+     *
+     * @return a <code>FixSessionAttributeDescriptorFactory</code> value
+     */
+    @Bean
+    public FixSessionAttributeDescriptorFactory getFixSessionAttributeDescriptorFactory()
+    {
+        return new SimpleFixSessionAttributeDescriptorFactory();
+    }
+    /**
+     * Get the active FIX session factory value.
+     *
+     * @return a <code>MutableActiveFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableActiveFixSessionFactory getMutableActiveFixSessionFactory()
+    {
+        return new SimpleActiveFixSessionFactory();
+    }
+    /**
+     * Get the FIX session factory value.
+     *
+     * @return a <code>MutableFixSessionFactory</code> value
+     */
+    @Bean
+    public MutableFixSessionFactory getMutableFixSessionFactory()
+    {
+        return new SimpleFixSessionFactory();
+    }
+    /**
+     * Get the Cluster Data factory value.
+     *
+     * @return a <code>ClusterDataFactory</code> value
+     */
+    @Bean
+    public ClusterDataFactory getClusterDataFactory()
+    {
+        return new SimpleClusterDataFactory();
+    }
+    /**
      * Get the user attribute factory value.
      *
-     * @return a <code>UserAttribute</code> value
+     * @return a <code>UserAttributeFactory</code> value
      */
     @Bean
     public UserAttributeFactory getUserAttributeFactory()

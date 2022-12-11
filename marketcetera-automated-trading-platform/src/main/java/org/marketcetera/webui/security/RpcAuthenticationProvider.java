@@ -6,6 +6,7 @@ import org.marketcetera.admin.AdminClient;
 import org.marketcetera.admin.AdminClientFactory;
 import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.service.ServiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,8 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
-
-import com.vaadin.flow.component.UI;
 
 /* $License$ */
 
@@ -50,11 +49,10 @@ public class RpcAuthenticationProvider
         try(AdminClient adminClient = adminClientFactory.create(clientParameters)) {
             adminClient.start();
             Set<? extends GrantedAuthority> permissions = adminClient.getPermissionsForCurrentUser();
-            // TODO DON'T DO THIS!
-            UI.getCurrent().getSession().setAttribute("username",
-                                                      name);
-            UI.getCurrent().getSession().setAttribute("password",
-                                                      password);
+            int services = serviceManager.connectServices(inAuthentication);
+            SLF4JLoggerProxy.info(this,
+                                  "Connected {} service(s)",
+                                  services);
             return new UsernamePasswordAuthenticationToken(name,
                                                            password,
                                                            permissions);
@@ -72,6 +70,11 @@ public class RpcAuthenticationProvider
     {
         return inAuthentication.equals(UsernamePasswordAuthenticationToken.class);
     }
+    /**
+     * provides access to service clients
+     */
+    @Autowired
+    private ServiceManager serviceManager;
     /**
      * provides a connection to the server for authn/authz
      */

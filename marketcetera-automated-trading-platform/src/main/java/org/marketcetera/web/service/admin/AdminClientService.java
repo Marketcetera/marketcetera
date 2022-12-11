@@ -300,6 +300,15 @@ public class AdminClientService
                                      inPermission);
     }
     /**
+     * Get the current user.
+     *
+     * @return a <code>User</code> value
+     */
+    public User getCurrentUser()
+    {
+        return adminClient.getCurrentUser();
+    }
+    /**
      * Sets the adminClientFactory value.
      *
      * @param inAdminClientFactory an <code>AdminRpcClientFactory</code> value

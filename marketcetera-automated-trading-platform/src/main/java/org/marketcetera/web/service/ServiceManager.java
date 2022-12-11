@@ -5,13 +5,12 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.Validate;
-import org.marketcetera.admin.User;
-import org.marketcetera.trade.UserID;
+import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.vaadin.flow.component.UI;
 
 /* $License$ */
 
@@ -51,6 +49,67 @@ public class ServiceManager
         instance = this;
     }
     /**
+     * 
+     *
+     *
+     * @param inAuthentication
+     * @return
+     */
+    public int connectServices(Authentication inAuthentication)
+    {
+        String username = inAuthentication.getName();
+        String password = inAuthentication.getCredentials().toString();
+        Cache<String,ConnectableService> serviceCache = servicesByUser.getUnchecked(username);
+        int services = 0;
+        for(ConnectableServiceFactory<?> serviceFactory : connectableServiceFactories) {
+            try {
+                SLF4JLoggerProxy.debug(this,
+                                       "Creating {} service for {}",
+                                       serviceFactory.getClass().getSimpleName(),
+                                       username);
+                // create a service for this user
+                ConnectableService service = serviceFactory.create();
+                // service is guaranteed to be non-null, but might or might not be running at this point
+                if(!service.isRunning()) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "{} service exists for {}, but is not running",
+                                           service.getClass().getSimpleName(),
+                                           username);
+                    try {
+                        service.disconnect();
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(this,
+                                              e);
+                        // we'll skip over this error, it might not be bad enough to cause the connection to fail
+                    }
+                    SLF4JLoggerProxy.debug(this,
+                                           "Connecting {} service for {}",
+                                           service.getClass().getSimpleName(),
+                                           username);
+                    if(service.connect(username,
+                                       password,
+                                       rpcHostname,
+                                       rpcPort)) {
+                        SLF4JLoggerProxy.debug(this,
+                                               "Created {} for {}",
+                                               service,
+                                               username);
+                        // cache it for the next access
+                        serviceCache.put(service.getClass().getSimpleName(),
+                                         service);
+                        services += 1;
+                    }
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to connect service for {}",
+                                      serviceFactory.getClass().getSimpleName());
+            }
+        }
+        return services;
+    }
+    /**
      * Get the service of the given type for the current user.
      *
      * @param <ServiceClazz>
@@ -62,83 +121,27 @@ public class ServiceManager
     public <ServiceClazz extends ConnectableService> ServiceClazz getService(Class<ServiceClazz> inServiceClass)
             throws NoServiceException
     {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Validate.notNull(context,
-                         "No security context");
-        Validate.isTrue(!(context.getAuthentication() instanceof AnonymousAuthenticationToken),
-                        "User not logged in");
-        // TODO DON'T DO THIS!
-        String username = String.valueOf(UI.getCurrent().getSession().getAttribute("username"));
-        Object credentials = String.valueOf(UI.getCurrent().getSession().getAttribute("password"));
-        System.out.println("COCO: ServiceManager.getService using " + username + " " + credentials);
-//        User currentUser = inAuthenticatedUser.get().get();
-//        UserID currentUserId = currentUser.getUserID();
-//        Cache<String,ConnectableService> serviceCache = servicesByUser.getUnchecked(currentUserId);
-//        ConnectableService service = serviceCache.getIfPresent(inServiceClass.getSimpleName());
-//        if(service == null) {
-//            // no current service for this user, this is a normal condition if the service hasn't been accessed yet
-//            ConnectableServiceFactory<?> serviceFactory = connectableServiceFactoriesByServiceClass.get(inServiceClass);
-//            // this is not a normal condition, and it seems unlikely that this should arise as there shouldn't be a module than can ask for a service that doesn't also provide a factory
-//            if(serviceFactory == null) {
-//                throw new NoServiceException("No connectable service factory for " + inServiceClass.getSimpleName());
-//            }
-//            SLF4JLoggerProxy.debug(this,
-//                                   "Creating {} service for {}",
-//                                   inServiceClass.getSimpleName(),
-//                                   currentUser);
-//            // create a service for this user
-//            service = serviceFactory.create();
-//        }
-//        // service is guaranteed to be non-null, but might or might not be running at this point
-//        if(!service.isRunning()) {
-//            SLF4JLoggerProxy.debug(this,
-//                                   "{} service exists for {}, but is not running",
-//                                   inServiceClass.getSimpleName(),
-//                                   currentUser);
-//            try {
-//                service.disconnect();
-//            } catch (Exception e) {
-//                SLF4JLoggerProxy.warn(this,
-//                                      e);
-//                // we'll skip over this error, it might not be bad enough to cause the connection to fail
-//            }
-//            try {
-//                SLF4JLoggerProxy.debug(this,
-//                                       "Connecting {} service for {}",
-//                                       inServiceClass.getSimpleName(),
-//                                       currentUser);
-//                if(service.connect(currentUser.getName(),
-//                                   currentUser.getHashedPassword(),
-//                                   rpcHostname,
-//                                   rpcPort)) {
-//                    SLF4JLoggerProxy.debug(this,
-//                                           "Created {} for {}",
-//                                           service,
-//                                           currentUser);
-//                    // cache it for the next access
-//                    serviceCache.put(inServiceClass.getSimpleName(),
-//                                     service);
-//                }
-//            } catch (Exception e) {
-//                SLF4JLoggerProxy.warn(this,
-//                                      e,
-//                                      "Failed to connect {} service for {}",
-//                                      inServiceClass.getSimpleName(),
-//                                      currentUser);
-//                throw new NoServiceException("Failed to connect " + currentUser + " to " + inServiceClass.getSimpleName(),
-//                                             e);
-//            }
-//        }
-//        if(!service.isRunning()) {
-//            SLF4JLoggerProxy.warn(this,
-//                                  "Failed to connect {} service for {}",
-//                                  inServiceClass.getSimpleName(),
-//                                  currentUser);
-//            throw new NoServiceException("Failed to connect " + currentUser + " to " + inServiceClass.getSimpleName());
-//        }
-//        // service is non-null and running
-//        return (ServiceClazz)service;
-        throw new UnsupportedOperationException("ServiceManager.getService not implemented yet");
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Validate.notNull(securityContext,
+                         "No Security Context");
+        Validate.notNull(!(securityContext.getAuthentication() instanceof AnonymousAuthenticationToken),
+                         "User Not Logged In");
+        String username = securityContext.getAuthentication().getName();
+        String serviceClassName = inServiceClass.getSimpleName();
+        SLF4JLoggerProxy.debug(this,
+                               "Retrieving {} for {}",
+                               serviceClassName,
+                               username);
+        Cache<String,ConnectableService> serviceCache = servicesByUser.getUnchecked(username);
+        ConnectableService service = serviceCache.getIfPresent(serviceClassName);
+        if(service == null) {
+            throw new NoServiceException("No service " + serviceClassName + " for " + username);
+        }
+        if(!service.isRunning()) {
+            serviceCache.invalidate(serviceClassName);
+            throw new NoServiceException("Service " + serviceClassName + " disconnected for " + username);
+        }
+        return (ServiceClazz)service;
     }
     /**
      * Get the instance.
@@ -152,9 +155,9 @@ public class ServiceManager
     /**
      * caches services by owning user and then by service type
      */
-    private final LoadingCache<UserID,Cache<String,ConnectableService>> servicesByUser = CacheBuilder.newBuilder().build(new CacheLoader<UserID,Cache<String,ConnectableService>>() {
+    private final LoadingCache<String,Cache<String,ConnectableService>> servicesByUser = CacheBuilder.newBuilder().build(new CacheLoader<String,Cache<String,ConnectableService>>() {
         @Override
-        public Cache<String,ConnectableService> load(UserID inKey)
+        public Cache<String,ConnectableService> load(String inKey)
                 throws Exception
         {
             return CacheBuilder.newBuilder().build();

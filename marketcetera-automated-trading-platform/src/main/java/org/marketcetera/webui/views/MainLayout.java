@@ -3,8 +3,8 @@ package org.marketcetera.webui.views;
 import java.util.Optional;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.web.admin.view.UserListView;
 import org.marketcetera.webui.security.AuthenticatedUser;
-import org.marketcetera.webui.views.helloworld.HelloWorldView;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -26,16 +26,23 @@ import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 /**
  * The main view is a top-level placeholder for other views.
  */
-public class MainLayout extends AppLayout {
+public class MainLayout
+        extends AppLayout
+{
 
     /**
      * A simple navigation item component, based on ListItem element.
      */
-    public static class MenuItemInfo extends ListItem {
+    public static class MenuItemInfo
+            extends ListItem
+    {
 
         private final Class<? extends Component> view;
 
-        public MenuItemInfo(String menuTitle, String iconClass, Class<? extends Component> view) {
+        public MenuItemInfo(String menuTitle,
+                            String iconClass,
+                            Class<? extends Component> view)
+        {
             this.view = view;
             RouterLink link = new RouterLink();
             // Use Lumo classnames for various styling
@@ -145,9 +152,12 @@ public class MainLayout extends AppLayout {
         return header;
     }
 
-    private MenuItemInfo[] createMenuItems() {
-        return new MenuItemInfo[]{ //
-                new MenuItemInfo("Hello World", "la la-golf-ball", HelloWorldView.class), //
+    private MenuItemInfo[] createMenuItems()
+    {
+        return new MenuItemInfo[] {
+                new MenuItemInfo("Users",
+                                 "la la-golf-ball",
+                                 UserListView.class),
 
         };
     }

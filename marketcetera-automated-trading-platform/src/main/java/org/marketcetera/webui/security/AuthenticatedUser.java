@@ -8,7 +8,6 @@ import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -17,31 +16,39 @@ import org.springframework.stereotype.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 
+/* $License$ */
+
+/**
+ *
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
 @Component
 public class AuthenticatedUser
 {
-    private Optional<Authentication> getAuthentication()
-    {
-        SecurityContext context = SecurityContextHolder.getContext();
-        System.out.println("COCO: AuthenticatedUser.getAuthentication using context: " + context);
-        return Optional.ofNullable(context.getAuthentication()).filter(authentication -> !(authentication instanceof AnonymousAuthenticationToken));
-    }
-
+    /**
+     * 
+     *
+     *
+     * @return
+     */
     public Optional<User> get()
     {
-        SecurityContext context = SecurityContextHolder.getContext();
-        System.out.println("COCO: AuthenticatedUser.get using context: " + context);
-        if(context.getAuthentication() instanceof AnonymousAuthenticationToken) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        if(securityContext == null || securityContext.getAuthentication() instanceof AnonymousAuthenticationToken) {
             return Optional.empty();
         }
         try {
             AdminClientService adminClientService = serviceManager.getService(AdminClientService.class);
+            return Optional.ofNullable(adminClientService.getCurrentUser());
         } catch (Exception e) {
-            e.printStackTrace();
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to return the current authenticated user");
             return Optional.empty();
         }
-//        return getAuthentication().map(authentication -> userService.findByName(authentication.getName()));
-        throw new UnsupportedOperationException("AuthenticatedUser.get() not implemented yet");
     }
     /**
      * 
@@ -54,12 +61,16 @@ public class AuthenticatedUser
         SLF4JLoggerProxy.info(this,
                               "Logging out {}",
                               context.getAuthentication().getName());
+        // TODO service manager logout
         UI.getCurrent().getPage().setLocation(SecurityConfiguration.LOGOUT_URL);
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(),
                              null,
                              null);
     }
+    /**
+     * provides access to client services
+     */
     @Autowired
     private ServiceManager serviceManager;
 }

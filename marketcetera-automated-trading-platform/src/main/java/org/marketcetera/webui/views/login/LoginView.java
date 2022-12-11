@@ -26,7 +26,6 @@ public class LoginView
     public LoginView(AuthenticatedUser authenticatedUser)
     {
         this.authenticatedUser = authenticatedUser;
-        System.out.println("COCO: creating login view with authenticated user: " + authenticatedUser);
         setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(),
                                          getClass()));
         LoginI18n i18n = LoginI18n.createDefault();
