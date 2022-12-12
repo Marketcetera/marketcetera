@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.service.UserService;
@@ -145,6 +146,22 @@ public class UserServiceImpl
         } else {
             pUser = new PersistentUser(inUser);
         }
+        return userDao.save(pUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserService#save(java.lang.String, org.marketcetera.admin.User)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public User save(String inUsername,
+                     User inUser)
+    {
+        PersistentUser pUser = userDao.findByName(inUsername);
+        Validate.notNull(pUser,
+                         "No user with username '" + inUsername + "'");
+        pUser.setActive(inUser.isActive());
+        pUser.setDescription(inUser.getDescription());
+        pUser.setName(inUser.getName());
         return userDao.save(pUser);
     }
     /* (non-Javadoc)

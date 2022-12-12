@@ -22,6 +22,25 @@ public class SimpleRole
         extends NDEntityBase
         implements MutableRole
 {
+    /**
+     * Create a new SimpleRole instance.
+     */
+    public SimpleRole() {}
+    /**
+     * Create a new SimpleRole instance.
+     *
+     * @param inRole a <code>Role</code> value
+     */
+    public SimpleRole(Role inRole)
+    {
+        setDescription(inRole.getDescription());
+        setId(inRole.getId());
+        setLastUpdated(inRole.getLastUpdated());
+        setName(inRole.getName());
+        setPermissions(inRole.getPermissions());
+        setSubjects(inRole.getSubjects());
+        setUpdateCount(inRole.getUpdateCount());
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.Role#getPermissions()
      */

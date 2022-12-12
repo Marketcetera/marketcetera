@@ -3,6 +3,7 @@ package org.marketcetera.webui.views;
 import java.util.Optional;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.web.admin.view.RoleListView;
 import org.marketcetera.web.admin.view.UserListView;
 import org.marketcetera.webui.security.AuthenticatedUser;
 
@@ -29,7 +30,6 @@ import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 public class MainLayout
         extends AppLayout
 {
-
     /**
      * A simple navigation item component, based on ListItem element.
      */
@@ -134,7 +134,10 @@ public class MainLayout
         }
 
         Nav nav = new Nav();
-        nav.addClassNames("flex", "overflow-auto", "px-m", "py-xs");
+        nav.addClassNames("flex",
+                          "overflow-auto",
+                          "px-m",
+                          "py-xs");
 
         // Wrap the links in a list; improves accessibility
         UnorderedList list = new UnorderedList();
@@ -156,10 +159,12 @@ public class MainLayout
     {
         return new MenuItemInfo[] {
                 new MenuItemInfo("Users",
-                                 "la la-golf-ball",
+                                 "la la-user",
                                  UserListView.class),
-
+                new MenuItemInfo("Roles",
+                                 "la la-id-card",
+                                 RoleListView.class),
         };
     }
-
+    private static final long serialVersionUID = 8633409836848403046L;
 }

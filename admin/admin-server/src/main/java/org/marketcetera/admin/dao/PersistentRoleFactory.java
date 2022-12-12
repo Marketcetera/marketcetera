@@ -1,6 +1,7 @@
 package org.marketcetera.admin.dao;
 
 import org.marketcetera.admin.MutableRoleFactory;
+import org.marketcetera.admin.Role;
 
 /* $License$ */
 
@@ -33,5 +34,14 @@ public class PersistentRoleFactory
     public PersistentRole create()
     {
         return new PersistentRole();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create(java.lang.Object)
+     */
+    @Override
+    public Role create(Role inRole)
+    {
+        return create(inRole.getName(),
+                      inRole.getDescription());
     }
 }

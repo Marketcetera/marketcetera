@@ -48,6 +48,6 @@ public class LoginView
         }
         setError(event.getLocation().getQueryParameters().getParameters().containsKey("error"));
     }
-
     private final AuthenticatedUser authenticatedUser;
+    private static final long serialVersionUID = 183975888637547652L;
 }

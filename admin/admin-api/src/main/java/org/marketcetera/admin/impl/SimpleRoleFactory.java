@@ -36,4 +36,13 @@ public class SimpleRoleFactory
     {
         return new SimpleRole();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create(java.lang.Object)
+     */
+    @Override
+    public MutableRole create(Role inRole)
+    {
+        return create(inRole.getName(),
+                      inRole.getDescription());
+    }
 }

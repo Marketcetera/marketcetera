@@ -29,6 +29,22 @@ public class SimpleUser
     /**
      * Create a new SimpleUser instance.
      *
+     * @param inUser a <code>User</code> value
+     */
+    public SimpleUser(User inUser)
+    {
+        setDescription(inUser.getDescription());
+        setHashedPassword(inUser.getHashedPassword());
+        setId(inUser.getId());
+        setIsActive(inUser.isActive());
+        setLastUpdated(inUser.getLastUpdated());
+        setName(inUser.getName());
+        setUpdateCount(inUser.getUpdateCount());
+        setUserId(inUser.getUserID());
+    }
+    /**
+     * Create a new SimpleUser instance.
+     *
      * @param inName a <code>String</code> value
      * @param inDescription a <code>String</code> value
      * @param inPassword a <code>String</code> value

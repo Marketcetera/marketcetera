@@ -29,6 +29,20 @@ public interface UserService
      */
     User save(User inUser);
     /**
+     * Updates the user with the given username to the values of the given user.
+     * 
+     * <p>This method will <em>not</em> change the <code>id</code> field of the user
+     * nor will it change the <code>password</code> field.</p>
+     * 
+     * <p>This user must already exist.</p>
+     *
+     * @param inUsername a <code>String</code> value.
+     * @param inUser a <code>User</code> value
+     * @return a <code>User</code> value
+     */
+    User save(String inUsername,
+              User inUser);
+    /**
      * Gets the user with the given name.
      *
      * @param inUsername a <code>String</code> value

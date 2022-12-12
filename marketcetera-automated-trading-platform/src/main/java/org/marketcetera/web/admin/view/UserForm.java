@@ -1,8 +1,7 @@
 package org.marketcetera.web.admin.view;
 
-import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.User;
-import org.marketcetera.admin.impl.SimpleUserFactory;
+import org.marketcetera.admin.impl.SimpleUser;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEvent;
@@ -22,7 +21,7 @@ import com.vaadin.flow.shared.Registration;
 public class UserForm
         extends FormLayout
 {
-    private MutableUser user;
+    private SimpleUser user;
     TextField name = new TextField("Name"); 
     TextField description = new TextField("Description");
     ComboBox<Boolean> status = new ComboBox<>("Active");
@@ -30,7 +29,7 @@ public class UserForm
     Button save = new Button("Save");
     Button delete = new Button("Delete");
     Button close = new Button("Cancel");
-    Binder<MutableUser> binder = new BeanValidationBinder<>(MutableUser.class); 
+    Binder<SimpleUser> binder = new BeanValidationBinder<>(SimpleUser.class); 
     /**
      * Create a new UserForm instance.
      */
@@ -55,7 +54,11 @@ public class UserForm
         if(inUser == null) {
             user = null;
         } else {
-            user = (MutableUser)(new SimpleUserFactory().create(inUser));
+            if(inUser instanceof SimpleUser) {
+                user = (SimpleUser)inUser;
+            } else {
+                user = new SimpleUser(inUser);
+            }
         }
         binder.readBean(user);
     }
@@ -63,21 +66,21 @@ public class UserForm
             extends ComponentEvent<UserForm>
     {
         protected UserFormEvent(UserForm source,
-                                MutableUser inUser)
+                                SimpleUser inUser)
         { 
             super(source,
                   false);
             user = inUser;
         }
 
-        public User getUser()
+        public SimpleUser getUser()
         {
             return user;
         }
         /**
          * underlying user value
          */
-        private MutableUser user;
+        private SimpleUser user;
         private static final long serialVersionUID = -2009373271619947320L;
     }
 
@@ -85,7 +88,7 @@ public class UserForm
             extends UserFormEvent
     {
         SaveEvent(UserForm source,
-                  MutableUser inUser) {
+                  SimpleUser inUser) {
             super(source,
                   inUser);
         }
@@ -95,7 +98,7 @@ public class UserForm
             extends UserFormEvent
     {
         DeleteEvent(UserForm source,
-                    MutableUser inUser)
+                    SimpleUser inUser)
         {
             super(source,
                   inUser);

@@ -1,5 +1,7 @@
 package org.marketcetera.admin;
 
+import org.marketcetera.core.Factory;
+
 /* $License$ */
 
 /**
@@ -10,6 +12,7 @@ package org.marketcetera.admin;
  * @since 1.0.1
  */
 public interface RoleFactory
+        extends Factory<Role>
 {
     /**
      * Creates a <code>Role</code> object with the given attributes.

@@ -329,7 +329,8 @@ public class AdminRpcService<SessionClazz>
                         mutableUser.setName(rpcUser.getName());
                         mutableUser.setDescription(rpcUser.getDescription());
                         // don't change id or password!
-                        existingUser = userService.save(mutableUser);
+                        existingUser = userService.save(inRequest.getUsername(),
+                                                        mutableUser);
                         AdminRpcUtil.getRpcUser(existingUser).ifPresent(value->responseBuilder.setUser(value));
                     } else {
                         throw new IllegalStateException("User service returned a non-mutable user - check configuration");

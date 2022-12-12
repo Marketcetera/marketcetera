@@ -2,8 +2,8 @@ package org.marketcetera.web.admin.view;
 
 import javax.annotation.security.PermitAll;
 
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.impl.SimpleUser;
+import org.marketcetera.admin.Role;
+import org.marketcetera.admin.impl.SimpleRole;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.webui.views.MainLayout;
@@ -18,15 +18,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @PermitAll
-@PageTitle("Users | MATP")
-@Route(value="users", layout = MainLayout.class) 
-public class UserListView
+@PageTitle("Roles | MATP")
+@Route(value="roles", layout = MainLayout.class) 
+public class RoleListView
         extends VerticalLayout
 {
     /**
-     * Create a new UserListView instance.
+     * Create a new RoleListView instance.
      */
-    public UserListView()
+    public RoleListView()
     {
         addClassName("list-view");
         setSizeFull();
@@ -52,31 +52,36 @@ public class UserListView
 
     private void configureForm()
     {
-        form = new UserForm();
+        form = new RoleForm();
         form.setWidth("25em");
-        form.addListener(UserForm.SaveEvent.class,
-                         this::saveUser); 
-        form.addListener(UserForm.DeleteEvent.class,
-                         this::deleteUser); 
-        form.addListener(UserForm.CloseEvent.class,
+        form.addListener(RoleForm.AddEvent.class,
+                         this::saveRole); 
+        form.addListener(RoleForm.DeleteEvent.class,
+                         this::deleteRole); 
+        form.addListener(RoleForm.EditEvent.class,
+                         this::saveRole); 
+        form.addListener(RoleForm.CloseEvent.class,
                          e -> closeEditor()); 
     }
 
-    private void saveUser(UserForm.SaveEvent event)
+    private void saveRole(RoleForm.AddOrEditEvent inEvent)
     {
         AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        // TODO need to save vs create? need to provide password
-        // TODO use original user name
-        service.updateUser(event.getUser().getName(),
-                           event.getUser());
+        if(inEvent.isAdd()) {
+            service.createRole(inEvent.getRole());
+        } else {
+            // TODO use original role name on edit
+            service.updateRole(inEvent.getRole().getName(),
+                               inEvent.getRole());
+        }
         updateList();
         closeEditor();
     }
 
-    private void deleteUser(UserForm.DeleteEvent event)
+    private void deleteRole(RoleForm.DeleteEvent event)
     {
         AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        service.deactivateUser(event.getUser().getName());
+        service.deleteRole(event.getRole().getName());
         updateList();
         closeEditor();
     }
@@ -89,8 +94,10 @@ public class UserListView
     {
         grid.addClassNames("contact-grid");
         grid.setSizeFull();
+        grid.setColumns("name","description");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event -> editUser(event.getValue())); 
+        grid.asSingleSelect().addValueChangeListener(event -> addOrEditRole(event.getValue(),
+                                                                            false)); 
     }
 
     private HorizontalLayout getToolbar()
@@ -99,20 +106,22 @@ public class UserListView
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
-        Button addUserButton = new Button("Add user");
-        addUserButton.addClickListener(click -> addUser()); 
+        Button addRoleButton = new Button("Add role");
+        addRoleButton.addClickListener(click -> addRole()); 
         HorizontalLayout toolbar = new HorizontalLayout(filterText,
-                                                        addUserButton);
+                                                        addRoleButton);
         toolbar.addClassName("toolbar");
         return toolbar;
     }
 
-    public void editUser(User inUser)
+    public void addOrEditRole(Role inRole,
+                              boolean inIsAdd)
     { 
-        if(inUser == null) {
+        if(inRole == null) {
             closeEditor();
         } else {
-            form.setUser(inUser);
+            form.setRole(inRole,
+                         inIsAdd);
             form.setVisible(true);
             addClassName("editing");
         }
@@ -120,15 +129,17 @@ public class UserListView
 
     private void closeEditor()
     {
-        form.setUser(null);
+        form.setRole(null,
+                     false);
         form.setVisible(false);
         removeClassName("editing");
     }
 
-    private void addUser()
+    private void addRole()
     {
         grid.asSingleSelect().clear();
-        editUser(new SimpleUser());
+        addOrEditRole(new SimpleRole(),
+                      true);
     }
 
 
@@ -137,10 +148,10 @@ public class UserListView
         // TODO filter
 //        grid.setItems(service.findAllContacts(filterText.getValue()));
         AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        grid.setItems(service.getUsers());
+        grid.setItems(service.getRoles());
     }
-    private Grid<User> grid = new Grid<>(User.class);
+    private Grid<Role> grid = new Grid<>(Role.class);
     private TextField filterText = new TextField();
-    private UserForm form;
-    private static final long serialVersionUID = 6331528916955469155L;
+    private RoleForm form;
+    private static final long serialVersionUID = -8930087273314672465L;
 }
