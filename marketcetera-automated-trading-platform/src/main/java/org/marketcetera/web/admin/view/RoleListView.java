@@ -1,19 +1,21 @@
 package org.marketcetera.web.admin.view;
 
+import java.util.Collection;
+import java.util.Map;
+
 import javax.annotation.security.PermitAll;
 
-import org.marketcetera.admin.Role;
 import org.marketcetera.admin.impl.SimpleRole;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.webui.views.MainLayout;
 
-import com.vaadin.flow.component.button.Button;
+import com.google.common.collect.Lists;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -21,137 +23,158 @@ import com.vaadin.flow.router.Route;
 @PageTitle("Roles | MATP")
 @Route(value="roles", layout = MainLayout.class) 
 public class RoleListView
-        extends VerticalLayout
+        extends AbstractListView<SimpleRole,RoleListView.RoleForm>
 {
     /**
      * Create a new RoleListView instance.
      */
     public RoleListView()
     {
-        addClassName("list-view");
-        setSizeFull();
-        configureGrid();
-        configureForm();
-        add(getToolbar(), getContent());
-        updateList();
-        closeEditor(); 
+        super(SimpleRole.class);
     }
-
-    private HorizontalLayout getContent()
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#setColumns(com.vaadin.flow.component.grid.Grid)
+     */
+    @Override
+    protected void setColumns(Grid<SimpleRole> inGrid)
     {
-        HorizontalLayout content = new HorizontalLayout(grid,
-                                                        form);
-        content.setFlexGrow(2,
-                            grid);
-        content.setFlexGrow(1,
-                            form);
-        content.addClassNames("content");
-        content.setSizeFull();
-        return content;
+        inGrid.setColumns("name",
+                          "description");
     }
-
-    private void configureForm()
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#createNewValue()
+     */
+    @Override
+    protected SimpleRole createNewValue()
+    {
+        return new SimpleRole();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#getUpdatedList()
+     */
+    @Override
+    protected Collection<SimpleRole> getUpdatedList()
+    {
+        Collection<SimpleRole> roles = Lists.newArrayList();
+        getServiceClient().getRoles().forEach(role -> roles.add((role instanceof SimpleRole ? (SimpleRole)role : new SimpleRole(role))));
+        return roles;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#doCreate(java.lang.Object)
+     */
+    @Override
+    protected void doCreate(SimpleRole inValue)
+    {
+        getServiceClient().createRole(inValue);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#doUpdate(java.lang.Object, java.util.Map)
+     */
+    @Override
+    protected void doUpdate(SimpleRole inValue,
+                            Map<String,Object> inValueKeyData)
+    {
+        getServiceClient().updateRole(String.valueOf(inValueKeyData.get("name")),
+                                      inValue);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#doDelete(java.lang.Object, java.util.Map)
+     */
+    @Override
+    protected void doDelete(SimpleRole inValue,
+                            Map<String,Object> inValueKeyData)
+    {
+        getServiceClient().deleteRole(String.valueOf(inValueKeyData.get("name")));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#registerInitialValue(java.lang.Object, java.util.Map)
+     */
+    @Override
+    protected void registerInitialValue(SimpleRole inValue,
+                                        Map<String,Object> inOutValueKeyData)
+    {
+        inOutValueKeyData.put("name",
+                              inValue.getName());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#createForm()
+     */
+    @Override
+    protected RoleForm createForm()
     {
         form = new RoleForm();
-        form.setWidth("25em");
-        form.addListener(RoleForm.AddEvent.class,
-                         this::saveRole); 
-        form.addListener(RoleForm.DeleteEvent.class,
-                         this::deleteRole); 
-        form.addListener(RoleForm.EditEvent.class,
-                         this::saveRole); 
-        form.addListener(RoleForm.CloseEvent.class,
-                         e -> closeEditor()); 
+        return form;
     }
-
-    private void saveRole(RoleForm.AddOrEditEvent inEvent)
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#getDataClazzName()
+     */
+    @Override
+    protected String getDataClazzName()
     {
-        AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        if(inEvent.isAdd()) {
-            service.createRole(inEvent.getRole());
-        } else {
-            // TODO use original role name on edit
-            service.updateRole(inEvent.getRole().getName(),
-                               inEvent.getRole());
-        }
-        updateList();
-        closeEditor();
-    }
-
-    private void deleteRole(RoleForm.DeleteEvent event)
-    {
-        AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        service.deleteRole(event.getRole().getName());
-        updateList();
-        closeEditor();
+        return "Role";
     }
     /**
-     * 
+     * Get the service client to use for this view.
      *
-     *
+     * @return an <code>AdminClientService</code> value
      */
-    private void configureGrid()
+    private AdminClientService getServiceClient()
     {
-        grid.addClassNames("contact-grid");
-        grid.setSizeFull();
-        grid.setColumns("name","description");
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event -> addOrEditRole(event.getValue(),
-                                                                            false)); 
+        return ServiceManager.getInstance().getService(AdminClientService.class);
     }
-
-    private HorizontalLayout getToolbar()
+    /**
+     * Provides the create/edit subform for roles.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    class RoleForm
+            extends AbstractListView<SimpleRole,RoleForm>.AbstractListForm
     {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
-        Button addRoleButton = new Button("Add role");
-        addRoleButton.addClickListener(click -> addRole()); 
-        HorizontalLayout toolbar = new HorizontalLayout(filterText,
-                                                        addRoleButton);
-        toolbar.addClassName("toolbar");
-        return toolbar;
-    }
-
-    public void addOrEditRole(Role inRole,
-                              boolean inIsAdd)
-    { 
-        if(inRole == null) {
-            closeEditor();
-        } else {
-            form.setRole(inRole,
-                         inIsAdd);
-            form.setVisible(true);
-            addClassName("editing");
+        /**
+         * Create a new RoleForm instance.
+         */
+        private RoleForm()
+        {
+            super();
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.admin.view.AbstractListView.AbstractListForm#createFormComponentLayout(com.vaadin.flow.data.binder.Binder)
+         */
+        @Override
+        protected Component createFormComponentLayout(Binder<SimpleRole> inBinder)
+        {
+            name = new TextField("Name"); 
+            description = new TextField("Description");
+            name.setEnabled(true);
+            name.setReadOnly(false);
+            description.setEnabled(true);
+            description.setReadOnly(false);
+            componentLayout = new VerticalLayout();
+            componentLayout.add(name,
+                                description);
+            inBinder.bind(name,"name");
+            inBinder.bind(description,"description");
+            return componentLayout;
+        }
+        /**
+         * name widget
+         */
+        private TextField name;
+        /**
+         * description widget
+         */
+        private TextField description;
+        /**
+         * editor components layout value
+         */
+        private VerticalLayout componentLayout;
+        private static final long serialVersionUID = -4925927232864950173L;
     }
-
-    private void closeEditor()
-    {
-        form.setRole(null,
-                     false);
-        form.setVisible(false);
-        removeClassName("editing");
-    }
-
-    private void addRole()
-    {
-        grid.asSingleSelect().clear();
-        addOrEditRole(new SimpleRole(),
-                      true);
-    }
-
-
-    private void updateList()
-    {
-        // TODO filter
-//        grid.setItems(service.findAllContacts(filterText.getValue()));
-        AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        grid.setItems(service.getRoles());
-    }
-    private Grid<Role> grid = new Grid<>(Role.class);
-    private TextField filterText = new TextField();
+    /**
+     * edit form instance
+     */
     private RoleForm form;
     private static final long serialVersionUID = -8930087273314672465L;
 }
