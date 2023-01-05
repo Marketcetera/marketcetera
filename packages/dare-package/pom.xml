@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.marketcetera</groupId>
   <artifactId>dare-package</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>DARE Package</name>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>packages-parent</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <dependencies>
     <!-- local compile -->
