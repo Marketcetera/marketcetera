@@ -230,15 +230,6 @@
       <plugin>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-maven-plugin</artifactId>
-        <configuration>
-          <user>${metc.jdbc.user}</user>
-          <password>${metc.jdbc.password}</password>
-          <url>${metc.jdbc.url}</url>
-          <driver>${metc.jdbc.driver}</driver>
-          <locations>
-            <location>classpath:db/migration/${metc.flyway.vendor}</location>
-          </locations>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

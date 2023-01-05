@@ -902,11 +902,6 @@
           <version>${mvn.spring.boot.version}</version>
         </plugin>
         <plugin>
-          <groupId>org.flywaydb</groupId>
-          <artifactId>flyway-maven-plugin</artifactId>
-          <version>9.10.2</version>
-        </plugin>
-        <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
           <artifactId>maven-replacer-plugin</artifactId>
           <version>1.4.1</version>
@@ -915,6 +910,16 @@
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
           <version>9.10.2</version>
+          <configuration>
+            <user>${metc.jdbc.user}</user>
+            <password>${metc.jdbc.password}</password>
+            <url>${metc.jdbc.url}</url>
+            <driver>${metc.jdbc.driver}</driver>
+            <locations>
+              <location>classpath:db/migration/${metc.flyway.vendor}</location>
+            </locations>
+            <cleanDisabled>false</cleanDisabled>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
