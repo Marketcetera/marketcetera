@@ -1072,9 +1072,9 @@ public class MarketDataRpcUtilTest
     {
         List<Instrument> instruments = Lists.newArrayList();
         instruments.add(new Equity("METC"));
-        instruments.add(org.marketcetera.trade.Future.fromString("METC-202411"));
+        instruments.add(org.marketcetera.trade.Future.fromString("METC-202211"));
         instruments.add(new Currency("USD/GBP"));
-        instruments.add(new Option("METC","20241117",EventTestBase.generateDecimalValue(),OptionType.Put));
+        instruments.add(new Option("METC","20221117",EventTestBase.generateDecimalValue(),OptionType.Put));
         instruments.add(new ConvertibleBond("FR0011453463"));
         return instruments;
     }
