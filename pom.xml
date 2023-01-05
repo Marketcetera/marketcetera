@@ -10,15 +10,15 @@
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public-parent</artifactId>
-  <version>4.0.1-SNAPSHOT</version>
+  <version>4.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Marketcetera Public Sources Parent POM</name>
   <description>The root of Marketcetera public sources.</description>
-  <url>http://www.marketcetera.org</url>
+  <url>https://www.marketcetera.org</url>
   <licenses>
     <license>
       <name>GNU General Public License (GPL)</name>
-      <url>http://www.gnu.org/licenses/gpl.html</url>
+      <url>https://www.gnu.org/licenses/gpl.html</url>
     </license>
   </licenses>
   <developers>
@@ -32,9 +32,9 @@
   </developers>
   <properties>
     <mvn.javase.version>8</mvn.javase.version>
-    <mvn.spring.boot.version>2.2.4.RELEASE</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.6.7</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
-    <mvn.log4j.version>2.17.1</mvn.log4j.version>
+    <mvn.log4j.version>2.17.2</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m -XX:+UnlockCommercialFeatures -XX:+FlightRecorder</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
   </properties>
@@ -256,6 +256,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>eventbus-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>eventbus-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -366,7 +371,7 @@
       <dependency>
         <groupId>org.quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>1.6.3-bd</version>
+        <version>2.2.0-bd</version>
       </dependency>
       <!-- Compile: CXF -->
       <dependency>
@@ -402,6 +407,11 @@
         <version>2.1.0</version>
       </dependency>
       <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.10.14</version>
+      </dependency>
+      <dependency>
         <groupId>info.schnatterer.moby-names-generator</groupId>
         <artifactId>moby-names-generator</artifactId>
         <version>20.10.1-r0</version>
@@ -409,12 +419,12 @@
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger2</artifactId>
-        <version>2.9.2</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.9.2</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.tensorflow</groupId>
@@ -424,18 +434,18 @@
       <dependency>
         <groupId>com.github.jnr</groupId>
         <artifactId>jnr-process</artifactId>
-        <version>0.2</version>
+        <version>0.4.11</version>
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20140107</version>
+        <version>20220320</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>4.0</version>
+        <version>9.2</version>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -445,17 +455,17 @@
       <dependency>
         <groupId>net.java.dev.glazedlists</groupId>
         <artifactId>glazedlists_java15</artifactId>
-        <version>1.9.0</version>
+        <version>1.9.1</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.6</version>
+        <version>2.11.0</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.2</version>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
@@ -465,7 +475,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.4</version>
+        <version>3.12.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -475,17 +485,17 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.9</version>
+        <version>1.15</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
-        <version>3.2.1</version>
+        <version>3.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.0</version>
+        <version>4.4</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}.fork</groupId>
@@ -495,7 +505,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.9.1</version>
+        <version>1.9.4</version>
       </dependency>
       <!-- Binding for Log4J -->
       <dependency>
@@ -545,15 +555,19 @@
         <version>1.7.8</version>
       </dependency>
       <dependency>
-        <groupId>cglib</groupId>
-        <artifactId>cglib</artifactId>
-        <version>3.1</version>
-        <scope>runtime</scope>
+        <groupId>com.espertech</groupId>
+        <artifactId>esper</artifactId>
+        <version>7.1.0</version>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
-        <artifactId>esper</artifactId>
-        <version>5.5.0</version>
+        <artifactId>esper-runtime</artifactId>
+        <version>8.6.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.espertech</groupId>
+        <artifactId>esper-compiler</artifactId>
+        <version>8.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -563,27 +577,12 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>28.1-jre</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j</groupId>
-        <artifactId>peaberry.eclipse</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>2.0</version>
+        <version>31.1-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>2.0.3</version>
+        <version>3.0.2</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.sirocco</groupId>
@@ -605,10 +604,6 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
           </exclusion>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -616,48 +611,48 @@
         <artifactId>protobuf-java</artifactId>
         <version>3.20.3</version>
       </dependency>
-      <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
+      <!-- do not change versions of grpc and netty without reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-core</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-netty</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-tcnative-boringssl-static</artifactId>
-        <version>2.0.17.Final</version>
+        <version>2.0.46.Final</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-protobuf</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-stub</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
       </dependency>
       <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-netty-shaded</artifactId>
-        <version>1.16.1</version>
+        <version>1.44.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.1.30.Final</version>
+        <version>4.1.72.Final</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.jcraft</groupId>
         <artifactId>jzlib</artifactId>
-        <version>1.1.2</version>
+        <version>1.1.3</version>
         <scope>runtime</scope>
       </dependency>
       <!-- Runtime. -->
@@ -670,7 +665,7 @@
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.4.2</version>
+        <version>3.4.4</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -718,19 +713,19 @@
       <dependency>
         <groupId>org.apache.geronimo.javamail</groupId>
         <artifactId>geronimo-javamail_1.4_mail</artifactId>
-        <version>1.8.3</version>
+        <version>1.8.4</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.javamail</groupId>
         <artifactId>geronimo-javamail_1.4_provider</artifactId>
-        <version>1.8.3</version>
+        <version>1.8.4</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>3.16</version>
+        <version>4.21</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -742,7 +737,7 @@
       <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
-        <version>2.0.16</version>
+        <version>2.1.6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -752,9 +747,15 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.postgresql</groupId>
-	<artifactId>postgresql</artifactId>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
         <version>42.5.1</version>
+        <scope>runtime</scope>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>2.5.2</version>
+        <scope>runtime</scope>
       </dependency>
       <!-- Testing: local modules. -->
       <dependency>
@@ -849,21 +850,21 @@
       </dependency>
       <!-- Testing: other. -->
       <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>5.8.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>pl.pragmatists</groupId>
         <artifactId>JUnitParams</artifactId>
-        <version>1.0.4</version>
+        <version>1.1.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymockclassextension</artifactId>
         <version>3.2</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.objenesis</groupId>
-        <artifactId>objenesis</artifactId>
-        <version>2.1</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -913,7 +914,17 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>6.5.3</version>
+          <version>9.10.2</version>
+          <configuration>
+            <user>${metc.jdbc.user}</user>
+            <password>${metc.jdbc.password}</password>
+            <url>${metc.jdbc.url}</url>
+            <driver>${metc.jdbc.driver}</driver>
+            <locations>
+              <location>classpath:db/migration/${metc.flyway.vendor}</location>
+            </locations>
+            <cleanDisabled>false</cleanDisabled>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.mysema.maven</groupId>
@@ -937,7 +948,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.3.0</version>
           <executions>
             <execution>
               <id>add-source</id>
@@ -958,7 +969,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>properties-maven-plugin</artifactId>
-          <version>1.0.0</version>
+          <version>1.1.0</version>
           <executions>
             <execution>
               <phase>generate-test-resources</phase>
@@ -974,7 +985,7 @@
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.2</version>
           <executions>
             <execution>
               <id>build-test-jar</id>
@@ -1013,7 +1024,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.5</version>
+          <version>5.1.6</version>
         </plugin>
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
@@ -1028,12 +1039,12 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>1.6.0</version>
+          <version>3.0.0</version>
         </plugin>
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.0.0-M5</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkCount>2.5C</forkCount>
@@ -1047,7 +1058,7 @@
         <!-- mvn compile -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.10.1</version>
           <configuration>
             <source>1.${mvn.javase.version}</source>
             <target>1.${mvn.javase.version}</target>
@@ -1056,16 +1067,17 @@
         <!-- mvn javadoc:* -->
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.4.0</version>
           <configuration>
             <!-- add this to disable checking -->
-            <failOnError>false</failOnError>
+            <additionalparam>-Xdoclint:none</additionalparam>
+            <doclint>none</doclint>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.3.0</version>
           <configuration>
             <finalName>${project.artifactId}</finalName>
             <appendAssemblyId>false</appendAssemblyId>
@@ -1079,7 +1091,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -1093,17 +1105,54 @@
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
       </plugin>
+      <!-- Adds the build number to each JAR -->
+      <plugin>
+        <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+        <artifactId>svn-revision-number-maven-plugin</artifactId>
+        <version>1.13</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <entries>
+            <entry>
+              <prefix>svn</prefix>
+            </entry>
+          </entries>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.tmatesoft.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.10.6</version>
+          </dependency>
+          <dependency>
+            <groupId>org.tmatesoft.sqljet</groupId>
+            <artifactId>sqljet</artifactId>
+            <version>1.1.14</version>
+          </dependency>
+          <dependency>
+            <groupId>de.regnis.q.sequence</groupId>
+            <artifactId>sequence-library</artifactId>
+            <version>1.0.4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-ssh</artifactId>
-        <version>2.5</version>
+        <version>3.5.3</version>
       </extension>
       <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.1</version>
+        <version>1.7.0</version>
       </extension>
     </extensions>
     <resources>
@@ -1137,7 +1186,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -1150,7 +1199,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.0.1</version>
+            <version>3.4.0</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -1213,13 +1262,6 @@
       <url>https://repository.springsource.com/maven/bundles/external</url>
     </repository>
     <repository>
-      <id>central</id>
-      <url>https://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>java.net</id>
       <url>https://download.java.net/maven/2</url>
       <snapshots>
@@ -1241,7 +1283,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.4.0</version>
         <configuration>
           <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
           <docletArtifact>
@@ -1256,12 +1298,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.12.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
+        <version>3.3.0</version>
       </plugin>
     </plugins>
   </reporting>

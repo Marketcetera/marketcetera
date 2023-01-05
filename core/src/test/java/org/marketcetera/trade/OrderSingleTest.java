@@ -1,6 +1,7 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.module.ExpectedFailure;
@@ -135,7 +136,7 @@ public class OrderSingleTest extends TypesTestBase {
         int intValue = 1;
         boolean boolValue = false;
 
-        msg.setField(new ExpireTime(date));
+        msg.setField(new ExpireTime(DateService.toUtcDateTime(date)));
         expectedMap.put(String.valueOf(ExpireTime.FIELD),
                 UtcTimestampConverter.convert(date, true));
 

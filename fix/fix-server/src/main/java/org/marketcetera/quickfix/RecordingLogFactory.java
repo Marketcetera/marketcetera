@@ -21,15 +21,6 @@ public class RecordingLogFactory
         implements LogFactory
 {
     /* (non-Javadoc)
-     * @see quickfix.LogFactory#create()
-     */
-    @Override
-    public Log create()
-    {
-        // not supported
-        throw new UnsupportedOperationException();
-    }
-    /* (non-Javadoc)
      * @see quickfix.LogFactory#create(quickfix.SessionID)
      */
     @Override

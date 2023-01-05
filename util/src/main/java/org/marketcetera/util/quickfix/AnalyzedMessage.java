@@ -5,16 +5,11 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
-import quickfix.DataDictionary;
-import quickfix.Field;
-import quickfix.FieldMap;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.MsgType;
 
 /**
  * Analyzes a QuickFIX/J message, producing a human-readable
@@ -22,12 +17,12 @@ import quickfix.field.MsgType;
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id$
+ * @version $Id: AnalyzedMessage.java 16154 2012-07-14 16:34:05Z colin $
  */
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id: AnalyzedMessage.java 16154 2012-07-14 16:34:05Z colin $")
 public class AnalyzedMessage
 {
 
@@ -51,28 +46,26 @@ public class AnalyzedMessage
      * @param qDict The data dictionary.
      * @param qMsg The message.
      */
-
-    public AnalyzedMessage
-        (DataDictionary qDict,
-         Message qMsg)
+    public AnalyzedMessage(quickfix.DataDictionary qDict,
+                           quickfix.Message qMsg)
     {
         // Determine message type.
 
         String msgType=null;
         try {
-            msgType=qMsg.getHeader().getField(new MsgType()).getValue();
-        } catch (FieldNotFound ex) {
+            msgType=qMsg.getHeader().getField(new quickfix.field.MsgType()).getValue();
+        } catch (quickfix.FieldNotFound ex) {
             Messages.MISSING_TYPE.error(this,ex,qMsg);
             return;
         }
 
         // Analyze sections.
 
-        analyzeFields(qDict,qDict,qMsg,DataDictionary.HEADER_ID,
+        analyzeFields(qDict,qDict,qMsg,quickfix.DataDictionary.HEADER_ID,
                       qMsg.getHeader().iterator(),mHeader);
         analyzeFields(qDict,qDict,qMsg,msgType,
                       qMsg.iterator(),mBody);
-        analyzeFields(qDict,qDict,qMsg,DataDictionary.TRAILER_ID,
+        analyzeFields(qDict,qDict,qMsg,quickfix.DataDictionary.TRAILER_ID,
                       qMsg.getTrailer().iterator(),mTrailer);
 
         // Validate message.
@@ -84,7 +77,26 @@ public class AnalyzedMessage
             mValidationException=ex;
         }
     }
-
+    /**
+     * Creates a new analyzed message for the given QuickFIX/J
+     * message, interpreted using the given data dictionary.
+     *
+     * @param inDataDictionary a <code>quickfix.DataDictionary</code> value
+     * @param inFieldMap a <code>quickfix.FieldMap</code> value
+     * @param inMsgType a <code>String</code> value
+     */
+    public AnalyzedMessage(quickfix.DataDictionary inDataDictionary,
+                           quickfix.FieldMap inFieldMap,
+                           String inMsgType)
+    {
+        // Analyze sections.
+        analyzeFields(inDataDictionary,
+                      inDataDictionary,
+                      inFieldMap,
+                      inMsgType,
+                      inFieldMap.iterator(),
+                      mBody);
+    }
 
     // INSTANCE METHODS.
 
@@ -105,18 +117,19 @@ public class AnalyzedMessage
      * @param list The results' list.
      */
 
-    static void analyzeFields
-        (DataDictionary nameQDict,
-         DataDictionary scopeQDict,
-         FieldMap qMap,
-         String msgType,
-         Iterator<?> qFields,
-         List<AnalyzedField> list)
+    static void analyzeFields(quickfix.DataDictionary nameQDict,
+                              quickfix.DataDictionary scopeQDict,
+                              quickfix.FieldMap qMap,
+                              String msgType,
+                              Iterator<?> qFields,
+                              List<AnalyzedField> list)
     {
         while (qFields.hasNext()) {
-            list.add(new AnalyzedField
-                     (nameQDict,scopeQDict,qMap,msgType,
-                      (Field<?>)(qFields.next())));
+            list.add(new AnalyzedField(nameQDict,
+                                       scopeQDict,
+                                       qMap,
+                                       msgType,
+                                       (quickfix.Field<?>)(qFields.next())));
         }
     }
 
