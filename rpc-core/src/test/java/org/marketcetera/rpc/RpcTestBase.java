@@ -68,17 +68,15 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     public void cleanup()
             throws Exception
     {
-        synchronized(clients) {
-            for(RpcClientClazz client : clients) {
-                try {
-                    client.stop();
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                }
+        for(RpcClientClazz client : clients) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
             }
-            clients.clear();
         }
+        clients.clear();
         stopServer();
     }
     /**
@@ -242,9 +240,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 {
                     try {
                         final RpcClientClazz client = createClient();
-                        synchronized(multipleClients) {
-                            multipleClients.add(client);
-                        }
+                        multipleClients.add(client);
                         Thread.sleep(1000);
                         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                             @Override
@@ -255,9 +251,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                             }
                         });
                         client.stop();
-                        synchronized(multipleClients) {
-                            multipleClients.remove(client);
-                        }
+                        multipleClients.remove(client);
                     } catch (Exception e) {
                         SLF4JLoggerProxy.warn(RpcTestBase.this,
                                               e);
@@ -271,9 +265,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
             public Boolean call()
                     throws Exception
             {
-                synchronized(multipleClients) {
-                    return !multipleClients.isEmpty();
-                }
+                return !multipleClients.isEmpty();
             }
         });
         assertTrue(exceptions.isEmpty());
@@ -340,9 +332,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                                                                    inPassword));
         prepareClient(client);
         client.start();
-        synchronized(clients) {
-            clients.add(client);
-        }
+        clients.add(client);
         return client;
     }
     /**
