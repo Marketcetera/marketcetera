@@ -909,7 +909,7 @@
         <plugin>
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
-          <version>9.10.2</version>
+          <version>9.11.0</version>
           <configuration>
             <user>${metc.jdbc.user}</user>
             <password>${metc.jdbc.password}</password>
