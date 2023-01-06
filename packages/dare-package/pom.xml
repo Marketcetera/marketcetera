@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.marketcetera</groupId>
   <artifactId>dare-package</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>DARE Package</name>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>packages-parent</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <dependencies>
     <!-- local compile -->
@@ -63,10 +63,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-rpc-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>eventbus-server</artifactId>
     </dependency>
     <!-- other compile -->
     <dependency>
@@ -166,11 +162,6 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
       <scope>runtime</scope>
@@ -178,23 +169,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
@@ -230,6 +204,15 @@
       <plugin>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-maven-plugin</artifactId>
+        <configuration>
+          <user>${metc.jdbc.user}</user>
+          <password>${metc.jdbc.password}</password>
+          <url>${metc.jdbc.url}</url>
+          <driver>${metc.jdbc.driver}</driver>
+          <locations>
+            <location>classpath:db/migration/${metc.flyway.vendor}</location>
+          </locations>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

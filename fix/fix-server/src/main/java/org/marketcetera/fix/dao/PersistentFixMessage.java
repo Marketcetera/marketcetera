@@ -2,6 +2,7 @@ package org.marketcetera.fix.dao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.marketcetera.fix.FixMessage;
@@ -85,6 +86,7 @@ public class PersistentFixMessage
     /**
      * fix message value
      */
+    @Lob
     @Column(name="message",nullable=false,length=8192,unique=false)
     private String message;
     private static final long serialVersionUID = -4643351730163899005L;

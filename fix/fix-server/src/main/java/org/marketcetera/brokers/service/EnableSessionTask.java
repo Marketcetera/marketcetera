@@ -9,7 +9,6 @@ import org.marketcetera.fix.event.FixSessionEnabledEvent;
 import org.marketcetera.fix.event.SimpleFixSessionEnabledEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import quickfix.SessionID;
 
@@ -30,8 +29,6 @@ public class EnableSessionTask
     public Boolean call()
             throws Exception
     {
-        SessionNameProvider sessionNameProvider = applicationContext.getBean(SessionNameProvider.class);
-        EventBusService eventBusService = applicationContext.getBean(EventBusService.class);
         FixSessionEnabledEvent fixSessionEnabledEvent = new SimpleFixSessionEnabledEvent(new quickfix.SessionID(session.getSessionId()));
         try {
             eventBusService.post(fixSessionEnabledEvent);
@@ -56,10 +53,15 @@ public class EnableSessionTask
         session = inSession;
     }
     /**
-     * provides access to the application context
+     * provides access to session names
      */
     @Autowired
-    private transient ApplicationContext applicationContext;
+    private transient SessionNameProvider sessionNameProvider;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private transient EventBusService eventBusService;
     /**
      * fix session to be enabled
      */

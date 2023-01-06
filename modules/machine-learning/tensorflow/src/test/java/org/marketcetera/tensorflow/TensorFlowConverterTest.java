@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.modules.headwater.HeadwaterModule;
 import org.marketcetera.tensorflow.converter.TensorFlowConverterModule;

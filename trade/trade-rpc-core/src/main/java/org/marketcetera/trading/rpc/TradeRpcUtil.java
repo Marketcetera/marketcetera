@@ -374,7 +374,7 @@ public abstract class TradeRpcUtil
                     result = OrderType.PreviouslyQuoted;
                     break;
                 case Stop:
-                    result = OrderType.StopLoss;
+                    result = OrderType.Stop;
                     break;
                 case StopLimit:
                     result = OrderType.StopLimit;
@@ -449,7 +449,7 @@ public abstract class TradeRpcUtil
                 case PreviouslyQuoted:
                     result = TradeTypesRpc.OrderType.PreviouslyQuoted;
                     break;
-                case StopLoss:
+                case Stop:
                     result = TradeTypesRpc.OrderType.Stop;
                     break;
                 case StopLimit:
@@ -2177,7 +2177,7 @@ public abstract class TradeRpcUtil
                 return TradeTypesRpc.ExecutionType.PendingReplaceExecutionType;
             case Rejected:
                 return TradeTypesRpc.ExecutionType.RejectedExecutionType;
-            case Replaced:
+            case Replace:
                 return TradeTypesRpc.ExecutionType.ReplaceExecutionType;
             case Restated:
                 return TradeTypesRpc.ExecutionType.RestatedExecutionType;
@@ -2231,7 +2231,7 @@ public abstract class TradeRpcUtil
             case RejectedExecutionType:
                 return ExecutionType.Rejected;
             case ReplaceExecutionType:
-                return ExecutionType.Replaced;
+                return ExecutionType.Replace;
             case RestatedExecutionType:
                 return ExecutionType.Restated;
             case StoppedExecutionType:

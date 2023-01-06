@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>marketdata</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>marketdata-exsim</artifactId>
-  <version>4.0.3-SNAPSHOT</version>
+  <version>4.0.1-SNAPSHOT</version>
   <name>Marketcetera Exsim Marketdata Adapter</name>
   <url>http://maven.apache.org</url>
   <properties>

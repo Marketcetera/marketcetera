@@ -41,7 +41,6 @@ import org.marketcetera.trade.service.Messages;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.time.DateService;
 
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
@@ -88,7 +87,7 @@ public class PersistentReport
             setFixMessage(fixMessage.toString());
             if(fixMessage.isSetField(quickfix.field.TransactTime.FIELD)) {
                 try {
-                    setTransactTime(DateService.toLocalDate(fixMessage.getUtcTimeStamp(quickfix.field.TransactTime.FIELD)));
+                    setTransactTime(fixMessage.getUtcTimeStamp(quickfix.field.TransactTime.FIELD));
                 } catch (quickfix.FieldNotFound ignored) {}
             } else {
                 setTransactTime(inReport.getSendingTime());

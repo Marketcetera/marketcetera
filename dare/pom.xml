@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>dare</artifactId>
@@ -137,21 +137,12 @@
     <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>eventbus-server</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
     </dependency>
     <dependency>
       <groupId>pl.pragmatists</groupId>
@@ -189,13 +180,18 @@
       <artifactId>spring-beans</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -282,6 +278,12 @@
           <argLine>${mvn.test.options}</argLine>
           <systemPropertyVariables>
             <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+            <metc.jdbc.user>${metc.jdbc.user}</metc.jdbc.user>
+            <metc.jdbc.password>${metc.jdbc.password}</metc.jdbc.password>
+            <metc.jdbc.driver>${metc.jdbc.driver}</metc.jdbc.driver>
+            <metc.jdbc.url>${metc.jdbc.url}</metc.jdbc.url>
+            <metc.jdbc.testquery>${metc.jdbc.testquery}</metc.jdbc.testquery>
+            <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
             <metc.jms.port>19600</metc.jms.port>
             <metc.ws.host>localhost</metc.ws.host>
             <metc.ws.port>19601</metc.ws.port>

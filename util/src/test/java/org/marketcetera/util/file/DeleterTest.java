@@ -2,7 +2,6 @@ package org.marketcetera.util.file;
 
 import java.io.File;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.exec.Disposition;
@@ -22,7 +21,6 @@ import static org.junit.Assume.*;
 
 /* $License$ */
 
-@Ignore
 public class DeleterTest
     extends TestCaseBase
 {

@@ -7,7 +7,6 @@ import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Reports the a specified broker status from each cluster member.
@@ -27,10 +26,10 @@ public class ReportBrokerStatusTask
     {
         if(status == FixSessionStatus.DELETED) {
             removeBrokerStatus();
+        } else {
+            brokerService.reportBrokerStatus(new BrokerID(session.getBrokerId()),
+                                             status);
         }
-        brokerService = applicationContext.getBean(BrokerService.class);
-        brokerService.reportBrokerStatus(new BrokerID(session.getBrokerId()),
-                                         status);
     }
     /**
      * Create a new ReportBrokerStatusTask instance.
@@ -65,12 +64,8 @@ public class ReportBrokerStatusTask
     /**
      * cluster-local broker service value
      */
-    private transient BrokerService brokerService;
-    /**
-     * provides access to the cluster-local application context
-     */
     @Autowired
-    private transient ApplicationContext applicationContext;
+    private transient BrokerService brokerService;
     /**
      * fix session to be enabled
      */

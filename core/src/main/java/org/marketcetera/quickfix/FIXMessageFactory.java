@@ -12,7 +12,6 @@ import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.time.DateService;
 
 import com.google.common.collect.Lists;
 
@@ -114,7 +113,7 @@ public class FIXMessageFactory {
     }
 
     protected void addHandlingInst(Message inMessage) {
-        inMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE_NO_BROKER_INTERVENTION));
+        inMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
     }
 
     public Message newCancelReplacePrice(
@@ -186,7 +185,7 @@ public class FIXMessageFactory {
     public void addSendingTime(Message inMessage)
     {
         if(!inMessage.getHeader().isSetField(quickfix.field.SendingTime.FIELD)) {
-            inMessage.getHeader().setField(new SendingTime(DateService.toUtcDateTime(new Date())));
+            inMessage.getHeader().setField(new SendingTime(new Date()));
         }
     }
     protected void fillFieldsFromExistingMessage(Message oldMessage,
@@ -282,8 +281,8 @@ public class FIXMessageFactory {
             return;
         }
         // TODO the time doesn't seem quite right
-        inGroup.setField(new quickfix.field.MDEntryDate(DateService.toUtcDate(inDateTime.minusMillis(inDateTime.getMillisOfDay()).toDate())));
-        inGroup.setField(new quickfix.field.MDEntryTime(DateService.toUtcTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate())));
+        inGroup.setField(new quickfix.field.MDEntryDate(inDateTime.minusMillis(inDateTime.getMillisOfDay()).toDate()));
+        inGroup.setField(new quickfix.field.MDEntryTime(inDateTime.minusYears(inDateTime.getYear()).minusDays(inDateTime.getDayOfYear()).toDate()));
     }
     /**
      * Create a new market data request that cancels the market data request based on the given original request.
@@ -296,40 +295,8 @@ public class FIXMessageFactory {
             throws FieldNotFound
     {
         Message cancelRequest = inOriginalMessage;
-        cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_UPDATE_REQUEST));
+        cancelRequest.setField(new quickfix.field.SubscriptionRequestType(quickfix.field.SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
         return cancelRequest;
-    }
-    /**
-     * Create a new market data request with the given parameters.
-     *
-     * @param inRequestId a <code>String</code> value
-     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value, may be empty for "all instruments"
-     * @param inExchange a <code>String</code> value, may be <code>null</code> for "all exchanges"
-     * @param inContent a <code>List&lt;Content&gt;</code> value
-     * @param inSubscriptionType a <code>char</code> value
-     * @return a <code>quickfix.Message</code> value
-     * @throws quickfix.FieldNotFound if the message could not be constructed
-     * @throws IllegalArgumentException if the provided content is contradictory, eg. aggregated depth and unaggregated depth or top of book and bbo10
-     */
-    public quickfix.Message newMarketDataRequest(FIXVersion inFixVersion,
-                                                 String inRequestId,
-                                                 List<Instrument> inInstruments,
-                                                 String inExchange,
-                                                 List<Content> inContent,
-                                                 char inSubscriptionType)
-            throws quickfix.FieldNotFound
-    {
-        // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
-        quickfix.Message request = msgFactory.create(beginString,
-                                                     MsgType.MARKET_DATA_REQUEST);
-        quickfix.DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(inFixVersion);
-        return doNewMarketDataRequest(request,
-                                      fixDictionary,
-                                      inRequestId,
-                                      inInstruments,
-                                      inExchange,
-                                      inContent,
-                                      inSubscriptionType);
     }
     /**
      * Create a new market data request with the given parameters.
@@ -343,23 +310,139 @@ public class FIXMessageFactory {
      * @throws FieldNotFound if the message could not be constructed
      * @throws IllegalArgumentException if the provided content is contradictory, eg. aggregated depth and unaggregated depth or top of book and bbo10
      */
-    public quickfix.Message newMarketDataRequest(String inRequestId,
-                                                 List<Instrument> inInstruments,
-                                                 String inExchange,
-                                                 List<Content> inContent,
-                                                 char inSubscriptionType)
-            throws quickfix.FieldNotFound
+    public Message newMarketDataRequest(String inRequestId,
+                                        List<Instrument> inInstruments,
+                                        String inExchange,
+                                        List<Content> inContent,
+                                        char inSubscriptionType)
+            throws FieldNotFound
     {
-        quickfix.Message request = msgFactory.create(beginString,
-                                                     MsgType.MARKET_DATA_REQUEST);
-        quickfix.DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
-        return doNewMarketDataRequest(request,
-                                      fixDictionary,
-                                      inRequestId,
-                                      inInstruments,
-                                      inExchange,
-                                      inContent,
-                                      inSubscriptionType);
+        // TODO add support for content in non 4.2 if dictionary supports it (imbalance, eg)
+        Message request = msgFactory.create(beginString,
+                                            MsgType.MARKET_DATA_REQUEST);
+        DataDictionary fixDictionary = FIXMessageUtil.getDataDictionary(request);
+        request.setField(new MDReqID(inRequestId));
+        int contentCount = 0;
+        Integer maxDepth = null;
+        Boolean aggregatedBook = null;
+        if(inContent != null) {
+            for(Content content : inContent) {
+                switch(content) {
+                    case AGGREGATED_DEPTH:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           true,
+                                                           aggregatedBook);
+                        break;
+                    case BBO10:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               10,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           true,
+                                                           aggregatedBook);
+                        break;
+                    case OPEN_BOOK:
+                    case TOTAL_VIEW:
+                    case UNAGGREGATED_DEPTH:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           false,
+                                                           aggregatedBook);
+                        break;
+                    case LATEST_TICK:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE,contentCount);
+                        break;
+                    case LEVEL_2:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               Integer.MAX_VALUE,
+                                               maxDepth);
+                        aggregatedBook = setAggregatedBook(request,
+                                                           false,
+                                                           aggregatedBook);
+                        break;
+                    case MARKET_STAT:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OPENING_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.CLOSING_PRICE,contentCount);
+                        if(fixDictionary.isFieldValue(quickfix.field.MDEntryType.FIELD,
+                                                      String.valueOf(quickfix.field.MDEntryType.TRADE_VOLUME))) {
+                            contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
+                        }
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE,contentCount);
+                        break;
+                    case NBBO:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               TOP_OF_BOOK_DEPTH,
+                                               maxDepth);
+                        break;
+                    case TOP_OF_BOOK:
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.BID,contentCount);
+                        contentCount = addMdEntry(request,quickfix.field.MDEntryType.OFFER,contentCount);
+                        maxDepth = setMaxDepth(request,
+                                               TOP_OF_BOOK_DEPTH,
+                                               maxDepth);
+                        break;
+                    case IMBALANCE:
+                    case DIVIDEND:
+                    default:
+                        throw new UnsupportedOperationException("Unsupported content: " + content);
+                }
+            }
+        }
+        if(!request.isSetField(quickfix.field.MarketDepth.FIELD)) {
+            maxDepth = setMaxDepth(request,
+                                   1,
+                                   maxDepth);
+        }
+        request.setField(new quickfix.field.NoMDEntryTypes(contentCount));
+        request.setChar(quickfix.field.SubscriptionRequestType.FIELD,
+                        inSubscriptionType);
+        request.setField(new quickfix.field.MDUpdateType(quickfix.field.MDUpdateType.FULL_REFRESH));
+        int numSymbols = 0;
+        if(inInstruments != null) {
+            numSymbols = inInstruments.size();
+            if(numSymbols == 0){
+                request.setInt(quickfix.field.NoRelatedSym.FIELD,
+                               numSymbols);
+            }
+            for(Instrument instrument : inInstruments) {
+                if(instrument != null) {
+                    InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(instrument);
+                    Group symbolGroup =  msgFactory.create(beginString,
+                                                           MsgType.MARKET_DATA_REQUEST,
+                                                           NoRelatedSym.FIELD);
+                    instrumentFunction.set(instrument,
+                                           fixDictionary,
+                                           quickfix.field.MsgType.ORDER_SINGLE,
+                                           symbolGroup);
+                    // some weirdness for currencies
+                    symbolGroup.removeField(quickfix.field.Currency.FIELD);
+                    symbolGroup.removeField(quickfix.field.OrdType.FIELD);
+                    if(inExchange != null && !inExchange.isEmpty()) {
+                        symbolGroup.setField(new quickfix.field.SecurityExchange(inExchange));
+                    }
+                    request.addGroup(symbolGroup);
+                }
+            }
+        } else {
+            request.setInt(quickfix.field.NoRelatedSym.FIELD,
+                           0);
+        }
+        return request;
     }
     /**
      * Returns a Market Data Request for the given symbols from the given exchange.
@@ -379,7 +462,7 @@ public class FIXMessageFactory {
                                     inInstruments,
                                     inExchange,
                                     Lists.newArrayList(Content.TOP_OF_BOOK,Content.LATEST_TICK),
-                                    quickfix.field.SubscriptionRequestType.SNAPSHOT_UPDATES);
+                                    quickfix.field.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
     }
     /** Creates a new MarketDataRequest for the specified symbols.
      * Setting the incoming symbols array to empty results in a "get all" request
@@ -712,7 +795,7 @@ public class FIXMessageFactory {
     public void addTransactionTimeIfNeeded(Message msg)
     {
         if(msgAugmentor.needsTransactTime(msg)) {
-            msg.setField(new TransactTime(DateService.toUtcDateTime(new Date())));
+            msg.setField(new TransactTime(new Date())); //non-i18n
         }
     }
 
@@ -803,151 +886,6 @@ public class FIXMessageFactory {
             (beginString,MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(msg);
         return msg;
-    }
-    /**
-     * Generate a market data request with the given attributes.
-     *
-     * @param inRequest a <code>quickfix.Message</code> value
-     * @param inFixDictionary a <code>quickfix.DataDictionary</code> value
-     * @param inRequestId a <code>String</code> value
-     * @param inInstruments a <code>List&lt;Instrument&gt;</code> value
-     * @param inExchange a <code>String</code> value
-     * @param inContent a <code>List&lt;Content&gt;</code> value
-     * @param inSubscriptionType a <code>char</code> value
-     * @return a <code>quickfix.Message</code> value
-     * @throws quickfix.FieldNotFound if the message cannot be constructed
-     */
-    private quickfix.Message doNewMarketDataRequest(quickfix.Message inRequest,
-                                                    quickfix.DataDictionary inFixDictionary,
-                                                    String inRequestId,
-                                                    List<Instrument> inInstruments,
-                                                    String inExchange,
-                                                    List<Content> inContent,
-                                                    char inSubscriptionType)
-            throws quickfix.FieldNotFound
-    {
-        inRequest.setField(new MDReqID(inRequestId));
-        int contentCount = 0;
-        Integer maxDepth = null;
-        Boolean aggregatedBook = null;
-        if(inContent != null) {
-            for(Content content : inContent) {
-                switch(content) {
-                    case AGGREGATED_DEPTH:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.BID,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.OFFER,contentCount);
-                        maxDepth = setMaxDepth(inRequest,
-                                               Integer.MAX_VALUE,
-                                               maxDepth);
-                        aggregatedBook = setAggregatedBook(inRequest,
-                                                           true,
-                                                           aggregatedBook);
-                        break;
-                    case BBO10:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.BID,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.OFFER,contentCount);
-                        maxDepth = setMaxDepth(inRequest,
-                                               10,
-                                               maxDepth);
-                        aggregatedBook = setAggregatedBook(inRequest,
-                                                           true,
-                                                           aggregatedBook);
-                        break;
-                    case OPEN_BOOK:
-                    case TOTAL_VIEW:
-                    case UNAGGREGATED_DEPTH:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.BID,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.OFFER,contentCount);
-                        maxDepth = setMaxDepth(inRequest,
-                                               Integer.MAX_VALUE,
-                                               maxDepth);
-                        aggregatedBook = setAggregatedBook(inRequest,
-                                                           false,
-                                                           aggregatedBook);
-                        break;
-                    case LATEST_TICK:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.TRADE,contentCount);
-                        break;
-                    case LEVEL_2:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
-                        maxDepth = setMaxDepth(inRequest,
-                                               Integer.MAX_VALUE,
-                                               maxDepth);
-                        aggregatedBook = setAggregatedBook(inRequest,
-                                                           false,
-                                                           aggregatedBook);
-                        break;
-                    case MARKET_STAT:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.OPENING_PRICE,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.CLOSING_PRICE,contentCount);
-                        if(inFixDictionary.isFieldValue(quickfix.field.MDEntryType.FIELD,
-                                                      String.valueOf(quickfix.field.MDEntryType.TRADE_VOLUME))) {
-                            contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.TRADE_VOLUME,contentCount);
-                        }
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.TRADING_SESSION_HIGH_PRICE,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.TRADING_SESSION_LOW_PRICE,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.TRADING_SESSION_VWAP_PRICE,contentCount);
-                        break;
-                    case NBBO:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.INDEX_VALUE,contentCount);
-                        maxDepth = setMaxDepth(inRequest,
-                                               TOP_OF_BOOK_DEPTH,
-                                               maxDepth);
-                        break;
-                    case TOP_OF_BOOK:
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.BID,contentCount);
-                        contentCount = addMdEntry(inRequest,quickfix.field.MDEntryType.OFFER,contentCount);
-                        maxDepth = setMaxDepth(inRequest,
-                                               TOP_OF_BOOK_DEPTH,
-                                               maxDepth);
-                        break;
-                    case IMBALANCE:
-                    case DIVIDEND:
-                    default:
-                        throw new UnsupportedOperationException("Unsupported content: " + content);
-                }
-            }
-        }
-        if(!inRequest.isSetField(quickfix.field.MarketDepth.FIELD)) {
-            maxDepth = setMaxDepth(inRequest,
-                                   1,
-                                   maxDepth);
-        }
-        inRequest.setField(new quickfix.field.NoMDEntryTypes(contentCount));
-        inRequest.setChar(quickfix.field.SubscriptionRequestType.FIELD,
-                        inSubscriptionType);
-        inRequest.setField(new quickfix.field.MDUpdateType(quickfix.field.MDUpdateType.FULL_REFRESH));
-        int numSymbols = 0;
-        if(inInstruments != null) {
-            numSymbols = inInstruments.size();
-            if(numSymbols == 0){
-                inRequest.setInt(quickfix.field.NoRelatedSym.FIELD,
-                               numSymbols);
-            }
-            for(Instrument instrument : inInstruments) {
-                if(instrument != null) {
-                    InstrumentToMessage<?> instrumentFunction = InstrumentToMessage.SELECTOR.forInstrument(instrument);
-                    Group symbolGroup =  msgFactory.create(beginString,
-                                                           MsgType.MARKET_DATA_REQUEST,
-                                                           NoRelatedSym.FIELD);
-                    instrumentFunction.set(instrument,
-                                           inFixDictionary,
-                                           quickfix.field.MsgType.ORDER_SINGLE,
-                                           symbolGroup);
-                    // some weirdness for currencies
-                    symbolGroup.removeField(quickfix.field.Currency.FIELD);
-                    symbolGroup.removeField(quickfix.field.OrdType.FIELD);
-                    if(inExchange != null && !inExchange.isEmpty()) {
-                        symbolGroup.setField(new quickfix.field.SecurityExchange(inExchange));
-                    }
-                    inRequest.addGroup(symbolGroup);
-                }
-            }
-        } else {
-            inRequest.setInt(quickfix.field.NoRelatedSym.FIELD,
-                           0);
-        }
-        return inRequest;
     }
     /**
      * Add an MDEntry to the given message with the given type.
