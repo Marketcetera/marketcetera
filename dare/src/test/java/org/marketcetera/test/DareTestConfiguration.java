@@ -9,6 +9,8 @@ import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.eventbus.server.EsperEngine;
+import org.marketcetera.eventbus.server.EventBusEsperConnector;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
 import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.ServerFixSessionFactory;
@@ -62,6 +64,28 @@ public class DareTestConfiguration
         IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
         symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
         return symbolResolverService;
+    }
+    /**
+     * Get the Esper engine value.
+     *
+     * @return an <code>EsperEngine</code> value
+     */
+    @Bean
+    public EsperEngine getEsperEngine()
+    {
+        EsperEngine esperEngine = new EsperEngine();
+        return esperEngine;
+    }
+    /**
+     * Get the Event Bus &lt;-&gt; Esper connector value.
+     *
+     * @return an <code>EventBusEsperConnector</code> value
+     */
+    @Bean
+    public EventBusEsperConnector getEventBusEsperConnector()
+    {
+        EventBusEsperConnector eventBusEsperConnector = new EventBusEsperConnector();
+        return eventBusEsperConnector;
     }
     /**
      * Get the average fill price factory value.

@@ -22,8 +22,10 @@ public class NullMessageStore
      * Create a new NullMessageStore instance.
      *
      * @param inSessionId a <code>SessionID</code> value
+     * @throws IOException if the message store cannot be created
      */
     public NullMessageStore(SessionID inSessionId)
+            throws IOException
     {
         sessionId = inSessionId;
         cache = new MemoryStore(inSessionId);

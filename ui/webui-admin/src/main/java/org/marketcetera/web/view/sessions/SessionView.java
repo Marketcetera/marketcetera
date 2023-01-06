@@ -74,6 +74,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import quickfix.FixVersions;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.field.ApplVerID;
 
 /* $License$ */
 
@@ -647,7 +648,7 @@ public class SessionView
                 fixVersionSelect.setNullSelectionAllowed(false);
                 fixVersionSelect.setTextInputAllowed(false);
                 fixVersionSelect.setRequired(true);
-                fixVersionSelect.setRequiredError("FIX Version requried");
+                fixVersionSelect.setRequiredError("FIX Version required");
                 senderCompIdTextField.setDescription("Sender Comp Id of the session");
                 senderCompIdTextField.setRequired(true);
                 senderCompIdTextField.setRequiredError("Sender Comp Id required");
@@ -659,11 +660,21 @@ public class SessionView
                 targetCompIdTextField.addValidator(new NullValidator("Target Comp Id required",
                                                                      false));
                 for(FIXVersion fixVersion : FIXVersion.values()) {
-                    if(fixVersion == FIXVersion.FIX_SYSTEM) {
+                    if(fixVersion == FIXVersion.FIX_SYSTEM || fixVersion.isFixT()) {
                         continue;
                     }
                     fixVersionSelect.addItem(fixVersion.toString());
                 }
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX27);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX30);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX40);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX41);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX42);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX43);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX44);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX50);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX50SP1);
+                fixVersionSelect.addItem(quickfix.FixVersions.BEGINSTRING_FIXT11 + " " + ApplVerID.FIX50SP2);
                 Validator sessionIdValidator = new Validator() {
                     @Override
                     public void validate(Object inValue)
@@ -717,8 +728,8 @@ public class SessionView
                 if(inFixSession.getFixSession().getSessionId() != null) {
                     SessionID sessionId = new SessionID(inFixSession.getFixSession().getSessionId());
                     if(sessionId.isFIXT()) {
-                        String defaultApplVerId = inFixSession.getFixSession().getSessionSettings().get(Session.SETTING_DEFAULT_APPL_VER_ID);
-                        fixVersionSelect.setValue(defaultApplVerId);
+                        String applVerId = inFixSession.getFixSession().getSessionSettings().get(Session.SETTING_DEFAULT_APPL_VER_ID);
+                        fixVersionSelect.setValue(FixVersions.BEGINSTRING_FIXT11 + " " + applVerId);
                     } else {
                         fixVersionSelect.setValue(sessionId.getBeginString());
                     }
@@ -745,12 +756,15 @@ public class SessionView
                 inFixSession.getFixSession().getMutableView().setDescription(descriptionTextField.getValue());
                 inFixSession.getFixSession().getMutableView().setBrokerId(brokerIdTextField.getValue());
                 String fixVersionValue = fixVersionSelect.getValue() == null ? null : String.valueOf(fixVersionSelect.getValue());
-                FIXVersion fixVersion = FIXVersion.getFIXVersion(fixVersionValue);
-                if(fixVersion.isFixT()) {
+                if(fixVersionValue.startsWith(FixVersions.BEGINSTRING_FIXT11)) {
+                    String[] fixVersionComponents = fixVersionValue.split(" ");
+                    String applVer = fixVersionComponents[1];
+                    quickfix.field.ApplVerID applVerId = new quickfix.field.ApplVerID();
+                    applVerId.setValue(applVer);
                     inFixSession.getFixSession().getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
-                                                          fixVersionValue);
+                                                                          fixVersionValue);
                     DecoratedDescriptor defaultApplVerId = sortedDescriptors.get(Session.SETTING_DEFAULT_APPL_VER_ID);
-                    defaultApplVerId.setValue(fixVersionValue);
+                    defaultApplVerId.setValue(applVer);
                     fixVersionValue = FixVersions.BEGINSTRING_FIXT11;
                 }
                 SessionID sessionId = new SessionID(fixVersionValue,

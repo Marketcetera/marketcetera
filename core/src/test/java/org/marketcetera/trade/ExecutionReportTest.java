@@ -1,6 +1,7 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.time.DateService;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -119,9 +120,9 @@ public class ExecutionReportTest extends TypesTestBase {
         msg.setField(new LastMkt(lastMarket));
         msg.setField(new LeavesQty(leavesQty));
         msg.setField(new OrdType(orderType.getFIXValue()));
-        msg.getHeader().setField(new SendingTime(sendingTime));
+        msg.getHeader().setField(new SendingTime(DateService.toUtcDateTime(sendingTime)));
         msg.setField(new quickfix.field.TimeInForce(timeInForce.getFIXValue()));
-        msg.setField(new TransactTime(transactTime));
+        msg.setField(new TransactTime(DateService.toUtcDateTime(transactTime)));
         msg.setField(new Text(text));
         msg.setField(new quickfix.field.OrderCapacity(
                 quickfix.field.OrderCapacity.PROPRIETARY));
