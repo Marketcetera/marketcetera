@@ -25,6 +25,19 @@ public class SimplePermission
     /**
      * Create a new SimplePermission instance.
      *
+     * @param inPermission a <code>Permission</code> value
+     */
+    public SimplePermission(Permission inPermission)
+    {
+        setDescription(inPermission.getDescription());
+        setId(inPermission.getId());
+        setLastUpdated(inPermission.getLastUpdated());
+        setName(inPermission.getName());
+        setUpdateCount(inPermission.getUpdateCount());
+    }
+    /**
+     * Create a new SimplePermission instance.
+     *
      * @param inName a <code>String</code> value
      * @param inDescription a <code>String</code> value
      */

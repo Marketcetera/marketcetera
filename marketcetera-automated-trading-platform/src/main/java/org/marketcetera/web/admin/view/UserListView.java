@@ -1,19 +1,21 @@
 package org.marketcetera.web.admin.view;
 
+import java.util.Collection;
+import java.util.Map;
+
 import javax.annotation.security.PermitAll;
 
-import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.webui.views.MainLayout;
 
-import com.vaadin.flow.component.button.Button;
+import com.google.common.collect.Lists;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -21,126 +23,160 @@ import com.vaadin.flow.router.Route;
 @PageTitle("Users | MATP")
 @Route(value="users", layout = MainLayout.class) 
 public class UserListView
-        extends VerticalLayout
+        extends AbstractListView<SimpleUser,UserListView.UserForm>
 {
     /**
      * Create a new UserListView instance.
      */
     public UserListView()
     {
-        addClassName("list-view");
-        setSizeFull();
-        configureGrid();
-        configureForm();
-        add(getToolbar(), getContent());
-        updateList();
-        closeEditor(); 
+        super(SimpleUser.class);
     }
-
-    private HorizontalLayout getContent()
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#setColumns(com.vaadin.flow.component.grid.Grid)
+     */
+    @Override
+    protected void setColumns(Grid<SimpleUser> inGrid)
     {
-        HorizontalLayout content = new HorizontalLayout(grid,
-                                                        form);
-        content.setFlexGrow(2,
-                            grid);
-        content.setFlexGrow(1,
-                            form);
-        content.addClassNames("content");
-        content.setSizeFull();
-        return content;
+        inGrid.setColumns("name",
+                          "description");
     }
-
-    private void configureForm()
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#createNewValue()
+     */
+    @Override
+    protected SimpleUser createNewValue()
+    {
+        return new SimpleUser();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#getUpdatedList()
+     */
+    @Override
+    protected Collection<SimpleUser> getUpdatedList()
+    {
+        Collection<SimpleUser> users = Lists.newArrayList();
+        getServiceClient().getUsers().forEach(user -> users.add((user instanceof SimpleUser ? (SimpleUser)user : new SimpleUser(user))));
+        return users;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#doCreate(java.lang.Object)
+     */
+    @Override
+    protected void doCreate(SimpleUser inValue)
+    {
+        // TODO
+        getServiceClient().createUser(inValue,
+                                      "pazzword");
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#doUpdate(java.lang.Object, java.util.Map)
+     */
+    @Override
+    protected void doUpdate(SimpleUser inValue,
+                            Map<String,Object> inValueKeyData)
+    {
+        getServiceClient().updateUser(String.valueOf(inValueKeyData.get("name")),
+                                      inValue);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#doDelete(java.lang.Object, java.util.Map)
+     */
+    @Override
+    protected void doDelete(SimpleUser inValue,
+                            Map<String,Object> inValueKeyData)
+    {
+        getServiceClient().deleteUser(String.valueOf(inValueKeyData.get("name")));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#registerInitialValue(java.lang.Object, java.util.Map)
+     */
+    @Override
+    protected void registerInitialValue(SimpleUser inValue,
+                                        Map<String,Object> inOutValueKeyData)
+    {
+        inOutValueKeyData.put("name",
+                              inValue.getName());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#createForm()
+     */
+    @Override
+    protected UserForm createForm()
     {
         form = new UserForm();
-        form.setWidth("25em");
-        form.addListener(UserForm.SaveEvent.class,
-                         this::saveUser); 
-        form.addListener(UserForm.DeleteEvent.class,
-                         this::deleteUser); 
-        form.addListener(UserForm.CloseEvent.class,
-                         e -> closeEditor()); 
+        return form;
     }
-
-    private void saveUser(UserForm.SaveEvent event)
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.admin.view.AbstractListView#getDataClazzName()
+     */
+    @Override
+    protected String getDataClazzName()
     {
-        AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        // TODO need to save vs create? need to provide password
-        // TODO use original user name
-        service.updateUser(event.getUser().getName(),
-                           event.getUser());
-        updateList();
-        closeEditor();
-    }
-
-    private void deleteUser(UserForm.DeleteEvent event)
-    {
-        AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        service.deactivateUser(event.getUser().getName());
-        updateList();
-        closeEditor();
+        return "User";
     }
     /**
-     * 
+     * Get the service client to use for this view.
      *
-     *
+     * @return an <code>AdminClientService</code> value
      */
-    private void configureGrid()
+    private AdminClientService getServiceClient()
     {
-        grid.addClassNames("contact-grid");
-        grid.setSizeFull();
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event -> editUser(event.getValue())); 
+        return ServiceManager.getInstance().getService(AdminClientService.class);
     }
-
-    private HorizontalLayout getToolbar()
+    /**
+     * Provides the create/edit subform for users.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    class UserForm
+            extends AbstractListView<SimpleUser,UserForm>.AbstractListForm
     {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
-        Button addUserButton = new Button("Add user");
-        addUserButton.addClickListener(click -> addUser()); 
-        HorizontalLayout toolbar = new HorizontalLayout(filterText,
-                                                        addUserButton);
-        toolbar.addClassName("toolbar");
-        return toolbar;
-    }
-
-    public void editUser(User inUser)
-    { 
-        if(inUser == null) {
-            closeEditor();
-        } else {
-            form.setUser(inUser);
-            form.setVisible(true);
-            addClassName("editing");
+        /**
+         * Create a new UserForm instance.
+         */
+        private UserForm()
+        {
+            super();
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.admin.view.AbstractListView.AbstractListForm#createFormComponentLayout(com.vaadin.flow.data.binder.Binder)
+         */
+        @Override
+        protected Component createFormComponentLayout(Binder<SimpleUser> inBinder)
+        {
+            name = new TextField("Name"); 
+            description = new TextField("Description");
+            name.setEnabled(true);
+            name.setReadOnly(false);
+            description.setEnabled(true);
+            description.setReadOnly(false);
+            componentLayout = new VerticalLayout();
+            componentLayout.add(name,
+                                description);
+            inBinder.bind(name,"name");
+            inBinder.bind(description,"description");
+            return componentLayout;
+        }
+        /**
+         * name widget
+         */
+        private TextField name;
+        /**
+         * description widget
+         */
+        private TextField description;
+        /**
+         * editor components layout value
+         */
+        private VerticalLayout componentLayout;
+        private static final long serialVersionUID = -4925927232864950173L;
     }
-
-    private void closeEditor()
-    {
-        form.setUser(null);
-        form.setVisible(false);
-        removeClassName("editing");
-    }
-
-    private void addUser()
-    {
-        grid.asSingleSelect().clear();
-        editUser(new SimpleUser());
-    }
-
-
-    private void updateList()
-    {
-        // TODO filter
-//        grid.setItems(service.findAllContacts(filterText.getValue()));
-        AdminClientService service = ServiceManager.getInstance().getService(AdminClientService.class);
-        grid.setItems(service.getUsers());
-    }
-    private Grid<User> grid = new Grid<>(User.class);
-    private TextField filterText = new TextField();
+    /**
+     * edit form instance
+     */
     private UserForm form;
-    private static final long serialVersionUID = 6331528916955469155L;
+    private static final long serialVersionUID = -8930087273314672465L;
 }

@@ -122,6 +122,13 @@ public interface AuthorizationService
      */
     CollectionPageResponse<Permission> findAllPermissions(PageRequest inPageRequest);
     /**
+     * Find some <code>SupervisorPermission</code> values.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;SupervisorPermission&gt;</code> value
+     */
+    CollectionPageResponse<SupervisorPermission> findAllSupervisorPermissions(PageRequest inPageRequest);
+    /**
      * Delete the <code>Permission</code> with the given name.
      *
      * @param inPermissionName a <code>String</code> value

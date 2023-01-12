@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <vaadin.version>23.2.10</vaadin.version>
+        <vaadin.version>23.3.1</vaadin.version>
         <!-- this parameter is needed as spring-boot bom overwrites it -->
         <selenium.version>4.5.3</selenium.version>
     </properties>
@@ -126,55 +126,55 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
-	    <exclusions>
+            <exclusions>
               <exclusion>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-logging</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
               </exclusion>
-	    </exclusions>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-	    <exclusions>
+            <exclusions>
               <exclusion>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-logging</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
               </exclusion>
-	    </exclusions>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-	    <exclusions>
+            <exclusions>
               <exclusion>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-logging</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
               </exclusion>
-	    </exclusions>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
-	    <exclusions>
+            <exclusions>
               <exclusion>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-logging</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
               </exclusion>
-	    </exclusions>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-	    <exclusions>
+            <exclusions>
               <exclusion>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-logging</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
               </exclusion>
-	    </exclusions>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>

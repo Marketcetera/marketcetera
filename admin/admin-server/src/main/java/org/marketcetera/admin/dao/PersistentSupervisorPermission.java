@@ -85,6 +85,18 @@ public class PersistentSupervisorPermission
     {
         return subjects;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PersistentSupervisorPermission [name=").append(getName())
+        .append(", description=").append(getDescription()).append(", supervisor=").append(supervisor).append(", subjects=")
+                .append(subjects).append(", permissions=").append(permissions).append("]");
+        return builder.toString();
+    }
     /**
      * supervisor value
      */

@@ -2,23 +2,17 @@ package org.marketcetera.web.admin.view;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.marketcetera.admin.Permission;
-import org.marketcetera.admin.impl.SimpleRole;
+import org.marketcetera.admin.impl.SimplePermission;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
 import org.marketcetera.webui.views.MainLayout;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -26,23 +20,23 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @PermitAll
-@PageTitle("Roles | MATP")
-@Route(value="roles", layout = MainLayout.class) 
-public class RoleListView
-        extends AbstractListView<SimpleRole,RoleListView.RoleForm>
+@PageTitle("Permissions | MATP")
+@Route(value="permissions", layout = MainLayout.class) 
+public class PermissionListView
+        extends AbstractListView<SimplePermission,PermissionListView.PermissionForm>
 {
     /**
-     * Create a new RoleListView instance.
+     * Create a new PermissionListView instance.
      */
-    public RoleListView()
+    public PermissionListView()
     {
-        super(SimpleRole.class);
+        super(SimplePermission.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#setColumns(com.vaadin.flow.component.grid.Grid)
      */
     @Override
-    protected void setColumns(Grid<SimpleRole> inGrid)
+    protected void setColumns(Grid<SimplePermission> inGrid)
     {
         inGrid.setColumns("name",
                           "description");
@@ -51,67 +45,54 @@ public class RoleListView
      * @see org.marketcetera.web.admin.view.AbstractListView#createNewValue()
      */
     @Override
-    protected SimpleRole createNewValue()
+    protected SimplePermission createNewValue()
     {
-        return new SimpleRole();
+        return new SimplePermission();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#getUpdatedList()
      */
     @Override
-    protected Collection<SimpleRole> getUpdatedList()
+    protected Collection<SimplePermission> getUpdatedList()
     {
-        Collection<SimpleRole> roles = Lists.newArrayList();
-        getServiceClient().getRoles().forEach(role -> roles.add((role instanceof SimpleRole ? (SimpleRole)role : new SimpleRole(role))));
-        return roles;
+        Collection<SimplePermission> permissions = Lists.newArrayList();
+        getServiceClient().getPermissions().forEach(permission -> permissions.add((permission instanceof SimplePermission ? (SimplePermission)permission : new SimplePermission(permission))));
+        return permissions;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doCreate(java.lang.Object)
      */
     @Override
-    protected void doCreate(SimpleRole inValue)
+    protected void doCreate(SimplePermission inValue)
     {
-        getServiceClient().createRole(inValue);
+        getServiceClient().createPermission(inValue);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doUpdate(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void doUpdate(SimpleRole inValue,
+    protected void doUpdate(SimplePermission inValue,
                             Map<String,Object> inValueKeyData)
     {
-        if(!CollectionUtils.isEqualCollection(inValue.getPermissions(),form.getSelectedPermissions(),PermissionComparator.instance)) {
-            inValue.getPermissions().clear();
-            inValue.setPermissions(form.getSelectedPermissions());
-        }
-        getServiceClient().updateRole(String.valueOf(inValueKeyData.get("name")),
+        getServiceClient().updatePermission(String.valueOf(inValueKeyData.get("name")),
                                       inValue);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doDelete(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void doDelete(SimpleRole inValue,
+    protected void doDelete(SimplePermission inValue,
                             Map<String,Object> inValueKeyData)
     {
-        getServiceClient().deleteRole(String.valueOf(inValueKeyData.get("name")));
+        getServiceClient().deletePermission(String.valueOf(inValueKeyData.get("name")));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#registerInitialValue(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void registerInitialValue(SimpleRole inValue,
+    protected void registerInitialValue(SimplePermission inValue,
                                         Map<String,Object> inOutValueKeyData)
     {
-        Collection<Permission> allPermissions = getServiceClient().getPermissions();
-        form.allPermissions.setItems(allPermissions);
-        Set<String> currentPermissionNames = Sets.newHashSet();
-        inValue.getPermissions().forEach(permission -> currentPermissionNames.add(permission.getName()));
-        allPermissions.forEach(permission -> {
-            if(currentPermissionNames.contains(permission.getName())) {
-                form.allPermissions.select(permission);
-            }
-        });
         inOutValueKeyData.put("name",
                               inValue.getName());
     }
@@ -119,9 +100,9 @@ public class RoleListView
      * @see org.marketcetera.web.admin.view.AbstractListView#createForm()
      */
     @Override
-    protected RoleForm createForm()
+    protected PermissionForm createForm()
     {
-        form = new RoleForm();
+        form = new PermissionForm();
         return form;
     }
     /* (non-Javadoc)
@@ -130,7 +111,7 @@ public class RoleListView
     @Override
     protected String getDataClazzName()
     {
-        return "Role";
+        return "Permission";
     }
     /**
      * Get the service client to use for this view.
@@ -142,19 +123,19 @@ public class RoleListView
         return ServiceManager.getInstance().getService(AdminClientService.class);
     }
     /**
-     * Provides the create/edit subform for roles.
+     * Provides the create/edit subform for permissions.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    class RoleForm
-            extends AbstractListView<SimpleRole,RoleForm>.AbstractListForm
+    class PermissionForm
+            extends AbstractListView<SimplePermission,PermissionForm>.AbstractListForm
     {
         /**
-         * Create a new RoleForm instance.
+         * Create a new PermissionForm instance.
          */
-        private RoleForm()
+        private PermissionForm()
         {
             super();
         }
@@ -162,43 +143,21 @@ public class RoleListView
          * @see org.marketcetera.web.admin.view.AbstractListView.AbstractListForm#createFormComponentLayout(com.vaadin.flow.data.binder.Binder)
          */
         @Override
-        protected Component createFormComponentLayout(Binder<SimpleRole> inBinder)
+        protected Component createFormComponentLayout(Binder<SimplePermission> inBinder)
         {
             name = new TextField("Name"); 
             description = new TextField("Description");
-            permissionsLabel = new Label("Permissions");
-            allPermissions = new MultiSelectListBox<>();
-            allPermissions.setItemLabelGenerator(inItem -> inItem.getName());
             name.setEnabled(true);
             name.setReadOnly(false);
             description.setEnabled(true);
             description.setReadOnly(false);
             componentLayout = new VerticalLayout();
             componentLayout.add(name,
-                                description,
-                                permissionsLabel,
-                                allPermissions);
+                                description);
             inBinder.bind(name,"name");
             inBinder.bind(description,"description");
             return componentLayout;
         }
-        /**
-         * Get the selected permissions.
-         *
-         * @return a <code>Set&lt;Permission&gt;</code> value
-         */
-        private Set<Permission> getSelectedPermissions()
-        {
-            return allPermissions.getSelectedItems();
-        }
-        /**
-         * caption label for {@link #allPermissions}
-         */
-        private Label permissionsLabel;
-        /**
-         * holds permissions selected and unselected
-         */
-        private MultiSelectListBox<Permission> allPermissions;
         /**
          * name widget
          */
@@ -216,6 +175,6 @@ public class RoleListView
     /**
      * edit form instance
      */
-    private RoleForm form;
+    private PermissionForm form;
     private static final long serialVersionUID = -8930087273314672465L;
 }

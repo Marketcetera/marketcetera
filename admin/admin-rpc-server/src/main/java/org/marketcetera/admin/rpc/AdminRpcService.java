@@ -1,5 +1,6 @@
 package org.marketcetera.admin.rpc;
 
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,8 @@ import org.marketcetera.admin.AdminRpc.CreatePermissionRequest;
 import org.marketcetera.admin.AdminRpc.CreatePermissionResponse;
 import org.marketcetera.admin.AdminRpc.CreateRoleRequest;
 import org.marketcetera.admin.AdminRpc.CreateRoleResponse;
+import org.marketcetera.admin.AdminRpc.CreateSupervisorPermissionRequest;
+import org.marketcetera.admin.AdminRpc.CreateSupervisorPermissionResponse;
 import org.marketcetera.admin.AdminRpc.CreateUserRequest;
 import org.marketcetera.admin.AdminRpc.CreateUserResponse;
 import org.marketcetera.admin.AdminRpc.DeactivateUserRequest;
@@ -23,6 +26,8 @@ import org.marketcetera.admin.AdminRpc.DeletePermissionRequest;
 import org.marketcetera.admin.AdminRpc.DeletePermissionResponse;
 import org.marketcetera.admin.AdminRpc.DeleteRoleRequest;
 import org.marketcetera.admin.AdminRpc.DeleteRoleResponse;
+import org.marketcetera.admin.AdminRpc.DeleteSupervisorPermissionRequest;
+import org.marketcetera.admin.AdminRpc.DeleteSupervisorPermissionResponse;
 import org.marketcetera.admin.AdminRpc.DeleteUserRequest;
 import org.marketcetera.admin.AdminRpc.DeleteUserResponse;
 import org.marketcetera.admin.AdminRpc.GetCurrentUserRequest;
@@ -33,6 +38,8 @@ import org.marketcetera.admin.AdminRpc.ReadPermissionsRequest;
 import org.marketcetera.admin.AdminRpc.ReadPermissionsResponse;
 import org.marketcetera.admin.AdminRpc.ReadRolesRequest;
 import org.marketcetera.admin.AdminRpc.ReadRolesResponse;
+import org.marketcetera.admin.AdminRpc.ReadSupervisorPermissionsRequest;
+import org.marketcetera.admin.AdminRpc.ReadSupervisorPermissionsResponse;
 import org.marketcetera.admin.AdminRpc.ReadUserAttributeRequest;
 import org.marketcetera.admin.AdminRpc.ReadUserAttributeResponse;
 import org.marketcetera.admin.AdminRpc.ReadUsersRequest;
@@ -41,6 +48,8 @@ import org.marketcetera.admin.AdminRpc.UpdatePermissionRequest;
 import org.marketcetera.admin.AdminRpc.UpdatePermissionResponse;
 import org.marketcetera.admin.AdminRpc.UpdateRoleRequest;
 import org.marketcetera.admin.AdminRpc.UpdateRoleResponse;
+import org.marketcetera.admin.AdminRpc.UpdateSupervisorPermissionRequest;
+import org.marketcetera.admin.AdminRpc.UpdateSupervisorPermissionResponse;
 import org.marketcetera.admin.AdminRpc.UpdateUserRequest;
 import org.marketcetera.admin.AdminRpc.UpdateUserResponse;
 import org.marketcetera.admin.AdminRpc.WriteUserAttributeRequest;
@@ -55,11 +64,14 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.RoleFactory;
+import org.marketcetera.admin.SupervisorPermission;
+import org.marketcetera.admin.SupervisorPermissionFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.dao.PersistentSupervisorPermission;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
@@ -188,6 +200,114 @@ public class AdminRpcService<SessionClazz>
                 inResponseObserver.onError(sre);
                 throw sre;
             }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#createSupervisorPermission(org.marketcetera.admin.AdminRpc.CreateSupervisorPermissionRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void createSupervisorPermission(CreateSupervisorPermissionRequest inRequest,
+                                               StreamObserver<CreateSupervisorPermissionResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#readSupervisorPermissions(org.marketcetera.admin.AdminRpc.ReadSupervisorPermissionsRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void readSupervisorPermissions(ReadSupervisorPermissionsRequest inRequest,
+                                              StreamObserver<ReadSupervisorPermissionsResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Received read supervisor permissions request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                AdminRpc.ReadSupervisorPermissionsResponse.Builder responseBuilder = AdminRpc.ReadSupervisorPermissionsResponse.newBuilder();
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.ReadSupervisorPermissionAction.name());
+                PageRequest pageRequest = inRequest.hasPage()?PagingRpcUtil.getPageRequest(inRequest.getPage()):PageRequest.ALL;
+                CollectionPageResponse<SupervisorPermission> permissionPage = authzService.findAllSupervisorPermissions(pageRequest);
+                permissionPage.getElements().forEach(supervisorPermission->AdminRpcUtil.getRpcSupervisorPermission(supervisorPermission).ifPresent(rpcSupervisorPermission->responseBuilder.addSupervisorPermission(rpcSupervisorPermission)));
+                responseBuilder.setPage(PagingRpcUtil.getPageResponse(pageRequest,
+                                                                      permissionPage));
+                AdminRpc.ReadSupervisorPermissionsResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#updateSupervisorPermission(org.marketcetera.admin.AdminRpc.UpdateSupervisorPermissionRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void updateSupervisorPermission(UpdateSupervisorPermissionRequest inRequest,
+                                               StreamObserver<UpdateSupervisorPermissionResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Received update supervisor permission request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                AdminRpc.UpdateSupervisorPermissionResponse.Builder responseBuilder = AdminRpc.UpdateSupervisorPermissionResponse.newBuilder();
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.UpdateSupervisorPermissionAction.name());
+                SupervisorPermission existingSupervisorPermission = authzService.findSupervisorPermissionByName(inRequest.getSupervisorPermissionName());
+                Validate.isTrue(existingSupervisorPermission != null,
+                                "Unknown supervisor permission: " + inRequest.getSupervisorPermissionName());
+                if(inRequest.hasSupervisorPermission()) {
+                    if(existingSupervisorPermission instanceof PersistentSupervisorPermission) {
+                        PersistentSupervisorPermission mutableSupervisorPermission = (PersistentSupervisorPermission)existingSupervisorPermission;
+                        AdminRpc.SupervisorPermission rpcSupervisorPermission = inRequest.getSupervisorPermission();
+                        Optional<SupervisorPermission> updatedSupervisorPermissionOption = AdminRpcUtil.getSupervisorPermission(rpcSupervisorPermission,
+                                                                                                                                supervisorPermissionFactory,
+                                                                                                                                permissionFactory,
+                                                                                                                                userFactory);
+                        if(updatedSupervisorPermissionOption.isPresent()) {
+                            SupervisorPermission updatedSupervisorPermission = updatedSupervisorPermissionOption.get();
+                            mutableSupervisorPermission.setName(updatedSupervisorPermission.getName());
+                            mutableSupervisorPermission.setDescription(updatedSupervisorPermission.getDescription());
+                            mutableSupervisorPermission.getPermissions().clear();
+                            mutableSupervisorPermission.getPermissions().addAll(updatedSupervisorPermission.getPermissions());
+                            mutableSupervisorPermission.getSubjects().clear();
+                            mutableSupervisorPermission.getSubjects().addAll(updatedSupervisorPermission.getSubjects());
+                            mutableSupervisorPermission.setSupervisor(updatedSupervisorPermission.getSupervisor());
+                            existingSupervisorPermission = authzService.save(mutableSupervisorPermission);
+                        }
+                        AdminRpcUtil.getRpcSupervisorPermission(existingSupervisorPermission).ifPresent(value->responseBuilder.setSupervisorPermission(value));
+                    } else {
+                        throw new IllegalStateException("User service returned a non-mutable permission - check configuration");
+                    }
+                }
+                AdminRpc.UpdateSupervisorPermissionResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#deleteSupervisorPermission(org.marketcetera.admin.AdminRpc.DeleteSupervisorPermissionRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void deleteSupervisorPermission(DeleteSupervisorPermissionRequest inRequest,
+                                               StreamObserver<DeleteSupervisorPermissionResponse> inResponseObserver)
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
         }
         /* (non-Javadoc)
          * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#getPermissionsForUsername(org.marketcetera.admin.AdminRpc.PermissionsForUsernameRequest, io.grpc.stub.StreamObserver)
@@ -945,6 +1065,11 @@ public class AdminRpcService<SessionClazz>
      */
     @Autowired
     private PermissionFactory permissionFactory;
+    /**
+     * creates {@link SupervisorPermission} objects
+     */
+    @Autowired
+    private SupervisorPermissionFactory supervisorPermissionFactory;
     /**
      * creates {@link Role} objects
      */

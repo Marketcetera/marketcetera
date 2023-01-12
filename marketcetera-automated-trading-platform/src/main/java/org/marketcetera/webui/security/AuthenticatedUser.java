@@ -45,7 +45,6 @@ public class AuthenticatedUser
             return Optional.ofNullable(adminClientService.getCurrentUser());
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
-                                  e,
                                   "Unable to return the current authenticated user");
             return Optional.empty();
         }

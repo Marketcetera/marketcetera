@@ -24,6 +24,7 @@ public class AdminRpcClientFactory
         AdminRpcClient adminClient = new AdminRpcClient(inParameters);
         adminClient.setPermissionFactory(permissionFactory);
         adminClient.setRoleFactory(roleFactory);
+        adminClient.setSupervisorPermissionFactory(supervisorPermissionFactory);
         adminClient.setUserAttributeFactory(userAttributeFactory);
         adminClient.setUserFactory(userFactory);
         return adminClient;
@@ -38,6 +39,11 @@ public class AdminRpcClientFactory
      */
     @Autowired
     private PermissionFactory permissionFactory;
+    /**
+     * creates {@link SupervisorPermission} objects
+     */
+    @Autowired
+    private SupervisorPermissionFactory supervisorPermissionFactory;
     /**
      * creates {@link User} objects
      */

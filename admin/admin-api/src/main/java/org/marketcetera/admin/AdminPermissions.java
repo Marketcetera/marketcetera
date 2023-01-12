@@ -40,7 +40,11 @@ public enum AdminPermissions
     ReadInstanceDataAction,
     ReadFixSessionAttributeDescriptorsAction,
     ReadUserAttributeAction,
-    WriteUserAttributeAction;
+    WriteUserAttributeAction,
+    CreateSupervisorPermissionAction,
+    ReadSupervisorPermissionAction,
+    UpdateSupervisorPermissionAction,
+    DeleteSupervisorPermissionAction;
     /* (non-Javadoc)
      * @see org.springframework.security.core.GrantedAuthority#getAuthority()
      */

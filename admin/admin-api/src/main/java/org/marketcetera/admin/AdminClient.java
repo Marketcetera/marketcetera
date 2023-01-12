@@ -172,4 +172,39 @@ public interface AdminClient
     void setUserAttribute(String inUsername,
                           UserAttributeType inAttributeType,
                           String inAttribute);
+    /**
+     * Update the supervisor permission with the given name.
+     *
+     * @param inSupervisorPermissionName a <code>String</code> value
+     * @param inSupervisorPermission a <code>SupervisorPermission</code> value
+     * @return a <code>SupervisorPermission</code> value
+     */
+    SupervisorPermission updateSupervisorPermission(String inSupervisorPermissionName,
+                                                    SupervisorPermission inSupervisorPermission);
+    /**
+     * Read supervisor permissions.
+     *
+     * @return a <code>List&lt;SupervisorPermissions&gt;</code> value
+     */
+    List<SupervisorPermission> readSupervisorPermissions();
+    /**
+     * Read a page of supervisor permissions.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;SupervisorPermission&gt;</code> value
+     */
+    CollectionPageResponse<SupervisorPermission> readSupervisorPermissions(PageRequest inPageRequest);
+    /**
+     * Create a supervisor permission from the given value.
+     *
+     * @param inSupervisorPermission a <code>SupervisorPermission</code> value
+     * @return a <code>SupervisorPermission</code> value
+     */
+    SupervisorPermission createSupervisorPermission(SupervisorPermission inSupervisorPermission);
+    /**
+     * Delete the supervisor permission with the given name.
+     *
+     * @param inSupervisorPermissionName a <code>String</code> value
+     */
+    void deleteSupervisorPermission(String inSupervisorPermissionName);
 }

@@ -29,4 +29,20 @@ public class PersistentSupervisorPermissionFactory
         supervisorPermission.setDescription(inDescription);
         return supervisorPermission;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create()
+     */
+    @Override
+    public PersistentSupervisorPermission create()
+    {
+        return new PersistentSupervisorPermission();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.Factory#create(java.lang.Object)
+     */
+    @Override
+    public SupervisorPermission create(SupervisorPermission inSupervisorPermission)
+    {
+        return new PersistentSupervisorPermission(inSupervisorPermission);
+    }
 }

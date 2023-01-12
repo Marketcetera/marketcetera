@@ -10,6 +10,7 @@ import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.AdminRpcClientParameters;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.Role;
+import org.marketcetera.admin.SupervisorPermission;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
@@ -298,6 +299,45 @@ public class AdminClientService
     {
         adminClient.updatePermission(inPermissionName,
                                      inPermission);
+    }
+    /**
+     * Update the supervisor permission with the given name.
+     *
+     * @param inSupervisorPermissionName a <code>String</code> value
+     * @param inSupervisorPermission a <code>SupervisorPermission</code> value
+     */
+    public void updateSupervisorPermission(String inSupervisorPermissionName,
+                                           SupervisorPermission inSupervisorPermission)
+    {
+        adminClient.updateSupervisorPermission(inSupervisorPermissionName,
+                                               inSupervisorPermission);
+    }
+    /**
+     * Create a new supervisor permission from the given value.
+     *
+     * @param inSupervisorPermission a <code>SupervisorPermission</code> value
+     */
+    public void createSupervisorPermission(SupervisorPermission inSupervisorPermission)
+    {
+        adminClient.createSupervisorPermission(inSupervisorPermission);
+    }
+    /**
+     * Get all supervisor permissions.
+     *
+     * @return a <code>Collection&lt;SupervisorPermission&gt;</code> value
+     */
+    public Collection<SupervisorPermission> getSupervisorPermissions()
+    {
+        return adminClient.readSupervisorPermissions();
+    }
+    /**
+     * Delete the supervisor permission with the given name.
+     *
+     * @param inSupervisorPermissionName a <code>String</code> value
+     */
+    public void deleteSupervisorPermission(String inSupervisorPermissionName)
+    {
+        adminClient.deleteSupervisorPermission(inSupervisorPermissionName);
     }
     /**
      * Get the current user.

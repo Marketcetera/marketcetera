@@ -26,6 +26,7 @@ import org.marketcetera.admin.dao.PersistentSupervisorPermission;
 import org.marketcetera.admin.dao.PersistentSupervisorPermissionDao;
 import org.marketcetera.admin.dao.QPersistentPermission;
 import org.marketcetera.admin.dao.QPersistentRole;
+import org.marketcetera.admin.dao.QPersistentSupervisorPermission;
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.provisioning.AdminConfiguration;
 import org.marketcetera.admin.service.AuthorizationService;
@@ -50,6 +51,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -188,6 +190,28 @@ public class AuthorizationServiceImpl
         } else {
             persistentSupervisorPermission = new PersistentSupervisorPermission(inSupervisorPermission);
         }
+        List<PersistentPermission> permissionsToSave = Lists.newArrayList();
+        for(Permission permission : persistentSupervisorPermission.getPermissions()) {
+            PersistentPermission pPermission = permissionDao.findByName(permission.getName());
+            if(pPermission != null) {
+                permissionsToSave.add(pPermission);
+            }
+        }
+        persistentSupervisorPermission.getPermissions().clear();
+        persistentSupervisorPermission.getPermissions().addAll(permissionsToSave);
+        List<User> subjectsToSave = Lists.newArrayList();
+        for(User subject : persistentSupervisorPermission.getSubjects()) {
+            PersistentUser pSubject = userDao.findByName(subject.getName());
+            if(pSubject != null) {
+                subjectsToSave.add(pSubject);
+            }
+        }
+        persistentSupervisorPermission.getSubjects().clear();
+        persistentSupervisorPermission.getSubjects().addAll(subjectsToSave);
+        PersistentUser supervisor = userDao.findByName(inSupervisorPermission.getSupervisor().getName());
+        if(supervisor != null) {
+            inSupervisorPermission.setSupervisor(supervisor);
+        }
         return supervisorPermissionDao.save(persistentSupervisorPermission);
     }
     /* (non-Javadoc)
@@ -216,6 +240,54 @@ public class AuthorizationServiceImpl
                                            QPersistentPermission.persistentPermission.name.getMetadata().getName()));
         permissions.addAll(permissionDao.findAll(sort));
         return permissions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.AuthorizationService#findAllSupervisorPermissions(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<SupervisorPermission> findAllSupervisorPermissions(PageRequest inPageRequest)
+    {
+        List<SupervisorPermission> supervisorPermissions = new ArrayList<>();
+        Sort jpaSort = null;
+        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
+                                             QPersistentSupervisorPermission.persistentSupervisorPermission.name.getMetadata().getName()));
+        } else {
+            for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
+                Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
+                String property = sort.getProperty();
+                String path = supervisorPermissionAliases.get(property.toLowerCase());
+                if(path == null) {
+                    SLF4JLoggerProxy.warn(this,
+                                          "No alias for supervisor permission column '{}'",
+                                          property);
+                    path = property;
+                }
+                if(jpaSort == null) {
+                    jpaSort = Sort.by(new Sort.Order(jpaSortDirection,
+                                                     path));
+                } else {
+                    jpaSort = jpaSort.and(Sort.by(new Sort.Order(jpaSortDirection,
+                                                                 path)));
+                }
+            }
+        }
+        org.springframework.data.domain.PageRequest pageRequest = org.springframework.data.domain.PageRequest.of(inPageRequest.getPageNumber(),
+                                                                                                                 inPageRequest.getPageSize(),
+                                                                                                                 jpaSort);
+        Page<PersistentSupervisorPermission> result = supervisorPermissionDao.findAll(pageRequest);
+        CollectionPageResponse<SupervisorPermission> response = new CollectionPageResponse<>();
+        response.setPageMaxSize(result.getSize());
+        response.setPageNumber(result.getNumber());
+        response.setPageSize(result.getNumberOfElements());
+        response.setTotalPages(result.getTotalPages());
+        response.setTotalSize(result.getTotalElements());
+        for(PersistentSupervisorPermission supervisorPermission : result.getContent()) {
+            supervisorPermissions.add(supervisorPermission);
+        }
+        response.setSortOrder(inPageRequest.getSortOrder());
+        response.setElements(supervisorPermissions);
+        return response;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.service.AuthorizationService#findAllPermissions(org.marketcetera.core.PageRequest)
@@ -495,6 +567,13 @@ public class AuthorizationServiceImpl
                                   QPersistentPermission.persistentPermission.name.getMetadata().getName());
             permissionAliases.put("description",
                                   QPersistentPermission.persistentPermission.description.getMetadata().getName());
+        }
+        if(supervisorPermissionAliases == null) {
+            supervisorPermissionAliases = Maps.newHashMap();
+            supervisorPermissionAliases.put("name",
+                                            QPersistentSupervisorPermission.persistentSupervisorPermission.name.getMetadata().getName());
+            permissionAliases.put("description",
+                                  QPersistentSupervisorPermission.persistentSupervisorPermission.description.getMetadata().getName());
         }
         permissionMapsByUsername = CacheBuilder.newBuilder().expireAfterWrite(userPermissionCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<String,LoadingCache<String,Boolean>>() {
             @Override
@@ -899,4 +978,8 @@ public class AuthorizationServiceImpl
      * specifies column aliases to use when sorting or filtering the permission table
      */
     private Map<String,String> permissionAliases;
+    /**
+     * specifies column aliases to use when sorting or filtering the supervisor permission table
+     */
+    private Map<String,String> supervisorPermissionAliases;
 }

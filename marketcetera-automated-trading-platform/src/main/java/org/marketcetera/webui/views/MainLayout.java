@@ -3,7 +3,9 @@ package org.marketcetera.webui.views;
 import java.util.Optional;
 
 import org.marketcetera.admin.User;
+import org.marketcetera.web.admin.view.PermissionListView;
 import org.marketcetera.web.admin.view.RoleListView;
+import org.marketcetera.web.admin.view.SupervisorPermissionListView;
 import org.marketcetera.web.admin.view.UserListView;
 import org.marketcetera.webui.security.AuthenticatedUser;
 
@@ -157,6 +159,7 @@ public class MainLayout
 
     private MenuItemInfo[] createMenuItems()
     {
+        // https://icons8.com/line-awesome
         return new MenuItemInfo[] {
                 new MenuItemInfo("Users",
                                  "la la-user",
@@ -164,6 +167,12 @@ public class MainLayout
                 new MenuItemInfo("Roles",
                                  "la la-id-card",
                                  RoleListView.class),
+                new MenuItemInfo("Permissions",
+                                 "la la-hands-helping",
+                                 PermissionListView.class),
+                new MenuItemInfo("Supervisor Permissions",
+                                 "la la-handshake",
+                                 SupervisorPermissionListView.class),
         };
     }
     private static final long serialVersionUID = 8633409836848403046L;

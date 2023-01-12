@@ -126,6 +126,51 @@ message DeletePermissionRequest {
 message DeletePermissionResponse {
 }
 
+message SupervisorPermission {
+    string name = 1;
+    string description = 2;
+    User supervisor = 3;
+    repeated Permission permissions = 4;
+    repeated User subjects = 5;
+}
+
+message CreateSupervisorPermissionRequest {
+    string sessionId = 1;
+    SupervisorPermission supervisorPermission = 2;
+}
+
+message CreateSupervisorPermissionResponse {
+    SupervisorPermission supervisorPermission = 1;
+}
+
+message ReadSupervisorPermissionsRequest {
+    string sessionId = 1;
+    PageRequest page = 2;
+}
+
+message ReadSupervisorPermissionsResponse {
+    PageResponse page = 1;
+    repeated SupervisorPermission supervisorPermission = 2;
+}
+
+message UpdateSupervisorPermissionRequest {
+    string sessionId = 1;
+    string supervisorPermissionName = 2;
+    SupervisorPermission supervisorPermission = 3;
+}
+
+message UpdateSupervisorPermissionResponse {
+    SupervisorPermission supervisorPermission = 1;
+}
+
+message DeleteSupervisorPermissionRequest {
+    string sessionId = 1;
+    string supervisorPermissionName = 2;
+}
+
+message DeleteSupervisorPermissionResponse {
+}
+
 message Role {
     string name = 1;
     string description = 2;
@@ -222,6 +267,10 @@ service AdminRpcService {
     rpc readPermissions(ReadPermissionsRequest) returns (ReadPermissionsResponse);
     rpc updatePermission(UpdatePermissionRequest) returns (UpdatePermissionResponse);
     rpc deletePermission(DeletePermissionRequest) returns (DeletePermissionResponse);
+    rpc createSupervisorPermission(CreateSupervisorPermissionRequest) returns (CreateSupervisorPermissionResponse);
+    rpc readSupervisorPermissions(ReadSupervisorPermissionsRequest) returns (ReadSupervisorPermissionsResponse);
+    rpc updateSupervisorPermission(UpdateSupervisorPermissionRequest) returns (UpdateSupervisorPermissionResponse);
+    rpc deleteSupervisorPermission(DeleteSupervisorPermissionRequest) returns (DeleteSupervisorPermissionResponse);
     rpc createRole(CreateRoleRequest) returns (CreateRoleResponse);
     rpc readRoles(ReadRolesRequest) returns (ReadRolesResponse);
     rpc updateRole(UpdateRoleRequest) returns (UpdateRoleResponse);

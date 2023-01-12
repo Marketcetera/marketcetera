@@ -3,10 +3,12 @@ package org.marketcetera.webui;
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
+import org.marketcetera.admin.SupervisorPermissionFactory;
 import org.marketcetera.admin.UserAttributeFactory;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.impl.SimplePermissionFactory;
 import org.marketcetera.admin.impl.SimpleRoleFactory;
+import org.marketcetera.admin.impl.SimpleSupervisorPermissionFactory;
 import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.cluster.ClusterDataFactory;
@@ -173,6 +175,16 @@ public class Application
     public PermissionFactory getPermissionFactory()
     {
         return new SimplePermissionFactory();
+    }
+    /**
+     * Get the supervisor permission factory value.
+     *
+     * @return a <code>SupervisorPermissionFactory</code> value
+     */
+    @Bean
+    public SupervisorPermissionFactory getSupervisorPermissionFactory()
+    {
+        return new SimpleSupervisorPermissionFactory();
     }
     private static final long serialVersionUID = 5355962292846525698L;
 }

@@ -7,6 +7,8 @@ import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.Role;
 import org.marketcetera.admin.RoleFactory;
+import org.marketcetera.admin.SupervisorPermission;
+import org.marketcetera.admin.SupervisorPermissionFactory;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -181,6 +183,61 @@ public abstract class AdminRpcUtil
         }
         return Optional.of(inPermissionFactory.create(inPermission.getName(),
                                                       inPermission.getDescription()));
+    }
+    /**
+     * Get the supervisor permission from the given value.
+     *
+     * @param inSupervisorPermission an <code>AdminRpc.SupervisorPermission</code> value
+     * @param inSupervisorPermissionFactory a <code>SupervisorPermissionFactory</code> value
+     * @param inPermissionFactory a <code>PermissionFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return an <code>Optional&lt;SupervisorPermission&gt;</code> value
+     */
+    public static Optional<SupervisorPermission> getSupervisorPermission(AdminRpc.SupervisorPermission inSupervisorPermission,
+                                                                         SupervisorPermissionFactory inSupervisorPermissionFactory,
+                                                                         PermissionFactory inPermissionFactory,
+                                                                         UserFactory inUserFactory)
+    {
+        if(inSupervisorPermission == null) {
+            return Optional.empty();
+        }
+        SupervisorPermission supervisorPermission = inSupervisorPermissionFactory.create(inSupervisorPermission.getName(),
+                                                                                         inSupervisorPermission.getDescription());
+        for(AdminRpc.Permission rpcPermission : inSupervisorPermission.getPermissionsList()) {
+            getPermission(rpcPermission,inPermissionFactory).ifPresent(value->supervisorPermission.getPermissions().add(value));
+        }
+        for(AdminRpc.User rpcUser : inSupervisorPermission.getSubjectsList()) {
+            getUser(rpcUser,inUserFactory).ifPresent(value->supervisorPermission.getSubjects().add(value));
+        }
+        getUser(inSupervisorPermission.getSupervisor(),inUserFactory).ifPresent(value->supervisorPermission.setSupervisor(value));
+        return Optional.of(supervisorPermission);
+    }
+    /**
+     * Get the RPC supervisor permission value.
+     *
+     * @param inSupervisorPermission an <code>Optional&lt;AdminRpc.SupervisorPermission&gt;</code> value
+     * @return an <code>Optional&lt;AdminRpc.SupervisorPermission&gt;</code> value
+     */
+    public static Optional<AdminRpc.SupervisorPermission> getRpcSupervisorPermission(SupervisorPermission inSupervisorPermission)
+    {
+        if(inSupervisorPermission == null) {
+            return Optional.empty();
+        }
+        AdminRpc.SupervisorPermission.Builder supervisorPermissionBuilder = AdminRpc.SupervisorPermission.newBuilder();
+        if(inSupervisorPermission.getDescription() != null) {
+            supervisorPermissionBuilder.setDescription(inSupervisorPermission.getDescription());
+        }
+        if(inSupervisorPermission.getName() != null) {
+            supervisorPermissionBuilder.setName(inSupervisorPermission.getName());
+        }
+        for(Permission permission : inSupervisorPermission.getPermissions()) {
+            getRpcPermission(permission).ifPresent(value->supervisorPermissionBuilder.addPermissions(value));
+        }
+        for(User subject : inSupervisorPermission.getSubjects()) {
+            getRpcUser(subject).ifPresent(value->supervisorPermissionBuilder.addSubjects(value));
+        }
+        getRpcUser(inSupervisorPermission.getSupervisor()).ifPresent(value->supervisorPermissionBuilder.setSupervisor(value));
+        return Optional.of(supervisorPermissionBuilder.build());
     }
     /**
      * Get the user attribute from the given RPC value.

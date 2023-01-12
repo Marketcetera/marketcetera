@@ -710,6 +710,121 @@ public class AdminRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#updateSupervisorPermission(java.lang.String, org.marketcetera.admin.SupervisorPermission)
+     */
+    @Override
+    public SupervisorPermission updateSupervisorPermission(String inName,
+                                                           SupervisorPermission inSupervisorPermission)
+    {
+        return executeCall(new Callable<SupervisorPermission>() {
+            @Override
+            public SupervisorPermission call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} updating permission {} {}",
+                                       getSessionId(),
+                                       inName,
+                                       inSupervisorPermission);
+                AdminRpc.UpdateSupervisorPermissionRequest.Builder requestBuilder = AdminRpc.UpdateSupervisorPermissionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcSupervisorPermission(inSupervisorPermission).ifPresent(value->requestBuilder.setSupervisorPermission(value));
+                requestBuilder.setSupervisorPermissionName(inName);
+                AdminRpc.UpdateSupervisorPermissionRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.UpdateSupervisorPermissionResponse response = getBlockingStub().updateSupervisorPermission(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<SupervisorPermission> result = AdminRpcUtil.getSupervisorPermission(response.getSupervisorPermission(),
+                                                                                             supervisorPermissionFactory,
+                                                                                             permissionFactory,
+                                                                                             userFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#readSupervisorPermissions()
+     */
+    @Override
+    public List<SupervisorPermission> readSupervisorPermissions()
+    {
+        return Lists.newArrayList(readSupervisorPermissions(new PageRequest(0,Integer.MAX_VALUE)).getElements());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#readSupervisorPermissions(org.marketcetera.persist.PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<SupervisorPermission> readSupervisorPermissions(PageRequest inPageRequest)
+    {
+        return executeCall(new Callable<CollectionPageResponse<SupervisorPermission>>() {
+            @Override
+            public CollectionPageResponse<SupervisorPermission> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} reading supervisor permissions {}",
+                                       getSessionId(),
+                                       inPageRequest);
+                AdminRpc.ReadSupervisorPermissionsRequest.Builder requestBuilder = AdminRpc.ReadSupervisorPermissionsRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setPage(PagingRpcUtil.buildPageRequest(inPageRequest));
+                AdminRpc.ReadSupervisorPermissionsRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.ReadSupervisorPermissionsResponse response = getBlockingStub().readSupervisorPermissions(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                List<SupervisorPermission> results = Lists.newArrayList();
+                for(AdminRpc.SupervisorPermission rpcSupervisorPermission : response.getSupervisorPermissionList()) {
+                    AdminRpcUtil.getSupervisorPermission(rpcSupervisorPermission,supervisorPermissionFactory,permissionFactory,userFactory).ifPresent(value->results.add(value));
+                }
+                CollectionPageResponse<SupervisorPermission> result = new CollectionPageResponse<>();
+                if(response.hasPage()) {
+                    PagingRpcUtil.addPageToResponse(response.getPage(),
+                                                    result);
+                }
+                result.setElements(results);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#createSupervisorPermission(org.marketcetera.admin.SupervisorPermission)
+     */
+    @Override
+    public SupervisorPermission createSupervisorPermission(SupervisorPermission inSupervisorPermission)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#deleteSupervisorPermission(java.lang.String)
+     */
+    @Override
+    public void deleteSupervisorPermission(String inSupervisorPermissionName)
+    {
+        throw new UnsupportedOperationException(); // TODO
+        
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#getUserAttribute(java.lang.String, com.marketcetera.admin.UserAttributeType)
      */
     @Override
@@ -839,6 +954,24 @@ public class AdminRpcClient
         permissionFactory = inPermissionFactory;
     }
     /**
+     * Get the supervisorPermissionFactory value.
+     *
+     * @return a <code>SupervisorPermissionFactory</code> value
+     */
+    public SupervisorPermissionFactory getSupervisorPermissionFactory()
+    {
+        return supervisorPermissionFactory;
+    }
+    /**
+     * Sets the supervisorPermissionFactory value.
+     *
+     * @param inSupervisorPermissionFactory a <code>SupervisorPermissionFactory</code> value
+     */
+    public void setSupervisorPermissionFactory(SupervisorPermissionFactory inSupervisorPermissionFactory)
+    {
+        supervisorPermissionFactory = inSupervisorPermissionFactory;
+    }
+    /**
      * Get the roleFactory value.
      *
      * @return a <code>RoleFactory</code> value
@@ -965,6 +1098,10 @@ public class AdminRpcClient
      * creates {@link Permission} objects
      */
     private PermissionFactory permissionFactory;
+    /**
+     * creates {@link SupervisorPermission} objects
+     */
+    private SupervisorPermissionFactory supervisorPermissionFactory;
     /**
      * creates {@link User} objects
      */
