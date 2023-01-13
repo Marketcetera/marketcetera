@@ -157,4 +157,10 @@ public interface AuthorizationService
      */
     Set<User> getSubjectUsersFor(User inSupervisorUser,
                                  String inPermissionName);
+    /**
+     * Delete the supervisor permission with the given name.
+     *
+     * @param inSupervisorPermissionName a <code>String</code> value
+     */
+    void deleteSupervisorPermission(String inSupervisorPermissionName);
 }

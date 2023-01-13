@@ -3,7 +3,6 @@ package org.marketcetera.admin.dao;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -112,7 +111,7 @@ public class PersistentSupervisorPermission
     /**
      * permissions granted to this role
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class,cascade={ CascadeType.ALL })
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class)
     private Set<Permission> permissions = new HashSet<>();
     private static final long serialVersionUID = 3776647081736905130L;
 }

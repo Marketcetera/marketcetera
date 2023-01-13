@@ -98,6 +98,19 @@ public class AuthorizationServiceImpl
         permissionDao.delete(permission);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.AuthorizationService#deleteSupervisorPermission(java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void deleteSupervisorPermission(String inSupervisorPermissionName)
+    {
+        PersistentSupervisorPermission supervisorPermission = supervisorPermissionDao.findByName(inSupervisorPermissionName);
+        if(supervisorPermission == null) {
+            return;
+        }
+        supervisorPermissionDao.delete(supervisorPermission);
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.tiaacref.irouter.service.AuthorizationService#save(com.marketcetera.tiaacref.systemmodel.Role)
      */
     @Override

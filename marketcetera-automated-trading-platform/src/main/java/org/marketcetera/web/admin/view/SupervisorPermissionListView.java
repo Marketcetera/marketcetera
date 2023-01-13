@@ -73,6 +73,9 @@ public class SupervisorPermissionListView
     @Override
     protected void doCreate(SimpleSupervisorPermission inValue)
     {
+        inValue.setPermissions(form.getSelectedPermissions());
+        inValue.setSubjects(form.getSelectedSubjects());
+        inValue.setSupervisor(form.supervisorPermissionSupervisor.getValue());
         getServiceClient().createSupervisorPermission(inValue);
     }
     /* (non-Javadoc)

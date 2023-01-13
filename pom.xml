@@ -39,7 +39,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <vaadin.version>23.2.10</vaadin.version>
     <esper.version>8.8.0</esper.version>
-    <mvn.flyway.version>8.5.0</mvn.flyway.version>
+    <mvn.flyway.version>9.11.0</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>

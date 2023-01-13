@@ -812,8 +812,39 @@ public class AdminRpcClient
     @Override
     public SupervisorPermission createSupervisorPermission(SupervisorPermission inSupervisorPermission)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return executeCall(new Callable<SupervisorPermission>() {
+            @Override
+            public SupervisorPermission call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} creating {}",
+                                       getSessionId(),
+                                       inSupervisorPermission);
+                AdminRpc.CreateSupervisorPermissionRequest.Builder requestBuilder = AdminRpc.CreateSupervisorPermissionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                AdminRpcUtil.getRpcSupervisorPermission(inSupervisorPermission).ifPresent(value->requestBuilder.setSupervisorPermission(value));
+                AdminRpc.CreateSupervisorPermissionRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                AdminRpc.CreateSupervisorPermissionResponse response = getBlockingStub().createSupervisorPermission(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Optional<SupervisorPermission> result = AdminRpcUtil.getSupervisorPermission(response.getSupervisorPermission(),
+                                                                                             supervisorPermissionFactory,
+                                                                                             permissionFactory,
+                                                                                             userFactory);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       result);
+                return result.orElse(null);
+            }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.admin.AdminClient#deleteSupervisorPermission(java.lang.String)
@@ -821,8 +852,33 @@ public class AdminRpcClient
     @Override
     public void deleteSupervisorPermission(String inSupervisorPermissionName)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} deleting supervisor permission {}",
+                                       getSessionId(),
+                                       inSupervisorPermissionName);
+                AdminRpc.DeleteSupervisorPermissionRequest.Builder requestBuilder = AdminRpc.DeleteSupervisorPermissionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inSupervisorPermissionName);
+                if(value != null) {
+                    requestBuilder.setSupervisorPermissionName(value);
+                }
+                AdminRpc.DeleteSupervisorPermissionRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.DeleteSupervisorPermissionResponse response = getBlockingStub().deleteSupervisorPermission(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
     }
     /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#getUserAttribute(java.lang.String, com.marketcetera.admin.UserAttributeType)

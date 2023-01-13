@@ -208,8 +208,67 @@ public class AdminRpcService<SessionClazz>
         public void createSupervisorPermission(CreateSupervisorPermissionRequest inRequest,
                                                StreamObserver<CreateSupervisorPermissionResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
-            
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Received create supervisor permission request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                AdminRpc.CreateSupervisorPermissionResponse.Builder responseBuilder = AdminRpc.CreateSupervisorPermissionResponse.newBuilder();
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.CreateSupervisorPermissionAction.name());
+                if(inRequest.hasSupervisorPermission()) {
+                    AdminRpc.SupervisorPermission rpcSupervisorPermission = inRequest.getSupervisorPermission();
+                    String name = StringUtils.trimToNull(rpcSupervisorPermission.getName());
+                    SupervisorPermission newSupervisorPermission = authzService.findSupervisorPermissionByName(name);
+                    Validate.isTrue(newSupervisorPermission == null,
+                                    "Supervisor Permission: " + name + " already exists");
+                    newSupervisorPermission = supervisorPermissionFactory.create(rpcSupervisorPermission.getName(),
+                                                                                 rpcSupervisorPermission.getDescription());
+                    for(AdminRpc.Permission rpcPermission : rpcSupervisorPermission.getPermissionsList()) {
+                        Permission permission = authzService.findPermissionByName(rpcPermission.getName());
+                        if(permission == null) {
+                            SLF4JLoggerProxy.warn(AdminRpcService.this,
+                                                  "Skipping unknown permission {}",
+                                                  rpcPermission.getName());
+                        } else {
+                            newSupervisorPermission.getPermissions().add(permission);
+                        }
+                    }
+                    for(AdminRpc.User rpcUser : rpcSupervisorPermission.getSubjectsList()) {
+                        User user = userService.findByName(rpcUser.getName());
+                        if(user == null) {
+                            SLF4JLoggerProxy.warn(AdminRpcService.this,
+                                                  "Skipping unknown user {}",
+                                                  rpcUser.getName());
+                        } else {
+                            newSupervisorPermission.getSubjects().add(user);
+                        }
+                    }
+                    if(rpcSupervisorPermission.hasSupervisor()) {
+                        User user = userService.findByName(rpcSupervisorPermission.getSupervisor().getName());
+                        if(user == null) {
+                            SLF4JLoggerProxy.warn(AdminRpcService.this,
+                                                  "Skipping unknown user {}",
+                                                  rpcSupervisorPermission.getSupervisor().getName());
+                        } else {
+                            newSupervisorPermission.setSupervisor(user);
+                        }
+                    }
+                    newSupervisorPermission = authzService.save(newSupervisorPermission);
+                    AdminRpcUtil.getRpcSupervisorPermission(newSupervisorPermission).ifPresent(value->responseBuilder.setSupervisorPermission(value));
+                }
+                AdminRpc.CreateSupervisorPermissionResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#readSupervisorPermissions(org.marketcetera.admin.AdminRpc.ReadSupervisorPermissionsRequest, io.grpc.stub.StreamObserver)
@@ -306,8 +365,30 @@ public class AdminRpcService<SessionClazz>
         public void deleteSupervisorPermission(DeleteSupervisorPermissionRequest inRequest,
                                                StreamObserver<DeleteSupervisorPermissionResponse> inResponseObserver)
         {
-            throw new UnsupportedOperationException(); // TODO
-            
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Received delete supervisor permission request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                AdminRpc.DeleteSupervisorPermissionResponse.Builder responseBuilder = AdminRpc.DeleteSupervisorPermissionResponse.newBuilder();
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.DeleteSupervisorPermissionAction.name());
+                SupervisorPermission existingSupervisorPermission = authzService.findSupervisorPermissionByName(inRequest.getSupervisorPermissionName());
+                Validate.isTrue(existingSupervisorPermission != null,
+                                "Unknown permission: " + inRequest.getSupervisorPermissionName());
+                authzService.deleteSupervisorPermission(inRequest.getSupervisorPermissionName());
+                AdminRpc.DeleteSupervisorPermissionResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#getPermissionsForUsername(org.marketcetera.admin.AdminRpc.PermissionsForUsernameRequest, io.grpc.stub.StreamObserver)
