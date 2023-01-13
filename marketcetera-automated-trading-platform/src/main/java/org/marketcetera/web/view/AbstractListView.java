@@ -1,4 +1,4 @@
-package org.marketcetera.web.admin.view;
+package org.marketcetera.web.view;
 
 import java.util.Collection;
 import java.util.Map;
@@ -345,10 +345,22 @@ public abstract class AbstractListView<DataClazz,
             delete = new Button("Delete");
             close = new Button("Cancel");
             binder = new BeanValidationBinder<>(dataClazz);
-            addClassName("contact-form"); 
-            binder.bindInstanceFields(this);
+            addClassName("contact-form");
+            if(useBinder()) {
+                binder.bindInstanceFields(this);
+            }
             add(createFormComponentLayout(binder),
                 createButtonsLayout());
+        }
+        /**
+         * 
+         *
+         *
+         * @return
+         */
+        protected boolean useBinder()
+        {
+            return true;
         }
         /**
          * Create the editor components layout.

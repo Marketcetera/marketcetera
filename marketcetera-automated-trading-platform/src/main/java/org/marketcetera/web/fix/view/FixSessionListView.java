@@ -1,13 +1,13 @@
-package org.marketcetera.web.admin.view;
+package org.marketcetera.web.fix.view;
 
 import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 
-import org.marketcetera.admin.impl.SimpleUser;
+import org.marketcetera.fix.impl.SimpleActiveFixSession;
 import org.marketcetera.web.service.ServiceManager;
-import org.marketcetera.web.service.admin.AdminClientService;
+import org.marketcetera.web.service.fixadmin.FixAdminClientService;
 import org.marketcetera.web.view.AbstractListView;
 import org.marketcetera.webui.views.MainLayout;
 
@@ -21,91 +21,95 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @PermitAll
-@PageTitle("Users | MATP")
-@Route(value="users", layout = MainLayout.class) 
-public class UserListView
-        extends AbstractListView<SimpleUser,UserListView.UserForm>
+@PageTitle("FIX Sessions | MATP")
+@Route(value="fix", layout = MainLayout.class) 
+public class FixSessionListView
+        extends AbstractListView<SimpleActiveFixSession,FixSessionListView.FixSessionForm>
 {
     /**
      * Create a new UserListView instance.
      */
-    public UserListView()
+    public FixSessionListView()
     {
-        super(SimpleUser.class);
+        super(SimpleActiveFixSession.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#setColumns(com.vaadin.flow.component.grid.Grid)
      */
     @Override
-    protected void setColumns(Grid<SimpleUser> inGrid)
+    protected void setColumns(Grid<SimpleActiveFixSession> inGrid)
     {
-        inGrid.setColumns("name",
-                          "description");
+        inGrid.setColumns("fixSession.name",
+                          "fixSession.description",
+                          "fixSession.sessionId",
+                          "fixSession.brokerId",
+                          "fixSession.affinity",
+                          "status",
+                          "clusterData",
+                          "senderSequenceNumber",
+                          "targetSequenceNumber");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#createNewValue()
      */
     @Override
-    protected SimpleUser createNewValue()
+    protected SimpleActiveFixSession createNewValue()
     {
-        return new SimpleUser();
+        return new SimpleActiveFixSession();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#getUpdatedList()
      */
     @Override
-    protected Collection<SimpleUser> getUpdatedList()
+    protected Collection<SimpleActiveFixSession> getUpdatedList()
     {
-        Collection<SimpleUser> users = Lists.newArrayList();
-        getServiceClient().getUsers().forEach(user -> users.add((user instanceof SimpleUser ? (SimpleUser)user : new SimpleUser(user))));
-        return users;
+        Collection<SimpleActiveFixSession> fixSessions = Lists.newArrayList();
+        getServiceClient().getFixSessions().forEach(fixSession -> fixSessions.add((fixSession instanceof SimpleActiveFixSession ? (SimpleActiveFixSession)fixSession : new SimpleActiveFixSession(fixSession))));
+        return fixSessions;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doCreate(java.lang.Object)
      */
     @Override
-    protected void doCreate(SimpleUser inValue)
+    protected void doCreate(SimpleActiveFixSession inValue)
     {
-        // TODO
-        getServiceClient().createUser(inValue,
-                                      "pazzword");
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doUpdate(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void doUpdate(SimpleUser inValue,
+    protected void doUpdate(SimpleActiveFixSession inValue,
                             Map<String,Object> inValueKeyData)
     {
-        getServiceClient().updateUser(String.valueOf(inValueKeyData.get("name")),
-                                      inValue);
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doDelete(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void doDelete(SimpleUser inValue,
+    protected void doDelete(SimpleActiveFixSession inValue,
                             Map<String,Object> inValueKeyData)
     {
-        getServiceClient().deleteUser(String.valueOf(inValueKeyData.get("name")));
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#registerInitialValue(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void registerInitialValue(SimpleUser inValue,
+    protected void registerInitialValue(SimpleActiveFixSession inValue,
                                         Map<String,Object> inOutValueKeyData)
     {
         inOutValueKeyData.put("name",
-                              inValue.getName());
+                              inValue.getFixSession().getName());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#createForm()
      */
     @Override
-    protected UserForm createForm()
+    protected FixSessionForm createForm()
     {
-        form = new UserForm();
+        form = new FixSessionForm();
         return form;
     }
     /* (non-Javadoc)
@@ -114,16 +118,16 @@ public class UserListView
     @Override
     protected String getDataClazzName()
     {
-        return "User";
+        return "FIX Session";
     }
     /**
      * Get the service client to use for this view.
      *
-     * @return an <code>AdminClientService</code> value
+     * @return a <code>FixAdminClientService</code> value
      */
-    private AdminClientService getServiceClient()
+    private FixAdminClientService getServiceClient()
     {
-        return ServiceManager.getInstance().getService(AdminClientService.class);
+        return ServiceManager.getInstance().getService(FixAdminClientService.class);
     }
     /**
      * Provides the create/edit subform for users.
@@ -132,13 +136,13 @@ public class UserListView
      * @version $Id$
      * @since $Release$
      */
-    class UserForm
-            extends AbstractListView<SimpleUser,UserForm>.AbstractListForm
+    class FixSessionForm
+            extends AbstractListView<SimpleActiveFixSession,FixSessionForm>.AbstractListForm
     {
         /**
          * Create a new UserForm instance.
          */
-        private UserForm()
+        private FixSessionForm()
         {
             super();
         }
@@ -146,7 +150,7 @@ public class UserListView
          * @see org.marketcetera.web.admin.view.AbstractListView.AbstractListForm#createFormComponentLayout(com.vaadin.flow.data.binder.Binder)
          */
         @Override
-        protected Component createFormComponentLayout(Binder<SimpleUser> inBinder)
+        protected Component createFormComponentLayout(Binder<SimpleActiveFixSession> inBinder)
         {
             name = new TextField("Name"); 
             description = new TextField("Description");
@@ -157,9 +161,15 @@ public class UserListView
             componentLayout = new VerticalLayout();
             componentLayout.add(name,
                                 description);
-            inBinder.bind(name,"name");
-            inBinder.bind(description,"description");
             return componentLayout;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.AbstractListView.AbstractListForm#useBinder()
+         */
+        @Override
+        protected boolean useBinder()
+        {
+            return false;
         }
         /**
          * name widget
@@ -173,11 +183,11 @@ public class UserListView
          * editor components layout value
          */
         private VerticalLayout componentLayout;
-        private static final long serialVersionUID = -4925927232864950173L;
+        private static final long serialVersionUID = -1931251254078030265L;
     }
     /**
      * edit form instance
      */
-    private UserForm form;
-    private static final long serialVersionUID = -8930087273314672465L;
+    private FixSessionForm form;
+    private static final long serialVersionUID = 516637620331918587L;
 }

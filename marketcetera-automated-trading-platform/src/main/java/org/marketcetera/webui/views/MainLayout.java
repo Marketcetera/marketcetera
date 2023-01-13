@@ -7,6 +7,7 @@ import org.marketcetera.web.admin.view.PermissionListView;
 import org.marketcetera.web.admin.view.RoleListView;
 import org.marketcetera.web.admin.view.SupervisorPermissionListView;
 import org.marketcetera.web.admin.view.UserListView;
+import org.marketcetera.web.fix.view.FixSessionListView;
 import org.marketcetera.webui.security.AuthenticatedUser;
 
 import com.vaadin.flow.component.Component;
@@ -38,7 +39,6 @@ public class MainLayout
     public static class MenuItemInfo
             extends ListItem
     {
-
         private final Class<? extends Component> view;
 
         public MenuItemInfo(String menuTitle,
@@ -76,8 +76,9 @@ public class MainLayout
                     addClassNames(lineawesomeClassnames);
                 }
             }
+            private static final long serialVersionUID = 8346510745670315840L;
         }
-
+        private static final long serialVersionUID = -5742548254184764846L;
     }
 
     private AuthenticatedUser authenticatedUser;
@@ -173,6 +174,9 @@ public class MainLayout
                 new MenuItemInfo("Supervisor Permissions",
                                  "la la-handshake",
                                  SupervisorPermissionListView.class),
+                new MenuItemInfo("FIX Sessions",
+                                 "la la-landmark",
+                                 FixSessionListView.class),
         };
     }
     private static final long serialVersionUID = 8633409836848403046L;

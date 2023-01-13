@@ -12,6 +12,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.impl.SimpleSupervisorPermission;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
+import org.marketcetera.web.view.AbstractListView;
 import org.marketcetera.webui.views.MainLayout;
 
 import com.google.common.collect.Lists;

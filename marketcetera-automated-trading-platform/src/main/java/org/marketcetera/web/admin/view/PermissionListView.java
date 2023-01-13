@@ -8,6 +8,7 @@ import javax.annotation.security.PermitAll;
 import org.marketcetera.admin.impl.SimplePermission;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.admin.AdminClientService;
+import org.marketcetera.web.view.AbstractListView;
 import org.marketcetera.webui.views.MainLayout;
 
 import com.google.common.collect.Lists;
