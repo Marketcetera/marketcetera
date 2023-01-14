@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<model>
+  <modelEntities>
+    <modelEntity name="Event" description="Indicates that something of interest has occurred" pojoProject="eventbus/eventbus-core" apiProject="eventbus/eventbus-api" persistentProject="eventbus/eventbus-server" packageName="org.marketcetera.eventbus.event" hasInterfaceProject="eventbus/eventbus-api">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEntityAttributes>
+        <modelEntityAttribute name="eventId" description="uniquely describes an event" type="long" useGetters="true" useSetters="true" interfaceProvided="false" isNullable="false" isUnique="true"/>
+        <modelEntityAttribute name="timestamp" description="date event was created" type="java.util.Date" useGetters="true" useSetters="true" isNullable="false"/>
+        <modelEntityAttribute name="type" description="type of event" type="String" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="data1" description="data field 1" type="String" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="data2" description="data field 2" type="String" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="data3" description="data field 3" type="String" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="data4" description="data field 4" type="String" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="data5" description="data field 5" type="String" useGetters="true" useSetters="true"/>
+      </modelEntityAttributes>
+    </modelEntity>
+  </modelEntities>
+  <rpcEntities>
+    <rpcEntity project="eventbus/eventbus-rpc-core" protoPrefix="eventbus_types" javaPackage="org.marketcetera.eventbus.event" javaClassName="EventbusTypesRpc" utilName="Eventbus">
+      <imports>
+        <import>rpc_base.proto</import>
+        <import>google/protobuf/timestamp.proto</import>
+      </imports>
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <rpcMessages>
+        <rpcMessage name="Event" description="describes an event" javaType="org.marketcetera.eventbus.event.Event"
+                    primaryFactory="org.marketcetera.eventbus.event.EventFactory">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="eventId" type="int64" description="uniquely describes an event"/>
+            <rpcMessageAttribute name="timestamp" type="google.protobuf.Timestamp" description="timestamp of event" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
+            <rpcMessageAttribute name="type" type="string" description="event type"/>
+            <rpcMessageAttribute name="data1" type="string" description="data field 1"/>
+            <rpcMessageAttribute name="data2" type="string" description="data field 2"/>
+            <rpcMessageAttribute name="data3" type="string" description="data field 3"/>
+            <rpcMessageAttribute name="data4" type="string" description="data field 4"/>
+            <rpcMessageAttribute name="data5" type="string" description="data field 5"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+      </rpcMessages>
+    </rpcEntity>
+    <rpcEntity project="eventbus/eventbus-rpc-core" protoPrefix="eventbus" javaPackage="org.marketcetera.eventbus.event" javaClassName="EventbusRpc" serverProject="eventbus/eventbus-rpc-server" apiProject="eventbus/eventbus-api" clientProject="eventbus/eventbus-rpc-client">
+      <imports>
+        <import>rpc_base.proto</import>
+        <import>rpc_eventbus_types.proto</import>
+      </imports>
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <autowiredServices>
+        <autowiredService type="org.marketcetera.admin.service.AuthorizationService" name="authzService" description="provides access to authorization services"/>
+      </autowiredServices>
+      <rpcMessages>
+        <rpcMessage name="GetEventsRequest" description="request events as they are created">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="GetEventsResponse" description="return events as they are created">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="event" type="Event" repeated="true"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+      </rpcMessages>
+      <rpcService name="EventbusRpcService" description="services for eventbus events">
+        <rpcServiceEntries>
+          <rpcServiceEntry name="login" description="starts the session" paramType="LoginRequest" returnType="LoginResponse"/>
+          <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
+          <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
+          <rpcServiceEntry name="getEvents" description="requests events as they are created" paramType="GetEventsRequest" returnType="GetEventsResponse" paged="false" serviceReturnType="org.marketcetera.eventbus.event.Event" serverStream="true">
+          </rpcServiceEntry>
+        </rpcServiceEntries>
+      </rpcService>
+    </rpcEntity>
+  </rpcEntities>
+</model>
