@@ -31,7 +31,6 @@ public class SecurityConfiguration
     public AuthenticationManager authManager(HttpSecurity http)
             throws Exception
     {
-        System.out.println("COCO: SecurityConfiguration.authManager");
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(authProvider);
         return authenticationManagerBuilder.build();
@@ -40,7 +39,6 @@ public class SecurityConfiguration
     protected void configure(HttpSecurity inHttpSecurity)
             throws Exception
     {
-        System.out.println("COCO: SecurityConfiguration.configure");
         inHttpSecurity.authorizeRequests().requestMatchers(new AntPathRequestMatcher("/images/*.png")).permitAll();
         super.configure(inHttpSecurity);
         setLoginView(inHttpSecurity,

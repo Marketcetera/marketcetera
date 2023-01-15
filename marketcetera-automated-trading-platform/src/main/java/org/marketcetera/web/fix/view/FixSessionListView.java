@@ -5,26 +5,33 @@ import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 
+import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.fixadmin.FixAdminClientService;
 import org.marketcetera.web.view.AbstractListView;
 import org.marketcetera.webui.views.MainLayout;
 
 import com.google.common.collect.Lists;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.Command;
 
 @PermitAll
 @PageTitle("FIX Sessions | MATP")
 @Route(value="fix", layout = MainLayout.class) 
 public class FixSessionListView
         extends AbstractListView<SimpleActiveFixSession,FixSessionListView.FixSessionForm>
+        implements BrokerStatusListener
 {
     /**
      * Create a new UserListView instance.
@@ -32,6 +39,28 @@ public class FixSessionListView
     public FixSessionListView()
     {
         super(SimpleActiveFixSession.class);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
+     */
+    @Override
+    public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
+    {
+        getUi().access(new Command() {
+            @Override
+            public void execute()
+            {
+                try {
+                    updateList();
+                    getUi().push();
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(FixSessionListView.this,
+                                          e);
+                }
+            }
+            private static final long serialVersionUID = 8842410404962613192L;
+            }
+        );
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#setColumns(com.vaadin.flow.component.grid.Grid)
@@ -102,6 +131,24 @@ public class FixSessionListView
     {
         inOutValueKeyData.put("name",
                               inValue.getFixSession().getName());
+    }
+    /* (non-Javadoc)
+     * @see com.vaadin.flow.component.Component#onAttach(com.vaadin.flow.component.AttachEvent)
+     */
+    @Override
+    protected void onAttach(AttachEvent inAttachEvent)
+    {
+        super.onAttach(inAttachEvent);
+        getServiceClient().addBrokerStatusListener(this);
+    }
+    /* (non-Javadoc)
+     * @see com.vaadin.flow.component.Component#onDetach(com.vaadin.flow.component.DetachEvent)
+     */
+    @Override
+    protected void onDetach(DetachEvent inDetachEvent)
+    {
+        getServiceClient().removeBrokerStatusListener(this);
+        super.onDetach(inDetachEvent);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#createForm()

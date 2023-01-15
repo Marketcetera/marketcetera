@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.spring.annotation.EnableVaadin;
 import com.vaadin.flow.theme.Theme;
@@ -43,6 +44,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
  * and some desktop browsers.
  *
  */
+@Push
 @EnableAutoConfiguration
 @EnableVaadin({"org.marketcetera","com.marketcetera"})
 @NpmPackage(value = "line-awesome", version = "1.3.0")

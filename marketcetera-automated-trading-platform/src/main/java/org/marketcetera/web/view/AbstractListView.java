@@ -4,12 +4,15 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -49,6 +52,15 @@ public abstract class AbstractListView<DataClazz,
             getContent());
         updateList();
         closeEditor(); 
+    }
+    /* (non-Javadoc)
+     * @see com.vaadin.flow.component.Component#onAttach(com.vaadin.flow.component.AttachEvent)
+     */
+    @Override
+    protected void onAttach(AttachEvent inAttachEvent)
+    {
+        super.onAttach(inAttachEvent);
+        ui = inAttachEvent.getUI();
     }
     /**
      * Configure the already-created grid.
@@ -167,7 +179,25 @@ public abstract class AbstractListView<DataClazz,
      */
     protected void updateList()
     {
-        grid.setItems(getUpdatedList());
+        listDataView = grid.setItems(getUpdatedList());
+    }
+    /**
+     * Get the listDataView value.
+     *
+     * @return a <code>GridListDataView<DataClazz></code> value
+     */
+    protected GridListDataView<DataClazz> getListDataView()
+    {
+        return listDataView;
+    }
+    /**
+     * Get the ui value.
+     *
+     * @return a <code>UI</code> value
+     */
+    protected UI getUi()
+    {
+        return ui;
     }
     /**
      * Create a new, initialized value.
@@ -519,6 +549,14 @@ public abstract class AbstractListView<DataClazz,
         private final Binder<DataClazz> binder;
         private static final long serialVersionUID = -1717470443251096115L;
     }
+    /**
+     * UI session for this view
+     */
+    private UI ui;
+    /**
+     * provides access to the {@link #grid}
+     */
+    private GridListDataView<DataClazz> listDataView;
     /**
      * class of the object being displayed in the grid and editor
      */

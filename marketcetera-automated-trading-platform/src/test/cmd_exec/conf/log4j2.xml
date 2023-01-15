@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable" monitorInterval="30">
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+    </Console>
+    <RollingRandomAccessFile name="FILE" fileName="target/logs/ui.log" filePattern="target/logs/ui-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="1000"/>
+    </RollingRandomAccessFile>
+    <RollingRandomAccessFile name="METRICS" fileName="target/logs/metrics.log" filePattern="target/logs/metrics-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+    </RollingRandomAccessFile>
+  </Appenders>
+  <Loggers>
+    <Root level="warn">
+      <AppenderRef ref="FILE"/>
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+    <logger name="org.marketcetera" level="info"/>
+    <logger name="com.marketcetera" level="info"/>
+    <logger name="metrics" level="info" additivity="false">
+      <AppenderRef ref="METRICS"/>
+    </logger>
+    <logger name="org.marketcetera.eventbus.event" level="trace"/>
+  </Loggers>
+</Configuration>

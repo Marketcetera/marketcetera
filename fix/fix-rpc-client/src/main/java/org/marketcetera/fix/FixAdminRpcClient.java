@@ -799,7 +799,10 @@ public class FixAdminRpcClient
         @Override
         protected ActiveFixSession translateMessage(BrokerStatusListenerResponse inResponse)
         {
-            return FixRpcUtil.getActiveFixSession(inResponse,activeFixSessionFactory,fixSessionFactory,clusterDataFactory).orElse(null);
+            return FixRpcUtil.getActiveFixSession(inResponse,
+                                                  activeFixSessionFactory,
+                                                  fixSessionFactory,
+                                                  clusterDataFactory).orElse(null);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trading.rpc.FixAdminRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
