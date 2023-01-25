@@ -25,6 +25,7 @@
     </Root>
     <logger name="org.marketcetera" level="info"/>
     <logger name="com.marketcetera" level="info"/>
+    <logger name="org.marketcetera.web" level="trace"/>
     <logger name="metrics" level="info" additivity="false">
       <AppenderRef ref="METRICS"/>
     </logger>

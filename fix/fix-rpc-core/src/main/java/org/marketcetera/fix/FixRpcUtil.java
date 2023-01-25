@@ -10,6 +10,7 @@ import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.ClusterRpcUtil;
 import org.marketcetera.core.Validator;
+import org.marketcetera.fix.impl.SimpleFixSessionInstanceData;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -32,7 +33,10 @@ public class FixRpcUtil
      */
     public static Optional<FixSessionInstanceData> getInstanceData(FixAdminRpc.InstanceData inInstanceData)
     {
-        throw new UnsupportedOperationException(); // TODO
+        SimpleFixSessionInstanceData instanceData = new SimpleFixSessionInstanceData();
+        instanceData.setHostname(inInstanceData.getHostname());
+        instanceData.setPort(inInstanceData.getPort());
+        return Optional.of(instanceData);
     }
     /**
      * Get the value from the given RPC value.

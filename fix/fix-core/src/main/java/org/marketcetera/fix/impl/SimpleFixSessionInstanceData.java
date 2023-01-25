@@ -17,7 +17,7 @@ import org.marketcetera.fix.FixSessionInstanceData;
  */
 @XmlRootElement(name="fixSessionInstanceData")
 @XmlAccessorType(XmlAccessType.NONE)
-public class SimpleFixSessinInstanceData
+public class SimpleFixSessionInstanceData
         implements FixSessionInstanceData
 {
     /* (non-Javadoc)

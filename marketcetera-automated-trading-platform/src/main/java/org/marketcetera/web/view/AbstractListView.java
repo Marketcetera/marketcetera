@@ -6,20 +6,20 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.value.ValueChangeMode;
 
 /* $License$ */
 
@@ -43,12 +43,12 @@ public abstract class AbstractListView<DataClazz,
     {
         dataClazz = inClassType;
         grid = new Grid<>(dataClazz);
-        filterText = new TextField();
+        actionComboBox = new ComboBox<>();
         addClassName("list-view");
         setSizeFull();
         configureGrid();
         configureForm();
-        add(getToolbar(),
+        add(configureToolbar(),
             getContent());
         updateList();
         closeEditor(); 
@@ -71,29 +71,62 @@ public abstract class AbstractListView<DataClazz,
         grid.setSizeFull();
         setColumns(grid);
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event -> addOrEditFormValue(event.getValue(),
-                                                                                 form,
-                                                                                 false)); 
+        addGridValueChangeListener(grid);
+        grid.setColumnReorderingAllowed(true);
+    }
+    /**
+     * Add the grid value change listener.
+     *
+     * @param inGrid a <code>Grid&lt;DataClazz&gt;</code> value
+     */
+    protected void addGridValueChangeListener(Grid<DataClazz> inGrid)
+    {
+        inGrid.asSingleSelect().addValueChangeListener(event -> addOrEditFormValue(event.getValue(),
+                                                                                   form,
+                                                                                   false));
     }
     /**
      * Construct and return the toolbar.
      *
      * @return a <code>HorizontalLayout</code> value
      */
-    protected HorizontalLayout getToolbar()
+    protected HorizontalLayout configureToolbar()
     {
-        filterText.setPlaceholder("Filter by name...");
-        filterText.setClearButtonVisible(true);
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(e -> updateList());
-        filterText.setVisible(enableFilterText());
+        actionComboBox.setAllowCustomValue(false);
+        actionComboBox.addValueChangeListener(event -> actionValueChanged(event));
         Button addValueButton = new Button("Add " + getDataClazzName());
         addValueButton.addClickListener(click -> doAdd());
         addValueButton.setVisible(enableAddButton());
-        HorizontalLayout toolbar = new HorizontalLayout(filterText,
+        HorizontalLayout toolbar = new HorizontalLayout(actionComboBox,
                                                         addValueButton);
         toolbar.addClassName("toolbar");
         return toolbar;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inEvent
+     */
+    protected void actionValueChanged(ValueChangeEvent<String> inEvent)
+    {}
+    /**
+     * Get the selected item.
+     *
+     * @return a <code>DataClazz</code> or <code>null</code>
+     */
+    protected DataClazz getSelectedItem()
+    {
+        return grid.asSingleSelect().getValue();
+    }
+    /**
+     * Get the actionComboBox value.
+     *
+     * @return a <code>ComboBox&lt;String&gt;</code> value
+     */
+    protected ComboBox<String> getActionComboBox()
+    {
+        return actionComboBox;
     }
     /**
      * Get the human-readable name of <code>DataClazz</code> objects.
@@ -263,8 +296,8 @@ public abstract class AbstractListView<DataClazz,
      */
     protected Component getContent()
     {
-        HorizontalLayout content = new HorizontalLayout(grid,
-                                                        form);
+        VerticalLayout content = new VerticalLayout(grid,
+                                                    form);
         content.setFlexGrow(2,
                             grid);
         content.setFlexGrow(1,
@@ -348,15 +381,6 @@ public abstract class AbstractListView<DataClazz,
         return grid;
     }
     /**
-     * Get the filter text widget.
-     *
-     * @return a <code>TextField</code> value
-     */
-    protected TextField getFilterText()
-    {
-        return filterText;
-    }
-    /**
      * Provides the base class implementation to the embedded edit form.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -379,8 +403,10 @@ public abstract class AbstractListView<DataClazz,
             if(useBinder()) {
                 binder.bindInstanceFields(this);
             }
-            add(createFormComponentLayout(binder),
-                createButtonsLayout());
+            add(createFormComponentLayout(binder));
+            if(useDefaultButtons()) {
+                add(createButtonsLayout());
+            }
         }
         /**
          * 
@@ -438,6 +464,16 @@ public abstract class AbstractListView<DataClazz,
             return new HorizontalLayout(save,
                                         delete,
                                         close);
+        }
+        /**
+         * 
+         *
+         *
+         * @return
+         */
+        protected boolean useDefaultButtons()
+        {
+            return true;
         }
         /**
          * Validate the subject and cause it to be saved.
@@ -566,9 +602,9 @@ public abstract class AbstractListView<DataClazz,
      */
     private final Grid<DataClazz> grid;
     /**
-     * filter widget
+     * action combo
      */
-    private final TextField filterText;
+    private final ComboBox<String> actionComboBox;
     /**
      * stores key information about the selected row in the grid to be used for datastore operations
      */

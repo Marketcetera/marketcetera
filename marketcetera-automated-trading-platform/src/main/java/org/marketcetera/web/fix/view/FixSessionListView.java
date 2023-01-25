@@ -1,36 +1,88 @@
 package org.marketcetera.web.fix.view;
 
+import java.net.Socket;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TimeZone;
+import java.util.TreeMap;
 
 import javax.annotation.security.PermitAll;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
-import org.marketcetera.fix.impl.SimpleActiveFixSession;
+import org.marketcetera.fix.FixSessionAttributeDescriptor;
+import org.marketcetera.fix.FixSessionDay;
+import org.marketcetera.fix.FixSessionInstanceData;
+import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptor;
+import org.marketcetera.persist.NDEntityBase;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.service.ServiceManager;
 import org.marketcetera.web.service.fixadmin.FixAdminClientService;
 import org.marketcetera.web.view.AbstractListView;
 import org.marketcetera.webui.views.MainLayout;
+import org.vaadin.teemu.wizards.AbstractWizardProgressListener;
+import org.vaadin.teemu.wizards.Wizard;
+import org.vaadin.teemu.wizards.WizardStep;
+import org.vaadin.teemu.wizards.event.WizardCancelledEvent;
+import org.vaadin.teemu.wizards.event.WizardCompletedEvent;
+import org.vaadin.teemu.wizards.event.WizardStepActivationEvent;
+import org.vaadin.teemu.wizards.event.WizardStepSetChangedEvent;
 
 import com.google.common.collect.Lists;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 
+import quickfix.FixVersions;
+import quickfix.Session;
+import quickfix.SessionID;
+
+/* $License$ */
+
+/**
+ * Provides a FIX Session view.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ * 
+ * TODO stopping session doesn't send status update from server
+ * TODO status update from server makes edit form disappear
+ * TODO sequence numbers don't update
+ * TODO shouldn't enable edit unless session is disabled
+ * TODO no sequence number update yet
+ */
 @PermitAll
 @PageTitle("FIX Sessions | MATP")
 @Route(value="fix", layout = MainLayout.class) 
 public class FixSessionListView
-        extends AbstractListView<SimpleActiveFixSession,FixSessionListView.FixSessionForm>
+        extends AbstractListView<DisplayFixSession,FixSessionListView.FixSessionForm>
         implements BrokerStatusListener
 {
     /**
@@ -38,7 +90,7 @@ public class FixSessionListView
      */
     public FixSessionListView()
     {
-        super(SimpleActiveFixSession.class);
+        super(DisplayFixSession.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
@@ -51,8 +103,11 @@ public class FixSessionListView
             public void execute()
             {
                 try {
-                    updateList();
-                    getUi().push();
+                    // not ideal, but, calling updateList causes the edit form to disappear
+                    if(!form.isVisible()) {
+                        updateList();
+                        getUi().push();
+                    }
                 } catch (Exception e) {
                     SLF4JLoggerProxy.warn(FixSessionListView.this,
                                           e);
@@ -66,13 +121,13 @@ public class FixSessionListView
      * @see org.marketcetera.web.admin.view.AbstractListView#setColumns(com.vaadin.flow.component.grid.Grid)
      */
     @Override
-    protected void setColumns(Grid<SimpleActiveFixSession> inGrid)
+    protected void setColumns(Grid<DisplayFixSession> inGrid)
     {
-        inGrid.setColumns("fixSession.name",
-                          "fixSession.description",
-                          "fixSession.sessionId",
-                          "fixSession.brokerId",
-                          "fixSession.affinity",
+        inGrid.setColumns("name",
+                          "description",
+                          "sessionId",
+                          "brokerId",
+                          "affinity",
                           "status",
                           "clusterData",
                           "senderSequenceNumber",
@@ -82,25 +137,25 @@ public class FixSessionListView
      * @see org.marketcetera.web.admin.view.AbstractListView#createNewValue()
      */
     @Override
-    protected SimpleActiveFixSession createNewValue()
+    protected DisplayFixSession createNewValue()
     {
-        return new SimpleActiveFixSession();
+        return new DisplayFixSession();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#getUpdatedList()
      */
     @Override
-    protected Collection<SimpleActiveFixSession> getUpdatedList()
+    protected Collection<DisplayFixSession> getUpdatedList()
     {
-        Collection<SimpleActiveFixSession> fixSessions = Lists.newArrayList();
-        getServiceClient().getFixSessions().forEach(fixSession -> fixSessions.add((fixSession instanceof SimpleActiveFixSession ? (SimpleActiveFixSession)fixSession : new SimpleActiveFixSession(fixSession))));
+        Collection<DisplayFixSession> fixSessions = Lists.newArrayList();
+        getServiceClient().getFixSessions().forEach(fixSession -> fixSessions.add(DisplayFixSession.create(fixSession)));
         return fixSessions;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.admin.view.AbstractListView#doCreate(java.lang.Object)
      */
     @Override
-    protected void doCreate(SimpleActiveFixSession inValue)
+    protected void doCreate(DisplayFixSession inValue)
     {
         throw new UnsupportedOperationException(); // TODO
     }
@@ -108,7 +163,7 @@ public class FixSessionListView
      * @see org.marketcetera.web.admin.view.AbstractListView#doUpdate(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void doUpdate(SimpleActiveFixSession inValue,
+    protected void doUpdate(DisplayFixSession inValue,
                             Map<String,Object> inValueKeyData)
     {
         throw new UnsupportedOperationException(); // TODO
@@ -117,7 +172,7 @@ public class FixSessionListView
      * @see org.marketcetera.web.admin.view.AbstractListView#doDelete(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void doDelete(SimpleActiveFixSession inValue,
+    protected void doDelete(DisplayFixSession inValue,
                             Map<String,Object> inValueKeyData)
     {
         throw new UnsupportedOperationException(); // TODO
@@ -126,11 +181,11 @@ public class FixSessionListView
      * @see org.marketcetera.web.admin.view.AbstractListView#registerInitialValue(java.lang.Object, java.util.Map)
      */
     @Override
-    protected void registerInitialValue(SimpleActiveFixSession inValue,
+    protected void registerInitialValue(DisplayFixSession inValue,
                                         Map<String,Object> inOutValueKeyData)
     {
         inOutValueKeyData.put("name",
-                              inValue.getFixSession().getName());
+                              inValue.getName());
     }
     /* (non-Javadoc)
      * @see com.vaadin.flow.component.Component#onAttach(com.vaadin.flow.component.AttachEvent)
@@ -140,6 +195,86 @@ public class FixSessionListView
     {
         super.onAttach(inAttachEvent);
         getServiceClient().addBrokerStatusListener(this);
+        getGrid().addSelectionListener(inEvent -> {
+            DisplayFixSession selectedObject = getSelectedItem();
+            getActionComboBox().setItems(Lists.newArrayList());
+            if(selectedObject == null) {
+                getActionComboBox().setReadOnly(true);
+            } else {
+                // TODO permission check before adding action to dropdown
+                getActionComboBox().setReadOnly(false);
+                // adjust the available actions based on the status of the selected row
+                switch(selectedObject.getStatus()) {
+                    case CONNECTED:
+                    case DISCONNECTED:
+                    case NOT_CONNECTED:
+                        getActionComboBox().setItems(Lists.newArrayList(ACTION_STOP));
+                        break;
+                    case DISABLED:
+                        getActionComboBox().setItems(Lists.newArrayList(ACTION_ENABLE,
+                                                                        ACTION_SEQUENCE,
+                                                                        ACTION_EDIT,
+                                                                        ACTION_DELETE));
+                        break;
+                    case STOPPED:
+                        getActionComboBox().setItems(Lists.newArrayList(ACTION_START,
+                                                                        ACTION_DISABLE,
+                                                                        ACTION_SEQUENCE));
+                        break;
+                    case AFFINITY_MISMATCH:
+                    case BACKUP:
+                    case DELETED:
+                    case UNKNOWN:
+                    default:
+                        // nothing available, these are essentially weird statuses for display
+                        break;
+                }
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractListView#actionValueChanged(com.vaadin.flow.component.HasValue.ValueChangeEvent)
+     */
+    @Override
+    protected void actionValueChanged(ValueChangeEvent<String> inEvent)
+    {
+        DisplayFixSession target = getGrid().asSingleSelect().getValue();
+        String action = inEvent.getValue();
+        SLF4JLoggerProxy.debug(this,
+                               "Action '{}' invoked on {}",
+                               inEvent.getValue(),
+                               target);
+        if(target == null || action == null) {
+            return;
+        }
+        switch(action) {
+            case ACTION_STOP:
+                getServiceClient().stopSession(target.getName());
+                break;
+            case ACTION_START:
+                getServiceClient().startSession(target.getName());
+                break;
+            case ACTION_DISABLE:
+                getServiceClient().disableSession(target.getName());
+                break;
+            case ACTION_ENABLE:
+                getServiceClient().enableSession(target.getName());
+                break;
+            case ACTION_EDIT:
+                addOrEditFormValue(target,
+                                   form,
+                                   false);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported action: " + action);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.AbstractListView#addGridValueChangeListener(com.vaadin.flow.component.grid.Grid)
+     */
+    @Override
+    protected void addGridValueChangeListener(Grid<DisplayFixSession> inGrid)
+    {
     }
     /* (non-Javadoc)
      * @see com.vaadin.flow.component.Component#onDetach(com.vaadin.flow.component.DetachEvent)
@@ -184,7 +319,7 @@ public class FixSessionListView
      * @since $Release$
      */
     class FixSessionForm
-            extends AbstractListView<SimpleActiveFixSession,FixSessionForm>.AbstractListForm
+            extends AbstractListView<DisplayFixSession,FixSessionForm>.AbstractListForm
     {
         /**
          * Create a new UserForm instance.
@@ -194,20 +329,34 @@ public class FixSessionListView
             super();
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.web.view.AbstractListView.AbstractListForm#useDefaultButtons()
+         */
+        @Override
+        protected boolean useDefaultButtons()
+        {
+            return false;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.web.view.AbstractListView.AbstractListForm#setValue(java.lang.Object, boolean)
+         */
+        @Override
+        protected void setValue(DisplayFixSession inValue,
+                                boolean inIsAdd)
+        {
+            fixSessionValue = inValue;
+            super.setValue(inValue,
+                           inIsAdd);
+            if(fixSessionValue != null) {
+                setupWizard(inIsAdd);
+            }
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.web.admin.view.AbstractListView.AbstractListForm#createFormComponentLayout(com.vaadin.flow.data.binder.Binder)
          */
         @Override
-        protected Component createFormComponentLayout(Binder<SimpleActiveFixSession> inBinder)
+        protected Component createFormComponentLayout(Binder<DisplayFixSession> inBinder)
         {
-            name = new TextField("Name"); 
-            description = new TextField("Description");
-            name.setEnabled(true);
-            name.setReadOnly(false);
-            description.setEnabled(true);
-            description.setReadOnly(false);
             componentLayout = new VerticalLayout();
-            componentLayout.add(name,
-                                description);
             return componentLayout;
         }
         /* (non-Javadoc)
@@ -216,25 +365,875 @@ public class FixSessionListView
         @Override
         protected boolean useBinder()
         {
-            return false;
+            return true;
+        }
+        private void setupWizard(boolean inIsNew)
+        {
+            final SortedMap<String,DecoratedDescriptor> sortedDescriptors = new TreeMap<>();
+            final String incomingName = fixSessionValue.getName();
+            Collection<FixSessionAttributeDescriptor> descriptors = getServiceClient().getFixSessionAttributeDescriptors();
+            for(FixSessionAttributeDescriptor descriptor : descriptors) {
+                DecoratedDescriptor actualDescriptor = new DecoratedDescriptor(descriptor);
+                sortedDescriptors.put(descriptor.getName(),
+                                      actualDescriptor);
+            }
+            if(!inIsNew) {
+                for(DecoratedDescriptor descriptor : sortedDescriptors.values()) {
+                    String existingValue = fixSessionValue.getSessionSettings().get(descriptor.getName());
+                    if(existingValue == null) {
+                        descriptor.setValue(null);
+                    } else {
+                        descriptor.setValue(existingValue);
+                    }
+                }
+            }
+            Wizard fixSessionWizard = new Wizard();
+            fixSessionWizard.addListener(new AbstractWizardProgressListener() {
+                public void activeStepChanged(WizardStepActivationEvent inEvent)
+                {
+                }
+                public void stepSetChanged(WizardStepSetChangedEvent inEvent)
+                {
+                }
+                public void wizardCompleted(WizardCompletedEvent inEvent)
+                {
+                    // TODO subWindow.close();
+                    System.out.println("COCO: wizard completed");
+                }
+                public void wizardCancelled(WizardCancelledEvent inEvent)
+                {
+                    // TODO subWindow.close();
+                    System.out.println("COCO: wizard canceled");
+                }
+                private static final long serialVersionUID = 7914059294191603115L;
+            });
+            fixSessionWizard.addStep(new WizardStep() {
+                @Override
+                public String getCaption()
+                {
+                    return "Type";
+                }
+                @Override
+                public Component getContent()
+                {
+                    FormLayout formLayout = new FormLayout();
+                    formLayout.setSizeFull();
+                    initializeFields();
+//                    connectionTypeOptionGroup.setMultiSelect(false);
+                    connectionType.setItems(DisplayFixSession.ACCEPTOR,
+                                            DisplayFixSession.INITIATOR);
+                    connectionType.setTooltipText("Indicates whether the session will receive orders (acceptor) or send them (initiator)");
+//                    connectionType.setRequired(true);
+//                    connectionType.setErrorMessage("Connection type required");
+                    getBinder().forField(connectionType).asRequired("Connection type required").bind("connectionType");
+                    affinity.setTooltipText("Indicates which cluster instance will host this session, if unsure, leave as 1");
+//                    affinity.setRequired(true);
+//                    affinity.setErrorMessage("Affinity required");
+                    getBinder().forField(affinity).asRequired("Affinity Required").withValidator((affinityValue,inContext) -> {
+                        try {
+                            Integer.parseInt(String.valueOf(affinityValue));
+                        } catch (Exception e) {
+                            return ValidationResult.error(ExceptionUtils.getRootCauseMessage(e));
+                        }
+                        return ValidationResult.ok();
+                    }).withConverter(new Converter<String,Integer>(){
+                        private static final long serialVersionUID = 2261243139927742849L;
+                        @Override
+                        public Result<Integer> convertToModel(String inValue,
+                                                              ValueContext inContext)
+                        {
+                            try {
+                                return Result.ok(Integer.parseInt(String.valueOf(inValue)));
+                            } catch (Exception e) {
+                                return Result.error(ExceptionUtils.getRootCauseMessage(e));
+                            }
+                        }
+                        @Override
+                        public String convertToPresentation(Integer inValue,
+                                                            ValueContext inContext)
+                        {
+                            return String.valueOf(inValue);
+                            
+                        }}).bind("affinity");
+                    updateFields();
+                    formLayout.add(connectionType,
+                                   affinity);
+                    return formLayout;
+                }
+                @Override
+                public boolean onAdvance()
+                {
+                    System.out.println("COCO: step1 onAdvance: " + connectionType.isInvalid() + " " + affinity.isInvalid());
+                    updateFixSession();
+                    return !connectionType.isInvalid() && !affinity.isInvalid();
+                }
+                @Override
+                public boolean onBack()
+                {
+                    return false;
+                }
+                /**
+                 * Initialize the UI widgets.
+                 */
+                private void initializeFields()
+                {
+                    if(fixSessionValue.getConnectionType() != null) {
+                        connectionType.setValue(fixSessionValue.getConnectionType());
+                    }
+                    affinity.setValue(String.valueOf(fixSessionValue.getAffinity()));
+                    connectionType.setVisible(true);
+                    affinity.setVisible(true);
+                }
+                /**
+                 * Update the UI fields from the FIX session variable.
+                 */
+                private void updateFields()
+                {
+                    connectionType.setValue(fixSessionValue.getConnectionType());
+                    affinity.setValue(String.valueOf(fixSessionValue.getAffinity()));
+                }
+                /**
+                 * Update the FIX session variable from the UI fields.
+                 */
+                private void updateFixSession()
+                {
+                    fixSessionValue.setConnectionType(connectionType.getValue());
+                    fixSessionValue.setAffinity(Integer.parseInt(affinity.getValue()));
+                }
+            });
+            fixSessionWizard.addStep(new WizardStep() {
+                @Override
+                public String getCaption()
+                {
+                    return "Network";
+                }
+                @Override
+                public Component getContent()
+                {
+                    FormLayout formLayout = new FormLayout();
+                    formLayout.setSizeFull();
+                    testConnectionLabel.setVisible(false);
+                    if(hostname.isEmpty()) {
+                        testConnectionButton.setEnabled(true);
+                    } else {
+                        testConnectionButton.setEnabled(false);
+                    }
+                    testConnectionButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+                        @Override
+                        public void onComponentEvent(ClickEvent<Button> inEvent)
+                        {
+                            testConnectionLabel.setText("");
+                            testConnectionLabel.setClassName(ButtonVariant.LUMO_SUCCESS.getVariantName());
+                            testConnectionLabel.setVisible(false);
+                            try(Socket s = new Socket(StringUtils.trimToNull(hostname.getValue()),
+                                                      Integer.parseInt(StringUtils.trim(port.getValue())))) {
+                                testConnectionLabel.setText("Test connection success");
+                                testConnectionLabel.setClassName(ButtonVariant.LUMO_SUCCESS.getVariantName());
+                            } catch (Exception e) {
+                                testConnectionLabel.setText("Test connection failed: " + ExceptionUtils.getRootCauseMessage(e));
+                                testConnectionLabel.setClassName(ButtonVariant.LUMO_ERROR.getVariantName());
+                            }
+                            testConnectionLabel.setVisible(true);
+                        }
+                        private static final long serialVersionUID = -6990373053475044911L;
+                    });
+                    if(fixSessionValue.isAcceptor()) {
+                        FixSessionInstanceData instanceData = getServiceClient().getFixSessionInstanceData(fixSessionValue.getAffinity());
+                        hostname.setValue(instanceData.getHostname());
+                        hostname.setReadOnly(true);
+                        hostname.setTooltipText("The acceptor hostname is determined by the server and is not modifiable");
+                        port.setValue(String.valueOf(instanceData.getPort()));
+                        port.setTooltipText("The acceptor port is determined by the server cluster framework and is not modifiable");
+                        port.setReadOnly(true);
+                        testConnectionButton.setVisible(false);
+                    } else {
+                        hostname.setReadOnly(false);
+                        hostname.setTooltipText("Hostname of the FIX gateway to connect to");
+                        hostname.setValue(fixSessionValue.getHostname()==null?"exchange.marketcetera.com":fixSessionValue.getHostname());
+                        getBinder().forField(hostname).asRequired("Hostname Required").withValidator((hostnameValue,inContext) -> {
+                            // TODO add hostname regex
+                            return ValidationResult.ok();
+                        }).bind("hostname");
+                        hostname.addValueChangeListener(inEvent -> {
+                            if(!hostname.isEmpty()) {
+                                testConnectionButton.setEnabled(false);
+                            }
+                        });
+                        port.setReadOnly(false);
+                        port.setTooltipText("Port of the FIX gateway to connect to");
+                        port.setValue(fixSessionValue.getPort()==0?"7001":String.valueOf(fixSessionValue.getPort()));
+                        getBinder().forField(port).asRequired("Port is required").withValidator((portValue,inContext) -> {
+                            try {
+                                Integer.parseInt(String.valueOf(portValue));
+                            } catch (Exception e) {
+                                return ValidationResult.error(ExceptionUtils.getRootCauseMessage(e));
+                            }
+                            return ValidationResult.ok();
+                        }).withConverter(new Converter<String,Integer>(){
+                            private static final long serialVersionUID = 2261243139927742849L;
+                            @Override
+                            public Result<Integer> convertToModel(String inValue,
+                                                                  ValueContext inContext)
+                            {
+                                try {
+                                    return Result.ok(Integer.parseInt(String.valueOf(inValue)));
+                                } catch (Exception e) {
+                                    return Result.error(ExceptionUtils.getRootCauseMessage(e));
+                                }
+                            }
+                            @Override
+                            public String convertToPresentation(Integer inValue,
+                                                                ValueContext inContext)
+                            {
+                                return String.valueOf(inValue);
+                                
+                            }}).bind("port");
+                        testConnectionButton.setVisible(true);
+                    }
+                    initializeFields();
+                    updateFields();
+                    formLayout.add(hostname,
+                                   port,
+                                   testConnectionButton,
+                                   testConnectionLabel);
+//                    formLayout.setComponentAlignment(testConnectionButton,
+//                                                     Alignment.BOTTOM_RIGHT);
+                    return formLayout;
+                }
+                @Override
+                public boolean onAdvance()
+                {
+                    updateFixSession();
+                    return !hostname.isInvalid() && !port.isInvalid();
+                }
+                @Override
+                public boolean onBack()
+                {
+                    return true;
+                }
+                /**
+                 * Initialize the UI widgets.
+                 */
+                private void initializeFields()
+                {
+                    if(fixSessionValue.isAcceptor()) {
+                        FixSessionInstanceData instanceData = getServiceClient().getFixSessionInstanceData(fixSessionValue.getAffinity());
+                        System.out.println("COCO: instance data is " + instanceData);
+                        hostname.setValue(instanceData.getHostname());
+                        hostname.setReadOnly(true);
+                        hostname.setTooltipText("The acceptor hostname is determined by the server and is not modifiable");
+                        port.setValue(String.valueOf(instanceData.getPort()));
+                        port.setTooltipText("The acceptor port is determined by the server cluster framework and is not modifiable");
+                        port.setReadOnly(true);
+                        testConnectionButton.setVisible(false);
+                    } else {
+                        hostname.setReadOnly(false);
+                        hostname.setTooltipText("Hostname of the FIX gateway to connect to");
+                        hostname.setValue(fixSessionValue.getHostname()==null?"exchange.marketcetera.com":fixSessionValue.getHostname());
+                        getBinder().forField(hostname).asRequired("Hostname is required").withValidator((hostnameValue,inContext) -> {
+                            hostnameValue = StringUtils.trimToNull(hostnameValue);
+                            // TODO use hostname reg ex
+                            if(hostnameValue == null) {
+                                return ValidationResult.error("Hostname is required");
+                            } else {
+                                return ValidationResult.ok();
+                            }
+                        }).bind("hostname");
+                        hostname.addValueChangeListener(inEvent -> {
+//                            fixSessionValue.setHost(String.valueOf(inEvent.getProperty().getValue()));
+                            if(!hostname.isEmpty()) {
+                                testConnectionButton.setEnabled(false);
+                            }
+                        });
+                        port.setReadOnly(false);
+                        port.setTooltipText("Port of the FIX gateway to connect to");
+                        port.setValue(fixSessionValue.getPort()==0?"7001":String.valueOf(fixSessionValue.getPort()));
+                        port.setRequired(true);
+                        getBinder().forField(port).asRequired("Port is required").withValidator((portValue,inContext) -> {
+                            try {
+                                Integer.parseInt(String.valueOf(portValue));
+                            } catch (Exception e) {
+                                return ValidationResult.error(ExceptionUtils.getRootCauseMessage(e));
+                            }
+                            return ValidationResult.ok();
+                        }).withConverter(new Converter<String,Integer>(){
+                            private static final long serialVersionUID = 2261243139927742849L;
+                            @Override
+                            public Result<Integer> convertToModel(String inValue,
+                                                                  ValueContext inContext)
+                            {
+                                try {
+                                    return Result.ok(Integer.parseInt(String.valueOf(inValue)));
+                                } catch (Exception e) {
+                                    return Result.error(ExceptionUtils.getRootCauseMessage(e));
+                                }
+                            }
+                            @Override
+                            public String convertToPresentation(Integer inValue,
+                                                                ValueContext inContext)
+                            {
+                                return String.valueOf(inValue);
+                                
+                            }}).bind("port");
+                        testConnectionButton.setVisible(true);
+                    }
+                }
+                /**
+                 * Update the UI fields from the FIX session variable.
+                 */
+                private void updateFields()
+                {
+                }
+                /**
+                 * Update the FIX session variable from the UI fields.
+                 */
+                private void updateFixSession()
+                {
+                    fixSessionValue.setHostname(hostname.getValue());
+                    fixSessionValue.setPort(Integer.parseInt(port.getValue()));
+                }
+                /**
+                 * connection button widget
+                 */
+                private Button testConnectionButton = new Button("Test Connection");
+                /**
+                 * test connection results widget
+                 */
+                private Label testConnectionLabel = new Label();
+            });
+            fixSessionWizard.addStep(new WizardStep() {
+                @Override
+                public String getCaption()
+                {
+                    return "Identity";
+                }
+                @Override
+                public Component getContent()
+                {
+                    // gather a list of the existing sessions, we'll use this to do some basic validation about session identity
+                    final Collection<ActiveFixSession> existingSessions = FixAdminClientService.getInstance().getFixSessions();
+                    FormLayout formLayout = new FormLayout();
+                    formLayout.setSizeFull();
+                    name.setTooltipText("Unique human-readable name of the session");
+                    getBinder().forField(name).asRequired("Name is required").withValidator((nameValue,inContext) -> {
+                        String computedValue = StringUtils.trimToNull(String.valueOf(nameValue));
+                        for(ActiveFixSession existingSession : existingSessions) {
+                            if(inIsNew && existingSession.getFixSession().getName().equals(computedValue)) {
+                                return ValidationResult.error("'"+existingSession.getFixSession().getName() + "' is already in use");
+                            }
+                        }
+                        if(computedValue.length() > 255) {
+                            return ValidationResult.error("Name may contain up to 255 characters");
+                        }
+                        if(!NDEntityBase.namePattern.matcher(computedValue).matches()) {
+                            return ValidationResult.error("Names may contain up to 255 letters, numbers, spaces, or the dash char ('-')");
+                        }
+                        return ValidationResult.ok();
+                    }).bind("name");
+                    description.setTooltipText("Optional description of the session");
+                    getBinder().forField(description).withValidator((descriptionValue,inContext) -> {
+                        String computedValue = StringUtils.trimToNull(String.valueOf(descriptionValue));
+                        if(computedValue.length() > 255) {
+                            return ValidationResult.error("Description may contain up to 255 characters");
+                        }
+                        return ValidationResult.ok();
+                    }).bind("description");
+                    brokerId.setTooltipText("Unique system identifier for this FIX session used to target orders, pick something short and descriptive");
+                    brokerId.setRequired(true);
+                    getBinder().forField(brokerId).asRequired("Broker Id required").withValidator((brokerIdValue,inContext) -> {
+                        String computedValue = StringUtils.trimToNull(String.valueOf(brokerIdValue));
+                        for(ActiveFixSession existingSession : existingSessions) {
+                            if(inIsNew && existingSession.getFixSession().getBrokerId().equals(computedValue)) {
+                                return ValidationResult.error("'"+existingSession.getFixSession().getBrokerId() + "' is already in use");
+                            }
+                        }
+                        return ValidationResult.ok();
+                    }).bind("brokerId");
+                    // build the FIX Session ID from three components
+                    fixVersion.setTooltipText("FIX version of the session");
+                    fixVersion.setAllowCustomValue(false);
+                    fixVersion.setItemLabelGenerator(inItem -> inItem.name());
+                    getBinder().forField(fixVersion).asRequired("FIX Version required").withValidator((inValue,inContext) -> {
+                        String fixVersionValue = inValue == null ? null : inValue.name();
+                        SessionID sessionId = new SessionID(fixVersionValue,
+                                                            senderCompIdTextField.getValue(),
+                                                            targetCompIdTextField.getValue());
+                        for(ActiveFixSession existingSession : existingSessions) {
+                            if(inIsNew && existingSession.getFixSession().getSessionId().equals(sessionId.toString())) {
+                                return ValidationResult.error("'"+existingSession.getFixSession().getSessionId() + "' is already in use");
+                            }
+                        }
+                        return ValidationResult.ok();
+                    }).bind("fixVersion");
+                    senderCompIdTextField.setTooltipText("Sender Comp Id of the session");
+                    senderCompIdTextField.setRequired(true);
+                    senderCompIdTextField.setErrorMessage("Sender Comp Id required");
+                    targetCompIdTextField.setTooltipText("Target Comp Id of the session");
+                    targetCompIdTextField.setRequired(true);
+                    targetCompIdTextField.setErrorMessage("Target Comp Id required");
+                    List<FIXVersion> fixVersions = Lists.newArrayList();
+                    for(FIXVersion fixVersion : FIXVersion.values()) {
+                        if(fixVersion == FIXVersion.FIX_SYSTEM) {
+                            continue;
+                        }
+                        fixVersions.add(fixVersion);
+                    }
+                    fixVersion.setItems(fixVersions);
+                    initializeFields();
+                    updateFields();
+                    formLayout.add(name,
+                                   description,
+                                   brokerId,
+                                   fixVersion,
+                                   senderCompIdTextField,
+                                   targetCompIdTextField);
+                    return formLayout;
+                }
+                @Override
+                public boolean onAdvance()
+                {
+                    updateFixSession();
+                    return !name.isInvalid() && !description.isInvalid() && !brokerId.isInvalid() &&
+                            !fixVersion.isInvalid() && !senderCompIdTextField.isInvalid() && !targetCompIdTextField.isInvalid();
+                }
+                @Override
+                public boolean onBack()
+                {
+                    return true;
+                }
+                /**
+                 * Initialize the UI widgets.
+                 */
+                private void initializeFields()
+                {
+                    name.setValue(fixSessionValue.getName()==null?"New Session":fixSessionValue.getName());
+                    description.setValue(fixSessionValue.getDescription());
+                    brokerId.setValue(fixSessionValue.getBrokerId()==null?"new-broker":fixSessionValue.getBrokerId());
+                    if(fixSessionValue.getSessionId() != null) {
+                        SessionID sessionId = new quickfix.SessionID(fixSessionValue.getSessionId());
+                        if(sessionId.isFIXT()) {
+                            String defaultApplVerId = fixSessionValue.getSessionSettings().get(Session.SETTING_DEFAULT_APPL_VER_ID);
+                            fixVersion.setValue(FIXVersion.getFIXVersion(new quickfix.field.ApplVerID(defaultApplVerId)));
+                        } else {
+                            fixVersion.setValue(FIXVersion.getFIXVersion(sessionId));
+                        }
+                        senderCompIdTextField.setValue(sessionId.getSenderCompID());
+                        targetCompIdTextField.setValue(sessionId.getTargetCompID());
+                    } else {
+                        senderCompIdTextField.setValue("MATP");
+                        targetCompIdTextField.setValue("MRKTC-EXCH");
+                        fixVersion.setValue(FIXVersion.FIX42);
+                    }
+                }
+                /**
+                 * Update the UI fields from the FIX session variable.
+                 */
+                private void updateFields()
+                {
+                }
+                /**
+                 * Update the FIX session variable from the UI fields.
+                 */
+                private void updateFixSession()
+                {
+                    fixSessionValue.setName(name.getValue());
+                    fixSessionValue.setDescription(description.getValue());
+                    fixSessionValue.setBrokerId(brokerId.getValue());
+                    String fixVersionValue = fixVersion.getValue() == null ? null : String.valueOf(fixVersion.getValue());
+                    FIXVersion fixVersion = FIXVersion.getFIXVersion(fixVersionValue);
+                    if(fixVersion.isFixT()) {
+                        fixSessionValue.getSessionSettings().put(Session.SETTING_DEFAULT_APPL_VER_ID,
+                                                              fixVersionValue);
+                        DecoratedDescriptor defaultApplVerId = sortedDescriptors.get(Session.SETTING_DEFAULT_APPL_VER_ID);
+                        defaultApplVerId.setValue(fixVersionValue);
+                        fixVersionValue = FixVersions.BEGINSTRING_FIXT11;
+                    }
+                    SessionID sessionId = new SessionID(fixVersionValue,
+                                                        senderCompIdTextField.getValue(),
+                                                        targetCompIdTextField.getValue());
+                    fixSessionValue.setSessionId(sessionId.toString());
+                }
+                /**
+                 * session name UI widget
+                 */
+                private TextField name = new TextField("Session Name");
+                /**
+                 * session description UI widget
+                 */
+                private TextField description = new TextField("Session Description");
+                /**
+                 * session broker id UI widget
+                 */
+                private TextField brokerId = new TextField("Broker Id");
+                /**
+                 * session FIX version UI widget
+                 */
+                private ComboBox<FIXVersion> fixVersion = new ComboBox<>("FIX Version");
+                /**
+                 * session sender comp id UI widget
+                 */
+                private TextField senderCompIdTextField = new TextField("Sender Comp Id");
+                /**
+                 * session target comp id UI widget
+                 */
+                private TextField targetCompIdTextField = new TextField("Target Comp Id");
+            });
+            fixSessionWizard.addStep(new WizardStep() {
+                @Override
+                public String getCaption()
+                {
+                    return "Start and End";
+                }
+                @Override
+                public Component getContent()
+                {
+                    FormLayout formLayout = new FormLayout();
+                    formLayout.setSizeFull();
+                    // set up widgets
+                    // session type
+                    sessionType.setItems(Lists.newArrayList(DisplayFixSession.DAILY,DisplayFixSession.WEEKLY,DisplayFixSession.CONTINUOUS));
+                    sessionType.setAllowCustomValue(false);
+                    // start and end time
+                    getBinder().forField(startTime).withValidator(new RegexpValidator("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
+                                                                                      "Enter a time value in the form 00:00:00")).bind("startTime");
+                    getBinder().forField(endTime).withValidator(new RegexpValidator("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
+                                                                                    "Enter a time value in the form 00:00:00")).bind("endTime");
+                    // time zone
+                    timezone.setAllowCustomValue(false);
+                    timezone.setItems(TimeZone.getAvailableIDs());
+                    // start and end day
+                    startDay.setAllowCustomValue(false);
+                    endDay.setAllowCustomValue(false);
+                    startDay.setItems(FixSessionDay.values());
+                    endDay.setItems(FixSessionDay.values());
+                    startDay.setItemLabelGenerator(item -> item.name());
+                    endDay.setItemLabelGenerator(item -> item.name());
+                    sessionType.addValueChangeListener(inEvent -> {
+                        updateFields();
+                    });
+                    // set up data
+                    initializeFields();
+                    updateFields();
+                    formLayout.add(sessionType,
+                                   startTime,
+                                   endTime,
+                                   startDay,
+                                   endDay,
+                                   timezone);
+                    return formLayout;
+                }
+                @Override
+                public boolean onAdvance()
+                {
+                    updateFixSession();
+                    if(isContinuousSession(fixSessionValue)) {
+                        return !sessionType.isInvalid();
+                    }
+                    if(isWeeklySession(fixSessionValue)) {
+                        return !sessionType.isInvalid() && !startTime.isInvalid() && !endTime.isInvalid() && !timezone.isInvalid() &&
+                                !startDay.isInvalid() && !endDay.isInvalid();
+                    }
+                    return !sessionType.isInvalid() && !startTime.isInvalid() && !endTime.isInvalid() && !timezone.isInvalid();
+                }
+                @Override
+                public boolean onBack()
+                {
+                    return true;
+                }
+                /**
+                 * Initialize the UI widgets.
+                 */
+                private void initializeFields()
+                {
+                    Map<String,String> settings = fixSessionValue.getSessionSettings();
+                    startTime.setValue(settings.containsKey(Session.SETTING_START_TIME)?settings.get(Session.SETTING_START_TIME):"00:00:00");
+                    endTime.setValue(settings.containsKey(Session.SETTING_END_TIME)?settings.get(Session.SETTING_END_TIME):"00:00:00");
+                    startDay.setValue(settings.containsKey(Session.SETTING_START_DAY)?FixSessionDay.valueOf(settings.get(Session.SETTING_START_DAY)):FixSessionDay.Monday);
+                    endDay.setValue(settings.containsKey(Session.SETTING_END_DAY)?FixSessionDay.valueOf(settings.get(Session.SETTING_END_DAY)):FixSessionDay.Friday);
+                    timezone.setValue(settings.containsKey(Session.SETTING_TIMEZONE)?settings.get(Session.SETTING_TIMEZONE):TimeZone.getDefault().getID());
+                    startTime.setVisible(true);
+                    endTime.setVisible(true);
+                    timezone.setVisible(true);
+                    startDay.setVisible(true);
+                    endDay.setVisible(true);
+                    // set default values
+                    // now, finalize the setup based on the selected session type
+                    String value = settings.get(Session.SETTING_NON_STOP_SESSION);
+                    if(DisplayFixSession.YES.equals(value)) {
+                        // this is a non-stop session. hide everything but the select
+                        startTime.setVisible(false);
+                        endTime.setVisible(false);
+                        timezone.setVisible(false);
+                        startDay.setVisible(false);
+                        endDay.setVisible(false);
+                        sessionType.setValue(DisplayFixSession.CONTINUOUS);
+                    } else {
+                        // this is a weekly or daily session
+                        value = settings.get(Session.SETTING_START_DAY);
+                        if(value != null) {
+                            // this is a weekly session, nothing more needs to be done
+                            sessionType.setValue(DisplayFixSession.WEEKLY);
+                        } else {
+                            // this is a daily session, hide the weekly settings
+                            startDay.setVisible(false);
+                            endDay.setVisible(false);
+                            sessionType.setValue(DisplayFixSession.DAILY);
+                        }
+                    }
+                }
+                /**
+                 * Update the UI fields from the FIX session variable.
+                 */
+                private void updateFields()
+                {
+                    Map<String,String> settings = fixSessionValue.getSessionSettings();
+                    String value = String.valueOf(sessionType.getValue());
+                    switch(value) {
+                        case DisplayFixSession.CONTINUOUS:
+                            startTime.setVisible(false);
+                            endTime.setVisible(false);
+                            timezone.setVisible(false);
+                            startDay.setVisible(false);
+                            endDay.setVisible(false);
+                            break;
+                        case DisplayFixSession.DAILY:
+                            startTime.setVisible(true);
+                            startTime.setValue(settings.containsKey(Session.SETTING_START_TIME)?settings.get(Session.SETTING_START_TIME):"00:00:00");
+                            endTime.setVisible(true);
+                            endTime.setValue(settings.containsKey(Session.SETTING_END_TIME)?settings.get(Session.SETTING_END_TIME):"00:00:00");
+                            timezone.setVisible(true);
+                            timezone.setValue(settings.containsKey(Session.SETTING_TIMEZONE)?settings.get(Session.SETTING_TIMEZONE):TimeZone.getDefault().getID());
+                            startDay.setVisible(false);
+                            endDay.setVisible(false);
+                            break;
+                        case DisplayFixSession.WEEKLY:
+                            startTime.setVisible(true);
+                            startTime.setValue(settings.containsKey(Session.SETTING_START_TIME)?settings.get(Session.SETTING_START_TIME):"00:00:00");
+                            endTime.setVisible(true);
+                            endTime.setValue(settings.containsKey(Session.SETTING_END_TIME)?settings.get(Session.SETTING_END_TIME):"00:00:00");
+                            timezone.setVisible(true);
+                            timezone.setValue(settings.containsKey(Session.SETTING_TIMEZONE)?settings.get(Session.SETTING_TIMEZONE):TimeZone.getDefault().getID());
+                            startDay.setVisible(true);
+                            startDay.setValue(settings.containsKey(Session.SETTING_START_DAY)?FixSessionDay.valueOf(settings.get(Session.SETTING_START_DAY)):FixSessionDay.Monday);
+                            endDay.setVisible(true);
+                            endDay.setValue(settings.containsKey(Session.SETTING_END_DAY)?FixSessionDay.valueOf(settings.get(Session.SETTING_END_DAY)):FixSessionDay.Friday);
+                            break;
+                    }
+                }
+                /**
+                 * Update the FIX session variable from the UI fields.
+                 */
+                private void updateFixSession()
+                {
+                    Map<String,String> settings = fixSessionValue.getSessionSettings();
+                    String value = String.valueOf(sessionType.getValue());
+                    switch(value) {
+                        case DisplayFixSession.CONTINUOUS:
+                            settings.remove(Session.SETTING_START_TIME);
+                            settings.remove(Session.SETTING_END_TIME);
+                            settings.remove(Session.SETTING_START_DAY);
+                            settings.remove(Session.SETTING_END_DAY);
+                            settings.remove(Session.SETTING_TIMEZONE);
+                            settings.put(Session.SETTING_NON_STOP_SESSION,
+                                         DisplayFixSession.YES);
+                            break;
+                        case DisplayFixSession.DAILY:
+                            settings.remove(Session.SETTING_START_DAY);
+                            settings.remove(Session.SETTING_END_DAY);
+                            settings.remove(Session.SETTING_NON_STOP_SESSION);
+                            settings.put(Session.SETTING_START_TIME,
+                                         startTime.getValue());
+                            settings.put(Session.SETTING_END_TIME,
+                                         endTime.getValue());
+                            settings.put(Session.SETTING_TIMEZONE,
+                                         String.valueOf(timezone.getValue()));
+                            break;
+                        case DisplayFixSession.WEEKLY:
+                            settings.remove(Session.SETTING_NON_STOP_SESSION);
+                            settings.put(Session.SETTING_START_TIME,
+                                         startTime.getValue());
+                            settings.put(Session.SETTING_END_TIME,
+                                         endTime.getValue());
+                            settings.put(Session.SETTING_TIMEZONE,
+                                         String.valueOf(timezone.getValue()));
+                            settings.put(Session.SETTING_START_DAY,
+                                         String.valueOf(startDay.getValue()));
+                            settings.put(Session.SETTING_END_DAY,
+                                         String.valueOf(endDay.getValue()));
+                            break;
+                    }
+                }
+                /**
+                 * Indicates if the given session is a weekly session.
+                 *
+                 * @param inFixSession a <code>DisplayFixSession</code> value
+                 * @return a <code>boolean</code> value
+                 */
+                private boolean isWeeklySession(DisplayFixSession inFixSession)
+                {
+                    return inFixSession.getSessionSettings().containsKey(Session.SETTING_START_DAY);
+                }
+                /**
+                 * Indicates if the given session is a non-stop, continuous session.
+                 *
+                 * @param inFixSession a <code>DisplayFixSession</code> value
+                 * @return a <code>boolean</code> value
+                 */
+                private boolean isContinuousSession(DisplayFixSession inFixSession)
+                {
+                    return DisplayFixSession.YES.equals(inFixSession.getSessionSettings().get(Session.SETTING_NON_STOP_SESSION));
+                }
+                /**
+                 * UI widget for session type
+                 */
+                private ComboBox<String> sessionType = new ComboBox<>("Session Type");
+                /**
+                 * UI widget for session start time
+                 */
+                private TextField startTime = new TextField("Start Time");
+                /**
+                 * UI widget for session end time
+                 */
+                private TextField endTime = new TextField("End Time");
+                /**
+                 * UI widget for time zone
+                 */
+                private ComboBox<String> timezone = new ComboBox<>("Time Zone");
+                /**
+                 * UI widget for start day
+                 */
+                private ComboBox<FixSessionDay> startDay = new ComboBox<>("Start Day");
+                /**
+                 * UI widget for end day
+                 */
+                private ComboBox<FixSessionDay> endDay = new ComboBox<>("End Day");
+            });
+            componentLayout.add(fixSessionWizard);
         }
         /**
-         * name widget
+         * connection type UI widget
          */
-        private TextField name;
+        private RadioButtonGroup<String> connectionType = new RadioButtonGroup<>("Connection Type");
         /**
-         * description widget
+         * affinity UI widget
          */
-        private TextField description;
+        private TextField affinity = new TextField("Affinty");
+        /**
+         * hostname UI widget
+         */
+        private TextField hostname = new TextField("Hostname");
+        /**
+         * port UI widget
+         */
+        private TextField port = new TextField("Port");
         /**
          * editor components layout value
          */
         private VerticalLayout componentLayout;
+        private DisplayFixSession fixSessionValue;
         private static final long serialVersionUID = -1931251254078030265L;
+    }
+    /**
+     * Provides a <code>FixSessionAttributeDescriptor</code> that supports setting a value.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static class DecoratedDescriptor
+            extends SimpleFixSessionAttributeDescriptor
+    {
+        /**
+         * Create a new DecoratedDescriptor instance.
+         *
+         * @param inDescriptor a <code>FixSessionAttributeDescriptor</code> value
+         */
+        public DecoratedDescriptor(FixSessionAttributeDescriptor inDescriptor)
+        {
+            setAdvice(inDescriptor.getAdvice());
+            setDefaultValue(inDescriptor.getDefaultValue());
+            setDescription(inDescriptor.getDescription());
+            setName(inDescriptor.getName());
+            setPattern(inDescriptor.getPattern());
+            setRequired(inDescriptor.isRequired());
+            setValue(getDefaultValue());
+        }
+        /**
+         * Create a new DecoratedDescriptor instance.
+         */
+        public DecoratedDescriptor() {}
+        /**
+         * Get the value value.
+         *
+         * @return a <code>String</code> value
+         */
+        public String getValue()
+        {
+            return value;
+        }
+        /**
+         * Sets the value value.
+         *
+         * @param inValue a <code>String</code> value
+         */
+        public void setValue(String inValue)
+        {
+            value = inValue;
+        }
+        /**
+         * Reset the value to the default value.
+         */
+        public void reset()
+        {
+            value = getDefaultValue();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("DecoratedDescriptor [").append(getName()).append("=").append(value).append("]");
+            return builder.toString();
+        }
+        /**
+         * value set by user
+         */
+        private String value;
+        private static final long serialVersionUID = 142085523837757672L;
     }
     /**
      * edit form instance
      */
     private FixSessionForm form;
+    /**
+     * edit action label
+     */
+    private final String ACTION_EDIT = "Edit";
+    /**
+     * start action label
+     */
+    private final String ACTION_START = "Start";
+    /**
+     * stop action label
+     */
+    private final String ACTION_STOP = "Stop";
+    /**
+     * enable action label
+     */
+    private final String ACTION_ENABLE = "Enable";
+    /**
+     * disable action label
+     */
+    private final String ACTION_DISABLE = "Disable";
+    /**
+     * delete action label
+     */
+    private final String ACTION_DELETE = "Delete";
+    /**
+     * edit sequence numbers label
+     */
+    private final String ACTION_SEQUENCE = "Update Sequence Numbers";
     private static final long serialVersionUID = 516637620331918587L;
 }
