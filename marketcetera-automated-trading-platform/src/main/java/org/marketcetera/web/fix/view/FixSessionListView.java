@@ -39,13 +39,23 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.ItemClickEvent;
+import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
@@ -240,34 +250,43 @@ public class FixSessionListView
     {
         DisplayFixSession target = getGrid().asSingleSelect().getValue();
         String action = inEvent.getValue();
+        if(target == null || action == null) {
+            return;
+        }
         SLF4JLoggerProxy.debug(this,
                                "Action '{}' invoked on {}",
                                inEvent.getValue(),
                                target);
-        if(target == null || action == null) {
-            return;
-        }
         switch(action) {
             case ACTION_STOP:
                 getServiceClient().stopSession(target.getName());
+                updateList();
                 break;
             case ACTION_START:
                 getServiceClient().startSession(target.getName());
+                updateList();
                 break;
             case ACTION_DISABLE:
                 getServiceClient().disableSession(target.getName());
+                updateList();
                 break;
             case ACTION_ENABLE:
                 getServiceClient().enableSession(target.getName());
+                updateList();
                 break;
             case ACTION_EDIT:
                 addOrEditFormValue(target,
                                    form,
                                    false);
                 break;
+            case ACTION_DELETE:
+                getServiceClient().deleteSession(target.getName());
+                updateList();
+                break;
             default:
                 throw new UnsupportedOperationException("Unsupported action: " + action);
         }
+        super.actionValueChanged(inEvent);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractListView#addGridValueChangeListener(com.vaadin.flow.component.grid.Grid)
@@ -397,13 +416,11 @@ public class FixSessionListView
                 }
                 public void wizardCompleted(WizardCompletedEvent inEvent)
                 {
-                    // TODO subWindow.close();
-                    System.out.println("COCO: wizard completed");
                 }
                 public void wizardCancelled(WizardCancelledEvent inEvent)
                 {
-                    // TODO subWindow.close();
-                    System.out.println("COCO: wizard canceled");
+                    closeEditor();
+                    updateList();
                 }
                 private static final long serialVersionUID = 7914059294191603115L;
             });
@@ -419,16 +436,11 @@ public class FixSessionListView
                     FormLayout formLayout = new FormLayout();
                     formLayout.setSizeFull();
                     initializeFields();
-//                    connectionTypeOptionGroup.setMultiSelect(false);
                     connectionType.setItems(DisplayFixSession.ACCEPTOR,
                                             DisplayFixSession.INITIATOR);
                     connectionType.setTooltipText("Indicates whether the session will receive orders (acceptor) or send them (initiator)");
-//                    connectionType.setRequired(true);
-//                    connectionType.setErrorMessage("Connection type required");
                     getBinder().forField(connectionType).asRequired("Connection type required").bind("connectionType");
                     affinity.setTooltipText("Indicates which cluster instance will host this session, if unsure, leave as 1");
-//                    affinity.setRequired(true);
-//                    affinity.setErrorMessage("Affinity required");
                     getBinder().forField(affinity).asRequired("Affinity Required").withValidator((affinityValue,inContext) -> {
                         try {
                             Integer.parseInt(String.valueOf(affinityValue));
@@ -463,7 +475,6 @@ public class FixSessionListView
                 @Override
                 public boolean onAdvance()
                 {
-                    System.out.println("COCO: step1 onAdvance: " + connectionType.isInvalid() + " " + affinity.isInvalid());
                     updateFixSession();
                     return !connectionType.isInvalid() && !affinity.isInvalid();
                 }
@@ -596,8 +607,6 @@ public class FixSessionListView
                                    port,
                                    testConnectionButton,
                                    testConnectionLabel);
-//                    formLayout.setComponentAlignment(testConnectionButton,
-//                                                     Alignment.BOTTOM_RIGHT);
                     return formLayout;
                 }
                 @Override
@@ -618,7 +627,6 @@ public class FixSessionListView
                 {
                     if(fixSessionValue.isAcceptor()) {
                         FixSessionInstanceData instanceData = getServiceClient().getFixSessionInstanceData(fixSessionValue.getAffinity());
-                        System.out.println("COCO: instance data is " + instanceData);
                         hostname.setValue(instanceData.getHostname());
                         hostname.setReadOnly(true);
                         hostname.setTooltipText("The acceptor hostname is determined by the server and is not modifiable");
@@ -632,7 +640,6 @@ public class FixSessionListView
                         hostname.setValue(fixSessionValue.getHostname()==null?"exchange.marketcetera.com":fixSessionValue.getHostname());
                         getBinder().forField(hostname).asRequired("Hostname is required").withValidator((hostnameValue,inContext) -> {
                             hostnameValue = StringUtils.trimToNull(hostnameValue);
-                            // TODO use hostname reg ex
                             if(hostnameValue == null) {
                                 return ValidationResult.error("Hostname is required");
                             } else {
@@ -640,7 +647,6 @@ public class FixSessionListView
                             }
                         }).bind("hostname");
                         hostname.addValueChangeListener(inEvent -> {
-//                            fixSessionValue.setHost(String.valueOf(inEvent.getProperty().getValue()));
                             if(!hostname.isEmpty()) {
                                 testConnectionButton.setEnabled(false);
                             }
@@ -733,7 +739,7 @@ public class FixSessionListView
                     description.setTooltipText("Optional description of the session");
                     getBinder().forField(description).withValidator((descriptionValue,inContext) -> {
                         String computedValue = StringUtils.trimToNull(String.valueOf(descriptionValue));
-                        if(computedValue.length() > 255) {
+                        if(computedValue != null && computedValue.length() > 255) {
                             return ValidationResult.error("Description may contain up to 255 characters");
                         }
                         return ValidationResult.ok();
@@ -807,7 +813,7 @@ public class FixSessionListView
                 private void initializeFields()
                 {
                     name.setValue(fixSessionValue.getName()==null?"New Session":fixSessionValue.getName());
-                    description.setValue(fixSessionValue.getDescription());
+                    description.setValue(fixSessionValue.getDescription()==null?"New Session Description":fixSessionValue.getDescription());
                     brokerId.setValue(fixSessionValue.getBrokerId()==null?"new-broker":fixSessionValue.getBrokerId());
                     if(fixSessionValue.getSessionId() != null) {
                         SessionID sessionId = new quickfix.SessionID(fixSessionValue.getSessionId());
@@ -893,11 +899,6 @@ public class FixSessionListView
                     // session type
                     sessionType.setItems(Lists.newArrayList(DisplayFixSession.DAILY,DisplayFixSession.WEEKLY,DisplayFixSession.CONTINUOUS));
                     sessionType.setAllowCustomValue(false);
-                    // start and end time
-                    getBinder().forField(startTime).withValidator(new RegexpValidator("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
-                                                                                      "Enter a time value in the form 00:00:00")).bind("startTime");
-                    getBinder().forField(endTime).withValidator(new RegexpValidator("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
-                                                                                    "Enter a time value in the form 00:00:00")).bind("endTime");
                     // time zone
                     timezone.setAllowCustomValue(false);
                     timezone.setItems(TimeZone.getAvailableIDs());
@@ -914,6 +915,11 @@ public class FixSessionListView
                     // set up data
                     initializeFields();
                     updateFields();
+                    // start and end time
+                    getBinder().forField(startTime).withValidator(new RegexpValidator("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
+                                                                                      "Enter a time value in the form 00:00:00")).bind("startTime");
+                    getBinder().forField(endTime).withValidator(new RegexpValidator("^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$",
+                                                                                    "Enter a time value in the form 00:00:00")).bind("endTime");
                     formLayout.add(sessionType,
                                    startTime,
                                    endTime,
@@ -1108,6 +1114,144 @@ public class FixSessionListView
                  */
                 private ComboBox<FixSessionDay> endDay = new ComboBox<>("End Day");
             });
+            fixSessionWizard.addStep(new WizardStep() {
+                @Override
+                public String getCaption()
+                {
+                    return "Settings";
+                }
+                @Override
+                public Component getContent()
+                {
+                    VerticalLayout formLayout = new VerticalLayout();
+                    formLayout.setMargin(true);
+                    formLayout.setSizeFull();
+                    final Grid<DecoratedDescriptor> descriptorGrid = new Grid<>(DecoratedDescriptor.class,
+                                                                                false);
+                    Column<DecoratedDescriptor> nameColumn = descriptorGrid.addColumn(DecoratedDescriptor::getName).setHeader("Name");
+                    Column<DecoratedDescriptor> valueColumn = descriptorGrid.addColumn(DecoratedDescriptor::getValue).setHeader("Value");
+                    nameColumn.setTooltipGenerator(selectedDescriptor -> selectedDescriptor.getDescription());
+                    valueColumn.setTooltipGenerator(selectedDescriptor -> selectedDescriptor.getDescription());
+                    descriptorGrid.setItems(sortedDescriptors.values());
+                    descriptorGrid.setWidth("1024px");
+                    descriptorGrid.setHeight("640px");
+                    Binder<DecoratedDescriptor> gridBinder = new Binder<>(DecoratedDescriptor.class);
+                    Editor<DecoratedDescriptor> editor = descriptorGrid.getEditor();
+                    editor.setBinder(gridBinder);
+                    TextField valueField = new TextField();
+                    valueField.setWidthFull();
+//                    addCloseHandler(valueField,
+//                                    editor);
+                    gridBinder.forField(valueField)
+//                            .withStatusLabel(firstNameValidationMessage)
+                            .bind(DecoratedDescriptor::getValue, DecoratedDescriptor::setValue);
+                    valueColumn.setEditorComponent(valueField);
+                    descriptorGrid.addItemDoubleClickListener(e -> {
+                        editor.editItem(e.getItem());
+                        Component editorComponent = e.getColumn().getEditorComponent();
+                        if (editorComponent instanceof Focusable) {
+                            ((Focusable<?>)editorComponent).focus();
+                        }
+                    });
+                    final DecoratedDescriptor selectedDescriptor = new DecoratedDescriptor();
+                    descriptorGrid.addItemClickListener(inEvent -> {
+                        ItemClickEvent<DecoratedDescriptor> itemClickEvent = (ItemClickEvent<DecoratedDescriptor>)inEvent;
+                        DecoratedDescriptor clickItem = itemClickEvent.getItem();
+                        selectedDescriptor.setAdvice(String.valueOf(clickItem.getAdvice()));
+                        selectedDescriptor.setDefaultValue(String.valueOf(clickItem.getDefaultValue()));
+                        selectedDescriptor.setDescription(String.valueOf(clickItem.getDescription()));
+                        selectedDescriptor.setName(String.valueOf(clickItem.getName()));
+                        selectedDescriptor.setPattern(String.valueOf(clickItem.getPattern()));
+                        selectedDescriptor.setRequired(Boolean.parseBoolean(String.valueOf(clickItem.isRequired())));
+                    });
+//                    // create an editor specific to the selected row
+//                    descriptorGrid.setEditorFieldFactory(new FieldGroupFieldFactory() {
+//                        @Override
+//                        @SuppressWarnings("rawtypes")
+//                        public <T extends Field> T createField(Class<?> inDataType,
+//                                                               Class<T> inFieldType)
+//                        {
+//                            final TextField textField = new TextField();
+//                            textField.setRequired(selectedDescriptor.isRequired());
+//                            textField.setDescription(selectedDescriptor.getDescription());
+//                            textField.setNullRepresentation("");
+//                            textField.addValueChangeListener(inEvent -> {
+//                                ValueChangeEvent valueChangeEvent = (ValueChangeEvent)inEvent;
+//                                String value = String.valueOf(valueChangeEvent.getProperty().getValue());
+//                                fixSessionValue.getSessionSettings().put(selectedDescriptor.getName(),
+//                                                                       value);
+//                            });
+//                            String pattern = StringUtils.trimToNull(selectedDescriptor.getPattern());
+//                            if(pattern != null) {
+//                                String advice = StringUtils.trimToNull(selectedDescriptor.getAdvice());
+//                                if(advice == null) {
+//                                    advice = "Does not match pattern " + pattern;
+//                                }
+//                                RegexpValidator validator = new RegexpValidator(pattern,
+//                                                                                advice);
+//                                validator.setErrorMessage(advice);
+//                                textField.addValidator(validator);
+//                            }
+//                            return inFieldType.cast(textField);
+//                        }
+//                        private static final long serialVersionUID = -5965893350850268432L;
+//                    });
+                    formLayout.add(descriptorGrid);
+                    return formLayout;
+                }
+                @Override
+                public boolean onAdvance()
+                {
+                    for(DecoratedDescriptor descriptor : sortedDescriptors.values()) {
+                        if(StringUtils.trimToNull(descriptor.getValue()) != null) {
+                            fixSessionValue.getSessionSettings().put(descriptor.getName(),
+                                                                     descriptor.getValue());
+                        }
+                    }
+                    try {
+                        if(inIsNew) {
+                            SLF4JLoggerProxy.debug(FixSessionListView.this,
+                                                   "Submitting new fix session: {}",
+                                                   fixSessionValue);
+                            getServiceClient().createFixSession(fixSessionValue);
+                        } else {
+                            SLF4JLoggerProxy.debug(FixSessionListView.this,
+                                                   "Submitting fix session for update: {}",
+                                                   fixSessionValue);
+                            getServiceClient().updateFixSession(incomingName,
+                                                                fixSessionValue);
+                        }
+                        closeEditor();
+                        updateList();
+                    } catch (Exception e) {
+                        Notification notification = new Notification();
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        Div text = new Div(new Text("A problem occurred saving the session: " + ExceptionUtils.getRootCauseMessage(e)));
+                        Button closeButton = new Button(new Icon("lumo",
+                                                                 "cross"));
+                        closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+                        closeButton.getElement().setAttribute("aria-label", "Close");
+                        closeButton.addClickListener(event -> {
+                            notification.close();
+                        });
+                        HorizontalLayout layout = new HorizontalLayout(text, closeButton);
+                        layout.setAlignItems(Alignment.CENTER);
+                        notification.add(layout);
+                        notification.open();
+                        return false;
+                    }
+                    return true;
+                }
+                @Override
+                public boolean onBack()
+                {
+                    return true;
+                }
+            });
+            fixSessionWizard.setSizeFull();
+            fixSessionWizard.setWidth("640px");
+            componentLayout.setSizeFull();
+            componentLayout.removeAll();
             componentLayout.add(fixSessionWizard);
         }
         /**

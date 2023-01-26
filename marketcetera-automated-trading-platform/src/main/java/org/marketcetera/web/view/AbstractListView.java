@@ -109,7 +109,9 @@ public abstract class AbstractListView<DataClazz,
      * @param inEvent
      */
     protected void actionValueChanged(ValueChangeEvent<String> inEvent)
-    {}
+    {
+        actionComboBox.clear();
+    }
     /**
      * Get the selected item.
      *

@@ -160,7 +160,6 @@ public class Wizard
      */
     public void setHeader(Component newHeader)
     {
-        System.out.println("COCO: header: " + header + " newHeader: " + newHeader);
         if (header != null) {
             if (newHeader == null) {
                 mainLayout.remove(header);

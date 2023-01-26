@@ -1,11 +1,16 @@
 package org.marketcetera.web.fix.view;
 
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.validation.constraints.NotEmpty;
 
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.fix.FixSession;
+import org.marketcetera.fix.FixSessionDay;
 import org.marketcetera.fix.FixSessionStatus;
+import org.marketcetera.fix.MutableFixSession;
 import org.marketcetera.quickfix.FIXVersion;
 
 import com.google.common.collect.Maps;
@@ -22,6 +27,7 @@ import quickfix.Session;
  * @since $Release$
  */
 public class DisplayFixSession
+        implements FixSession
 {
     public static DisplayFixSession create(ActiveFixSession inActiveFixSession)
     {
@@ -45,20 +51,28 @@ public class DisplayFixSession
         }
         displayFixSession.setFixVersion(fixVersion);
         displayFixSession.setHostname(inActiveFixSession.getFixSession().getHost());
+        displayFixSession.setMappedBrokerId(inActiveFixSession.getFixSession().getMappedBrokerId());
         displayFixSession.setName(inActiveFixSession.getFixSession().getName());
         displayFixSession.setPort(inActiveFixSession.getFixSession().getPort());
         displayFixSession.setSessionId(inActiveFixSession.getFixSession().getSessionId());
         displayFixSession.setSessionSettings(inActiveFixSession.getFixSession().getSessionSettings());
-        switch(inActiveFixSession.getFixSession().getSessionSettings().get("")) {
-            
+        String value = StringUtils.trimToNull(inActiveFixSession.getFixSession().getSessionSettings().get(quickfix.Session.SETTING_START_TIME));
+        displayFixSession.setStartTime(value!=null?value:"00:00:00");
+        value = StringUtils.trimToNull(inActiveFixSession.getFixSession().getSessionSettings().get(quickfix.Session.SETTING_END_TIME));
+        displayFixSession.setEndTime(value!=null?value:"00:00:00");
+        value = StringUtils.trimToNull(inActiveFixSession.getFixSession().getSessionSettings().get(quickfix.Session.SETTING_START_DAY));
+        displayFixSession.setStartDay(value!=null?value:FixSessionDay.Monday.name());
+        value = StringUtils.trimToNull(inActiveFixSession.getFixSession().getSessionSettings().get(quickfix.Session.SETTING_END_DAY));
+        displayFixSession.setEndDay(value!=null?value:FixSessionDay.Friday.name());
+        value = StringUtils.trimToNull(inActiveFixSession.getFixSession().getSessionSettings().get(quickfix.Session.SETTING_TIMEZONE));
+        displayFixSession.setTimezone(value!=null?value:TimeZone.getDefault().getID());
+        if(displayFixSession.isContinuousSession(inActiveFixSession)) {
+            displayFixSession.setSessionType(CONTINUOUS);
+        } else if(displayFixSession.isWeeklySession(inActiveFixSession)) {
+            displayFixSession.setSessionType(WEEKLY);
+        } else {
+            displayFixSession.setSessionType(DAILY);
         }
-//        displayFixSession.setSessionType(ACCEPTOR);
-//        private String sessionType;
-//        private String startTime;
-//        private String endTime;
-//        private String timezone;
-//        private String startDay;
-//        private String endDay;
         displayFixSession.setStatus(inActiveFixSession.getStatus());
         return displayFixSession;
     }
@@ -413,6 +427,55 @@ public class DisplayFixSession
     {
         endTime = inEndTime;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.HasMutableView#getMutableView()
+     */
+    @Override
+    public MutableFixSession getMutableView()
+    {
+        throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getMappedBrokerId()
+     */
+    @Override
+    public String getMappedBrokerId()
+    {
+        return mappedBrokerId;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#isEnabled()
+     */
+    @Override
+    public boolean isEnabled()
+    {
+        throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#isDeleted()
+     */
+    @Override
+    public boolean isDeleted()
+    {
+        throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.fix.FixSession#getHost()
+     */
+    @Override
+    public String getHost()
+    {
+        return getHostname();
+    }
+    /**
+     * Sets the mappedBrokerId value.
+     *
+     * @param inMappedBrokerId a <code>String</code> value
+     */
+    public void setMappedBrokerId(String inMappedBrokerId)
+    {
+        mappedBrokerId = inMappedBrokerId;
+    }
     /**
      * Indicates if the given session is a weekly session.
      *
@@ -482,4 +545,5 @@ public class DisplayFixSession
     private String timezone;
     private String startDay;
     private String endDay;
+    private String mappedBrokerId;
 }
