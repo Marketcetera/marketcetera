@@ -488,10 +488,17 @@ public class FixSessionListView
                  */
                 private void initializeFields()
                 {
-                    if(fixSessionValue.getConnectionType() != null) {
-                        connectionType.setValue(fixSessionValue.getConnectionType());
+                    if(inIsNew) {
+//                        connectionType.setValue(DisplayFixSession.INITIATOR);
+//                        affinity.setValue("1");
+                        fixSessionValue.setConnectionType(DisplayFixSession.INITIATOR);
+                        fixSessionValue.setAffinity(1);
+                    } else {
+                        if(fixSessionValue.getConnectionType() != null) {
+                            connectionType.setValue(fixSessionValue.getConnectionType());
+                        }
+                        affinity.setValue(String.valueOf(fixSessionValue.getAffinity()));
                     }
-                    affinity.setValue(String.valueOf(fixSessionValue.getAffinity()));
                     connectionType.setVisible(true);
                     affinity.setVisible(true);
                 }
@@ -562,7 +569,6 @@ public class FixSessionListView
                         hostname.setTooltipText("Hostname of the FIX gateway to connect to");
                         hostname.setValue(fixSessionValue.getHostname()==null?"exchange.marketcetera.com":fixSessionValue.getHostname());
                         getBinder().forField(hostname).asRequired("Hostname Required").withValidator((hostnameValue,inContext) -> {
-                            // TODO add hostname regex
                             return ValidationResult.ok();
                         }).bind("hostname");
                         hostname.addValueChangeListener(inEvent -> {
