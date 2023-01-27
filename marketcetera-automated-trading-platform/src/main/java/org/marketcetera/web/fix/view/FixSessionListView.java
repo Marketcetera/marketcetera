@@ -45,6 +45,7 @@ import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
@@ -59,8 +60,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
@@ -283,6 +286,9 @@ public class FixSessionListView
                 getServiceClient().deleteSession(target.getName());
                 updateList();
                 break;
+            case ACTION_SEQUENCE:
+                updateSequenceNumbers(target);
+                break;
             default:
                 throw new UnsupportedOperationException("Unsupported action: " + action);
         }
@@ -320,6 +326,113 @@ public class FixSessionListView
     protected String getDataClazzName()
     {
         return "FIX Session";
+    }
+    /**
+     * Update the sequence numbers for the given session.
+     *
+     * @param inFixSession a <code>DisplayFixSession</code> value
+     */
+    private void updateSequenceNumbers(DisplayFixSession inFixSession)
+    {
+        Binder<DisplayFixSession> sequenceBinder = new BeanValidationBinder<>(DisplayFixSession.class);
+        VerticalLayout layout = new VerticalLayout();
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        TextField senderSequenceNumber = new TextField("Sender Sequence Number");
+        TextField targetSequenceNumber = new TextField("Target Sequence Number");
+        Button okButton = new Button("OK");
+        Button cancelButton = new Button("Cancel");
+        senderSequenceNumber.setTooltipText("The sequence number of the next sender message");
+        targetSequenceNumber.setTooltipText("The sequence number of the next target message");
+        senderSequenceNumber.addBlurListener(event -> {
+            okButton.setEnabled(!senderSequenceNumber.isInvalid() && !targetSequenceNumber.isInvalid());
+        });
+        targetSequenceNumber.addBlurListener(event -> {
+            okButton.setEnabled(!senderSequenceNumber.isInvalid() && !targetSequenceNumber.isInvalid());
+        });
+        sequenceBinder.forField(senderSequenceNumber).asRequired("Sender Sequence Number Required").withValidator((senderValue,inContext) -> {
+            try {
+                Integer.parseInt(String.valueOf(senderValue));
+            } catch (Exception e) {
+                return ValidationResult.error(ExceptionUtils.getRootCauseMessage(e));
+            }
+            return ValidationResult.ok();
+        }).withConverter(new Converter<String,Integer>(){
+            private static final long serialVersionUID = 2261243139927742849L;
+            @Override
+            public Result<Integer> convertToModel(String inValue,
+                                                  ValueContext inContext)
+            {
+                try {
+                    return Result.ok(Integer.parseInt(String.valueOf(inValue)));
+                } catch (Exception e) {
+                    return Result.error(ExceptionUtils.getRootCauseMessage(e));
+                }
+            }
+            @Override
+            public String convertToPresentation(Integer inValue,
+                                                ValueContext inContext)
+            {
+                return String.valueOf(inValue);
+                
+            }}).bind("senderSequenceNumber");
+        sequenceBinder.forField(targetSequenceNumber).asRequired("Target Sequence Number Required").withValidator((targetValue,inContext) -> {
+            try {
+                Integer.parseInt(String.valueOf(targetValue));
+            } catch (Exception e) {
+                return ValidationResult.error(ExceptionUtils.getRootCauseMessage(e));
+            }
+            return ValidationResult.ok();
+        }).withConverter(new Converter<String,Integer>(){
+            private static final long serialVersionUID = 2261243139927742849L;
+            @Override
+            public Result<Integer> convertToModel(String inValue,
+                                                  ValueContext inContext)
+            {
+                try {
+                    return Result.ok(Integer.parseInt(String.valueOf(inValue)));
+                } catch (Exception e) {
+                    return Result.error(ExceptionUtils.getRootCauseMessage(e));
+                }
+            }
+            @Override
+            public String convertToPresentation(Integer inValue,
+                                                ValueContext inContext)
+            {
+                return String.valueOf(inValue);
+                
+            }}).bind("targetSequenceNumber");
+        sequenceBinder.readBean(inFixSession);
+        sequenceBinder.bindInstanceFields(inFixSession);
+        okButton.setEnabled(false);
+        buttonLayout.add(cancelButton,
+                         okButton);
+        layout.add(senderSequenceNumber,
+                   targetSequenceNumber,
+                   buttonLayout);
+        Dialog displayWindow = new Dialog();
+        okButton.addClickListener(event -> {
+            try {
+                sequenceBinder.writeBean(inFixSession);
+            } catch (ValidationException e) {
+                e.printStackTrace();
+            }
+            getServiceClient().updateSequenceNumbers(inFixSession.getName(),
+                                                     inFixSession.getSenderSequenceNumber(),
+                                                     inFixSession.getTargetSequenceNumber());
+            displayWindow.close();
+            updateList();
+        });
+        cancelButton.addClickListener(event -> {
+            displayWindow.close();
+        });
+        displayWindow.setCloseOnEsc(true);
+        displayWindow.setCloseOnOutsideClick(false);
+        displayWindow.setDraggable(true);
+        displayWindow.setHeaderTitle("Set Sequence Numbers");
+        displayWindow.setModal(true);
+        displayWindow.setResizable(true);
+        displayWindow.add(layout);
+        displayWindow.open();
     }
     /**
      * Get the service client to use for this view.
@@ -489,8 +602,6 @@ public class FixSessionListView
                 private void initializeFields()
                 {
                     if(inIsNew) {
-//                        connectionType.setValue(DisplayFixSession.INITIATOR);
-//                        affinity.setValue("1");
                         fixSessionValue.setConnectionType(DisplayFixSession.INITIATOR);
                         fixSessionValue.setAffinity(1);
                     } else {

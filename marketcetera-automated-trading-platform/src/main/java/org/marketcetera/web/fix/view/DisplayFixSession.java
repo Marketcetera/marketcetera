@@ -74,6 +74,8 @@ public class DisplayFixSession
             displayFixSession.setSessionType(DAILY);
         }
         displayFixSession.setStatus(inActiveFixSession.getStatus());
+        displayFixSession.setSenderSequenceNumber(inActiveFixSession.getSenderSequenceNumber());
+        displayFixSession.setTargetSequenceNumber(inActiveFixSession.getTargetSequenceNumber());
         return displayFixSession;
     }
     /**
@@ -475,6 +477,24 @@ public class DisplayFixSession
     public void setMappedBrokerId(String inMappedBrokerId)
     {
         mappedBrokerId = inMappedBrokerId;
+    }
+    /**
+     * Sets the senderSequenceNumber value.
+     *
+     * @param inSenderSequenceNumber an <code>int</code> value
+     */
+    public void setSenderSequenceNumber(int inSenderSequenceNumber)
+    {
+        senderSequenceNumber = inSenderSequenceNumber;
+    }
+    /**
+     * Sets the targetSequenceNumber value.
+     *
+     * @param inTargetSequenceNumber an <code>int</code> value
+     */
+    public void setTargetSequenceNumber(int inTargetSequenceNumber)
+    {
+        targetSequenceNumber = inTargetSequenceNumber;
     }
     /**
      * Indicates if the given session is a weekly session.
