@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Interface to computed position-related metrics. Since the position and realize P&L are not
+ * Interface to computed position-related metrics. Since the position and realize P&amp;L are not
  * dependent on market data, they should never be null. Other values may be null if the necessary
  * market data is unavailable.
  * 

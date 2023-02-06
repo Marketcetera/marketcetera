@@ -25,7 +25,7 @@ import javax.management.*;
  * {@link java.io.File#createTempFile(String, String)}  temporary} directory
  * location. 
  * <p>
- * <h4>Usage</h4>
+ * <h1>Usage</h1>
  * The code that needs to be instrumented should be modified to invoke
  * <code>ThreadedMetric</code> as follows.
  * <pre>
@@ -78,7 +78,7 @@ import javax.management.*;
  *   thread local variables to keep track of iterations, you might get
  *   non-intuitive results. 
  * </p>
- * <h4>Output</h4>
+ * <h1>Output</h1>
  * <p>
  *   The class will dump the collected metrics as a CSV file, in the temp
  *   directory location with the name
@@ -123,11 +123,11 @@ import javax.management.*;
  * <p>
  *   Under certain circumstances, the rows may contain extra columns at the end.
  *   These extra columns either contain any extra data that was supplied to any of
- *   the checkpoint calls: <code>begin(), event() & end()</code> for the
+ *   the checkpoint calls: <code>begin(), event() &amp; end()</code> for the
  *   iteration that the row represents. OR they may contain extra checkpoint
  *   time deltas resulting from <code>event()</code> invocations within a loop. 
  * </p>
- * <h4>Configuration & Management</h4>
+ * <h1>Configuration &amp; Management</h1>
  * <p>
  *   The instrumentation is disabled by default. It can be turned on via JMX
  *   or via a properties file placed in the classpath. For more information

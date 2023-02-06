@@ -21,7 +21,7 @@ import javax.sql.DataSource;
  * accessible via JDBC. The <code>JdbcMessageProvider</code> only has support for different languages,
  * but if support for country or variant is required one could easily subclass it and override the
  * <code>getLocale</code> method. If <code>getLocale</code> is overridden, the languageColumn parameter
- * (or <code>jdbc.sql.locale.column<code> Map entry) of the constructors may be null, since it will not be used.
+ * (or <code>jdbc.sql.locale.column</code> Map entry) of the constructors may be null, since it will not be used.
  * @author Mattias Jiderhamn
  */
 public class JdbcMessageProvider implements MessageProvider {

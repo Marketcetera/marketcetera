@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * A calculator that wraps another calculator and multiplies all P&L values by a
+ * A calculator that wraps another calculator and multiplies all P&amp;L values by a
  * multiplier.
  * <p>
  * If the multiplier is unavailable, this class effectively nulls out all PNL
