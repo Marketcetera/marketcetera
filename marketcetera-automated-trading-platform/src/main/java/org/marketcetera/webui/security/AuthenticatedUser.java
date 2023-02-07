@@ -29,6 +29,15 @@ import com.vaadin.flow.server.VaadinServletRequest;
 public class AuthenticatedUser
 {
     /**
+     *
+     *
+     * @return
+     */
+    public static User getCurrentUser()
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /**
      * 
      *
      *
