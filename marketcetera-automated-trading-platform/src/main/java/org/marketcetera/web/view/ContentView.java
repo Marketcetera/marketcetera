@@ -1,6 +1,6 @@
 package org.marketcetera.web.view;
 
-import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /* $License$ */
 
@@ -12,13 +12,13 @@ import com.vaadin.flow.component.Component;
  * @since $Release$
  */
 public abstract class ContentView
-        extends Component
+        extends VerticalLayout
 {
     /**
      * Get the Vaadin name of the view.
      *
      * @return a <code>String</code> value
      */
-    abstract String getViewName();
+    public abstract String getViewName();
     private static final long serialVersionUID = 8586381469467733948L;
 }

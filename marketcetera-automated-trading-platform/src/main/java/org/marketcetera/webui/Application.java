@@ -1,5 +1,7 @@
 package org.marketcetera.webui;
 
+import java.util.List;
+
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
@@ -13,6 +15,7 @@ import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
@@ -23,12 +26,15 @@ import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 
+import com.google.common.collect.Lists;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
@@ -188,5 +194,30 @@ public class Application
     {
         return new SimpleSupervisorPermissionFactory();
     }
+    /**
+     * Get the XmlService value.
+     *
+     * @return an <code>XmlService</code> value
+     * @throws ClassNotFoundException if a context class path cannot be resolved
+     */
+    @Bean
+    public XmlService getXmlService()
+            throws ClassNotFoundException
+    {
+        XmlService xmlService = new XmlService();
+        List<Class<?>> contextPathClassEntries = Lists.newArrayList();
+        for(String contextPathEntry : contextPathClasses) {
+            contextPathClassEntries.add(Class.forName(contextPathEntry));
+        }
+        SLF4JLoggerProxy.info(this,
+                              "Using the");
+        xmlService.setContextPath(contextPathClassEntries);
+        return xmlService;
+    }
+    /**
+     * context path classes used to marshal and unmarshal XML values
+     */
+    @Value("${metc.xml.context.path.classes}")
+    private List<String> contextPathClasses;
     private static final long serialVersionUID = 5355962292846525698L;
 }

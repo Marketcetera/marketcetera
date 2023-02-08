@@ -2,13 +2,16 @@ package org.marketcetera.webui.views.helloworld;
 
 import javax.annotation.security.PermitAll;
 
+import org.marketcetera.web.events.NewWindowEvent;
+import org.marketcetera.web.service.WebMessageService;
+import org.marketcetera.web.view.ContentViewFactory;
 import org.marketcetera.webui.security.AuthenticatedUser;
 import org.marketcetera.webui.views.MainLayout;
 import org.marketcetera.webui.views.login.LoginView;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -34,7 +37,18 @@ public class HelloWorldView
         name = new TextField("Your name");
         sayHello = new Button("Say hello");
         sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue());
+            webMessageService.post(new NewWindowEvent() {
+                @Override
+                public String getWindowTitle()
+                {
+                    return "Test Window";
+                }
+                @Override
+                public Class<? extends ContentViewFactory> getViewFactoryType()
+                {
+                    return TestViewFactory.class;
+                }}
+            );
         });
         sayHello.addClickShortcut(Key.ENTER);
 
@@ -50,6 +64,8 @@ public class HelloWorldView
             event.forwardTo(LoginView.class);
         }
     }
+    @Autowired
+    private WebMessageService webMessageService;
     private final AuthenticatedUser authenticatedUser;
     private static final long serialVersionUID = 2721922659936438309L;
 }

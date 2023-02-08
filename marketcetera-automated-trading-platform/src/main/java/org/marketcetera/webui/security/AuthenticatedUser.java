@@ -2,6 +2,8 @@ package org.marketcetera.webui.security;
 
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.admin.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.web.service.ServiceManager;
@@ -35,7 +37,15 @@ public class AuthenticatedUser
      */
     public static User getCurrentUser()
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(instance == null) {
+            return null;
+        }
+        return instance.get().orElse(null);
+    }
+    @PostConstruct
+    public void start()
+    {
+        instance = this;
     }
     /**
      * 
@@ -76,6 +86,10 @@ public class AuthenticatedUser
                              null,
                              null);
     }
+    /**
+     * 
+     */
+    private static AuthenticatedUser instance;
     /**
      * provides access to client services
      */

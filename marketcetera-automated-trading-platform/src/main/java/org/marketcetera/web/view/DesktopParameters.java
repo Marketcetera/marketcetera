@@ -1,6 +1,7 @@
 package org.marketcetera.web.view;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.web.service.WindowManagerService;
 
 import com.vaadin.flow.component.page.BrowserWindowResizeEvent;
 import com.vaadin.flow.component.page.BrowserWindowResizeListener;
@@ -17,6 +18,15 @@ import com.vaadin.flow.component.page.BrowserWindowResizeListener;
 public class DesktopParameters
         implements BrowserWindowResizeListener
 {
+    /**
+     * Create a new DesktopParameters instance.
+     *
+     * @param inWindowManagerService
+     */
+    public DesktopParameters(WindowManagerService inWindowManagerService)
+    {
+        windowManagerService = inWindowManagerService;
+    }
     /**
      * Get the top value.
      *
@@ -91,13 +101,15 @@ public class DesktopParameters
     }
     /**
      * Recalculate the dynamic parameters.
+     *
+     * @param inHeight an <code>int</code> value
+     * @param inWidth an <code>int</code> value
      */
-    public void recalculate()
+    public void recalculate(int inHeight,
+                            int inWidth)
     {
-        // TODO
-//        bottom = Page.getCurrent().getBrowserWindowHeight();
-//        right = Page.getCurrent().getBrowserWindowWidth();
-        throw new UnsupportedOperationException();
+        bottom = inHeight;
+        right = inWidth;
     }
     /* (non-Javadoc)
      * @see com.vaadin.server.Page.BrowserWindowResizeListener#browserWindowResized(com.vaadin.server.Page.BrowserWindowResizeEvent)
@@ -105,11 +117,13 @@ public class DesktopParameters
     @Override
     public void browserWindowResized(BrowserWindowResizeEvent inEvent)
     {
-        recalculate();
+        recalculate(inEvent.getHeight(),
+                    inEvent.getWidth());
         SLF4JLoggerProxy.trace(this,
                                "Browser resize: {} -> {}",
                                inEvent,
                                this);
+        windowManagerService.browserWindowResized(inEvent);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -122,6 +136,10 @@ public class DesktopParameters
                 .append(bottom).append(", right=").append(right).append("]");
         return builder.toString();
     }
+    /**
+     * provides window management services
+     */
+    private final WindowManagerService windowManagerService;
     /**
      * desktop viewable area top edge coordinate
      */
