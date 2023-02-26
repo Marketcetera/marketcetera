@@ -2,7 +2,10 @@ package org.marketcetera.ui;
 
 import java.io.IOException;
 
+import org.controlsfx.control.NotificationPane;
+import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.events.LogoutEvent;
+import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.view.ApplicationMenu;
@@ -15,9 +18,17 @@ import com.google.common.eventbus.Subscribe;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 /* $License$ */
@@ -52,21 +63,55 @@ public class App
     public void start(Stage stage)
             throws IOException
     {
-        //        scene = new Scene(loadFXML("primary"), 640, 480);
-        //        stage.setScene(scene);
-        //        stage.show();
         SLF4JLoggerProxy.info(this,
                               "Starting main stage");
         root = new VBox();
         menuLayout = new VBox();
-        root.getChildren().add(menuLayout);
-        Scene mainScene = new Scene(root,
-                                    1024,
-                                    768);
+        workspace = new VBox();
+        workspace.setPrefWidth(1024);
+        workspace.setPrefHeight(768);
+        initializeFooter();
+        Separator separator = new Separator(Orientation.HORIZONTAL);
+        root.getChildren().addAll(menuLayout,
+                                  workspace,
+                                  separator,
+                                  footer);
+        Scene mainScene = new Scene(root);
         stage.setScene(mainScene);
         stage.setTitle("Marketcetera Automated Trading Platform");
+//        // Create a WebView
+//        WebView webView = new WebView();
+//        // Wrap it inside a NotificationPane
+//        NotificationPane notificationPane = new NotificationPane(webView);
+//        notificationPane.setShowFromTop(false);
+//        // and put the NotificationPane inside a Tab
+//        Tab tab1 = new Tab("Tab 1");
+//        tab1.setContent(notificationPane);
+//        // and the Tab inside a TabPane. We just have one tab here, but of course 
+//        // you can have more!
+//        TabPane tabPane = new TabPane();
+//        tabPane.getTabs().addAll(tab1);
+//        displayLayout.getChildren().add(notificationPane);
+        initializeNotificationPane();
+        
         stage.show();
         doLogin();
+    }
+    private void initializeFooter()
+    {
+        footer = new HBox(10);
+//        footer.setMaxHeight(100);
+        statusLayout = new HBox();
+        statusLayout.setAlignment(Pos.BOTTOM_LEFT);
+        clockLabel = new Label();
+        clockUpdater = new ClockUpdater(clockLabel);
+        clockUpdater.start();
+        userLabel = new Label();
+        userLabel.setAlignment(Pos.BASELINE_CENTER);
+        footer.setAlignment(Pos.BOTTOM_CENTER);
+        footer.getChildren().addAll(statusLayout,
+                                    clockLabel,
+                                    userLabel);
     }
     private void showMenu()
     {
@@ -81,6 +126,39 @@ public class App
         }
         applicationMenu.refreshMenuPermissions();
     }
+    private void initializeNotificationPane()
+    {
+        // Create a WebView
+        WebView webView = new WebView();
+        // Wrap it inside a NotificationPane
+        notificationPane = new NotificationPane(webView);
+        // and put the NotificationPane inside a Tab
+        Tab tab1 = new Tab("Tab 1");
+        tab1.setContent(notificationPane);
+        // and the Tab inside a TabPane. We just have one tab here, but of course 
+        // you can have more!
+        TabPane tabPane = new TabPane();
+        tabPane.getTabs().addAll(tab1);
+        notificationPane.setShowFromTop(false);
+        workspace.getChildren().add(notificationPane);
+        notificationPane.setPrefHeight(700);
+    }
+    @Subscribe
+    public void onLogon(LoginEvent inEvent)
+    {
+        Platform.runLater(() -> { userLabel.setText(inEvent.getSessionUser().getUsername());});
+    }
+    @Subscribe
+    public void onNotification(NotificationEvent inEvent)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received: {}",
+                               inEvent);
+        Platform.runLater(() -> {
+            notificationPane.setText(inEvent.getMessage());
+            notificationPane.show();
+        });
+    }
     @Subscribe
     public void onLogout(LogoutEvent inEvent)
     {
@@ -88,8 +166,11 @@ public class App
                                               null);
         SessionUser.getCurrent().setAttribute(SessionUser.class,
                                               null);
-        Platform.runLater(() -> menuLayout.getChildren().clear());
-        Platform.runLater(() -> doLogin());
+        Platform.runLater(() -> {
+            userLabel.setText("");
+            menuLayout.getChildren().clear();
+            doLogin();
+        });
     }
     private void doLogin()
     {
@@ -121,5 +202,12 @@ public class App
     private VBox menuLayout;
     private ApplicationContext context;
     private VBox root;
+    private HBox footer;
+    private HBox statusLayout;
+    private Label clockLabel;
+    private Label userLabel;
+    private VBox workspace;
+    private NotificationPane notificationPane;
+    private ClockUpdater clockUpdater;
 
 }

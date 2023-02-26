@@ -8,6 +8,7 @@ import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.events.LogoutEvent;
+import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.WebMessageService;
@@ -19,8 +20,6 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.Subscribe;
 
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 /* $License$ */
 
@@ -118,10 +117,12 @@ public class FixSessionWatcher
                 @Override
                 public void run()
                 {
-                    // TODO this really wants to be a tray notification
-                    Alert a = new Alert(AlertType.INFORMATION);
-                    a.setContentText(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString()));
-                    a.show();
+                    messageService.post(new NotificationEvent(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString())));
+//                    // TODO this really wants to be a tray notification
+//                    Alert a = new Alert(AlertType.INFORMATION);
+//                    a.setContentText(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString()));
+//                    a.show();
+                    
                 }
             });
         }

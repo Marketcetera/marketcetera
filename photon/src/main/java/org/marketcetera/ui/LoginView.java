@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.ui.events.LoginEvent;
+import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -14,11 +15,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -87,34 +85,25 @@ public class LoginView
     {
         String username = StringUtils.trimToNull(usernameText.getText());
         String password = StringUtils.trimToNull(passwordText.getText());
+        SLF4JLoggerProxy.debug(this,
+                               "Attempting to log in {}",
+                               username);
+        SessionUser sessionUser = new SessionUser(username,
+                                                  password);
+        SessionUser.getCurrent().setAttribute(SessionUser.class,
+                                              sessionUser);
         try {
-            SLF4JLoggerProxy.debug(this,
-                                   "Attempting to log in {}",
-                                   username);
-            SessionUser sessionUser = new SessionUser(username,
-                                                      password);
-            SessionUser.getCurrent().setAttribute(SessionUser.class,
-                                                  sessionUser);
-            try {
-                if(webAuthenticator.shouldAllow(null,
-                                                username,
-                                                password.toCharArray())) {
-                    SLF4JLoggerProxy.info(this,
-                                          "{} logged in",
-                                          username);
-                    // Navigate to main view
-                    webMessageService.post(new LoginEvent(sessionUser));
-                    close();
-                } else {
-                    throw new IllegalArgumentException("Failed to log in");
-                }
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "{} failed to log in",
+            if(webAuthenticator.shouldAllow(null,
+                                            username,
+                                            password.toCharArray())) {
+                SLF4JLoggerProxy.info(this,
+                                      "{} logged in",
                                       username);
-                SessionUser.getCurrent().setAttribute(SessionUser.class,
-                                                      null);
+                // Navigate to main view
+                webMessageService.post(new LoginEvent(sessionUser));
+                close();
+            } else {
+                throw new IllegalArgumentException("Failed to log in");
             }
         } catch (Exception e) {
             String message = ExceptionUtils.getRootCauseMessage(e);
@@ -131,18 +120,8 @@ public class LoginView
     private void showPopupMessage(final String message)
     {
         // TODO this doesn't show
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run()
-            {
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Information Dialog");
-                alert.setHeaderText("Look, an Information Dialog");
-                alert.setContentText("I have a great message for you!");
-                alert.initOwner(LoginView.this);
-                alert.showAndWait();
-            }}
-        );
+        System.out.println("Positing notification event");
+        webMessageService.post(new NotificationEvent(message));
     }
     private void onCloseRequest(WindowEvent inEvent)
     {
