@@ -1236,11 +1236,10 @@
     <module>metrics</module>
     <module>modules</module>
     <module>packages</module>
+    <module>photon</module>
     <module>rpc-core</module>
     <module>trade</module>
     <module>tools</module>
-    <!--module>ui</module-->
-    <!--module>ui-new</module-->
     <module>util</module>
     <module>util-test</module>
   </modules>
