@@ -114,7 +114,7 @@ public class WindowManagerService
                                "onWindow: {}",
                                inEvent.getWindowTitle());
         // create the UI window element
-        Stage newWindow = new Stage();
+        final Stage newWindow = new Stage();
         if(inEvent.getWindowIcon() != null) {
             newWindow.getIcons().add(inEvent.getWindowIcon());
         }
@@ -129,6 +129,7 @@ public class WindowManagerService
         ContentView contentView = viewFactory.create(newWindow,
                                                      inEvent,
                                                      newWindowWrapper.getProperties());
+        newWindow.setOnCloseRequest(inCloseEvent -> contentView.onClose(inCloseEvent));
         styleService.addStyle(contentView);
         Scene rootScene = contentView.getScene();
         newWindow.setTitle(inEvent.getWindowTitle());

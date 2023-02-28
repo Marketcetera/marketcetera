@@ -87,6 +87,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -147,6 +148,16 @@ public class OrderTicketView
                 }}
             );
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     */
+    @Override
+    public void onClose(WindowEvent inEvent)
+    {
+        try {
+            serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
+        } catch (Exception ignored) {}
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
