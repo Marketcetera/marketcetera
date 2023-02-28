@@ -1,5 +1,8 @@
 package org.marketcetera.ui;
 
+import java.awt.Taskbar;
+import java.awt.Taskbar.Feature;
+import java.awt.Toolkit;
 import java.io.IOException;
 
 import org.controlsfx.control.NotificationPane;
@@ -26,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -79,21 +83,22 @@ public class App
         Scene mainScene = new Scene(root);
         stage.setScene(mainScene);
         stage.setTitle("Marketcetera Automated Trading Platform");
-//        // Create a WebView
-//        WebView webView = new WebView();
-//        // Wrap it inside a NotificationPane
-//        NotificationPane notificationPane = new NotificationPane(webView);
-//        notificationPane.setShowFromTop(false);
-//        // and put the NotificationPane inside a Tab
-//        Tab tab1 = new Tab("Tab 1");
-//        tab1.setContent(notificationPane);
-//        // and the Tab inside a TabPane. We just have one tab here, but of course 
-//        // you can have more!
-//        TabPane tabPane = new TabPane();
-//        tabPane.getTabs().addAll(tab1);
-//        displayLayout.getChildren().add(notificationPane);
         initializeNotificationPane();
-        
+        stage.getIcons().addAll(new Image("/images/photon-16x16.png"),
+                                new Image("/images/photon-24x24.png"),
+                                new Image("/images/photon-32x32.png"),
+                                new Image("/images/photon-48x48.png"),
+                                new Image("/images/photon-48x48.png"),
+                                new Image("/images/photon-64x64.png"),
+                                new Image("/images/photon-128x128.png"));
+        if (Taskbar.isTaskbarSupported()) {
+            Taskbar taskbar = Taskbar.getTaskbar();
+            if(taskbar.isSupported(Feature.ICON_IMAGE)) {
+                final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+                java.awt.Image dockIcon = defaultToolkit.getImage(getClass().getResource("/images/photon-48x48.png"));
+                taskbar.setIconImage(dockIcon);
+            }
+        }
         stage.show();
         doLogin();
     }

@@ -59,6 +59,12 @@ public class StyleService
             addStyle(node);
         }
     }
+    public void addStyleToAll(Node...inComponents)
+    {
+        for(Node node : inComponents) {
+            addStyle(node);
+        }
+    }
     public void addStyle(Node inComponent)
     {
         String componentId = inComponent.getId();
@@ -97,7 +103,7 @@ public class StyleService
                                inComponent.getId(),
                                key);
         if(stylesToApply != null) {
-            inComponent.getStyleClass().add(stylesToApply);
+            inComponent.setStyle(stylesToApply);
         }
         if(inKey.equals(key)) {
             return;

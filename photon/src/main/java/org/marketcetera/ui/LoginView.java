@@ -44,7 +44,7 @@ public class LoginView
         extends Stage
 {
     @PostConstruct
-    public void init()
+    public void start()
     {
         initModality(Modality.APPLICATION_MODAL);
         HBox usernameBox = new HBox(5);

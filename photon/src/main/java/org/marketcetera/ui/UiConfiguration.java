@@ -1,5 +1,7 @@
 package org.marketcetera.ui;
 
+import java.util.Arrays;
+
 import org.marketcetera.admin.AdminRpcClientFactory;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
@@ -11,6 +13,7 @@ import org.marketcetera.admin.impl.SimpleUserAttributeFactory;
 import org.marketcetera.admin.impl.SimpleUserFactory;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
+import org.marketcetera.core.XmlService;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
 import org.marketcetera.fix.FixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
@@ -21,6 +24,17 @@ import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
+import org.marketcetera.trade.AverageFillPriceFactory;
+import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
+import org.marketcetera.trade.MutableOrderSummaryFactory;
+import org.marketcetera.trade.MutableReportFactory;
+import org.marketcetera.trade.SimpleAverageFillPrice;
+import org.marketcetera.trade.SimpleAverageFillPriceFactory;
+import org.marketcetera.trade.SimpleExecutionReportSummaryFactory;
+import org.marketcetera.trade.SimpleOrderSummaryFactory;
+import org.marketcetera.trade.SimpleReportFactory;
+import org.marketcetera.trade.TradeContextClassProvider;
+import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.admin.AdminClientService;
@@ -55,6 +69,69 @@ public class UiConfiguration
         IterativeSymbolResolver symbolResolverService = new IterativeSymbolResolver();
         symbolResolverService.getSymbolResolvers().add(new PatternSymbolResolver());
         return symbolResolverService;
+    }
+    /**
+     * Get the XML service value.
+     *
+     * @return an <code>XmlService</code> value
+     */
+    @Bean
+    public XmlService getXmlService()
+    {
+        XmlService xmlService = new XmlService();
+        xmlService.getContextPath().addAll(Arrays.asList(new TradeContextClassProvider().getContextClasses()));
+        xmlService.getContextPath().add(SimpleAverageFillPrice.class);
+        return xmlService;
+    }
+    /**
+     * Get the average fill price factory value.
+     *
+     * @return an <code>AverageFillPriceFactory</code> value
+     */
+    @Bean
+    public AverageFillPriceFactory getAverageFillPriceFactory()
+    {
+        return new SimpleAverageFillPriceFactory();
+    }
+    /**
+     * Get the report factory value.
+     *
+     * @return a <code>SimpleReportFactory</code> value
+     */
+    @Bean
+    public MutableReportFactory getReportFactory()
+    {
+        return new SimpleReportFactory();
+    }
+    /**
+     * Get the execution report summary factory value.
+     *
+     * @return a <code>MutableExecutionReportSummaryFactory</code> value
+     */
+    @Bean
+    public MutableExecutionReportSummaryFactory getExecutionReportSummaryFactory()
+    {
+        return new SimpleExecutionReportSummaryFactory();
+    }
+    /**
+     * Get the order summary factory value.
+     *
+     * @return a <code>MutableOrderSummayFactory</code> value
+     */
+    @Bean
+    public MutableOrderSummaryFactory getOrderSummaryFactory()
+    {
+        return new SimpleOrderSummaryFactory();
+    }
+    /**
+     * Get the trade client factory value.
+     *
+     * @return a <code>TradeRpcClientFactory</code> value
+     */
+    @Bean
+    public TradeRpcClientFactory getTradeClientFactory()
+    {
+        return new TradeRpcClientFactory();
     }
     /**
      * Get the admin client factory value.

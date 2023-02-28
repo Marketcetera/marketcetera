@@ -113,6 +113,8 @@ public class WindowManagerService
                                inEvent.getWindowTitle());
         // create the UI window element
         Stage newWindow = new Stage();
+        // TODO set the icon for this window
+//        newWindow.getIcons().add(new Image("images/Order_Ticket.png"));
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         // the content view factory will be used to create the new window content
         ContentViewFactory viewFactory = applicationContext.getBean(inEvent.getViewFactoryType());
@@ -439,8 +441,10 @@ public class WindowManagerService
                                    String.valueOf(window.getWidth()));
             properties.setProperty(windowModeProp,
                                    String.valueOf(window.isMaximized()));
-            properties.setProperty(windowTitleProp,
-                                   window.getTitle());
+            if(window.getTitle() != null) {
+                properties.setProperty(windowTitleProp,
+                                       window.getTitle());
+            }
             properties.setProperty(windowModalProp,
                                    String.valueOf(window.getModality()));
             // TODO not sure what to do about dragging yet

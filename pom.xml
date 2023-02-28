@@ -400,7 +400,6 @@
         <artifactId>webui-trade</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- Compile: Vaadin -->
       <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>org.quickfixj</groupId>
@@ -794,13 +793,6 @@
         <version>2.6.1</version>
         <scope>runtime</scope>
       </dependency>
-      <!-- Runtime: Vaadin -->
-      <!--dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-push</artifactId>
-        <scope>runtime</scope>
-        <version>${vaadin.version}</version>
-      </dependency-->
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
