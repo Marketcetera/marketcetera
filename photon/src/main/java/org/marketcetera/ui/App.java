@@ -11,9 +11,11 @@ import org.marketcetera.ui.events.LogoutEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.WindowManagerService;
 import org.marketcetera.ui.view.ApplicationMenu;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.google.common.eventbus.Subscribe;
@@ -61,14 +63,17 @@ public class App
         super.init();
         context = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
         webMessageService = context.getBean(WebMessageService.class);
+        windowManagerService = context.getBean(WindowManagerService.class);
         webMessageService.register(this);
     }
     @Override
-    public void start(Stage stage)
+    public void start(Stage inStage)
             throws IOException
     {
         SLF4JLoggerProxy.info(this,
                               "Starting main stage");
+        mainStage = inStage;
+        windowManagerService.initializeMainStage(mainStage);
         root = new VBox();
         menuLayout = new VBox();
         workspace = new VBox();
@@ -81,10 +86,10 @@ public class App
                                   separator,
                                   footer);
         Scene mainScene = new Scene(root);
-        stage.setScene(mainScene);
-        stage.setTitle("Marketcetera Automated Trading Platform");
+        inStage.setScene(mainScene);
+        inStage.setTitle("Marketcetera Automated Trading Platform");
         initializeNotificationPane();
-        stage.getIcons().addAll(new Image("/images/photon-16x16.png"),
+        inStage.getIcons().addAll(new Image("/images/photon-16x16.png"),
                                 new Image("/images/photon-24x24.png"),
                                 new Image("/images/photon-32x32.png"),
                                 new Image("/images/photon-48x48.png"),
@@ -95,17 +100,24 @@ public class App
             Taskbar taskbar = Taskbar.getTaskbar();
             if(taskbar.isSupported(Feature.ICON_IMAGE)) {
                 final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-                java.awt.Image dockIcon = defaultToolkit.getImage(getClass().getResource("/images/photon-48x48.png"));
+                java.awt.Image dockIcon = defaultToolkit.getImage(getClass().getResource("/images/photon-128x128.png"));
                 taskbar.setIconImage(dockIcon);
             }
         }
-        stage.show();
+        inStage.setOnCloseRequest(closeEvent -> {
+            isShuttingDown = true;
+            webMessageService.post(new LogoutEvent());
+            try {
+                ((ConfigurableApplicationContext)context).close();
+            } catch (Exception ignored) {}
+            Platform.exit();
+        });
+        inStage.show();
         doLogin();
     }
     private void initializeFooter()
     {
         footer = new HBox(10);
-//        footer.setMaxHeight(100);
         statusLayout = new HBox();
         statusLayout.setAlignment(Pos.BOTTOM_LEFT);
         clockLabel = new Label();
@@ -174,7 +186,9 @@ public class App
         Platform.runLater(() -> {
             userLabel.setText("");
             menuLayout.getChildren().clear();
-            doLogin();
+            if(!isShuttingDown) {
+                doLogin();
+            }
         });
     }
     private void doLogin()
@@ -195,15 +209,21 @@ public class App
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
-
+    public static Stage getMainStage()
+    {
+        return mainStage;
+    }
+    private static Stage mainStage;
     public static void main(String[] args)
     {
         launch();
     }
+    private boolean isShuttingDown = false;
     /**
      * web message service value
      */
     private WebMessageService webMessageService;
+    private WindowManagerService windowManagerService;
     private VBox menuLayout;
     private ApplicationContext context;
     private VBox root;

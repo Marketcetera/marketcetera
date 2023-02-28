@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +44,35 @@ public class ServiceManager
                                                           factory);
         }
         instance = this;
+    }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        try {
+            for(Cache<String,ConnectableService> services : servicesByUser.asMap().values()) {
+                for(ConnectableService service : services.asMap().values()) {
+                    try {
+                        service.disconnect();
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(this,
+                                              e);
+                    } finally {
+                        SLF4JLoggerProxy.info(this,
+                                              "{} stopped",
+                                              service);
+                    }
+                }
+            }
+            servicesByUser.invalidateAll();
+        } finally {
+            instance = null;
+            SLF4JLoggerProxy.info(this,
+                                  "{} stopped",
+                                  PlatformServices.getServiceName(getClass()));
+        }
     }
     /**
      * Get the service of the given type for the current user.

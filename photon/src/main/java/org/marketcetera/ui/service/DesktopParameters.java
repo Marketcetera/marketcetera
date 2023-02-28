@@ -1,7 +1,8 @@
 package org.marketcetera.ui.service;
 
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.stage.Stage;
 
 /* $License$ */
 
@@ -15,74 +16,101 @@ import javafx.stage.Screen;
 public class DesktopParameters
 {
     /**
+     * Create a new DesktopParameters instance.
+     *
+     * @param inMainStage
+     */
+    public DesktopParameters(Stage inMainStage)
+    {
+        mainStage = inMainStage;
+        mainStage.widthProperty().addListener(new ChangeListener< Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> inObservable,
+                                Number inOldValue,
+                                Number inNewValue)
+            {
+                recalculate();
+            }}
+        );
+        mainStage.heightProperty().addListener(new ChangeListener< Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> inObservable,
+                                Number inOldValue,
+                                Number inNewValue)
+            {
+                recalculate();
+            }}
+        );
+    }
+    /**
      * Get the top value.
      *
-     * @return a <code>int</code> value
+     * @return a <code>double</code> value
      */
-    public int getTop()
+    public double getTop()
     {
         return top;
     }
     /**
      * Sets the top value.
      *
-     * @param inTop a <code>int</code> value
+     * @param doubleop a <code>double</code> value
      */
-    public void setTop(int inTop)
+    public void setTop(double doubleop)
     {
-        top = inTop;
+        top = doubleop;
     }
     /**
      * Get the left value.
      *
-     * @return a <code>int</code> value
+     * @return a <code>double</code> value
      */
-    public int getLeft()
+    public double getLeft()
     {
         return left;
     }
     /**
      * Sets the left value.
      *
-     * @param inLeft a <code>int</code> value
+     * @param inLeft a <code>double</code> value
      */
-    public void setLeft(int inLeft)
+    public void setLeft(double inLeft)
     {
         left = inLeft;
     }
     /**
      * Get the bottom value.
      *
-     * @return a <code>int</code> value
+     * @return a <code>double</code> value
      */
-    public int getBottom()
+    public double getBottom()
     {
         return bottom;
     }
     /**
      * Sets the bottom value.
      *
-     * @param inBottom a <code>int</code> value
+     * @param inBottom a <code>double</code> value
      */
-    public void setBottom(int inBottom)
+    public void setBottom(double inBottom)
     {
         bottom = inBottom;
     }
     /**
      * Get the right value.
      *
-     * @return a <code>int</code> value
+     * @return a <code>double</code> value
      */
-    public int getRight()
+    public double getRight()
     {
         return right;
     }
     /**
      * Sets the right value.
      *
-     * @param inRight a <code>int</code> value
+     * @param inRight a <code>double</code> value
      */
-    public void setRight(int inRight)
+    public void setRight(double inRight)
     {
         right = inRight;
     }
@@ -91,10 +119,10 @@ public class DesktopParameters
      */
     public void recalculate()
     {
-        // note that there can be more than one screen if you have multiple monitors. this doesn't handle multiple monitors
-        Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        bottom = (int)bounds.getHeight();
-        right = (int)bounds.getWidth();
+        top = mainStage.getY();
+        left = mainStage.getX();
+        bottom = mainStage.getY() + mainStage.getHeight();
+        right = mainStage.getX() + mainStage.getWidth();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -108,19 +136,23 @@ public class DesktopParameters
         return builder.toString();
     }
     /**
+     * main stage object
+     */
+    private final Stage mainStage;
+    /**
      * desktop viewable area top edge coordinate
      */
-    private int top = 0;
+    private double top = 0;
     /**
      * desktop viewable area left edge coordinate
      */
-    private int left = 0;
+    private double left = 0;
     /**
      * desktop viewable area bottom edge coordinate
      */
-    private int bottom;
+    private double bottom;
     /**
      * desktop viewable area right edge coordinate
      */
-    private int right;
+    private double right;
 }

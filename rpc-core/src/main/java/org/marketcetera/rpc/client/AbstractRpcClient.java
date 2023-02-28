@@ -236,11 +236,14 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     {
         if(channel != null) {
             try {
+                System.out.println("Waiting to stop RPC service");
                 channel.shutdown().awaitTermination(parameters.getHeartbeatInterval(),
                                                     TimeUnit.MILLISECONDS);
+                System.out.println("RPC service stopped");
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       e);
+                channel.shutdownNow();
             }
             channel = null;
         }

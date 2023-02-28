@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
+import org.marketcetera.ui.App;
 import org.marketcetera.ui.events.CascadeWindowsEvent;
 import org.marketcetera.ui.events.CloseWindowsEvent;
 import org.marketcetera.ui.events.LoginEvent;
@@ -90,7 +92,7 @@ public class WindowManagerService
     @Subscribe
     public void onLogin(LoginEvent inEvent)
     {
-        DesktopParameters desktopParameters = new DesktopParameters();
+        DesktopParameters desktopParameters = new DesktopParameters(mainStage);
         desktopParameters.recalculate();
         SessionUser.getCurrent().setAttribute(DesktopParameters.class,
                                               desktopParameters);
@@ -102,6 +104,11 @@ public class WindowManagerService
         WindowRegistry windowRegistry = getCurrentUserRegistry();
         windowRegistry.restoreLayout(displayLayout);
     }
+    public void initializeMainStage(Stage inMainStage)
+    {
+        mainStage = inMainStage;
+    }
+    private Stage mainStage;
     /**
      * Receive new window events.
      *
@@ -115,6 +122,7 @@ public class WindowManagerService
                                inEvent.getWindowTitle());
         // create the UI window element
         final Stage newWindow = new Stage();
+        newWindow.initOwner(App.getMainStage());
         if(inEvent.getWindowIcon() != null) {
             newWindow.getIcons().add(inEvent.getWindowIcon());
         }
@@ -291,6 +299,26 @@ public class WindowManagerService
             registry.scheduleWindowPositionMonitor();
         }
         return registry;
+    }
+    private static double getDoubleValue(Properties inProperties,
+                                         String inPropertyName)
+    {
+        return getDoubleValue(inProperties,
+                              inPropertyName,
+                              0.0);
+    }
+    private static double getDoubleValue(Properties inProperties,
+                                         String inPropertyName,
+                                         double inDefaultValue)
+    {
+        String rawValue = StringUtils.trimToNull(inProperties.getProperty(inPropertyName));
+        double value = inDefaultValue;
+        if(rawValue != null) {
+            try {
+                value = Double.parseDouble(rawValue);
+            } catch (NumberFormatException ignored) {}
+        }
+        return value;
     }
     /**
      * Event used to open a new window on restart.
@@ -498,8 +526,10 @@ public class WindowManagerService
 //            window.setDraggable(Boolean.parseBoolean(properties.getProperty(windowDraggableProp)));
             window.setResizable(Boolean.parseBoolean(properties.getProperty(windowResizableProp)));
             window.setTitle(properties.getProperty(windowTitleProp));
-            window.setX(Integer.parseInt(properties.getProperty(windowPosXProp)));
-            window.setY(Integer.parseInt(properties.getProperty(windowPosYProp)));
+            window.setX(getDoubleValue(properties,
+                                       windowPosXProp));
+            window.setY(getDoubleValue(properties,
+                                       windowPosYProp));
             window.getProperties().put(windowStyleId,
                                        properties.getProperty(windowStyleId));
             setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
@@ -625,8 +655,8 @@ public class WindowManagerService
                     int xPos = desktopCascadeWindowOffset;
                     int yPos = desktopCascadeWindowOffset;
                     DesktopParameters params = SessionUser.getCurrent().getAttribute(DesktopParameters.class);
-                    int maxX = params.getRight();
-                    int maxY = params.getBottom();
+                    double maxX = params.getRight();
+                    double maxY = params.getBottom();
                     for(WindowMetaData activeWindow : activeWindows) {
                         double windowWidth = getWindowWidth(activeWindow.getWindow());
                         double windowHeight = getWindowHeight(activeWindow.getWindow());
@@ -671,17 +701,17 @@ public class WindowManagerService
                     if(!isPerfectSquare(numWindows)) {
                         numCols += 1;
                     }
-                    int windowWidth = Math.floorDiv(params.getRight(),
-                                                    numCols);
-                    int windowHeight = Math.floorDiv((params.getBottom()-params.getTop()),
-                                                     numRows);
+                    double windowWidth = Math.floorDiv(((Double)params.getRight()).intValue(),
+                                                       numCols);
+                    double windowHeight = Math.floorDiv(((Double)(params.getBottom()-params.getTop())).intValue(),
+                                                        numRows);
                     int colNum = 0;
                     int rowNum = 0;
-                    int posX = params.getLeft();
-                    int posY = params.getTop();
+                    double posX = params.getLeft();
+                    double posY = params.getTop();
                     for(WindowMetaData activeWindow : activeWindows) {
-                        int suggestedX = posX + (colNum * windowWidth);
-                        int suggestedY = posY + (rowNum * windowHeight);
+                        double suggestedX = posX + (colNum * windowWidth);
+                        double suggestedY = posY + (rowNum * windowHeight);
                         activeWindow.getWindow().setWidth(windowWidth);
                         activeWindow.getWindow().setHeight(windowHeight);
                         activeWindow.getWindow().setX(suggestedX);
@@ -732,8 +762,10 @@ public class WindowManagerService
                                            "Restoring {} {}",
                                            windowUid,
                                            windowProperties);
+                    Stage newWindow = new Stage();
+                    newWindow.initOwner(App.getMainStage());
                     WindowMetaData newWindowMetaData = new WindowMetaData(windowProperties,
-                                                                          new Stage());
+                                                                          newWindow);
                     addWindow(newWindowMetaData);
                     addWindowListeners(newWindowMetaData);
                     styleService.addStyle(newWindowMetaData.getWindow().getScene());
@@ -768,18 +800,31 @@ public class WindowManagerService
         {
             WindowRegistry windowRegistry = this;
             Stage newWindow = inWindowWrapper.getWindow();
+//            newWindow.addEventHandler()
             newWindow.addEventHandler(MouseEvent.MOUSE_CLICKED,
                                       new EventHandler<MouseEvent>() {
-                                        @Override
-                                        public void handle(MouseEvent inEvent)
-                                        {
-                                            SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                                                   "Click: {}",
-                                                                   inEvent);
-                                            verifyWindowLocation(newWindow);
-                                            inWindowWrapper.updateProperties();
-                                            updateDisplayLayout();
-                                        }}
+                @Override
+                public void handle(MouseEvent inEvent)
+                {
+                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                           "Click: {}",
+                                           inEvent);
+                    verifyWindowLocation(newWindow);
+                    inWindowWrapper.updateProperties();
+                    updateDisplayLayout();
+                }}
+            );
+            newWindow.setOnShown(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent inEvent)
+                {
+                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+                                           "Shown: {}",
+                                           inEvent);
+                    verifyWindowLocation(newWindow);
+                    inWindowWrapper.updateProperties();
+                    updateDisplayLayout();
+                }}
             );
 //            newWindow.addWindowModeChangeListener(inEvent -> {
 //                SLF4JLoggerProxy.trace(WindowManagerService.this,
@@ -897,12 +942,16 @@ public class WindowManagerService
             int pad = desktopViewableAreaPad;
             DesktopParameters params = SessionUser.getCurrent().getAttribute(DesktopParameters.class);
             // the order here is important: first, resize the window, if necessary
-            int maxWidth = params.getRight()-params.getLeft();
+            double maxWidth = params.getRight()-params.getLeft();
             double windowWidth = getWindowWidth(inWindow);
             if(windowWidth > maxWidth) {
                 inWindow.setWidth(maxWidth - (pad*2));
             }
-            int maxHeight = params.getBottom() - params.getTop();
+            if(windowWidth <= 10) {
+                windowWidth = 100;
+                inWindow.setWidth(windowWidth);
+            }
+            double maxHeight = params.getBottom() - params.getTop();
             double windowHeight = getWindowHeight(inWindow);
             if(windowHeight > maxHeight) {
                 inWindow.setHeight(maxHeight - (pad*2));
@@ -916,7 +965,7 @@ public class WindowManagerService
             }
             // check top
             double windowTop = getWindowTop(inWindow);
-            if(windowTop < params.getTop()) {
+            if(windowTop < params.getTop()+pad) {
                 double newWindowTop = params.getTop() + pad;
                 inWindow.setY(newWindowTop);
             }
@@ -978,7 +1027,9 @@ public class WindowManagerService
                     {
                         for(WindowMetaData windowMetaData : activeWindows) {
                             try {
-                                returnWindowToDesktop(windowMetaData.getWindow());
+                                if(WindowManagerService.this.isWindowOutsideDesktop(windowMetaData.getWindow())) {
+                                    returnWindowToDesktop(windowMetaData.getWindow());
+                                }
                             } catch (Exception e) {
                                 SLF4JLoggerProxy.warn(WindowManagerService.this,
                                                       ExceptionUtils.getRootCauseMessage(e));
@@ -1159,7 +1210,7 @@ public class WindowManagerService
     /**
      * desktop viewable area pad value
      */
-    @Value("${metc.desktop.viewable.area.pad:10}")
+    @Value("${metc.desktop.viewable.area.pad:75}")
     private int desktopViewableAreaPad;
     /**
      * desktop cascade window offset value
