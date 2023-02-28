@@ -176,6 +176,8 @@ public class OrderTicketView
         pegToMidpointCheckBox = new CheckBox();
         pegToMidpointLockedLabel = new Label("Peg to Midpoint Locked");
         pegToMidpointLockedCheckBox = new CheckBox();
+        textLabel = new Label("Text");
+        textTextField = new TextField();
         accountLabel = new Label("Account");
         accountTextField = new TextField();
         orderTicketLabel = new Label("New Order Ticket");
@@ -245,6 +247,8 @@ public class OrderTicketView
                 //                                Type.ERROR_MESSAGE);
             }
         }
+        String orderTicketLabelHeader = replaceExecutionReportOption.isPresent() ? "Replace " : "New ";
+        orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
         Suggestion suggestion = null;
         if(event instanceof HasSuggestion) {
@@ -336,10 +340,12 @@ public class OrderTicketView
             try {
                 String symbol = StringUtils.trimToNull(String.valueOf(inNewValue));
                 if(symbol == null) {
+                    orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
                     return;
                 }
                 resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
                 if(resolvedInstrument == null) {
+                    orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
                     symbolTextField.setStyle(errorStyle);
                     adviceLabel.textProperty().set("Cannot resolve symbol");
                     return;
@@ -347,6 +353,7 @@ public class OrderTicketView
                 symbolTextField.setStyle(successStyle);
                 adviceLabel.textProperty().set("");
                 symbolTextField.setTooltip(new Tooltip(resolvedInstrument.toString()));
+                orderTicketLabel.textProperty().set(orderTicketLabelHeader + resolvedInstrument.getSecurityType().name() + " Order Ticket");
                 // TODO if peg-to-midpoint is checked, we need to change the market data subscription
             } finally {
                 adjustSendButton();
@@ -434,27 +441,39 @@ public class OrderTicketView
         styleService.addStyleToAll(otherAccordion,
                                    otherLayout,
                                    otherPane);
-        accountTextField.setPromptText("account");
+        // text
+        textLabel.setId(getClass().getCanonicalName() + ".textLabel");
+        textTextField.setPromptText("optional order text");
+        textTextField.setId(getClass().getCanonicalName() + ".textTextField");
+        textTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.Text.FIELD));
+        otherLayout.add(textLabel,0,0);
+        otherLayout.add(textTextField,1,0);
+        styleService.addStyleToAll(textLabel,
+                                   textTextField);
+        // account
+        accountLabel.setId(getClass().getCanonicalName() + ".accountLabel");
+        accountTextField.setPromptText("optional account");
         accountTextField.setId(getClass().getCanonicalName() + ".accountTextField");
         accountTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.Account.FIELD));
-        otherLayout.add(accountLabel,0,0);
-        otherLayout.add(accountTextField,1,0);
+        otherLayout.add(accountLabel,0,1);
+        otherLayout.add(accountTextField,1,1);
         styleService.addStyleToAll(accountLabel,
                                    accountTextField);
         // Ex Destination
-        exDestinationTextField.setPromptText("external destination");
+        exDestinationLabel.setId(getClass().getCanonicalName() + ".exDestinationLabel");
+        exDestinationTextField.setPromptText("optional ex destination");
         exDestinationTextField.setId(getClass().getCanonicalName() + ".exDestinationTextField");
         exDestinationTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.ExDestination.FIELD));
         styleService.addStyleToAll(exDestinationLabel,
                                    exDestinationTextField);
-        otherLayout.add(exDestinationLabel,0,1);
-        otherLayout.add(exDestinationTextField,1,1);
+        otherLayout.add(exDestinationLabel,0,2);
+        otherLayout.add(exDestinationTextField,1,2);
         // max floor
         maxFloorTextField.setPromptText("max floor");
         maxFloorTextField.setId(getClass().getCanonicalName() + ".maxFloorTextField");
         maxFloorTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.MaxFloor.FIELD));
         maxFloorTextField.isValidProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue) {
+            if(newValue || StringUtils.trimToNull(maxFloorTextField.textProperty().get()) == null) {
                 maxFloorTextField.setStyle(successStyle);
                 adviceLabel.textProperty().set("");
             } else {
@@ -466,8 +485,8 @@ public class OrderTicketView
         });
         styleService.addStyleToAll(maxFloorLabel,
                                    maxFloorTextField);
-        otherLayout.add(maxFloorLabel,0,2);
-        otherLayout.add(maxFloorTextField,1,2);
+        otherLayout.add(maxFloorLabel,0,3);
+        otherLayout.add(maxFloorTextField,1,3);
         // peg to midpoint
         // peg-to-midpoint selector
         pegToMidpointLabel.setId(getClass().getCanonicalName() + ".pegToMidpointLabel");
@@ -485,8 +504,8 @@ public class OrderTicketView
         });
         styleService.addStyleToAll(pegToMidpointLabel,
                                    pegToMidpointCheckBox);
-        otherLayout.add(pegToMidpointLabel,0,3);
-        otherLayout.add(pegToMidpointCheckBox,1,3);
+        otherLayout.add(pegToMidpointLabel,0,4);
+        otherLayout.add(pegToMidpointCheckBox,1,4);
         // peg-to-midpoint locked
         pegToMidpointLockedLabel.setId(getClass().getCanonicalName() + ".pegToMidpointLockedLabel");
         pegToMidpointLockedCheckBox.setId(getClass().getCanonicalName() + ".pegToMidpointLockedCheckBox");
@@ -494,8 +513,8 @@ public class OrderTicketView
         pegToMidpointLockedCheckBox.setTooltip(new Tooltip("Price pegged to the midpoint of the spread when the order is sent"));
         styleService.addStyleToAll(pegToMidpointLockedLabel,
                                    pegToMidpointLockedCheckBox);
-        otherLayout.add(pegToMidpointLockedLabel,0,4);
-        otherLayout.add(pegToMidpointLockedCheckBox,1,4);
+        otherLayout.add(pegToMidpointLockedLabel,0,5);
+        otherLayout.add(pegToMidpointLockedCheckBox,1,5);
         // broker algos
         brokerAlgoAccordion.setId(getClass().getCanonicalName() + ".brokerAlgoAccordion");
         brokerAlgoPane.expandedProperty().set(false);
@@ -845,6 +864,8 @@ public class OrderTicketView
     private Accordion otherAccordion;
     private TitledPane otherPane;
     private GridPane otherLayout;
+    private Label textLabel;
+    private TextField textTextField;
     private Label accountLabel;
     private TextField accountTextField;
     private Label exDestinationLabel;

@@ -5,6 +5,8 @@ import java.util.Properties;
 import org.marketcetera.core.Pair;
 import org.marketcetera.ui.view.ContentViewFactory;
 
+import javafx.scene.image.Image;
+
 /* $License$ */
 
 /**
@@ -16,6 +18,15 @@ import org.marketcetera.ui.view.ContentViewFactory;
  */
 public interface NewWindowEvent
 {
+    /**
+     * Get the icon to display for the window, if any.
+     *
+     * @return an <code>Image</cod> value or <code>null</code>
+     */
+    default Image getWindowIcon()
+    {
+        return null;
+    }
     /**
      * Get the title to display in the window.
      *
@@ -51,12 +62,12 @@ public interface NewWindowEvent
      * 
      * <p>Implementing class may choose to override this call to suggest a different size for the new window.
      *
-     * @return a <code>Pair&lt;String,String&gt;</code> value
+     * @return a <code>Pair&lt;Double,Double&gt;</code> value
      */
-    default Pair<String,String> getWindowSize()
+    default Pair<Double,Double> getWindowSize()
     {
-        return Pair.create("50%",
-                           "50%");
+        return Pair.create(50.0,
+                           50.0);
     }
     /**
      * Indicate if the new window should be resizable.

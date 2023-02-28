@@ -2,7 +2,7 @@ package org.marketcetera.ui.trade.view;
 
 import org.marketcetera.ui.view.MenuContent;
 
-import javafx.scene.Node;
+import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -52,7 +52,7 @@ public class TradeContentCategory
      * @see com.marketcetera.web.view.MenuContent#getIcon()
      */
     @Override
-    public Node getMenuIcon()
+    public Image getMenuIcon()
     {
         return null;
     }

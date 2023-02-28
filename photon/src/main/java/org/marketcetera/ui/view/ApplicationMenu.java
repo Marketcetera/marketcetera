@@ -23,6 +23,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 
 /* $License$ */
@@ -127,7 +129,7 @@ public class ApplicationMenu
             // this item may be a parent or a leaf
             Menu parent = new Menu();
             parent.setText(topLevelContentItem.getMenuCaption());
-            Node icon = topLevelContentItem.getMenuIcon();
+            Node icon = new ImageView(topLevelContentItem.getMenuIcon());
             parent.setGraphic(icon);
             menu.getMenus().add(parent);
             topLevelContentItem.setMenuItem(parent);
@@ -148,7 +150,7 @@ public class ApplicationMenu
                 for(MenuContent childItem : childItems) {
                     MenuItem newChildIem = new MenuItem();
                     newChildIem.setText(childItem.getMenuCaption());
-                    newChildIem.setGraphic(childItem.getMenuIcon());
+                    newChildIem.setGraphic(new ImageView(childItem.getMenuIcon()));
                     newChildIem.setOnAction(e -> childItem.getCommand().run());
                     parent.getItems().add(newChildIem);
                     MenuItemMetaData newChildItemMetaData = new MenuItemMetaData(childItem);
@@ -320,7 +322,7 @@ public class ApplicationMenu
          * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
          */
         @Override
-        public Node getMenuIcon()
+        public Image getMenuIcon()
         {
             return menuContent.getMenuIcon();
         }

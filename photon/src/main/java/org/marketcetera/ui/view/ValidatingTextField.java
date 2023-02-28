@@ -2,6 +2,8 @@ package org.marketcetera.ui.view;
 
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.scene.control.TextField;
 
@@ -21,7 +23,8 @@ public class ValidatingTextField
     {
         validation = inValidation;
         textProperty().addListener((observableValue, oldValue, newValue) -> {
-            isValidPropertyWrapper.set(validation.test(newValue));
+            String rawValue = StringUtils.trimToNull(newValue);
+            isValidPropertyWrapper.set(rawValue == null || validation.test(newValue));
         });
         isValidPropertyWrapper.set(true);
     }

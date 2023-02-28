@@ -24,6 +24,7 @@ import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.TileWindowsEvent;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ContentViewFactory;
+import org.marketcetera.ui.view.MenuContent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
@@ -113,8 +115,9 @@ public class WindowManagerService
                                inEvent.getWindowTitle());
         // create the UI window element
         Stage newWindow = new Stage();
-        // TODO set the icon for this window
-//        newWindow.getIcons().add(new Image("images/Order_Ticket.png"));
+        if(inEvent.getWindowIcon() != null) {
+            newWindow.getIcons().add(inEvent.getWindowIcon());
+        }
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         // the content view factory will be used to create the new window content
         ContentViewFactory viewFactory = applicationContext.getBean(inEvent.getViewFactoryType());
@@ -298,6 +301,17 @@ public class WindowManagerService
     private class RestartNewWindowEvent
             implements NewWindowEvent
     {
+        /* (non-Javadoc)
+         * @see org.marketcetera.ui.events.NewWindowEvent#getWindowIcon()
+         */
+        @Override
+        public Image getWindowIcon()
+        {
+            if(contentViewFactory instanceof MenuContent) {
+                return ((MenuContent)contentViewFactory).getMenuIcon();
+            }
+            return null;
+        }
         /* (non-Javadoc)
          * @see org.marketcetera.web.events.NewWindowEvent#getWindowTitle()
          */

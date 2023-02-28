@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 
-import javafx.scene.Node;
+import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -48,7 +48,7 @@ public class OrderTicketViewFactory
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Node getMenuIcon()
+    public Image getMenuIcon()
     {
         return getIcon("images/Order_Ticket.png");
     }
@@ -72,10 +72,10 @@ public class OrderTicketViewFactory
      * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
      */
     @Override
-    protected Pair<String,String> getWindowSize()
+    protected Pair<Double,Double> getWindowSize()
     {
-        return Pair.create("1350", 
-                           "655");
+        return Pair.create(1350.0, 
+                           655.0);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()

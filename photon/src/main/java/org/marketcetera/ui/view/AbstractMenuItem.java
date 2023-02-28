@@ -3,9 +3,7 @@ package org.marketcetera.ui.view;
 import org.marketcetera.ui.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 /* $License$ */
 
@@ -19,17 +17,14 @@ import javafx.scene.image.ImageView;
 public abstract class AbstractMenuItem
         implements MenuContent
 {
-    protected Node getIcon(String inName)
+    protected Image getIcon(String inName)
     {
-        if(iconView == null) {
+        if(icon == null) {
             icon = new Image(inName);
-            iconView = new ImageView();
-            iconView.setImage(icon);
         }
-        return iconView;
+        return icon;
     }
     private Image icon;
-    private ImageView iconView;
     /**
      * web message service value
      */

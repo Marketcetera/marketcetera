@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import javafx.scene.Node;
+import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -51,9 +51,9 @@ public interface MenuContent
     /**
      * Get the menu icon value.
      *
-     * @return a <code>Resource</code> value
+     * @return an <code>Image</code> value
      */
-    Node getMenuIcon();
+    Image getMenuIcon();
     /**
      * Get the command value to execute.
      *

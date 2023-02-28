@@ -71,7 +71,7 @@ public class StyleService
         if(componentId == null) {
             SLF4JLoggerProxy.trace(this,
                                    "Component {} has no id property",
-                                   componentId);
+                                   inComponent.getClass().getSimpleName());
             return;
         }
         SLF4JLoggerProxy.trace(this,

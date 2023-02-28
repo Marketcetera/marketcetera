@@ -7,9 +7,7 @@ import org.marketcetera.ui.view.AbstractContentViewFactory;
 import org.marketcetera.ui.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 /* $License$ */
 
@@ -49,12 +47,12 @@ public abstract class AbstractTradeViewFactory
     /**
      * Get the initial window size for new windows of this type.
      *
-     * @return <code>Pair&lt;String,String&gt;</code> value
+     * @return <code>Pair&lt;Double,Double&gt;</code> value
      */
-    protected Pair<String,String> getWindowSize()
+    protected Pair<Double,Double> getWindowSize()
     {
-        return Pair.create("50",
-                           "50");
+        return Pair.create(50.0,
+                           50.0);
     }
     /**
      * Get the content view factory for this view factory.
@@ -98,22 +96,27 @@ public abstract class AbstractTradeViewFactory
          * @see org.marketcetera.web.events.NewWindowEvent#getWindowSize()
          */
         @Override
-        public Pair<String,String> getWindowSize()
+        public Pair<Double,Double> getWindowSize()
         {
             return AbstractTradeViewFactory.this.getWindowSize();
         }
-    }
-    protected Node getIcon(String inName)
-    {
-        if(iconView == null) {
-            icon = new Image(inName);
-            iconView = new ImageView();
-            iconView.setImage(icon);
+        /* (non-Javadoc)
+         * @see org.marketcetera.ui.events.NewWindowEvent#getWindowIcon()
+         */
+        @Override
+        public Image getWindowIcon()
+        {
+            return getMenuIcon();
         }
-        return iconView;
+    }
+    protected Image getIcon(String inName)
+    {
+        if(icon == null) {
+            icon = new Image(inName);
+        }
+        return icon;
     }
     private Image icon;
-    private ImageView iconView;
     /**
      * weight of open orders menu item
      */

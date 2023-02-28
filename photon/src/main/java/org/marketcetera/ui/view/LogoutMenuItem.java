@@ -9,9 +9,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 /* $License$ */
 
@@ -30,11 +28,8 @@ public class LogoutMenuItem
     public void start()
     {
         icon = new Image("images/Logout.png");
-        iconView = new ImageView();
-        iconView.setImage(icon);
     }
     private Image icon;
-    private ImageView iconView;
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -63,10 +58,9 @@ public class LogoutMenuItem
      * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Node getMenuIcon()
+    public Image getMenuIcon()
     {
-        // <a target="_blank" href="https://icons8.com/icon/bh0gX14acFPO/sign-out">Sign Out</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-        return iconView;
+        return icon;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()

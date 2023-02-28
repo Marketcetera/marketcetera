@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.HasExecutionReport;
-import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
 import org.marketcetera.ui.view.ContentViewFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -23,7 +22,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ReplaceOrderEvent
-        implements HasExecutionReport,NewWindowEvent
+        extends AbstractOrderTicketEvent
+        implements HasExecutionReport
 {
     /* (non-Javadoc)
      * @see org.marketcetera.trade.HasExecutionReport#getExecutionReport()
