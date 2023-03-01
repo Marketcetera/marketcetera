@@ -3,8 +3,10 @@ package org.marketcetera.core.notifications;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -21,6 +23,16 @@ public class MultiMethodNotificationExecutor
         extends AbstractNotificationExecutor
         implements NotificationExecutor
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Starting {}",
+                              PlatformServices.getServiceName(NotificationExecutor.class));
+    }
     /* (non-Javadoc)
      * @see com.marketcetera.ramius.strategy.NotificationExecutor#notify(org.marketcetera.core.notifications.INotification)
      */

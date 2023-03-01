@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.eventbus.Subscribe;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert.AlertType;
 
 /* $License$ */
 
@@ -117,12 +118,24 @@ public class FixSessionWatcher
                 @Override
                 public void run()
                 {
-                    messageService.post(new NotificationEvent(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString())));
-//                    // TODO this really wants to be a tray notification
-//                    Alert a = new Alert(AlertType.INFORMATION);
-//                    a.setContentText(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString()));
-//                    a.show();
-                    
+                    AlertType alertType = null;
+                    switch(inActiveFixSession.getStatus()) {
+                        case CONNECTED:
+                            alertType = AlertType.CONFIRMATION;
+                            break;
+                        case DELETED:
+                        case DISABLED:
+                        case DISCONNECTED:
+                        case NOT_CONNECTED:
+                        case STOPPED:
+                        case AFFINITY_MISMATCH:
+                        case BACKUP:
+                        case UNKNOWN:
+                        default:
+                            alertType = AlertType.ERROR;
+                    }
+                    messageService.post(new NotificationEvent(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString()),
+                                                              alertType));
                 }
             });
         }

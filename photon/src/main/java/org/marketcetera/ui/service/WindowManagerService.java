@@ -122,7 +122,7 @@ public class WindowManagerService
                                inEvent.getWindowTitle());
         // create the UI window element
         final Stage newWindow = new Stage();
-        newWindow.initOwner(App.getMainStage());
+        newWindow.initOwner(App.getPrimaryStage());
         if(inEvent.getWindowIcon() != null) {
             newWindow.getIcons().add(inEvent.getWindowIcon());
         }
@@ -170,6 +170,9 @@ public class WindowManagerService
         SLF4JLoggerProxy.debug(this,
                                "onLogout: {}",
                                inEvent);
+        if(SessionUser.getCurrent() == null) {
+            return;
+        }
         getCurrentUserRegistry().logout();
         SessionUser.getCurrent().setAttribute(WindowRegistry.class,
                                               null);
@@ -763,7 +766,7 @@ public class WindowManagerService
                                            windowUid,
                                            windowProperties);
                     Stage newWindow = new Stage();
-                    newWindow.initOwner(App.getMainStage());
+                    newWindow.initOwner(App.getPrimaryStage());
                     WindowMetaData newWindowMetaData = new WindowMetaData(windowProperties,
                                                                           newWindow);
                     addWindow(newWindowMetaData);

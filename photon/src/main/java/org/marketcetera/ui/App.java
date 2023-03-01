@@ -5,11 +5,11 @@ import java.awt.Taskbar.Feature;
 import java.awt.Toolkit;
 import java.io.IOException;
 
-import org.controlsfx.control.NotificationPane;
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.events.LogoutEvent;
-import org.marketcetera.ui.events.NotificationEvent;
+import org.marketcetera.ui.service.PhotonNotificationService;
 import org.marketcetera.ui.service.SessionUser;
+import org.marketcetera.ui.service.StyleService;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.service.WindowManagerService;
 import org.marketcetera.ui.view.ApplicationMenu;
@@ -24,17 +24,17 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 /* $License$ */
@@ -50,9 +50,6 @@ import javafx.stage.Stage;
 public class App
         extends Application
 {
-
-    private static Scene scene;
-
     /* (non-Javadoc)
      * @see javafx.application.Application#init()
      */
@@ -64,19 +61,24 @@ public class App
         context = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
         webMessageService = context.getBean(WebMessageService.class);
         windowManagerService = context.getBean(WindowManagerService.class);
+        styleService = context.getBean(StyleService.class);
         webMessageService.register(this);
     }
+    /* (non-Javadoc)
+     * @see javafx.application.Application#start(javafx.stage.Stage)
+     */
     @Override
-    public void start(Stage inStage)
-            throws IOException
+    public void start(Stage inPrimaryStage)
+            throws Exception
     {
         SLF4JLoggerProxy.info(this,
                               "Starting main stage");
-        mainStage = inStage;
-        windowManagerService.initializeMainStage(mainStage);
+        primaryStage = inPrimaryStage;
+        windowManagerService.initializeMainStage(primaryStage);
         root = new VBox();
         menuLayout = new VBox();
         workspace = new VBox();
+        workspace.setId(getClass().getCanonicalName() + ".workspace");
         workspace.setPrefWidth(1024);
         workspace.setPrefHeight(768);
         initializeFooter();
@@ -86,16 +88,15 @@ public class App
                                   separator,
                                   footer);
         Scene mainScene = new Scene(root);
-        inStage.setScene(mainScene);
-        inStage.setTitle("Marketcetera Automated Trading Platform");
-        initializeNotificationPane();
-        inStage.getIcons().addAll(new Image("/images/photon-16x16.png"),
-                                new Image("/images/photon-24x24.png"),
-                                new Image("/images/photon-32x32.png"),
-                                new Image("/images/photon-48x48.png"),
-                                new Image("/images/photon-48x48.png"),
-                                new Image("/images/photon-64x64.png"),
-                                new Image("/images/photon-128x128.png"));
+        inPrimaryStage.setScene(mainScene);
+        inPrimaryStage.setTitle("Marketcetera Automated Trading Platform");
+        inPrimaryStage.getIcons().addAll(new Image("/images/photon-16x16.png"),
+                                         new Image("/images/photon-24x24.png"),
+                                         new Image("/images/photon-32x32.png"),
+                                         new Image("/images/photon-48x48.png"),
+                                         new Image("/images/photon-48x48.png"),
+                                         new Image("/images/photon-64x64.png"),
+                                         new Image("/images/photon-128x128.png"));
         if (Taskbar.isTaskbarSupported()) {
             Taskbar taskbar = Taskbar.getTaskbar();
             if(taskbar.isSupported(Feature.ICON_IMAGE)) {
@@ -104,7 +105,7 @@ public class App
                 taskbar.setIconImage(dockIcon);
             }
         }
-        inStage.setOnCloseRequest(closeEvent -> {
+        inPrimaryStage.setOnCloseRequest(closeEvent -> {
             isShuttingDown = true;
             webMessageService.post(new LogoutEvent());
             try {
@@ -112,23 +113,94 @@ public class App
             } catch (Exception ignored) {}
             Platform.exit();
         });
-        inStage.show();
+        VBox.setVgrow(menuLayout,
+                      Priority.NEVER);
+        VBox.setVgrow(workspace,
+                      Priority.ALWAYS);
+        VBox.setVgrow(footer,
+                      Priority.NEVER);
+        styleService.addStyleToAll(menuLayout,
+                                   workspace,
+                                   separator,
+                                   footer,
+                                   root);
+        inPrimaryStage.show();
         doLogin();
+    }
+    /**
+     * Receive <code>LoginEvent</code> values.
+     *
+     * @param inEvent a <code>LoginEvent</code> value
+     */
+    @Subscribe
+    public void onLogon(LoginEvent inEvent)
+    {
+        Platform.runLater(() -> { userLabel.setText(inEvent.getSessionUser().getUsername());});
+        notificationService = context.getBean(PhotonNotificationService.class);
+    }
+    /**
+     * Receive logout events.
+     *
+     * @param inEvent a <code>LogoutEvent</code> value
+     */
+    @Subscribe
+    public void onLogout(LogoutEvent inEvent)
+    {
+        if(notificationService != null) {
+            notificationService.stop();
+            notificationService = null;
+        }
+        if(SessionUser.getCurrent() != null) {
+            SessionUser.getCurrent().setAttribute(ApplicationMenu.class,
+                                                  null);
+            SessionUser.getCurrent().setAttribute(SessionUser.class,
+                                                  null);
+        }
+        Platform.runLater(() -> {
+            userLabel.setText("");
+            menuLayout.getChildren().clear();
+            if(!isShuttingDown) {
+                doLogin();
+            }
+        });
     }
     private void initializeFooter()
     {
-        footer = new HBox(10);
-        statusLayout = new HBox();
-        statusLayout.setAlignment(Pos.BOTTOM_LEFT);
+        footer = new HBox();
+        footer.setId(getClass().getCanonicalName() + ".footer");
+        footerToolBar = new ToolBar();
+        footerToolBar.setOrientation(Orientation.HORIZONTAL);
+        footerToolBar.setId(getClass().getCanonicalName() + ".footerToolBar");
+        statusToolBar = new ToolBar();
+        statusToolBar.setId(getClass().getCanonicalName() + ".statusToolBar");
+        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Green.png")));
+        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Green.png")));
+        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Green.png")));
+        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Red.png")));
         clockLabel = new Label();
+        clockLabel.setId(getClass().getCanonicalName() + ".clockLabel");
         clockUpdater = new ClockUpdater(clockLabel);
         clockUpdater.start();
         userLabel = new Label();
-        userLabel.setAlignment(Pos.BASELINE_CENTER);
-        footer.setAlignment(Pos.BOTTOM_CENTER);
-        footer.getChildren().addAll(statusLayout,
-                                    clockLabel,
-                                    userLabel);
+        userLabel.setId(getClass().getCanonicalName() + ".userLabel");
+        Separator footerToolBarSeparator1 = new Separator(Orientation.VERTICAL);
+        footerToolBarSeparator1.setId(getClass().getCanonicalName() + ".footerToolBarSeparator1");
+        Separator footerToolBarSeparator2 = new Separator(Orientation.VERTICAL);
+        footerToolBarSeparator2.setId(getClass().getCanonicalName() + ".footerToolBarSeparator2");
+        footerToolBar.getItems().addAll(statusToolBar,
+                                        footerToolBarSeparator1,
+                                        clockLabel,
+                                        footerToolBarSeparator2,
+                                        userLabel);
+        HBox.setHgrow(footerToolBar,
+                      Priority.ALWAYS);
+        footer.getChildren().add(footerToolBar);
+        styleService.addStyleToAll(footer,
+                                   footerToolBar,
+                                   footerToolBarSeparator1,
+                                   footerToolBarSeparator2,
+                                   clockLabel,
+                                   userLabel);
     }
     private void showMenu()
     {
@@ -142,54 +214,6 @@ public class App
                                                   applicationMenu);
         }
         applicationMenu.refreshMenuPermissions();
-    }
-    private void initializeNotificationPane()
-    {
-        // Create a WebView
-        WebView webView = new WebView();
-        // Wrap it inside a NotificationPane
-        notificationPane = new NotificationPane(webView);
-        // and put the NotificationPane inside a Tab
-        Tab tab1 = new Tab("Tab 1");
-        tab1.setContent(notificationPane);
-        // and the Tab inside a TabPane. We just have one tab here, but of course 
-        // you can have more!
-        TabPane tabPane = new TabPane();
-        tabPane.getTabs().addAll(tab1);
-        notificationPane.setShowFromTop(false);
-        workspace.getChildren().add(notificationPane);
-        notificationPane.setPrefHeight(700);
-    }
-    @Subscribe
-    public void onLogon(LoginEvent inEvent)
-    {
-        Platform.runLater(() -> { userLabel.setText(inEvent.getSessionUser().getUsername());});
-    }
-    @Subscribe
-    public void onNotification(NotificationEvent inEvent)
-    {
-        SLF4JLoggerProxy.debug(this,
-                               "Received: {}",
-                               inEvent);
-        Platform.runLater(() -> {
-            notificationPane.setText(inEvent.getMessage());
-            notificationPane.show();
-        });
-    }
-    @Subscribe
-    public void onLogout(LogoutEvent inEvent)
-    {
-        SessionUser.getCurrent().setAttribute(ApplicationMenu.class,
-                                              null);
-        SessionUser.getCurrent().setAttribute(SessionUser.class,
-                                              null);
-        Platform.runLater(() -> {
-            userLabel.setText("");
-            menuLayout.getChildren().clear();
-            if(!isShuttingDown) {
-                doLogin();
-            }
-        });
     }
     private void doLogin()
     {
@@ -209,16 +233,31 @@ public class App
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
-    public static Stage getMainStage()
+    public static Stage getPrimaryStage()
     {
-        return mainStage;
+        return primaryStage;
     }
-    private static Stage mainStage;
+    public static Region getWorkspace()
+    {
+        return workspace;
+    }
     public static void main(String[] args)
     {
         launch();
     }
+    /**
+     * holds main stage object
+     */
+    private static Stage primaryStage;
+    private static Scene scene;
+    /**
+     * indicates if the app is shutting down now
+     */
     private boolean isShuttingDown = false;
+    /**
+     * provides style services
+     */
+    private StyleService styleService;
     /**
      * web message service value
      */
@@ -228,11 +267,11 @@ public class App
     private ApplicationContext context;
     private VBox root;
     private HBox footer;
-    private HBox statusLayout;
     private Label clockLabel;
     private Label userLabel;
-    private VBox workspace;
-    private NotificationPane notificationPane;
+    private static VBox workspace;
     private ClockUpdater clockUpdater;
-
+    private ToolBar statusToolBar;
+    private ToolBar footerToolBar;
+    private PhotonNotificationService notificationService;
 }
