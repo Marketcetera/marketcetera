@@ -124,6 +124,8 @@ public class App
                                    separator,
                                    footer,
                                    root);
+        mainScene.getStylesheets().clear();
+        mainScene.getStylesheets().add("dark-mode.css");
         inPrimaryStage.show();
         doLogin();
     }

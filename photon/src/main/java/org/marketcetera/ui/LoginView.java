@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.ui.events.LoginEvent;
-import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -69,6 +68,8 @@ public class LoginView
                                   passwordBox,
                                   loginButton);
         Scene scene = new Scene(root);
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add("dark-mode.css");
         setScene(scene);
         // The title of the stage is not visible for all styles.
         setTitle("Login");
@@ -112,16 +113,9 @@ public class LoginView
                                   "{} failed to log in: {}",
                                   username,
                                   message);
-            showPopupMessage(message);
             SessionUser.getCurrent().setAttribute(SessionUser.class,
                                                   null);
         }
-    }
-    private void showPopupMessage(final String message)
-    {
-        // TODO this doesn't show
-        System.out.println("Positing notification event");
-        webMessageService.post(new NotificationEvent(message));
     }
     private void onCloseRequest(WindowEvent inEvent)
     {
@@ -131,6 +125,7 @@ public class LoginView
     private Button loginButton;
     private PasswordField passwordText;
     private TextField usernameText;
+    private Label adviceLabel;
     /**
      * provides authentication services
      */

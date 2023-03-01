@@ -121,7 +121,7 @@ public class FixSessionWatcher
                     AlertType alertType = null;
                     switch(inActiveFixSession.getStatus()) {
                         case CONNECTED:
-                            alertType = AlertType.CONFIRMATION;
+                            alertType = AlertType.INFORMATION;
                             break;
                         case DELETED:
                         case DISABLED:
@@ -134,7 +134,8 @@ public class FixSessionWatcher
                         default:
                             alertType = AlertType.ERROR;
                     }
-                    messageService.post(new NotificationEvent(inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString()),
+                    messageService.post(new NotificationEvent("FIX Session Status",
+                                                              inActiveFixSession.getFixSession().getName() + " " + StringUtils.trim(prettyStatus.toString()),
                                                               alertType));
                 }
             });

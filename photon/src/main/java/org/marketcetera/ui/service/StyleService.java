@@ -67,20 +67,20 @@ public class StyleService
     }
     public void addStyle(Node inComponent)
     {
-        String componentId = inComponent.getId();
-        if(componentId == null) {
-            SLF4JLoggerProxy.trace(this,
-                                   "Component {} has no id property",
-                                   inComponent.getClass().getSimpleName());
-            return;
-        }
-        SLF4JLoggerProxy.trace(this,
-                               "Applying styles to {}",
-                               componentId);
-        // apply styles in order from least to most specific
-        applyStyle(componentId.indexOf('.'),
-                   componentId,
-                   inComponent);
+//        String componentId = inComponent.getId();
+//        if(componentId == null) {
+//            SLF4JLoggerProxy.trace(this,
+//                                   "Component {} has no id property",
+//                                   inComponent.getClass().getSimpleName());
+//            return;
+//        }
+//        SLF4JLoggerProxy.trace(this,
+//                               "Applying styles to {}",
+//                               componentId);
+//        // apply styles in order from least to most specific
+//        applyStyle(componentId.indexOf('.'),
+//                   componentId,
+//                   inComponent);
     }
     private void applyStyle(int inIndex,
                             String inKey,

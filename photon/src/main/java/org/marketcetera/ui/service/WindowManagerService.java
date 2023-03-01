@@ -47,6 +47,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
@@ -123,6 +124,7 @@ public class WindowManagerService
         // create the UI window element
         final Stage newWindow = new Stage();
         newWindow.initOwner(App.getPrimaryStage());
+        newWindow.initStyle(StageStyle.UNDECORATED);
         if(inEvent.getWindowIcon() != null) {
             newWindow.getIcons().add(inEvent.getWindowIcon());
         }
@@ -140,6 +142,8 @@ public class WindowManagerService
         newWindow.setOnCloseRequest(inCloseEvent -> contentView.onClose(inCloseEvent));
         styleService.addStyle(contentView);
         Scene rootScene = contentView.getScene();
+        rootScene.getStylesheets().clear();
+        rootScene.getStylesheets().add("dark-mode.css");
         newWindow.setTitle(inEvent.getWindowTitle());
         // set properties of the new window based on the received event
         newWindow.initModality(inEvent.isModal()?Modality.APPLICATION_MODAL:Modality.NONE);
@@ -438,7 +442,10 @@ public class WindowManagerService
                                                                                               properties.getProperty(windowTitleProp)),
                                                                     properties);
                 styleService.addStyle(contentView);
-                window.setScene(contentView.getScene());
+                Scene scene = contentView.getScene();
+                scene.getStylesheets().clear();
+                scene.getStylesheets().add("dark-mode.css");
+                window.setScene(scene);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -1213,7 +1220,7 @@ public class WindowManagerService
     /**
      * desktop viewable area pad value
      */
-    @Value("${metc.desktop.viewable.area.pad:75}")
+    @Value("${metc.desktop.viewable.area.pad:50}")
     private int desktopViewableAreaPad;
     /**
      * desktop cascade window offset value

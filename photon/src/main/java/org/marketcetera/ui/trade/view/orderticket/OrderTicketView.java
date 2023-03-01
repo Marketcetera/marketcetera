@@ -63,6 +63,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -243,8 +244,9 @@ public class OrderTicketView
                 replaceExecutionReport = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
                 // TODO
-                webMessageService.post(new NotificationEvent("Unable to replace order: " + PlatformServices.getMessage(e)));
-                //                                Type.ERROR_MESSAGE);
+                webMessageService.post(new NotificationEvent("Replace Order",
+                                                             "Unable to replace order: " + PlatformServices.getMessage(e),
+                                                             AlertType.ERROR));
             }
         }
         replaceExecutionReportOption = Optional.ofNullable(replaceExecutionReport);
@@ -254,8 +256,9 @@ public class OrderTicketView
             try {
                 averageFillPrice = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                webMessageService.post(new NotificationEvent("Unable to trade order: " + PlatformServices.getMessage(e)));
-                //                                Type.ERROR_MESSAGE);
+                webMessageService.post(new NotificationEvent("Trade Order",
+                                                             "Unable to trade order: " + PlatformServices.getMessage(e),
+                                                             AlertType.ERROR));
             }
         }
         String orderTicketLabelHeader = replaceExecutionReportOption.isPresent() ? "Replace " : "New ";

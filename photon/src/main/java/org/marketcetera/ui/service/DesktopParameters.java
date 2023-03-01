@@ -1,7 +1,6 @@
 package org.marketcetera.ui.service;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.stage.Stage;
 
 /* $License$ */
@@ -23,24 +22,10 @@ public class DesktopParameters
     public DesktopParameters(Stage inMainStage)
     {
         mainStage = inMainStage;
-        mainStage.widthProperty().addListener(new ChangeListener< Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> inObservable,
-                                Number inOldValue,
-                                Number inNewValue)
-            {
-                recalculate();
-            }}
-        );
-        mainStage.heightProperty().addListener(new ChangeListener< Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> inObservable,
-                                Number inOldValue,
-                                Number inNewValue)
-            {
-                recalculate();
-            }}
-        );
+        mainStage.widthProperty().addListener((ChangeListener<Number>) (inObservable,inOldValue,inNewValue) -> recalculate());
+        mainStage.heightProperty().addListener((ChangeListener<Number>) (inObservable,inOldValue,inNewValue) -> recalculate());
+        mainStage.xProperty().addListener((ChangeListener<Number>) (inObservable,inOldValue,inNewValue) -> recalculate());
+        mainStage.yProperty().addListener((ChangeListener<Number>) (inObservable,inOldValue,inNewValue) -> recalculate());
     }
     /**
      * Get the top value.
