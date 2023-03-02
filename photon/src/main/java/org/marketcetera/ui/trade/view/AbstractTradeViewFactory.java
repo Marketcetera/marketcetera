@@ -51,8 +51,8 @@ public abstract class AbstractTradeViewFactory
      */
     protected Pair<Double,Double> getWindowSize()
     {
-        return Pair.create(50.0,
-                           50.0);
+        return Pair.create(0.0,
+                           0.0);
     }
     /**
      * Get the content view factory for this view factory.

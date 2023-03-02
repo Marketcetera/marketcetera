@@ -129,7 +129,7 @@ public class DisplayReport
      *
      * @return a <code>BrokerID</code> value
      */
-    public BrokerID getBrokerID()
+    public BrokerID getBrokerId()
     {
         return report.getBrokerID();
     }
@@ -138,7 +138,7 @@ public class DisplayReport
      *
      * @return a <code>ReportID</code> value
      */
-    public ReportID getReportID()
+    public ReportID getReportId()
     {
         return report.getReportID();
     }

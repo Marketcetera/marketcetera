@@ -27,7 +27,6 @@
 -- roles
 -- permissions
 
-- open orders view
 
 - average fills view
 
@@ -41,11 +40,13 @@
 
 - add strategy view
 
-x format time and date to something interesting
-* reports view
 
 - positions view
 
 - add view metrics module (with rpc, etc)
 
 - reports needs add report action
+
+
+
+x open orders view

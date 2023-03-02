@@ -5,8 +5,6 @@
     -fx-control-inner-background: derive(-fx-base, 35%);
     -fx-control-inner-background-alt: -fx-control-inner-background ;
     -fx-font-size: 12px;
-    -fx-border-radius: 10 10 0 0;
-    -fx-background-radius: 10 10 0 0;
 }
 
 .label{
