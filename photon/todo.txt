@@ -9,6 +9,7 @@
 - login window should be centered on main window, not screen
 - resize main window not stored in window properties?, should be reset on login
 - cascade and tile not working yet
+- weird always-on-top issue with window system
 - order ticket not formatted with last know values
 - broker status toolbar, needs to do something
 - rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
@@ -17,36 +18,23 @@
 - experiment with style of windows to make them more compact?
 - change windows to use popups instead of new stages?
 - replace order ticket values not filled out
-
 - add advice to login
-
 - add fix session view
-
 - add admin views
 -- users
 -- roles
 -- permissions
-
-
-- average fills view
-
 - suggestions view
-
 - need enter mnemonic for login view
-
 - add market data view
-
 - add cluster view
-
 - add strategy view
-
-
 - positions view
-
 - add view metrics module (with rpc, etc)
-
 - reports needs add report action
+- go back to old icons
 
+- average price view
 
-
+x fills view
 x open orders view

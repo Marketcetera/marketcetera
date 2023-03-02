@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.HasBrokerID;
+import org.marketcetera.trade.HasReportID;
 import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderID;
@@ -33,7 +35,7 @@ import quickfix.InvalidMessage;
  * @since $Release$
  */
 public class DisplayReport
-        implements FixMessageDisplayType
+        implements FixMessageDisplayType,HasReportID,HasBrokerID
 {
     /**
      * Get the order id value.
@@ -124,21 +126,11 @@ public class DisplayReport
     {
         return report.getReportType();
     }
-    /**
-     * Get the broker ID value.
-     *
-     * @return a <code>BrokerID</code> value
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasReportID#getReportID()
      */
-    public BrokerID getBrokerId()
-    {
-        return report.getBrokerID();
-    }
-    /**
-     * Get the report ID value.
-     *
-     * @return a <code>ReportID</code> value
-     */
-    public ReportID getReportId()
+    @Override
+    public ReportID getReportID()
     {
         return report.getReportID();
     }
@@ -291,6 +283,14 @@ public class DisplayReport
     public String getExchange()
     {
         return exchange;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasBrokerID#getBrokerId()
+     */
+    @Override
+    public BrokerID getBrokerId()
+    {
+        return report.getBrokerID();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.HasBrokerID;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
@@ -26,7 +27,7 @@ import quickfix.InvalidMessage;
  * @since $Release$
  */
 public class DisplayOrderSummary
-        implements FixMessageDisplayType,OrderSummary
+        implements FixMessageDisplayType,OrderSummary,HasBrokerID
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasFIXMessage#getMessage()

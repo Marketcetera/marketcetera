@@ -63,7 +63,7 @@ import javafx.stage.WindowEvent;
 /* $License$ */
 
 /**
- *
+ * Provides common behaviors for views that need to display FIX messages in a table.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -311,70 +311,94 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         };
         return tableCell;
     }
+    protected boolean includeOrderQuantityColumn()
+    {
+        return true;
+    }
+    protected boolean includeOrderPriceColumn()
+    {
+        return true;
+    }
+    protected boolean includeOriginalOrderIdColumn()
+    {
+        return true;
+    }
+    protected boolean includeExchangeColumn()
+    {
+        return true;
+    }
     protected void initializeColumns(TableView<FixClazz> reportsTableView)
     {
-        TableColumn<FixClazz,Date> transactTimeColumn = new TableColumn<>("TransactTime"); 
+        transactTimeColumn = new TableColumn<>("TransactTime"); 
         transactTimeColumn.setCellValueFactory(new PropertyValueFactory<>("transactTime"));
         transactTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
-        TableColumn<FixClazz,Date> sendingTimeColumn = new TableColumn<>("SendingTime"); 
+        sendingTimeColumn = new TableColumn<>("SendingTime"); 
         sendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("sendingTime"));
         sendingTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
-        TableColumn<FixClazz,OrderID> orderIdColumn = new TableColumn<>("OrdId"); 
+        orderIdColumn = new TableColumn<>("OrdId"); 
         orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
-        TableColumn<FixClazz,OrderID> origOrderIdColumn = new TableColumn<>("OrigOrdId"); 
-        origOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("originalOrderId"));
-        TableColumn<FixClazz,OrderStatus> orderStatusColumn = new TableColumn<>("OrdStatus"); 
+        origOrderIdColumn = new TableColumn<>("OrigOrdId"); 
+        orderStatusColumn = new TableColumn<>("OrdStatus"); 
         orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
-        TableColumn<FixClazz,Side> sideColumn = new TableColumn<>("Side"); 
+        sideColumn = new TableColumn<>("Side"); 
         sideColumn.setCellValueFactory(new PropertyValueFactory<>("side"));
-        TableColumn<FixClazz,Instrument> symbolColumn = new TableColumn<>("Symbol"); 
+        symbolColumn = new TableColumn<>("Symbol"); 
         symbolColumn.setCellValueFactory(new PropertyValueFactory<>("instrument"));
         symbolColumn.setCellFactory(tableColumn -> renderInstrumentCell(tableColumn));
-        TableColumn<FixClazz,BigDecimal> ordQtyColumn = new TableColumn<>("OrdQty"); 
-        ordQtyColumn.setCellValueFactory(new PropertyValueFactory<>("orderQuantity"));
-        ordQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,BigDecimal> cumQtyColumn = new TableColumn<>("CumQty"); 
+        ordQtyColumn = new TableColumn<>("OrdQty"); 
+        cumQtyColumn = new TableColumn<>("CumQty"); 
         cumQtyColumn.setCellValueFactory(new PropertyValueFactory<>("cumulativeQuantity"));
         cumQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,BigDecimal> leavesQtyColumn = new TableColumn<>("LeavesQty"); 
+        leavesQtyColumn = new TableColumn<>("LeavesQty"); 
         leavesQtyColumn.setCellValueFactory(new PropertyValueFactory<>("leavesQuantity"));
         leavesQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,BigDecimal> orderPriceColumn = new TableColumn<>("OrderPx"); 
-        orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPrice"));
-        orderPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,BigDecimal> averagePriceColumn = new TableColumn<>("AvgPx"); 
+        orderPriceColumn = new TableColumn<>("OrderPx"); 
+        averagePriceColumn = new TableColumn<>("AvgPx"); 
         averagePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averagePrice"));
         averagePriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,String> accountColumn = new TableColumn<>("Account"); 
+        accountColumn = new TableColumn<>("Account"); 
         accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
-        TableColumn<FixClazz,BigDecimal> lastQtyColumn = new TableColumn<>("LastQty"); 
+        lastQtyColumn = new TableColumn<>("LastQty"); 
         lastQtyColumn.setCellValueFactory(new PropertyValueFactory<>("lastQuantity"));
         lastQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,BigDecimal> lastPriceColumn = new TableColumn<>("LastPx"); 
+        lastPriceColumn = new TableColumn<>("LastPx"); 
         lastPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
         lastPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        TableColumn<FixClazz,String> exchangeColumn = new TableColumn<>("Exchange"); 
-        exchangeColumn.setCellValueFactory(new PropertyValueFactory<>("exchange"));
-        TableColumn<FixClazz,BrokerID> brokerIdColumn = new TableColumn<>("BrokerId"); 
+        exchangeColumn = new TableColumn<>("Exchange"); 
+        brokerIdColumn = new TableColumn<>("BrokerId"); 
         brokerIdColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
-        TableColumn<FixClazz,String> traderColumn = new TableColumn<>("Trader"); 
+        traderColumn = new TableColumn<>("Trader"); 
         traderColumn.setCellValueFactory(new PropertyValueFactory<>("trader"));
         reportsTableView.getColumns().add(transactTimeColumn);
         reportsTableView.getColumns().add(sendingTimeColumn);
         reportsTableView.getColumns().add(orderIdColumn);
-        reportsTableView.getColumns().add(origOrderIdColumn);
+        if(includeOriginalOrderIdColumn()) {
+            origOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("originalOrderId"));
+            reportsTableView.getColumns().add(origOrderIdColumn);
+        }
         reportsTableView.getColumns().add(orderStatusColumn);
         reportsTableView.getColumns().add(sideColumn);
         reportsTableView.getColumns().add(symbolColumn);
-        reportsTableView.getColumns().add(ordQtyColumn);
+        if(includeOrderQuantityColumn()) {
+            ordQtyColumn.setCellValueFactory(new PropertyValueFactory<>("orderQuantity"));
+            ordQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+            reportsTableView.getColumns().add(ordQtyColumn);
+        }
         reportsTableView.getColumns().add(cumQtyColumn);
         reportsTableView.getColumns().add(leavesQtyColumn);
-        reportsTableView.getColumns().add(orderPriceColumn);
+        if(includeOrderPriceColumn()) {
+            orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPrice"));
+            orderPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+            reportsTableView.getColumns().add(orderPriceColumn);
+        }
         reportsTableView.getColumns().add(averagePriceColumn);
         reportsTableView.getColumns().add(accountColumn);
         reportsTableView.getColumns().add(lastQtyColumn);
         reportsTableView.getColumns().add(lastPriceColumn);
-        reportsTableView.getColumns().add(exchangeColumn);
+        if(includeExchangeColumn()) {
+            exchangeColumn.setCellValueFactory(new PropertyValueFactory<>("exchange"));
+            reportsTableView.getColumns().add(exchangeColumn);
+        }
         reportsTableView.getColumns().add(brokerIdColumn);
         reportsTableView.getColumns().add(traderColumn);
     }

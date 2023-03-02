@@ -1,22 +1,12 @@
-package org.marketcetera.ui.trade.view.reports;
+package org.marketcetera.ui.trade.view;
 
 import java.util.Properties;
 
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.persist.CollectionPageResponse;
-import org.marketcetera.persist.PageRequest;
-import org.marketcetera.trade.Report;
-import org.marketcetera.trade.ReportType;
-import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
-import org.marketcetera.ui.trade.view.AbstractFixMessageView;
-import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -26,77 +16,48 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 /* $License$ */
 
 /**
- * Provides a view for Order Tickets.
+ * Provides common behaviors for Fix message views that need to be able to delete reports;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ReportsView
-        extends AbstractFixMessageView<DisplayReport,Report>
-        implements ContentView,TradeMessageListener
+public abstract class AbstractDeletableFixMessageView<FixClazz extends DeletableFixMessageDisplayType,ClientClazz>
+        extends AbstractFixMessageView<FixClazz,ClientClazz>
 {
     /**
-     * Create a new ReportsView instance.
+     * Create a new AbstractDeletableFixMessageView instance.
      *
      * @param inParentWindow a <code>Stage</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public ReportsView(Stage inParentWindow,
-                       NewWindowEvent inEvent,
-                       Properties inViewProperties)
+    protected AbstractDeletableFixMessageView(Stage inParentWindow,
+                                              NewWindowEvent inEvent,
+                                              Properties inViewProperties)
     {
         super(inParentWindow,
               inEvent,
               inViewProperties);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getViewName()
-     */
-    @Override
-    public String getViewName()
-    {
-        return NAME;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#getClientReports(org.marketcetera.persist.PageRequest)
-     */
-    @Override
-    protected CollectionPageResponse<Report> getClientReports(PageRequest inPageRequest)
-    {
-        return tradeClientService.getReports(inPageRequest);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#createFixDisplayObject(java.lang.Object)
-     */
-    @Override
-    protected DisplayReport createFixDisplayObject(Report inClientClazz)
-    {
-        return new DisplayReport(inClientClazz);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#initializeContextMenu(javafx.scene.control.TableView)
      */
     @Override
-    protected void initializeContextMenu(TableView<DisplayReport> inTableView)
+    protected void initializeContextMenu(TableView<FixClazz> inTableView)
     {
         super.initializeContextMenu(inTableView);
         ContextMenu reportsTableContextMenu = inTableView.getContextMenu();
         SeparatorMenuItem contextMenuSeparator = new SeparatorMenuItem();
         deleteReportMenuItem = new MenuItem("Delete Report");
         deleteReportMenuItem.setOnAction(event -> {
-            DisplayReport report = inTableView.getSelectionModel().getSelectedItem();
+            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete Report " + report.getReportID());
             alert.setContentText("Deleting a report may modify positions, continue?");
@@ -137,22 +98,10 @@ public class ReportsView
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#initializeColumns(javafx.scene.control.TableView)
-     */
-    @Override
-    protected void initializeColumns(TableView<DisplayReport> inTableView)
-    {
-        super.initializeColumns(inTableView);
-        msgTypeColumn = new TableColumn<>("MsgType"); 
-        msgTypeColumn.setCellValueFactory(new PropertyValueFactory<>("msgType"));
-        inTableView.getColumns().add(2,
-                                     msgTypeColumn);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#enableContextMenuItems(org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType)
      */
     @Override
-    protected void enableContextMenuItems(DisplayReport inNewValue)
+    protected void enableContextMenuItems(FixClazz inNewValue)
     {
         super.enableContextMenuItems(inNewValue);
         if(inNewValue == null) {
@@ -166,12 +115,4 @@ public class ReportsView
      * delete report menu item for the context menu
      */
     private MenuItem deleteReportMenuItem;
-    /**
-     * report message type column
-     */
-    private TableColumn<DisplayReport,ReportType> msgTypeColumn;
-    /**
-     * global name of this view
-     */
-    private static final String NAME = "FIX Messages View";
 }
