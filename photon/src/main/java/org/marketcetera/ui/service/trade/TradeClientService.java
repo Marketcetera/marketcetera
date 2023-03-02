@@ -15,6 +15,8 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
+import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
@@ -48,6 +50,38 @@ public class TradeClientService
      * Create a new TradeClientService instance.
      */
     public TradeClientService() {}
+    /**
+     * Removes the given report from the persistent report store.
+     * 
+     * <p>Reports removed this way will not be added to the system data bus and no clients
+     * will receive this report.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inReportId a <code>ReportID</code> value
+     */
+    public void deleteReport(ReportID inReportId)
+    {
+        tradeClient.deleteReport(inReportId);
+    }
+    /**
+     * Add the given trade message listener.
+     *
+     * @param inTradeMessageListener a <code>TradeMessageListener</code> value
+     */
+    public void addTradeMessageListener(TradeMessageListener inTradeMessageListener)
+    {
+        tradeClient.addTradeMessageListener(inTradeMessageListener);
+    }
+    /**
+     * Remove the given trade message listener.
+     *
+     * @param inTradeMessageListener a <code>TradeMessageListener</code> value
+     */
+    public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
+    {
+        tradeClient.removeTradeMessageListener(inTradeMessageListener);
+    }
     /**
      * Get the latest execution report from the order chain represented by the given order id from the chain or chain root order id.
      *

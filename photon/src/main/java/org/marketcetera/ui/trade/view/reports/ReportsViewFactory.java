@@ -1,10 +1,9 @@
-package org.marketcetera.ui.trade.view.orderticket;
+package org.marketcetera.ui.trade.view.reports;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.fix.FixPermissions;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.ui.trade.view.AbstractTradeViewFactory;
 import org.marketcetera.ui.view.ContentView;
@@ -18,14 +17,14 @@ import javafx.scene.image.Image;
 /* $License$ */
 
 /**
- * Creates {@link OrderTicketView} content objects.
+ * Creates {@link ReportsView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @Component
-public class OrderTicketViewFactory
+public class ReportsViewFactory
         extends AbstractTradeViewFactory
 {
     /* (non-Javadoc)
@@ -34,7 +33,7 @@ public class OrderTicketViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "Order Ticket";
+        return "FIX Messages";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
@@ -42,7 +41,7 @@ public class OrderTicketViewFactory
     @Override
     public int getWeight()
     {
-        return orderTicketWeight;
+        return fixMessagesWeight;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -50,7 +49,7 @@ public class OrderTicketViewFactory
     @Override
     public Image getMenuIcon()
     {
-        return getIcon("images/Order_Ticket.png");
+        return getIcon("images/FIX_Messages.png");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
@@ -69,21 +68,12 @@ public class OrderTicketViewFactory
         return getMenuCaption();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
-     */
-    @Override
-    protected Pair<Double,Double> getWindowSize()
-    {
-        return Pair.create(850.0, 
-                           200.0);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.web.view.AbstractContentViewFactory#getViewType()
      */
     @Override
     protected Class<? extends ContentView> getViewType()
     {
-        return OrderTicketView.class;
+        return ReportsView.class;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.trade.view.AbstractTradeViewFactory#getViewFactoryType()
@@ -91,10 +81,19 @@ public class OrderTicketViewFactory
     @Override
     protected Class<? extends AbstractTradeViewFactory> getViewFactoryType()
     {
-        return OrderTicketViewFactory.class;
+        return ReportsViewFactory.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
+     */
+    @Override
+    protected Pair<Double,Double> getWindowSize()
+    {
+        return Pair.create(800.0, 
+                           200.0);
     }
     /**
      * permission(s) required to execute open order view
      */
-    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.SendOrderAction,FixPermissions.ViewBrokerStatusAction));
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(TradePermissions.ViewReportAction));
 }

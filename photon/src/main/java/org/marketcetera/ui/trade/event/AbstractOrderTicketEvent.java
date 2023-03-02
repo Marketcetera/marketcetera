@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for order ticket events.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

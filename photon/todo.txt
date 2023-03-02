@@ -1,0 +1,51 @@
+- not all controls in order ticket able to be styled
+- order suggestions in order ticket
+- broker algos in order ticket
+- custom fields in order ticket
+- transfer text to order in order ticket
+- peg to midpoint in order ticket
+- stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
+- no way to close app from login window
+- login window should be centered on main window, not screen
+- resize main window not stored in window properties?, should be reset on login
+- cascade and tile not working yet
+- order ticket not formatted with last know values
+- broker status toolbar, needs to do something
+- rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
+- need add help menu
+- need about menu with attributions and copyright
+- experiment with style of windows to make them more compact?
+- change windows to use popups instead of new stages?
+- replace order ticket values not filled out
+
+- add advice to login
+
+- add fix session view
+
+- add admin views
+-- users
+-- roles
+-- permissions
+
+- open orders view
+
+- average fills view
+
+- suggestions view
+
+- need enter mnemonic for login view
+
+- add market data view
+
+- add cluster view
+
+- add strategy view
+
+x format time and date to something interesting
+* reports view
+
+- positions view
+
+- add view metrics module (with rpc, etc)
+
+- reports needs add report action

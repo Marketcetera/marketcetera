@@ -47,7 +47,6 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
@@ -124,7 +123,6 @@ public class WindowManagerService
         // create the UI window element
         final Stage newWindow = new Stage();
         newWindow.initOwner(App.getPrimaryStage());
-        newWindow.initStyle(StageStyle.UNDECORATED);
         if(inEvent.getWindowIcon() != null) {
             newWindow.getIcons().add(inEvent.getWindowIcon());
         }
@@ -146,12 +144,17 @@ public class WindowManagerService
         rootScene.getStylesheets().add("dark-mode.css");
         newWindow.setTitle(inEvent.getWindowTitle());
         // set properties of the new window based on the received event
-        newWindow.initModality(inEvent.isModal()?Modality.APPLICATION_MODAL:Modality.NONE);
+//        newWindow.initModality(inEvent.isModal()?Modality.APPLICATION_MODAL:Modality.NONE);
+//        newWindow.initModality(Modality.NONE);
         // TODO not sure how to disallow dragging
 //        newWindow.setDraggable(inEvent.isDraggable());
         newWindow.setResizable(inEvent.isResizable());
-        newWindow.setWidth(Double.valueOf(inEvent.getWindowSize().getFirstMember()));
-        newWindow.setHeight(Double.valueOf(inEvent.getWindowSize().getSecondMember()));
+        if(inEvent.getWindowSize().getFirstMember() > 0) {
+            newWindow.setWidth(inEvent.getWindowSize().getFirstMember());
+        }
+        if(inEvent.getWindowSize().getSecondMember() > 0) {
+            newWindow.setHeight(inEvent.getWindowSize().getSecondMember());
+        }
         windowRegistry.addWindow(newWindowWrapper);
         // set the content of the new window
         newWindow.setScene(rootScene);
@@ -161,7 +164,7 @@ public class WindowManagerService
         newWindow.getProperties().put(WindowManagerService.windowUuidProp,
                                       inEvent.getWindowStyleId());
         newWindow.show();
-        newWindow.requestFocus();
+//        newWindow.requestFocus();
     }
     /**
      * Receive logout events.
@@ -527,7 +530,8 @@ public class WindowManagerService
         {
             window.setWidth(Double.parseDouble(properties.getProperty(windowWidthProp)));
             window.setHeight(Double.parseDouble(properties.getProperty(windowHeightProp)));
-            window.initModality(Modality.valueOf(properties.getProperty(windowModalProp)));
+//            window.initModality(Modality.valueOf(properties.getProperty(windowModalProp)));
+            window.initModality(Modality.NONE);
             Boolean isMaximized = Boolean.parseBoolean(properties.getProperty(windowModeProp));
             window.setMaximized(isMaximized);
             // TODO not sure about these yet
@@ -542,10 +546,10 @@ public class WindowManagerService
                                        windowPosYProp));
             window.getProperties().put(windowStyleId,
                                        properties.getProperty(windowStyleId));
-            setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
-            if(hasFocus) {
-                window.requestFocus();
-            }
+//            setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
+//            if(hasFocus) {
+//                window.requestFocus();
+//            }
         }
         /**
          * Set the immutable properties of this window to the underlying properties storage.
@@ -810,7 +814,6 @@ public class WindowManagerService
         {
             WindowRegistry windowRegistry = this;
             Stage newWindow = inWindowWrapper.getWindow();
-//            newWindow.addEventHandler()
             newWindow.addEventHandler(MouseEvent.MOUSE_CLICKED,
                                       new EventHandler<MouseEvent>() {
                 @Override
@@ -914,7 +917,7 @@ public class WindowManagerService
                                      WindowMetaData inWindowWrapper)
         {
             SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                   "Resize: {}",
+                                   "Verify: {}",
                                    inDimension);
             verifyWindowLocation(inWindowWrapper.getWindow());
             inWindowWrapper.updateProperties();

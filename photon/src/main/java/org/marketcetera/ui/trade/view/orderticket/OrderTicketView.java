@@ -41,6 +41,7 @@ import org.marketcetera.ui.service.StyleService;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.service.trade.TradeClientService;
+import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ValidatingTextField;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -87,7 +88,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 /* $License$ */
@@ -102,8 +102,17 @@ import javafx.stage.WindowEvent;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OrderTicketView
+        extends AbstractContentView
         implements ContentView,BrokerStatusListener
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getScene()
+     */
+    @Override
+    public Scene getScene()
+    {
+        return scene;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
      */
@@ -237,20 +246,19 @@ public class OrderTicketView
         adviceLabel = new Label("");
         adviceSeparator = new Separator(Orientation.HORIZONTAL);
         // find saved data, if any
-        String xmlData = StringUtils.trimToNull(viewProperties.getProperty(ExecutionReport.class.getCanonicalName()));
+        String xmlData = StringUtils.trimToNull(getViewProperties().getProperty(ExecutionReport.class.getCanonicalName()));
         ExecutionReport replaceExecutionReport = null;
         if(xmlData != null) {
             try {
                 replaceExecutionReport = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                // TODO
                 webMessageService.post(new NotificationEvent("Replace Order",
                                                              "Unable to replace order: " + PlatformServices.getMessage(e),
                                                              AlertType.ERROR));
             }
         }
         replaceExecutionReportOption = Optional.ofNullable(replaceExecutionReport);
-        xmlData = StringUtils.trimToNull(viewProperties.getProperty(AverageFillPrice.class.getCanonicalName()));
+        xmlData = StringUtils.trimToNull(getViewProperties().getProperty(AverageFillPrice.class.getCanonicalName()));
         AverageFillPrice averageFillPrice = null;
         if(xmlData != null) {
             try {
@@ -265,8 +273,8 @@ public class OrderTicketView
         orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
         Suggestion suggestion = null;
-        if(event instanceof HasSuggestion) {
-            suggestion = ((HasSuggestion)event).getSuggestion();
+        if(getNewWindowEvent() instanceof HasSuggestion) {
+            suggestion = ((HasSuggestion)getNewWindowEvent()).getSuggestion();
         }
         suggestionOption = Optional.ofNullable(suggestion);
         orderTicketLabel.setFont(new Font(32));
@@ -443,7 +451,6 @@ public class OrderTicketView
         styleService.addStyleToAll(timeInForceLabel,
                                    timeInForceComboBox,
                                    timeInForceLayout);
-        // TODO optional order ticket layouts for other asset classes
         // other group
         otherAccordion.setId(getClass().getCanonicalName() + ".otherAccordion");
         otherPane.expandedProperty().set(false);
@@ -697,7 +704,7 @@ public class OrderTicketView
 //                                  Type.TRAY_NOTIFICATION);
                 if(replaceExecutionReportOption.isPresent()) {
                     // close containing ticket
-                    ((Stage)parent).close();
+                    getParentWindow().close();
                 } else {
                     // partially clear ticket
                     resetTicket(false);
@@ -727,14 +734,6 @@ public class OrderTicketView
                                         adviceSeparator,
                                         adviceLabel);
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
-     */
-    @Override
-    public Scene getScene()
-    {
-        return scene;
-    }
     /**
      * Create a new OrderTicketView instance.
      *
@@ -742,13 +741,13 @@ public class OrderTicketView
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public OrderTicketView(Window inParent,
+    public OrderTicketView(Stage inParent,
                            NewWindowEvent inEvent,
                            Properties inProperties)
     {
-        parent = inParent;
-        event = inEvent;
-        viewProperties = inProperties;
+        super(inParent,
+              inEvent,
+              inProperties);
     }
     /**
      * Adjust the send button based on the other fields.
@@ -915,18 +914,6 @@ public class OrderTicketView
      */
     private final static BrokerID AUTO_SELECT_BROKER = new BrokerID("Auto Select");
     /**
-     * parent window opened for the content
-     */
-    private final Window parent;
-    /**
-     * new window event that caused the view to be opened
-     */
-    private final NewWindowEvent event;
-    /**
-     * properties that initialize this view
-     */
-    private final Properties viewProperties;
-    /**
      * global name of this view
      */
     private static final String NAME = "Order Ticket View";
@@ -970,27 +957,4 @@ public class OrderTicketView
      */
     @Autowired
     private WebMessageService webMessageService;
-////    /* (non-Javadoc)
-////     * @see com.vaadin.ui.AbstractComponent#detach()
-////     */
-////    @Override
-////    public void detach()
-////    {
-////        SLF4JLoggerProxy.trace(this,
-////                               "{} {} detach",
-////                               PlatformServices.getServiceName(getClass()),
-////                               hashCode());
-////        serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
-////    }
-////    /* (non-Javadoc)
-////     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-////     */
-////    @Override
-////    public void enter(ViewChangeEvent inEvent)
-////    {
-////        SLF4JLoggerProxy.trace(this,
-////                               "{} enter: {}",
-////                               PlatformServices.getServiceName(getClass()),
-////                               inEvent);
-////    }
 }

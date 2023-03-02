@@ -175,10 +175,7 @@ public class App
         footerToolBar.setId(getClass().getCanonicalName() + ".footerToolBar");
         statusToolBar = new ToolBar();
         statusToolBar.setId(getClass().getCanonicalName() + ".statusToolBar");
-        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Green.png")));
-        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Green.png")));
-        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Green.png")));
-        statusToolBar.getItems().add(new ImageView(new Image("/images/Session_Status_Red.png")));
+        statusToolBar.getItems().add(new ImageView(new Image("/images/LedGreen.gif")));
         clockLabel = new Label();
         clockLabel.setId(getClass().getCanonicalName() + ".clockLabel");
         clockUpdater = new ClockUpdater(clockLabel);

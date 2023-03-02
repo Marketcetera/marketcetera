@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 /* $License$ */
 
@@ -24,7 +23,6 @@ import javafx.stage.Window;
  * @since $Release$
  */
 public abstract class AbstractContentView
-        extends Stage
         implements ContentView
 {
     /**
@@ -39,9 +37,9 @@ public abstract class AbstractContentView
     /**
      * Get the parentWindow value.
      *
-     * @return a <code>Window</code> value
+     * @return a <code>Stage</code> value
      */
-    protected Window getParentWindow()
+    protected Stage getParentWindow()
     {
         return parentWindow;
     }
