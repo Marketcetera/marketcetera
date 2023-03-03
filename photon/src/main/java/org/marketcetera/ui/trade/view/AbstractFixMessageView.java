@@ -315,6 +315,18 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
     {
         return true;
     }
+    protected boolean includeLeavesQuantityColumn()
+    {
+        return true;
+    }
+    protected boolean includeLastQuantityColumn()
+    {
+        return true;
+    }
+    protected boolean includeLastPriceColumn()
+    {
+        return true;
+    }
     protected boolean includeOrderPriceColumn()
     {
         return true;
@@ -327,19 +339,41 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
     {
         return true;
     }
+    protected boolean includeTransactTimeColumn()
+    {
+        return true;
+    }
+    protected boolean includeSendingTimeColumn()
+    {
+        return true;
+    }
+    protected boolean includeOrderIdColumn()
+    {
+        return true;
+    }
+    protected boolean includeOrderStatusColumn()
+    {
+        return true;
+    }
+    protected boolean includeAccountColumn()
+    {
+        return true;
+    }
+    protected boolean includeBrokerIdColumn()
+    {
+        return true;
+    }
+    protected boolean includeTraderColumn()
+    {
+        return true;
+    }
     protected void initializeColumns(TableView<FixClazz> reportsTableView)
     {
         transactTimeColumn = new TableColumn<>("TransactTime"); 
-        transactTimeColumn.setCellValueFactory(new PropertyValueFactory<>("transactTime"));
-        transactTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
         sendingTimeColumn = new TableColumn<>("SendingTime"); 
-        sendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("sendingTime"));
-        sendingTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
         orderIdColumn = new TableColumn<>("OrdId"); 
-        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
         origOrderIdColumn = new TableColumn<>("OrigOrdId"); 
         orderStatusColumn = new TableColumn<>("OrdStatus"); 
-        orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
         sideColumn = new TableColumn<>("Side"); 
         sideColumn.setCellValueFactory(new PropertyValueFactory<>("side"));
         symbolColumn = new TableColumn<>("Symbol"); 
@@ -350,33 +384,38 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         cumQtyColumn.setCellValueFactory(new PropertyValueFactory<>("cumulativeQuantity"));
         cumQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
         leavesQtyColumn = new TableColumn<>("LeavesQty"); 
-        leavesQtyColumn.setCellValueFactory(new PropertyValueFactory<>("leavesQuantity"));
-        leavesQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
         orderPriceColumn = new TableColumn<>("OrderPx"); 
         averagePriceColumn = new TableColumn<>("AvgPx"); 
         averagePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averagePrice"));
         averagePriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
         accountColumn = new TableColumn<>("Account"); 
-        accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
         lastQtyColumn = new TableColumn<>("LastQty"); 
-        lastQtyColumn.setCellValueFactory(new PropertyValueFactory<>("lastQuantity"));
-        lastQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
         lastPriceColumn = new TableColumn<>("LastPx"); 
-        lastPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
-        lastPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
         exchangeColumn = new TableColumn<>("Exchange"); 
         brokerIdColumn = new TableColumn<>("BrokerId"); 
-        brokerIdColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
         traderColumn = new TableColumn<>("Trader"); 
-        traderColumn.setCellValueFactory(new PropertyValueFactory<>("trader"));
-        reportsTableView.getColumns().add(transactTimeColumn);
-        reportsTableView.getColumns().add(sendingTimeColumn);
-        reportsTableView.getColumns().add(orderIdColumn);
+        if(includeTransactTimeColumn()) {
+            transactTimeColumn.setCellValueFactory(new PropertyValueFactory<>("transactTime"));
+            transactTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
+            reportsTableView.getColumns().add(transactTimeColumn);
+        }
+        if(includeSendingTimeColumn()) {
+            sendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("sendingTime"));
+            sendingTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
+            reportsTableView.getColumns().add(sendingTimeColumn);
+        }
+        if(includeOrderIdColumn()) {
+            orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
+            reportsTableView.getColumns().add(orderIdColumn);
+        }
         if(includeOriginalOrderIdColumn()) {
             origOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("originalOrderId"));
             reportsTableView.getColumns().add(origOrderIdColumn);
         }
-        reportsTableView.getColumns().add(orderStatusColumn);
+        if(includeOrderStatusColumn()) {
+            orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+            reportsTableView.getColumns().add(orderStatusColumn);
+        }
         reportsTableView.getColumns().add(sideColumn);
         reportsTableView.getColumns().add(symbolColumn);
         if(includeOrderQuantityColumn()) {
@@ -385,22 +424,43 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             reportsTableView.getColumns().add(ordQtyColumn);
         }
         reportsTableView.getColumns().add(cumQtyColumn);
-        reportsTableView.getColumns().add(leavesQtyColumn);
+        if(includeLeavesQuantityColumn()) {
+            leavesQtyColumn.setCellValueFactory(new PropertyValueFactory<>("leavesQuantity"));
+            leavesQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+            reportsTableView.getColumns().add(leavesQtyColumn);
+        }
         if(includeOrderPriceColumn()) {
             orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPrice"));
             orderPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
             reportsTableView.getColumns().add(orderPriceColumn);
         }
         reportsTableView.getColumns().add(averagePriceColumn);
-        reportsTableView.getColumns().add(accountColumn);
-        reportsTableView.getColumns().add(lastQtyColumn);
-        reportsTableView.getColumns().add(lastPriceColumn);
+        if(includeAccountColumn()) {
+            accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
+            reportsTableView.getColumns().add(accountColumn);
+        }
+        if(includeLastQuantityColumn()) {
+            lastQtyColumn.setCellValueFactory(new PropertyValueFactory<>("lastQuantity"));
+            lastQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+            reportsTableView.getColumns().add(lastQtyColumn);
+        }
+        if(includeLastPriceColumn()) {
+            lastPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
+            lastPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+            reportsTableView.getColumns().add(lastPriceColumn);
+        }
         if(includeExchangeColumn()) {
             exchangeColumn.setCellValueFactory(new PropertyValueFactory<>("exchange"));
             reportsTableView.getColumns().add(exchangeColumn);
         }
-        reportsTableView.getColumns().add(brokerIdColumn);
-        reportsTableView.getColumns().add(traderColumn);
+        if(includeBrokerIdColumn()) {
+            brokerIdColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
+            reportsTableView.getColumns().add(brokerIdColumn);
+        }
+        if(includeTraderColumn()) {
+            traderColumn.setCellValueFactory(new PropertyValueFactory<>("trader"));
+            reportsTableView.getColumns().add(traderColumn);
+        }
     }
     protected void updateReports()
     {

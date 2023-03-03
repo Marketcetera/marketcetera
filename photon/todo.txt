@@ -33,6 +33,7 @@
 - add view metrics module (with rpc, etc)
 - reports needs add report action
 - go back to old icons
+- configurable way to set number of decimals to display for all types
 
 - average price view
 
