@@ -27,11 +27,15 @@
 - positions view
 - add view metrics module (with rpc, etc)
 - reports needs add report action
-- go back to old icons
+- go back to old icons 
 - configurable way to set number of decimals to display for all types
 - menus are not fully recursive: only go to top level
 
 - add fix session view
+
+- fix sessions target/sender seq num not updating
+- failed fix session actions return "UNKNOWN" instead of a useful error message
+- traderAdmin should have view fix sessions permission
 
 x login window should be centered on main window, not screen
 x no way to close app from login window

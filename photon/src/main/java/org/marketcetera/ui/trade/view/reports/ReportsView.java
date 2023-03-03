@@ -9,6 +9,7 @@ import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.trade.view.AbstractFixMessageView;
@@ -23,7 +24,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableColumn;
@@ -97,18 +97,15 @@ public class ReportsView
         deleteReportMenuItem = new MenuItem("Delete Report");
         deleteReportMenuItem.setOnAction(event -> {
             DisplayReport report = inTableView.getSelectionModel().getSelectedItem();
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete Report " + report.getReportID());
-            alert.setContentText("Deleting a report may modify positions, continue?");
+            Alert alert = PhotonServices.generateAlert("Delete Report " + report.getReportID(),
+                                                       "Deleting a report may modify positions, continue?",
+                                                       AlertType.CONFIRMATION);
             ButtonType okButton = new ButtonType("Ok",
                                                  ButtonBar.ButtonData.OK_DONE);
             ButtonType cancelButton = new ButtonType("Cancel",
                                                      ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(okButton,
                                           cancelButton);
-            DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().clear();
-            dialogPane.getStylesheets().add("dark-mode.css");
             alert.showAndWait().ifPresent(type -> {
                 if (type == okButton) {
                     try {
