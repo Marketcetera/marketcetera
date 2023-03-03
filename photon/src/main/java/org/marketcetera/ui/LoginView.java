@@ -3,8 +3,9 @@ package org.marketcetera.ui;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ui.events.LoginEvent;
+import org.marketcetera.ui.service.NoServiceException;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -14,12 +15,17 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import io.grpc.StatusRuntimeException;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -31,7 +37,7 @@ import javafx.stage.WindowEvent;
 /* $License$ */
 
 /**
- *
+ * Provides a login input to the user.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -42,6 +48,9 @@ import javafx.stage.WindowEvent;
 public class LoginView
         extends Stage
 {
+    /**
+     * Validate and start the object.
+     */
     @PostConstruct
     public void start()
     {
@@ -60,13 +69,26 @@ public class LoginView
         loginButton = new Button("Login");
         loginButton.setOnAction(this::onLogin);
         loginButton.setDisable(true);
-        usernameText.setOnKeyTyped(this::enableLoginButton);
-        passwordText.setOnKeyTyped(this::enableLoginButton);
+        usernameText.textProperty().addListener((ChangeListener<String>) (inObservable,inOldValue,inNewValue) -> enableLoginButton()); 
+        passwordText.textProperty().addListener((ChangeListener<String>) (inObservable,inOldValue,inNewValue) -> enableLoginButton()); 
+        adviceLabel = new Label();
+        adviceLabel.setVisible(false);
         setOnCloseRequest(this::onCloseRequest);
         VBox root = new VBox(5);
         root.getChildren().addAll(usernameBox,
                                   passwordBox,
+                                  adviceLabel,
                                   loginButton);
+        root.setPadding(new Insets(10));
+        root.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if(event.getCode() == KeyCode.ENTER) {
+               loginButton.fire();
+               event.consume(); 
+            } else if(event.getCode() == KeyCode.ESCAPE) {
+                fireEvent(new WindowEvent(this,
+                                          WindowEvent.WINDOW_CLOSE_REQUEST));
+            }
+        });
         Scene scene = new Scene(root);
         scene.getStylesheets().clear();
         scene.getStylesheets().add("dark-mode.css");
@@ -76,14 +98,23 @@ public class LoginView
         initStyle(StageStyle.UTILITY);
         setResizable(false);
     }
-    private void enableLoginButton(KeyEvent inKeyEvent)
+    /**
+     * Enables or disables the login button.
+     */
+    private void enableLoginButton()
     {
         String value = StringUtils.trimToNull(usernameText.getText());
         String password = StringUtils.trimToNull(passwordText.getText());
         loginButton.setDisable(value == null || password == null);
     }
+    /**
+     * Fired when the logon button is pressed.
+     *
+     * @param inEvent an <code>ActionEvent</code> value
+     */
     private void onLogin(ActionEvent inEvent)
     {
+        adviceLabel.setVisible(false);
         String username = StringUtils.trimToNull(usernameText.getText());
         String password = StringUtils.trimToNull(passwordText.getText());
         SLF4JLoggerProxy.debug(this,
@@ -93,10 +124,13 @@ public class LoginView
                                                   password);
         SessionUser.getCurrent().setAttribute(SessionUser.class,
                                               sessionUser);
+        String message = null;
+        boolean authenticationSuccess;
         try {
-            if(webAuthenticator.shouldAllow(null,
-                                            username,
-                                            password.toCharArray())) {
+            authenticationSuccess = webAuthenticator.shouldAllow(null,
+                                                                 username,
+                                                                 password.toCharArray());
+            if(authenticationSuccess) {
                 SLF4JLoggerProxy.info(this,
                                       "{} logged in",
                                       username);
@@ -104,27 +138,55 @@ public class LoginView
                 webMessageService.post(new LoginEvent(sessionUser));
                 close();
             } else {
-                throw new IllegalArgumentException("Failed to log in");
+                message = "Username or password does not match";
             }
+        } catch (StatusRuntimeException | NoServiceException e) {
+            message = "Username or password does not match";
+            authenticationSuccess = false;
         } catch (Exception e) {
-            String message = ExceptionUtils.getRootCauseMessage(e);
+            authenticationSuccess = false;
+            if(message == null) {
+                message = PlatformServices.getMessage(e);
+            }
+        }
+        if(!authenticationSuccess) {
             SLF4JLoggerProxy.warn(this,
-                                  e,
                                   "{} failed to log in: {}",
                                   username,
                                   message);
             SessionUser.getCurrent().setAttribute(SessionUser.class,
                                                   null);
+            adviceLabel.setVisible(true);
+            adviceLabel.setStyle(PhotonServices.errorMessage);
+            adviceLabel.setText(message);
+            passwordText.textProperty().set("");
         }
     }
+    /**
+     * Fired when the window is attempted to be closed without logging on.
+     *
+     * @param inEvent a <code>WindowEvent</code> value
+     */
     private void onCloseRequest(WindowEvent inEvent)
     {
-        inEvent.consume();
+        // shutdown the whole app
+        Platform.exit();
     }
-    
+    /**
+     * button used to trigger logon attempt
+     */
     private Button loginButton;
+    /**
+     * password field value
+     */
     private PasswordField passwordText;
+    /**
+     * username field value
+     */
     private TextField usernameText;
+    /**
+     * shows an error message, if appropriate
+     */
     private Label adviceLabel;
     /**
      * provides authentication services

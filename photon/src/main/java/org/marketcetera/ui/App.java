@@ -58,10 +58,10 @@ public class App
             throws Exception
     {
         super.init();
-        context = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
-        webMessageService = context.getBean(WebMessageService.class);
-        windowManagerService = context.getBean(WindowManagerService.class);
-        styleService = context.getBean(StyleService.class);
+        applicationContext = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
+        webMessageService = applicationContext.getBean(WebMessageService.class);
+        windowManagerService = applicationContext.getBean(WindowManagerService.class);
+        styleService = applicationContext.getBean(StyleService.class);
         webMessageService.register(this);
     }
     /* (non-Javadoc)
@@ -109,7 +109,7 @@ public class App
             isShuttingDown = true;
             webMessageService.post(new LogoutEvent());
             try {
-                ((ConfigurableApplicationContext)context).close();
+                ((ConfigurableApplicationContext)applicationContext).close();
             } catch (Exception ignored) {}
             Platform.exit();
         });
@@ -138,7 +138,7 @@ public class App
     public void onLogon(LoginEvent inEvent)
     {
         Platform.runLater(() -> { userLabel.setText(inEvent.getSessionUser().getUsername());});
-        notificationService = context.getBean(PhotonNotificationService.class);
+        notificationService = applicationContext.getBean(PhotonNotificationService.class);
     }
     /**
      * Receive logout events.
@@ -178,8 +178,9 @@ public class App
         statusToolBar.getItems().add(new ImageView(new Image("/images/LedGreen.gif")));
         clockLabel = new Label();
         clockLabel.setId(getClass().getCanonicalName() + ".clockLabel");
-        clockUpdater = new ClockUpdater(clockLabel);
-        clockUpdater.start();
+        // create the clock updater service, though we don't need to refer to it hereafter
+        applicationContext.getBean(ClockUpdater.class,
+                                   clockLabel);
         userLabel = new Label();
         userLabel.setId(getClass().getCanonicalName() + ".userLabel");
         Separator footerToolBarSeparator1 = new Separator(Orientation.VERTICAL);
@@ -203,11 +204,15 @@ public class App
     }
     private void showMenu()
     {
-        ApplicationMenu applicationMenu = SessionUser.getCurrent().getAttribute(ApplicationMenu.class);
+        SessionUser currentUser = SessionUser.getCurrent();
+        if(currentUser == null) {
+            return;
+        }
+        ApplicationMenu applicationMenu = currentUser.getAttribute(ApplicationMenu.class);
         if(applicationMenu == null) {
             SLF4JLoggerProxy.debug(App.class,
                                    "Session is now logged in, building application menu");
-            applicationMenu = context.getBean(ApplicationMenu.class);
+            applicationMenu = applicationContext.getBean(ApplicationMenu.class);
             menuLayout.getChildren().add(applicationMenu.getMenu());
             SessionUser.getCurrent().setAttribute(ApplicationMenu.class,
                                                   applicationMenu);
@@ -216,7 +221,7 @@ public class App
     }
     private void doLogin()
     {
-        LoginView loginView = context.getBean(LoginView.class);
+        LoginView loginView = applicationContext.getBean(LoginView.class);
         loginView.showAndWait();
         showMenu();
     }
@@ -263,13 +268,12 @@ public class App
     private WebMessageService webMessageService;
     private WindowManagerService windowManagerService;
     private VBox menuLayout;
-    private ApplicationContext context;
+    private ApplicationContext applicationContext;
     private VBox root;
     private HBox footer;
     private Label clockLabel;
     private Label userLabel;
     private static VBox workspace;
-    private ClockUpdater clockUpdater;
     private ToolBar statusToolBar;
     private ToolBar footerToolBar;
     private PhotonNotificationService notificationService;

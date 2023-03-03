@@ -33,6 +33,7 @@ import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.trade.client.SendOrderResponse;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.ServiceManager;
@@ -345,10 +346,10 @@ public class OrderTicketView
         quantityTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.OrderQty.FIELD));
         quantityTextField.isValidProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue) {
-                quantityTextField.setStyle(successStyle);
+                quantityTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
             } else {
-                quantityTextField.setStyle(errorStyle);
+                quantityTextField.setStyle(PhotonServices.errorStyle);
                 adviceLabel.textProperty().set("Numeric quantity required");
             }
         });
@@ -368,11 +369,11 @@ public class OrderTicketView
                 resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
                 if(resolvedInstrument == null) {
                     orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
-                    symbolTextField.setStyle(errorStyle);
+                    symbolTextField.setStyle(PhotonServices.errorStyle);
                     adviceLabel.textProperty().set("Cannot resolve symbol");
                     return;
                 }
-                symbolTextField.setStyle(successStyle);
+                symbolTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
                 symbolTextField.setTooltip(new Tooltip(resolvedInstrument.toString()));
                 orderTicketLabel.textProperty().set(orderTicketLabelHeader + resolvedInstrument.getSecurityType().name() + " Order Ticket");
@@ -425,10 +426,10 @@ public class OrderTicketView
         priceTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.OrderQty.FIELD));
         priceTextField.isValidProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue) {
-                priceTextField.setStyle(successStyle);
+                priceTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
             } else {
-                priceTextField.setStyle(errorStyle);
+                priceTextField.setStyle(PhotonServices.errorStyle);
                 adviceLabel.textProperty().set("Numeric price required");
             }
             adjustSendButton();
@@ -495,10 +496,10 @@ public class OrderTicketView
         maxFloorTextField.setTooltip(new Tooltip("FIX field " + quickfix.field.MaxFloor.FIELD));
         maxFloorTextField.isValidProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue || StringUtils.trimToNull(maxFloorTextField.textProperty().get()) == null) {
-                maxFloorTextField.setStyle(successStyle);
+                maxFloorTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
             } else {
-                maxFloorTextField.setStyle(errorStyle);
+                maxFloorTextField.setStyle(PhotonServices.errorStyle);
                 adviceLabel.textProperty().set("Numeric max floor quantity required");
             }
             // TODO probably need to also check that max floor <= quantity
@@ -847,10 +848,6 @@ public class OrderTicketView
         private final StringProperty value;
         
     }
-    String successMessage = String.format("-fx-text-fill: GREEN;");
-    String errorMessage = String.format("-fx-text-fill: RED;");
-    String errorStyle = String.format("-fx-border-color: RED; -fx-border-width: 2; -fx-border-radius: 5;");
-    String successStyle = String.format("-fx-border-color: #A9A9A9; -fx-border-width: 2; -fx-border-radius: 5;");
     private VBox rootLayout;
     private Label orderTicketLabel;
     private VBox brokerLayout;

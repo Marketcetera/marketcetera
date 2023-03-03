@@ -5,8 +5,6 @@
 - transfer text to order in order ticket
 - peg to midpoint in order ticket
 - stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
-- no way to close app from login window
-- login window should be centered on main window, not screen
 - resize main window not stored in window properties?, should be reset on login
 - cascade and tile not working yet
 - weird always-on-top issue with window system
@@ -18,14 +16,11 @@
 - experiment with style of windows to make them more compact?
 - change windows to use popups instead of new stages?
 - replace order ticket values not filled out
-- add advice to login
-- add fix session view
 - add admin views
 -- users
 -- roles
 -- permissions
 - suggestions view
-- need enter mnemonic for login view
 - add market data view
 - add cluster view
 - add strategy view
@@ -34,8 +29,13 @@
 - reports needs add report action
 - go back to old icons
 - configurable way to set number of decimals to display for all types
+- menus are not fully recursive: only go to top level
 
-- average price view
+- add fix session view
 
-x fills view
-x open orders view
+x login window should be centered on main window, not screen
+x no way to close app from login window
+x need enter mnemonic for login view
+x add advice to login
+x status bar clock format - configurable?
+
