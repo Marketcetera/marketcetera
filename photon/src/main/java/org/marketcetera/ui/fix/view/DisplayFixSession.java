@@ -18,10 +18,6 @@ public class DisplayFixSession
 {
     /**
      * Create a new DisplayFixSession instance.
-     */
-    public DisplayFixSession() {}
-    /**
-     * Create a new DisplayFixSession instance.
      *
      * @param inFixSession an <code>ActiveFixSession</code> value
      */

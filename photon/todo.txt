@@ -36,10 +36,20 @@
 - fix sessions target/sender seq num not updating
 - failed fix session actions return "UNKNOWN" instead of a useful error message
 - traderAdmin should have view fix sessions permission
+- expand FIX wizard to allow specification of multiple host/port combinations?
+- fix wizard test connection fails causes controls to be sized weirdly
+
+- add listener to rpc clients?
 
 x login window should be centered on main window, not screen
 x no way to close app from login window
 x need enter mnemonic for login view
 x add advice to login
 x status bar clock format - configurable?
+
+
+"^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
+
+
+"^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
 

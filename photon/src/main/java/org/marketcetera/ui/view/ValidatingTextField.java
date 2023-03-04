@@ -28,6 +28,10 @@ public class ValidatingTextField
         });
         isValidPropertyWrapper.set(true);
     }
+    public Predicate<String> getPredicate()
+    {
+        return validation;
+    }
     public ReadOnlyBooleanWrapper isValidProperty()
     {
         return isValidPropertyWrapper;
