@@ -626,13 +626,16 @@ public class FixSessionView
                                       ExceptionUtils.getRootCauseMessage(e));
                 testConnectionLabel.setText("Test connection failed: " + ExceptionUtils.getRootCauseMessage(e));
                 testConnectionLabel.setStyle(PhotonServices.errorMessage);
+            } finally {
+                if(networkLayout.getScene() != null) {
+                    ((Stage)networkLayout.getScene().getWindow()).sizeToScene();
+                }
             }
         });
-        
         wizard.setFlow(new LinearFlow(sessionTypePane,
                                       networkPane,
                                       initializeSessionIdentityPane(inFixSession,inIsNew,adviceLabel),
-                                      initializeSessionTimesPane(inFixSession,inIsNew,adviceLabel)));
+                                      initializeSessionTimesPane(inFixSession,inIsNew)));
         // show wizard and wait for response
         PhotonServices.style(sessionTypePane.getScene());
         wizard.showAndWait().ifPresent(result -> {
@@ -641,216 +644,19 @@ public class FixSessionView
             }
         });
     }
+    /**
+     * Generate and return the Session Times wizard pane.
+     *
+     * @param inFixSession a <code>DisplayFixSession</code> value
+     * @param inIsNew a <code>boolean</code> value
+     * @return a <code>WizardPane</code> value
+     */
     private WizardPane initializeSessionTimesPane(DisplayFixSession inFixSession,
-                                                  boolean inIsNew,
-                                                  Label inAdviceLabel)
+                                                  boolean inIsNew)
     {
-        SessionTimesFieldSet fieldSet = new SessionTimesFieldSet(inFixSession,
+        SessionTimesPane sessionTimesPane = new SessionTimesPane(inFixSession,
                                                                  inIsNew);
-        return fieldSet.generateWizardPane("Session Times");
-    }
-    private static abstract class AbstractFieldSet
-    {
-        protected WizardPane generateWizardPane(String inHeaderText)
-        {
-            WizardPane sessionTimesPane = new WizardPane() {
-                /* (non-Javadoc)
-                 * @see org.controlsfx.dialog.WizardPane#onEnteringPage(org.controlsfx.dialog.Wizard)
-                 */
-                @Override
-                public void onEnteringPage(Wizard inWizard)
-                {
-                    super.onEnteringPage(inWizard);
-                    doOnEnteringPage(inWizard);
-                    inWizard.invalidProperty().bind(sessionTimesInvalid);
-                }
-                /* (non-Javadoc)
-                 * @see org.controlsfx.dialog.WizardPane#onExitingPage(org.controlsfx.dialog.Wizard)
-                 */
-                @Override
-                public void onExitingPage(Wizard inWizard)
-                {
-                    doOnExitingPage(inWizard);
-                    super.onExitingPage(inWizard);
-                }
-            };
-            paneLayout.setHgap(10);
-            paneLayout.setVgap(10);
-            paneLayout.setPadding(new Insets(20,150,10,10));
-            sessionTimesPane.setHeaderText(inHeaderText);
-            setFieldsInGrid();
-            sessionTimesPane.setContent(paneLayout);
-            return sessionTimesPane;
-        }
-        protected void setFieldsInGrid() {}
-        protected void doOnEnteringPage(Wizard inWizard) {}
-        protected void doOnExitingPage(Wizard inWizard) {}
-        protected AbstractFieldSet(DisplayFixSession inFixSession,
-                                   boolean inIsNew)
-        {
-            fixSession = inFixSession;
-            isNew = inIsNew;
-            adviceLabel = new Label();
-            paneLayout = new GridPane();
-            sessionTimesInvalid = new SimpleBooleanProperty(true);
-        }
-        protected final BooleanProperty sessionTimesInvalid;
-        protected final DisplayFixSession fixSession;
-        protected final boolean isNew;
-        protected final Label adviceLabel;
-        protected final GridPane paneLayout;
-    }
-    private static class SessionTimesFieldSet
-            extends AbstractFieldSet
-    {
-        
-        /* (non-Javadoc)
-         * @see org.marketcetera.ui.fix.view.FixSessionView.AbstractFieldSet#setFieldsInGrid()
-         */
-        @Override
-        protected void setFieldsInGrid()
-        {
-            paneLayout.add(new Label("Type"),0,0);
-            paneLayout.add(sessionTypeComboBox,1,0);
-            paneLayout.add(new Label("Start Time"),0,1);
-            paneLayout.add(startTimeField,1,1);
-            paneLayout.add(new Label("End Time"),0,2);
-            paneLayout.add(endTimeField,1,2);
-            paneLayout.add(new Label("Start Day"),0,3);
-            paneLayout.add(startDayComboBox,1,3);
-            paneLayout.add(new Label("End Day"),0,4);
-            paneLayout.add(endDayComboBox,1,4);
-            paneLayout.add(new Label("Time Zone"),0,5);
-            paneLayout.add(timeZoneComboBox,1,5);
-            paneLayout.add(adviceLabel,0,6,2,1);
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.ui.fix.view.FixSessionView.AbstractFieldSet#doOnEnteringPage(org.controlsfx.dialog.Wizard)
-         */
-        @Override
-        protected void doOnEnteringPage(Wizard inWizard)
-        {
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.ui.fix.view.FixSessionView.AbstractFieldSet#doOnExitingPage(org.controlsfx.dialog.Wizard)
-         */
-        @Override
-        protected void doOnExitingPage(Wizard inWizard)
-        {
-        }
-        private SessionTimesFieldSet(DisplayFixSession inFixSession,
-                                     boolean inIsNew)
-        {
-            super(inFixSession,
-                  inIsNew);
-            Predicate<String> timeFieldPredicate = value -> {
-                return value.matches("^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$");
-            };
-            Function<Void,Boolean> invalidTestFunction = new Function<>() {
-                @Override
-                public Boolean apply(Void inIgnored)
-                {
-                    return startTimeField.isValidProperty().get();
-                }
-            };
-            sessionTimesInvalid = new SimpleBooleanProperty(true);
-            sessionTypeComboBox = new ComboBox<>();
-            sessionTypeComboBox.getItems().add(DAILY);
-            sessionTypeComboBox.getItems().add(WEEKLY);
-            sessionTypeComboBox.getItems().add(CONTINUOUS);
-            startTimeField = new ValidatingTextField(timeFieldPredicate);
-            endTimeField = new ValidatingTextField(timeFieldPredicate);
-            timeZoneComboBox = new ComboBox<>();
-            for(String timeZoneId : TimeZone.getAvailableIDs()) {
-                timeZoneComboBox.getItems().add(timeZoneId);
-            }
-            startDayComboBox = new ComboBox<>();
-            endDayComboBox = new ComboBox<>();
-            sessionTypeComboBox.valueProperty().addListener((observableValue,oldValue,newValue) -> {
-                sessionTimesInvalid.set(invalidTestFunction.apply(null));
-                updateFields();
-            });
-            startTimeField.setId("sessionTimes.startTime");
-            startTimeField.setPromptText("00:00:00");
-            startTimeField.setTooltip(new Tooltip("Enter a time value in the form 00:00:00"));
-            startTimeField.isValidProperty().addListener((observable,oldValue,newValue) -> {
-                if(newValue) {
-                    startTimeField.setStyle(PhotonServices.successStyle);
-                    adviceLabel.setText("");
-                    adviceLabel.setStyle(PhotonServices.successMessage);
-                } else {
-                    adviceLabel.setText("Start time must be in the form 00:00:00");
-                    startTimeField.setStyle(PhotonServices.errorStyle);
-                    adviceLabel.setStyle(PhotonServices.errorMessage);
-                }
-            });
-            startTimeField.textProperty().addListener((observableValue,oldValue,newValue) -> sessionTimesInvalid.set(invalidTestFunction.apply(null)));
-            endTimeField.setId("sessionTimes.endTime");
-            endTimeField.setPromptText("00:00:00");
-            endTimeField.setTooltip(new Tooltip("Enter a time value in the form 00:00:00"));
-            endTimeField.isValidProperty().addListener((observable,oldValue,newValue) -> {
-                if(newValue) {
-                    endTimeField.setStyle(PhotonServices.successStyle);
-                    adviceLabel.setText("");
-                    adviceLabel.setStyle(PhotonServices.successMessage);
-                } else {
-                    adviceLabel.setText("End time must be in the form 00:00:00");
-                    endTimeField.setStyle(PhotonServices.errorStyle);
-                    adviceLabel.setStyle(PhotonServices.errorMessage);
-                }
-            });
-            endTimeField.textProperty().addListener((observableValue,oldValue,newValue) -> sessionTimesInvalid.set(invalidTestFunction.apply(null)));
-            startDayComboBox.getItems().addAll(FixSessionDay.values());
-            endDayComboBox.getItems().addAll(FixSessionDay.values());
-        }
-        private void updateFields()
-        {
-            Map<String,String> settings = fixSession.getSource().getFixSession().getSessionSettings();
-            String value = String.valueOf(sessionTypeComboBox.getValue());
-            switch(value) {
-                case CONTINUOUS:
-                    startTimeField.setVisible(false);
-                    endTimeField.setVisible(false);
-                    timeZoneComboBox.setVisible(false);
-                    startDayComboBox.setVisible(false);
-                    endDayComboBox.setVisible(false);
-                    break;
-                case DAILY:
-                    startTimeField.setVisible(true);
-//                    startTimeField.setText(settings.containsKey(quickfix.Session.SETTING_START_TIME)?settings.get(quickfix.Session.SETTING_START_TIME):"00:00:00");
-                    endTimeField.setVisible(true);
-//                    endTimeField.setText(settings.containsKey(quickfix.Session.SETTING_END_TIME)?settings.get(quickfix.Session.SETTING_END_TIME):"00:00:00");
-                    timeZoneComboBox.setVisible(true);
-//                    timeZoneComboBox.setValue(settings.containsKey(quickfix.Session.SETTING_TIMEZONE)?settings.get(quickfix.Session.SETTING_TIMEZONE):TimeZone.getDefault().getID());
-                    startDayComboBox.setVisible(false);
-                    endDayComboBox.setVisible(false);
-                    break;
-                case WEEKLY:
-                    startTimeField.setVisible(true);
-//                    startTimeField.setText(settings.containsKey(quickfix.Session.SETTING_START_TIME)?settings.get(quickfix.Session.SETTING_START_TIME):"00:00:00");
-                    endTimeField.setVisible(true);
-//                    endTimeField.setText(settings.containsKey(quickfix.Session.SETTING_END_TIME)?settings.get(quickfix.Session.SETTING_END_TIME):"00:00:00");
-                    timeZoneComboBox.setVisible(true);
-//                    timeZoneComboBox.setValue(settings.containsKey(quickfix.Session.SETTING_TIMEZONE)?settings.get(quickfix.Session.SETTING_TIMEZONE):TimeZone.getDefault().getID());
-                    startDayComboBox.setVisible(true);
-//                    startDayComboBox.setValue(FixSessionDay.valueOf(settings.containsKey(quickfix.Session.SETTING_START_DAY)?settings.get(quickfix.Session.SETTING_START_DAY):FixSessionDay.Monday.name()));
-                    endDayComboBox.setVisible(true);
-//                    endDayComboBox.setValue(FixSessionDay.valueOf(settings.containsKey(quickfix.Session.SETTING_END_DAY)?settings.get(quickfix.Session.SETTING_END_DAY):FixSessionDay.Friday.name()));
-                    break;
-            }
-            // TODO update grid settings, too
-        }
-        private final String CONTINUOUS = "Continuous";
-        private final String DAILY = "Daily";
-        private final String WEEKLY = "Weekly";
-        private final String YES = "Y";
-        private final BooleanProperty sessionTimesInvalid;
-        private final ComboBox<String> sessionTypeComboBox;
-        private final ValidatingTextField startTimeField;
-        private final ValidatingTextField endTimeField;
-        private final ComboBox<String> timeZoneComboBox;
-        private final ComboBox<FixSessionDay> startDayComboBox;
-        private final ComboBox<FixSessionDay> endDayComboBox;
+        return sessionTimesPane.generateWizardPane("Session Times");
     }
     private WizardPane initializeSessionIdentityPane(DisplayFixSession inFixSession,
                                                      boolean inIsNew,
@@ -1259,6 +1065,410 @@ public class FixSessionView
                                                              AlertType.ERROR));
             }
         });
+    }
+    /**
+     * Provides common behaviors for wizard pane objects.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static abstract class AbstractWizardPane
+    {
+        /**
+         * Generate the wizard pane with the given header text.
+         *
+         * @param inHeaderText a <code>String</code> value
+         * @return a <code>WizarPane</code> value
+         */
+        protected WizardPane generateWizardPane(String inHeaderText)
+        {
+            WizardPane wizardPane = new WizardPane() {
+                /* (non-Javadoc)
+                 * @see org.controlsfx.dialog.WizardPane#onEnteringPage(org.controlsfx.dialog.Wizard)
+                 */
+                @Override
+                public void onEnteringPage(Wizard inWizard)
+                {
+                    super.onEnteringPage(inWizard);
+                    doOnEnteringPage(inWizard);
+                    inWizard.invalidProperty().bind(fieldsInvalid);
+                }
+                /* (non-Javadoc)
+                 * @see org.controlsfx.dialog.WizardPane#onExitingPage(org.controlsfx.dialog.Wizard)
+                 */
+                @Override
+                public void onExitingPage(Wizard inWizard)
+                {
+                    doOnExitingPage(inWizard);
+                    super.onExitingPage(inWizard);
+                }
+            };
+            paneLayout.setHgap(10);
+            paneLayout.setVgap(10);
+            paneLayout.setPadding(new Insets(20,150,10,10));
+            wizardPane.setHeaderText(inHeaderText);
+            wizardPane.setId(getPaneName());
+            setFieldsInGrid();
+            wizardPane.setContent(paneLayout);
+            return wizardPane;
+        }
+        /**
+         * Get the name of the pane for internal use.
+         *
+         * @return a <code>String</code> value
+         */
+        protected String getPaneName()
+        {
+            return getClass().getSimpleName();
+        }
+        /**
+         * Establish the fields in the dialog grid.
+         */
+        protected void setFieldsInGrid() {}
+        /**
+         * Steps to take upon entering the page.
+         *
+         * @param inWizard a <code>Wizard</code> value
+         */
+        protected void doOnEnteringPage(Wizard inWizard) {}
+        /**
+         * Steps to take before exiting the page.
+         *
+         * @param inWizard a <code>Wizard</code> value
+         */
+        protected void doOnExitingPage(Wizard inWizard) {}
+        /**
+         * Create a new AbstractWizardPane instance.
+         *
+         * @param inFixSession a <code>DisplayFixSession</code> value
+         * @param inIsNew a <code>boolean</code> value
+         */
+        protected AbstractWizardPane(DisplayFixSession inFixSession,
+                                     boolean inIsNew)
+        {
+            fixSession = inFixSession;
+            isNew = inIsNew;
+            adviceLabel = new Label();
+            paneLayout = new GridPane();
+            fieldsInvalid = new SimpleBooleanProperty(true);
+        }
+        /**
+         * indicates if the fields are currently in an invalid state
+         */
+        protected final BooleanProperty fieldsInvalid;
+        /**
+         * FIX session to be modified
+         */
+        protected final DisplayFixSession fixSession;
+        /**
+         * indicates if the action is adding a new FIX session or modifying an existing one
+         */
+        protected final boolean isNew;
+        /**
+         * holds error messages to be displayed if a field is invalid
+         */
+        protected final Label adviceLabel;
+        /**
+         * the main layout of the page
+         */
+        protected final GridPane paneLayout;
+    }
+    /**
+     * Presents the FIX session times settings.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class SessionTimesPane
+            extends AbstractWizardPane
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.ui.fix.view.FixSessionView.AbstractFieldSet#setFieldsInGrid()
+         */
+        @Override
+        protected void setFieldsInGrid()
+        {
+            paneLayout.getChildren().clear();
+            int rowIndex = 0;
+            paneLayout.add(new Label("Type"),0,rowIndex);
+            paneLayout.add(sessionTypeComboBox,1,rowIndex);
+            String value = String.valueOf(sessionTypeComboBox.getValue());
+            switch(value) {
+                case CONTINUOUS:
+                    break;
+                case DAILY:
+                    paneLayout.add(new Label("Start Time"),0,++rowIndex);
+                    paneLayout.add(startTimeField,1,rowIndex);
+                    paneLayout.add(new Label("End Time"),0,++rowIndex);
+                    paneLayout.add(endTimeField,1,rowIndex);
+                    paneLayout.add(new Label("Time Zone"),0,++rowIndex);
+                    paneLayout.add(timeZoneComboBox,1,rowIndex);
+                    break;
+                case WEEKLY:
+                    paneLayout.add(new Label("Start Time"),0,++rowIndex);
+                    paneLayout.add(startTimeField,1,rowIndex);
+                    paneLayout.add(new Label("End Time"),0,++rowIndex);
+                    paneLayout.add(endTimeField,1,rowIndex);
+                    paneLayout.add(new Label("Start Day"),0,++rowIndex);
+                    paneLayout.add(startDayComboBox,1,rowIndex);
+                    paneLayout.add(new Label("End Day"),0,++rowIndex);
+                    paneLayout.add(endDayComboBox,1,rowIndex);
+                    paneLayout.add(new Label("Time Zone"),0,++rowIndex);
+                    paneLayout.add(timeZoneComboBox,1,rowIndex);
+                    break;
+            }
+            paneLayout.add(adviceLabel,0,++rowIndex,2,1);
+            if(paneLayout.getScene() != null) {
+                ((Stage)paneLayout.getScene().getWindow()).sizeToScene();
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.ui.fix.view.FixSessionView.AbstractFieldSet#doOnEnteringPage(org.controlsfx.dialog.Wizard)
+         */
+        @Override
+        protected void doOnEnteringPage(Wizard inWizard)
+        {
+            Map<String,String> settings = fixSession.getSource().getFixSession().getSessionSettings();
+            startTimeField.setText(settings.containsKey(quickfix.Session.SETTING_START_TIME)?settings.get(quickfix.Session.SETTING_START_TIME):"00:00:00");
+            endTimeField.setText(settings.containsKey(quickfix.Session.SETTING_END_TIME)?settings.get(quickfix.Session.SETTING_END_TIME):"00:00:00");
+            startDayComboBox.setValue(settings.containsKey(quickfix.Session.SETTING_START_DAY)?FixSessionDay.valueOf(settings.get(quickfix.Session.SETTING_START_DAY)):FixSessionDay.Monday);
+            endDayComboBox.setValue(settings.containsKey(quickfix.Session.SETTING_END_DAY)?FixSessionDay.valueOf(settings.get(quickfix.Session.SETTING_END_DAY)):FixSessionDay.Friday);
+            timeZoneComboBox.setValue(settings.containsKey(quickfix.Session.SETTING_TIMEZONE)?settings.get(quickfix.Session.SETTING_TIMEZONE):TimeZone.getDefault().getID());
+            startTimeField.setVisible(true);
+            endTimeField.setVisible(true);
+            // now, finalize the setup based on the selected session type
+            String value = settings.get(quickfix.Session.SETTING_NON_STOP_SESSION);
+            if(YES.equals(value)) {
+                // this is a non-stop session. hide everything but the select
+                sessionTypeComboBox.setValue(CONTINUOUS);
+            } else {
+                // this is a weekly or daily session
+                value = settings.get(quickfix.Session.SETTING_START_DAY);
+                if(value != null) {
+                    // this is a weekly session, nothing more needs to be done
+                    sessionTypeComboBox.setValue(WEEKLY);
+                } else {
+                    // this is a daily session
+                    sessionTypeComboBox.setValue(DAILY);
+                }
+            }
+            updateFields();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.ui.fix.view.FixSessionView.AbstractFieldSet#doOnExitingPage(org.controlsfx.dialog.Wizard)
+         */
+        @Override
+        protected void doOnExitingPage(Wizard inWizard)
+        {
+            Map<String,String> settings = fixSession.getSource().getFixSession().getSessionSettings();
+            String value = String.valueOf(sessionTypeComboBox.getValue());
+            switch(value) {
+                case CONTINUOUS:
+                    settings.remove(quickfix.Session.SETTING_START_TIME);
+                    settings.remove(quickfix.Session.SETTING_END_TIME);
+                    settings.remove(quickfix.Session.SETTING_START_DAY);
+                    settings.remove(quickfix.Session.SETTING_END_DAY);
+                    settings.remove(quickfix.Session.SETTING_TIMEZONE);
+                    settings.put(quickfix.Session.SETTING_NON_STOP_SESSION,
+                                 YES);
+                    break;
+                case DAILY:
+                    settings.remove(quickfix.Session.SETTING_START_DAY);
+                    settings.remove(quickfix.Session.SETTING_END_DAY);
+                    settings.remove(quickfix.Session.SETTING_NON_STOP_SESSION);
+                    settings.put(quickfix.Session.SETTING_START_TIME,
+                                 startTimeField.getText());
+                    settings.put(quickfix.Session.SETTING_END_TIME,
+                                 endTimeField.getText());
+                    settings.put(quickfix.Session.SETTING_TIMEZONE,
+                                 String.valueOf(timeZoneComboBox.getValue()));
+                    break;
+                case WEEKLY:
+                    settings.remove(quickfix.Session.SETTING_NON_STOP_SESSION);
+                    settings.put(quickfix.Session.SETTING_START_TIME,
+                                 startTimeField.getText());
+                    settings.put(quickfix.Session.SETTING_END_TIME,
+                                 endTimeField.getText());
+                    settings.put(quickfix.Session.SETTING_TIMEZONE,
+                                 String.valueOf(timeZoneComboBox.getValue()));
+                    settings.put(quickfix.Session.SETTING_START_DAY,
+                                 String.valueOf(startDayComboBox.getValue()));
+                    settings.put(quickfix.Session.SETTING_END_DAY,
+                                 String.valueOf(endDayComboBox.getValue()));
+                    break;
+            }
+        }
+        /**
+         * Create a new SessionTimesPane instance.
+         *
+         * @param inFixSession a <code>DisplayFixSession</code> value
+         * @param inIsNew a <code>boolean</code> value
+         */
+        private SessionTimesPane(DisplayFixSession inFixSession,
+                                 boolean inIsNew)
+        {
+            super(inFixSession,
+                  inIsNew);
+            Predicate<String> timeFieldPredicate = value -> {
+                return value.matches("^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$");
+            };
+            Function<Void,Boolean> invalidTestFunction = new Function<>() {
+                @Override
+                public Boolean apply(Void inIgnored)
+                {
+                    if(sessionTypeComboBox.getValue() == null) {
+                        return true;
+                    }
+                    boolean isValid = false;
+                    String value = String.valueOf(sessionTypeComboBox.getValue());
+                    switch(value) {
+                        case CONTINUOUS:
+                            isValid = true;
+                            break;
+                        case DAILY:
+                            isValid = startTimeField.isValidProperty().get() &&
+                                      endTimeField.isValidProperty().get() &&
+                                      timeZoneComboBox.getValue() != null;
+                            break;
+                        case WEEKLY:
+                            isValid = startTimeField.isValidProperty().get() &&
+                                      endTimeField.isValidProperty().get() &&
+                                      startDayComboBox.getValue() != null &&
+                                      endDayComboBox.getValue() != null &&
+                                      timeZoneComboBox.getValue() != null;
+                            break;
+                    }
+                    return !isValid;
+                }
+            };
+            sessionTypeComboBox = new ComboBox<>();
+            sessionTypeComboBox.setId("sessionType");
+            sessionTypeComboBox.getItems().add(DAILY);
+            sessionTypeComboBox.getItems().add(WEEKLY);
+            sessionTypeComboBox.getItems().add(CONTINUOUS);
+            startTimeField = new ValidatingTextField(timeFieldPredicate);
+            startTimeField.setId("sessionStartTime");
+            endTimeField = new ValidatingTextField(timeFieldPredicate);
+            endTimeField.setId("sessionEndTime");
+            timeZoneComboBox = new ComboBox<>();
+            timeZoneComboBox.setId("sessionTimeZone");
+            for(String timeZoneId : TimeZone.getAvailableIDs()) {
+                timeZoneComboBox.getItems().add(timeZoneId);
+            }
+            startDayComboBox = new ComboBox<>();
+            startDayComboBox.setId("sessionStartDay");
+            endDayComboBox = new ComboBox<>();
+            endDayComboBox.setId("sessionEndDay");
+            sessionTypeComboBox.valueProperty().addListener((observableValue,oldValue,newValue) -> {
+                fieldsInvalid.set(invalidTestFunction.apply(null));
+                updateFields();
+            });
+            startTimeField.setId("sessionTimes.startTime");
+            startTimeField.setPromptText("00:00:00");
+            startTimeField.setTooltip(new Tooltip("Enter a time value in the form 00:00:00"));
+            startTimeField.isValidProperty().addListener((observable,oldValue,newValue) -> {
+                if(newValue) {
+                    startTimeField.setStyle(PhotonServices.successStyle);
+                    adviceLabel.setText("");
+                    adviceLabel.setStyle(PhotonServices.successMessage);
+                } else {
+                    adviceLabel.setText("Start time must be in the form 00:00:00");
+                    startTimeField.setStyle(PhotonServices.errorStyle);
+                    adviceLabel.setStyle(PhotonServices.errorMessage);
+                }
+            });
+            startTimeField.textProperty().addListener((observableValue,oldValue,newValue) -> fieldsInvalid.set(invalidTestFunction.apply(null)));
+            endTimeField.setId("sessionTimes.endTime");
+            endTimeField.setPromptText("00:00:00");
+            endTimeField.setTooltip(new Tooltip("Enter a time value in the form 00:00:00"));
+            endTimeField.isValidProperty().addListener((observable,oldValue,newValue) -> {
+                if(newValue) {
+                    endTimeField.setStyle(PhotonServices.successStyle);
+                    adviceLabel.setText("");
+                    adviceLabel.setStyle(PhotonServices.successMessage);
+                } else {
+                    adviceLabel.setText("End time must be in the form 00:00:00");
+                    endTimeField.setStyle(PhotonServices.errorStyle);
+                    adviceLabel.setStyle(PhotonServices.errorMessage);
+                }
+            });
+            endTimeField.textProperty().addListener((observableValue,oldValue,newValue) -> fieldsInvalid.set(invalidTestFunction.apply(null)));
+            startDayComboBox.getItems().addAll(FixSessionDay.values());
+            endDayComboBox.getItems().addAll(FixSessionDay.values());
+        }
+        /**
+         * Update the field widgets visible vs invisible.
+         */
+        private void updateFields()
+        {
+            String value = String.valueOf(sessionTypeComboBox.getValue());
+            switch(value) {
+                case CONTINUOUS:
+                    startTimeField.setVisible(false);
+                    endTimeField.setVisible(false);
+                    timeZoneComboBox.setVisible(false);
+                    startDayComboBox.setVisible(false);
+                    endDayComboBox.setVisible(false);
+                    break;
+                case DAILY:
+                    startTimeField.setVisible(true);
+                    endTimeField.setVisible(true);
+                    timeZoneComboBox.setVisible(true);
+                    startDayComboBox.setVisible(false);
+                    endDayComboBox.setVisible(false);
+                    break;
+                case WEEKLY:
+                    startTimeField.setVisible(true);
+                    endTimeField.setVisible(true);
+                    timeZoneComboBox.setVisible(true);
+                    startDayComboBox.setVisible(true);
+                    endDayComboBox.setVisible(true);
+                    break;
+            }
+            setFieldsInGrid();
+        }
+        /**
+         * indicates continuous FIX sessions
+         */
+        private final String CONTINUOUS = "Continuous";
+        /**
+         * indicates daily FIX sessions
+         */
+        private final String DAILY = "Daily";
+        /**
+         * indicates weekly FIX sessions
+         */
+        private final String WEEKLY = "Weekly";
+        /**
+         * used to store continuous FIX sessions in the settings
+         */
+        private final String YES = "Y";
+        /**
+         * chooses what type of FIX session
+         */
+        private final ComboBox<String> sessionTypeComboBox;
+        /**
+         * daily/weekly FIX session start time
+         */
+        private final ValidatingTextField startTimeField;
+        /**
+         * daily/weekly FIX session end time
+         */
+        private final ValidatingTextField endTimeField;
+        /**
+         * daily/weekly FIX session time zone
+         */
+        private final ComboBox<String> timeZoneComboBox;
+        /**
+         * weekly FIX session start day
+         */
+        private final ComboBox<FixSessionDay> startDayComboBox;
+        /**
+         * weekly FIX session end day
+         */
+        private final ComboBox<FixSessionDay> endDayComboBox;
     }
     /**
      * Provides a <code>FixSessionAttributeDescriptor</code> that supports setting a value.

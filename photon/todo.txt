@@ -1,4 +1,3 @@
-- not all controls in order ticket able to be styled
 - order suggestions in order ticket
 - broker algos in order ticket
 - custom fields in order ticket
@@ -30,26 +29,27 @@
 - go back to old icons 
 - configurable way to set number of decimals to display for all types
 - menus are not fully recursive: only go to top level
+- remove style service as a bad idea
+- convert fix session panes to use inner classes
+- incorporate session id validator in fix session wizard session identity page
 
 - add fix session view
+- add fix session button to fix session view
 
 - fix sessions target/sender seq num not updating
 - failed fix session actions return "UNKNOWN" instead of a useful error message
 - traderAdmin should have view fix sessions permission
-- expand FIX wizard to allow specification of multiple host/port combinations?
-- fix wizard test connection fails causes controls to be sized weirdly
+- expand FIX wizard to allow specification of multiple host/port combinations for failover?
 
-- add listener to rpc clients?
+- add listener to rpc clients for status bar image?
 
+x not all controls in order ticket able to be styled
 x login window should be centered on main window, not screen
 x no way to close app from login window
 x need enter mnemonic for login view
 x add advice to login
 x status bar clock format - configurable?
+x fix wizard test connection fails causes controls to be sized weirdly
 
 
-"^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
-
-
-"^([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$"
 

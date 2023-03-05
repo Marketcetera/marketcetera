@@ -89,10 +89,9 @@ public class LoginView
                                           WindowEvent.WINDOW_CLOSE_REQUEST));
             }
         });
-        Scene scene = new Scene(root);
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add("dark-mode.css");
-        setScene(scene);
+        mainScene = new Scene(root);
+        PhotonServices.style(mainScene);
+        setScene(mainScene);
         // The title of the stage is not visible for all styles.
         setTitle("Login");
         initStyle(StageStyle.UTILITY);
@@ -114,7 +113,9 @@ public class LoginView
      */
     private void onLogin(ActionEvent inEvent)
     {
+        adviceLabel.setText("");
         adviceLabel.setVisible(false);
+        sizeToScene();
         String username = StringUtils.trimToNull(usernameText.getText());
         String password = StringUtils.trimToNull(passwordText.getText());
         SLF4JLoggerProxy.debug(this,
@@ -141,7 +142,7 @@ public class LoginView
                 message = "Username or password does not match";
             }
         } catch (StatusRuntimeException | NoServiceException e) {
-            message = "Username or password does not match";
+            message = PlatformServices.getMessage(e);
             authenticationSuccess = false;
         } catch (Exception e) {
             authenticationSuccess = false;
@@ -160,6 +161,7 @@ public class LoginView
             adviceLabel.setStyle(PhotonServices.errorMessage);
             adviceLabel.setText(message);
             passwordText.textProperty().set("");
+            sizeToScene();
         }
     }
     /**
@@ -172,6 +174,10 @@ public class LoginView
         // shutdown the whole app
         Platform.exit();
     }
+    /**
+     * main scene of the dialog
+     */
+    private Scene mainScene;
     /**
      * button used to trigger logon attempt
      */
