@@ -105,6 +105,9 @@
             <configuration>
               <mainClass>org.marketcetera.ui.App</mainClass>
               <workingDirectory>src/test/cmd_exec</workingDirectory>
+	      <options>
+		<option>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+              </options>
             </configuration>
           </execution>
         </executions>

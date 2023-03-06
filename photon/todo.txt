@@ -34,15 +34,23 @@
 - incorporate session id validator in fix session wizard session identity page
 
 - add fix session view
-- add fix session button to fix session view
+- add add fix session button to fix session view
 
 - fix sessions target/sender seq num not updating
 - failed fix session actions return "UNKNOWN" instead of a useful error message
 - traderAdmin should have view fix sessions permission
 - expand FIX wizard to allow specification of multiple host/port combinations for failover?
+-- either that or need to do something that allows freeform settings to be added instead of just the normal ones
+- enforce patterns on fix session attributes in fix session wizard
 
 - add listener to rpc clients for status bar image?
 
+- defining a FIX session w/o a heartbeatint causes all kinds of havoc on client and server
+- update fix session adds new session instead of updating old one
+x fix session wizard: not writing settings to final object
+x fix session wizard: session type not being written to settings
+x fix session wizard: settings are doubled up
+x fix session wizard crashing on final step
 x not all controls in order ticket able to be styled
 x login window should be centered on main window, not screen
 x no way to close app from login window

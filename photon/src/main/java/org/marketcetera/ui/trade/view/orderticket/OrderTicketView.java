@@ -560,6 +560,7 @@ public class OrderTicketView
         brokerAlgoLayout.add(brokerAlgoLabel,0,0);
         brokerAlgoLayout.add(brokerAlgoComboBox,1,0);
         // broker algo tag table
+        // TODO this doesn't look editable
         brokerAlgoTagTable.setId(getClass().getCanonicalName() + ".brokerAlgoTable");
         TableColumn<BrokerAlgoTag,String> brokerAlgoTagLabelColumn = new TableColumn<>("Tag");
         brokerAlgoTagLabelColumn.setCellValueFactory(new PropertyValueFactory<>("label"));
