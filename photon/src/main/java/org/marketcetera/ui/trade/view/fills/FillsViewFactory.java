@@ -82,15 +82,6 @@ public class FillsViewFactory
     {
         return FillsViewFactory.class;
     }
-//    /* (non-Javadoc)
-//     * @see org.marketcetera.web.trade.openorders.view.AbstractTradeViewFactory#getWindowSize()
-//     */
-//    @Override
-//    protected Pair<Double,Double> getWindowSize()
-//    {
-//        return Pair.create(800.0, 
-//                           200.0);
-//    }
     /**
      * permission(s) required to execute fills view
      */

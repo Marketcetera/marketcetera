@@ -163,8 +163,9 @@ public class WindowManagerService
         // TODO pretty sure this isn't right
         newWindow.getProperties().put(WindowManagerService.windowUuidProp,
                                       inEvent.getWindowStyleId());
+        newWindow.sizeToScene();
         newWindow.show();
-//        newWindow.requestFocus();
+        newWindow.requestFocus();
     }
     /**
      * Receive logout events.

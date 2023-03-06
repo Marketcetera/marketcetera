@@ -1,4 +1,34 @@
+* New Features *
+================
 - order suggestions in order ticket
+- rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
+- need add help menu
+- need about menu with attributions and copyright
+- experiment with style of windows to make them more compact?
+- change windows to use popups instead of new stages?
+- suggestions view
+- add market data view
+- add cluster view
+- add strategy view
+- positions view
+- add view metrics module (with rpc, etc)
+- reports needs add report action
+- go back to old icons 
+- configurable way to set number of decimals to display for all types
+- remove style service as a bad idea
+- convert fix session panes to use inner classes
+- fix sessions target/sender seq num not updating
+- traderAdmin should have view fix sessions permission
+- expand FIX wizard to allow specification of multiple host/port combinations for failover?
+-- either that or need to do something that allows freeform settings to be added instead of just the normal ones
+- enforce patterns on fix session attributes in fix session wizard
+- add listener to rpc clients for status bar image?
+- add new permission for activate/deactivate users and use them in UserView context menu
+- create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
+- add ActivateUser to AdminClient and use in UserView context menu
+
+* Bugs *
+========
 - broker algos in order ticket
 - custom fields in order ticket
 - transfer text to order in order ticket
@@ -9,55 +39,26 @@
 - weird always-on-top issue with window system
 - order ticket not formatted with last know values
 - broker status toolbar, needs to do something
-- rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
-- need add help menu
-- need about menu with attributions and copyright
-- experiment with style of windows to make them more compact?
-- change windows to use popups instead of new stages?
 - replace order ticket values not filled out
-- add admin views
--- users
--- roles
--- permissions
-- suggestions view
-- add market data view
-- add cluster view
-- add strategy view
-- positions view
-- add view metrics module (with rpc, etc)
-- reports needs add report action
-- go back to old icons 
-- configurable way to set number of decimals to display for all types
 - menus are not fully recursive: only go to top level
-- remove style service as a bad idea
-- convert fix session panes to use inner classes
 - incorporate session id validator in fix session wizard session identity page
-
-- add fix session view
-- add add fix session button to fix session view
-
-- fix sessions target/sender seq num not updating
 - failed fix session actions return "UNKNOWN" instead of a useful error message
-- traderAdmin should have view fix sessions permission
-- expand FIX wizard to allow specification of multiple host/port combinations for failover?
--- either that or need to do something that allows freeform settings to be added instead of just the normal ones
-- enforce patterns on fix session attributes in fix session wizard
-
-- add listener to rpc clients for status bar image?
-
 - defining a FIX session w/o a heartbeatint causes all kinds of havoc on client and server
 - update fix session adds new session instead of updating old one
-x fix session wizard: not writing settings to final object
-x fix session wizard: session type not being written to settings
-x fix session wizard: settings are doubled up
-x fix session wizard crashing on final step
-x not all controls in order ticket able to be styled
-x login window should be centered on main window, not screen
-x no way to close app from login window
-x need enter mnemonic for login view
-x add advice to login
-x status bar clock format - configurable?
-x fix wizard test connection fails causes controls to be sized weirdly
+- add fix session shows empty session name in the update message
+- check permissions for add FIX session
+- can't delete user with supervisor permissions
+- can't delete user with roles
+- need to sort out password hashing/sending/authenticating between client and server
+- adminClient requires old password when changing password, but that requires keeping it around, which is a security issue. remove the old password parameter from the call.
+- PhotonServices.successStyle needs to match initial style, instead adds a light boundary
+- deactive user causes stale row error
+- do the admin views have permissions set for them? - no permissions exist for ViewUsers, ViewRoles, ViewPermissions - need to be added to UserViewFactory
 
+- add admin views
+xx users
+-- roles
+-- permissions
+-- supervisor permissions
 
-
+- work on blockchains MDA for market data views

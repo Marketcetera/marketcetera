@@ -118,7 +118,7 @@ public class FixSessionViewFactory
         return FixSessionView.class;
     }
     /**
-     * permission(s) required to execute open order view
+     * permission(s) required to execute fix session view
      */
     private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(AdminPermissions.ViewSessionAction));
     /**
