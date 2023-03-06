@@ -1,10 +1,10 @@
 package org.marketcetera.ui.trade.event;
 
+import java.net.URL;
+
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -22,7 +22,7 @@ public abstract class AbstractOrderTicketEvent
      * @see org.marketcetera.ui.events.NewWindowEvent#getWindowIcon()
      */
     @Override
-    public Image getWindowIcon()
+    public URL getWindowIcon()
     {
         return orderViewFactory.getMenuIcon();
     }

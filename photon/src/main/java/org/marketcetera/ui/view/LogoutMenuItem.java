@@ -1,6 +1,6 @@
 package org.marketcetera.ui.view;
 
-import javax.annotation.PostConstruct;
+import java.net.URL;
 
 import org.marketcetera.ui.events.LogoutEvent;
 import org.marketcetera.ui.service.SessionUser;
@@ -8,8 +8,6 @@ import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -24,12 +22,6 @@ import javafx.scene.image.Image;
 public class LogoutMenuItem
         implements MenuContent
 {
-    @PostConstruct
-    public void start()
-    {
-        icon = new Image("images/Logout.png");
-    }
-    private Image icon;
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getMenuCaption()
      */
@@ -58,9 +50,9 @@ public class LogoutMenuItem
      * @see com.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
-        return icon;
+        return getClass().getClassLoader().getResource("images/Logout.svg");
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()

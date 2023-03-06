@@ -1,12 +1,11 @@
 package org.marketcetera.ui.view;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -51,9 +50,9 @@ public interface MenuContent
     /**
      * Get the menu icon value.
      *
-     * @return an <code>Image</code> value
+     * @return a <code>URL</code> value or null
      */
-    Image getMenuIcon();
+    URL getMenuIcon();
     /**
      * Get the command value to execute.
      *

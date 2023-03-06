@@ -1,5 +1,6 @@
 package org.marketcetera.ui.service;
 
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -42,7 +43,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
@@ -124,7 +124,8 @@ public class WindowManagerService
         final Stage newWindow = new Stage();
         newWindow.initOwner(App.getPrimaryStage());
         if(inEvent.getWindowIcon() != null) {
-            newWindow.getIcons().add(inEvent.getWindowIcon());
+            // TODO need to convert to Image to show here
+//            newWindow.getIcons().add(PhotonServices.getSvgResource(inEvent.getWindowIcon()));
         }
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         // the content view factory will be used to create the new window content
@@ -345,7 +346,7 @@ public class WindowManagerService
          * @see org.marketcetera.ui.events.NewWindowEvent#getWindowIcon()
          */
         @Override
-        public Image getWindowIcon()
+        public URL getWindowIcon()
         {
             if(contentViewFactory instanceof MenuContent) {
                 return ((MenuContent)contentViewFactory).getMenuIcon();

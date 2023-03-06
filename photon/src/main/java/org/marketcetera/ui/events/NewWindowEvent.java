@@ -1,11 +1,10 @@
 package org.marketcetera.ui.events;
 
+import java.net.URL;
 import java.util.Properties;
 
 import org.marketcetera.core.Pair;
 import org.marketcetera.ui.view.ContentViewFactory;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -21,9 +20,9 @@ public interface NewWindowEvent
     /**
      * Get the icon to display for the window, if any.
      *
-     * @return an <code>Image</cod> value or <code>null</code>
+     * @return a <code>URL</cod> value or <code>null</code>
      */
-    default Image getWindowIcon()
+    default URL getWindowIcon()
     {
         return null;
     }

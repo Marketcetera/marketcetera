@@ -1,11 +1,11 @@
 package org.marketcetera.ui.fix.view;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.core.Pair;
-import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
@@ -17,8 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -54,9 +52,9 @@ public class FixSessionViewFactory
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
-        return PhotonServices.getIcon("images/FIX_Sessions.png");
+        return getClass().getClassLoader().getResource("images/FIX_Sessions.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.MenuContent#getCategory()

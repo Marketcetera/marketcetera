@@ -1,9 +1,9 @@
 package org.marketcetera.ui.view;
 
+import java.net.URL;
+
 import org.marketcetera.ui.events.TileWindowsEvent;
 import org.springframework.stereotype.Component;
-
-import javafx.scene.image.Image;
 
 
 /* $License$ */
@@ -47,9 +47,9 @@ public class TileWindowsMenuItem
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
-        return getIcon("images/Tile_Windows.png");
+        return getClass().getClassLoader().getResource("images/Tile_Windows.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()

@@ -1,5 +1,6 @@
 package org.marketcetera.ui.view;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -9,6 +10,7 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.service.AuthorizationHelperService;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -19,12 +21,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 
 /* $License$ */
@@ -123,14 +122,15 @@ public class ApplicationMenu
         }
         // all menu items have now been categorized and sorted, go back through and create the menu bar
         menu = new MenuBar();
-//        menu.setStyleName(ValoTheme.MENUBAR_BORDERLESS);
         // the top-level menu is in topLevelContent, some of the items may be categories
         for(MenuItemMetaData topLevelContentItem : topLevelContent) {
             // this item may be a parent or a leaf
             Menu parent = new Menu();
             parent.setText(topLevelContentItem.getMenuCaption());
-            Node icon = new ImageView(topLevelContentItem.getMenuIcon());
-            parent.setGraphic(icon);
+            if(topLevelContentItem.getMenuIcon() != null) {
+                // TODO it might be better w/o the top-level icons?
+//                parent.setGraphic(PhotonServices.getSvgResource(topLevelContentItem.getMenuIcon()));
+            }
             menu.getMenus().add(parent);
             topLevelContentItem.setMenuItem(parent);
             SortedSet<MenuContent> childItems = categoryContent.get(topLevelContentItem);
@@ -148,13 +148,15 @@ public class ApplicationMenu
                 placeholderMenuItem.setOnAction(e -> topLevelContentItem.getCommand().run());
             } else {
                 for(MenuContent childItem : childItems) {
-                    MenuItem newChildIem = new MenuItem();
-                    newChildIem.setText(childItem.getMenuCaption());
-                    newChildIem.setGraphic(new ImageView(childItem.getMenuIcon()));
-                    newChildIem.setOnAction(e -> childItem.getCommand().run());
-                    parent.getItems().add(newChildIem);
+                    MenuItem newChildItem = new MenuItem();
+                    newChildItem.setText(childItem.getMenuCaption());
+                    if(childItem.getMenuIcon() != null) {
+                        newChildItem.setGraphic(PhotonServices.getSvgResource(childItem.getMenuIcon()));
+                    }
+                    newChildItem.setOnAction(e -> childItem.getCommand().run());
+                    parent.getItems().add(newChildItem);
                     MenuItemMetaData newChildItemMetaData = new MenuItemMetaData(childItem);
-                    newChildItemMetaData.setMenuItem(newChildIem);
+                    newChildItemMetaData.setMenuItem(newChildItem);
                     topLevelContentItem.getChildItems().add(newChildItemMetaData);
                 }
             }
@@ -250,6 +252,7 @@ public class ApplicationMenu
 //            private static final long serialVersionUID = -4840986259382011275L;
 //        });
     }
+    
     /**
      * Evaluate the permissions for the given menu item and set the menu item to be visible accordingly.
      *
@@ -322,7 +325,7 @@ public class ApplicationMenu
          * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
          */
         @Override
-        public Image getMenuIcon()
+        public URL getMenuIcon()
         {
             return menuContent.getMenuIcon();
         }

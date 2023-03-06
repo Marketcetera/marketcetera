@@ -7,11 +7,15 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.girod.javafx.svgimage.SVGLoader;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -102,6 +106,19 @@ public abstract class PhotonServices
         } catch (URISyntaxException e) {
             return false;
         }
+    }
+    /**
+     * Load an SVG image into a node.
+     *
+     * @param inUrl a <code>URL</code> value
+     * @return a <code>Node</code> value
+     */
+    public static Node getSvgResource(URL inUrl)
+    {
+        Group svgImage = SVGLoader.load(inUrl);
+        svgImage.setScaleX(0.5);
+        svgImage.setScaleY(0.5);
+        return svgImage;
     }
     public static class NDEntityCellFactory<Clazz extends SummaryNDEntityBase>
             implements Callback<ListView<Clazz>, ListCell<Clazz>>

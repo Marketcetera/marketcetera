@@ -1,5 +1,6 @@
 package org.marketcetera.ui.trade.view.fills;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 
@@ -10,8 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -46,9 +45,9 @@ public class FillsViewFactory
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
-        return getIcon("images/Fills.png");
+        return getClass().getClassLoader().getResource("images/Fills.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()

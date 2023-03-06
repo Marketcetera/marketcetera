@@ -1,8 +1,8 @@
 package org.marketcetera.ui.admin.view;
 
-import org.marketcetera.ui.view.MenuContent;
+import java.net.URL;
 
-import javafx.scene.image.Image;
+import org.marketcetera.ui.view.MenuContent;
 
 
 /* $License$ */
@@ -53,7 +53,7 @@ public class AdminContentCategory
      * @see com.marketcetera.web.view.MenuContent#getIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
         return null;
     }

@@ -1,11 +1,10 @@
 package org.marketcetera.ui.admin.view;
 
-import org.marketcetera.ui.PhotonServices;
+import java.net.URL;
+
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ContentViewFactory;
 import org.springframework.stereotype.Component;
-
-import javafx.scene.image.Image;
 
 /* $License$ */
 
@@ -40,9 +39,9 @@ public class RoleViewFactory
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
-        return PhotonServices.getIcon("images/Roles.png");
+        return getClass().getClassLoader().getResource("images/Roles.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()

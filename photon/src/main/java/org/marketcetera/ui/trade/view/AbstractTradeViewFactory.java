@@ -1,5 +1,7 @@
 package org.marketcetera.ui.trade.view;
 
+import java.net.URL;
+
 import org.marketcetera.core.Pair;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.service.WebMessageService;
@@ -104,7 +106,7 @@ public abstract class AbstractTradeViewFactory
          * @see org.marketcetera.ui.events.NewWindowEvent#getWindowIcon()
          */
         @Override
-        public Image getWindowIcon()
+        public URL getWindowIcon()
         {
             return getMenuIcon();
         }

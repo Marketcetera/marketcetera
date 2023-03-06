@@ -1,6 +1,6 @@
 package org.marketcetera.ui.view;
 
-import javafx.scene.image.Image;
+import java.net.URL;
 
 /* $License$ */
 
@@ -50,7 +50,7 @@ public class WindowContentCategory
      * @see com.marketcetera.web.view.MenuContent#getIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
         return null;
     }

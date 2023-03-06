@@ -1,9 +1,9 @@
 package org.marketcetera.ui.view;
 
+import java.net.URL;
+
 import org.marketcetera.ui.events.CloseWindowsEvent;
 import org.springframework.stereotype.Component;
-
-import javafx.scene.image.Image;
 
 
 /* $License$ */
@@ -47,9 +47,9 @@ public class CloseAllWindowsMenuItem
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
      */
     @Override
-    public Image getMenuIcon()
+    public URL getMenuIcon()
     {
-        return getIcon("images/Close_All_Windows.png");
+        return getClass().getClassLoader().getResource("images/Close_All_Windows.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()
