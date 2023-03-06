@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import javafx.scene.Scene;
@@ -16,7 +17,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
+import javafx.util.Callback;
 
 /* $License$ */
 
@@ -97,6 +101,27 @@ public abstract class PhotonServices
             return new URI("my://userinfo@" + candidateHost + ":80").getHost() != null;
         } catch (URISyntaxException e) {
             return false;
+        }
+    }
+    public static class NDEntityCellFactory<Clazz extends SummaryNDEntityBase>
+            implements Callback<ListView<Clazz>, ListCell<Clazz>>
+    {
+        @Override
+        public ListCell<Clazz> call(ListView<Clazz> inParameter)
+        {
+            return new ListCell<>(){
+                @Override
+                public void updateItem(Clazz inData,
+                                       boolean isEmpty)
+                {
+                    super.updateItem(inData, isEmpty);
+                    if (isEmpty || inData == null) {
+                        setText(null);
+                    } else {
+                        setText(inData.getName());
+                    }
+                }
+            };
         }
     }
     public static String successMessage = String.format("-fx-text-fill: GREEN;");
