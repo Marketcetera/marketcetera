@@ -1,10 +1,16 @@
 package org.marketcetera.ui.admin.view;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
 
+import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ContentViewFactory;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -67,4 +73,16 @@ public class UserViewFactory
     {
         return getClass();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.MenuContent#getAllPermissions()
+     */
+    @Override
+    public Set<GrantedAuthority> getAllPermissions()
+    {
+        return requiredPermissions;
+    }
+    /**
+     * permission(s) required to execute the user view
+     */
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(AdminPermissions.ReadUserAction));
 }

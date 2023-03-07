@@ -13,7 +13,6 @@
 - positions view
 - add view metrics module (with rpc, etc)
 - reports needs add report action
-- go back to old icons 
 - configurable way to set number of decimals to display for all types
 - remove style service as a bad idea
 - convert fix session panes to use inner classes
@@ -22,10 +21,10 @@
 - expand FIX wizard to allow specification of multiple host/port combinations for failover?
 -- either that or need to do something that allows freeform settings to be added instead of just the normal ones
 - enforce patterns on fix session attributes in fix session wizard
-- add listener to rpc clients for status bar image?
 - add new permission for activate/deactivate users and use them in UserView context menu
 - create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
 - add ActivateUser to AdminClient and use in UserView context menu
+- work on blockchains MDA for market data views
 
 * Bugs *
 ========
@@ -38,7 +37,6 @@
 - cascade and tile not working yet
 - weird always-on-top issue with window system
 - order ticket not formatted with last know values
-- broker status toolbar, needs to do something
 - replace order ticket values not filled out
 - menus are not fully recursive: only go to top level
 - incorporate session id validator in fix session wizard session identity page
@@ -53,16 +51,15 @@
 - adminClient requires old password when changing password, but that requires keeping it around, which is a security issue. remove the old password parameter from the call.
 - PhotonServices.successStyle needs to match initial style, instead adds a light boundary
 - deactive user causes stale row error
-- do the admin views have permissions set for them? - no permissions exist for ViewUsers, ViewRoles, ViewPermissions - need to be added to UserViewFactory
 - add check to add/update user to see if the username is already in use
 - need to add permissions to roles add or update
 - changing permissions doesn't work in adding/updating permissions
 - moving multiple permissions in the role add/update doesn't seem to work
-
 - add admin views
-xx users
-xx roles
-xx permissions
 -- supervisor permissions
 
-- work on blockchains MDA for market data views
+- server status toolbar, needs to do something
+
+
+x do the admin views have permissions set for them? - no permissions exist for ViewUsers, ViewRoles, ViewPermissions - need to be added to UserViewFactory
+x go back to old icons 

@@ -1,5 +1,6 @@
 package org.marketcetera.rpc.client;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -13,6 +14,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.VersionInfo;
 import org.marketcetera.rpc.base.BaseRpc;
@@ -20,6 +22,8 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
+
+import com.google.common.collect.Lists;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -72,6 +76,26 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     public boolean isRunning()
     {
         return alive.get() && !stopped.get();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.RpcClient#addClientStatusListener(org.marketcetera.rpc.client.ClientStatusListener)
+     */
+    @Override
+    public void addClientStatusListener(ClientStatusListener inListener)
+    {
+        synchronized(clientStatusListeners) {
+            clientStatusListeners.add(inListener);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.rpc.client.RpcClient#removeClientStatusListener(org.marketcetera.rpc.client.ClientStatusListener)
+     */
+    @Override
+    public void removeClientStatusListener(ClientStatusListener inListener)
+    {
+        synchronized(clientStatusListeners) {
+            clientStatusListeners.remove(inListener);
+        }
     }
     /**
      * Create a new AbstractRpcClient instance.
@@ -359,6 +383,16 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
                                        sessionId,
                                        inIsConnected);
                 onStatusChange(inIsConnected);
+                synchronized(clientStatusListeners) {
+                    for(ClientStatusListener listener : clientStatusListeners) {
+                        try {
+                            listener.receiveClientStatus(inIsConnected);
+                        } catch (Exception e) {
+                            SLF4JLoggerProxy.warn(this,
+                                                  e);
+                        }
+                    }
+                }
             } catch (Exception e) {
                 String message = ExceptionUtils.getRootCauseMessage(e);
                 if(SLF4JLoggerProxy.isDebugEnabled(this)) {
@@ -503,6 +537,10 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
      * parameters used to start the client
      */
     private final ParameterClazz parameters;
+    /**
+     * listeners to be informed upon status changes
+     */
+    private final List<ClientStatusListener> clientStatusListeners = Lists.newArrayList();
     /**
      * common heartbeat executor for <em>all</em> clients, do not touch it when this client stops
      */

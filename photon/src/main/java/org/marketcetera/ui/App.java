@@ -97,7 +97,7 @@ public class App
                                          new Image("/images/photon-48x48.png"),
                                          new Image("/images/photon-64x64.png"),
                                          new Image("/images/photon-128x128.png"));
-        if (Taskbar.isTaskbarSupported()) {
+        if(Taskbar.isTaskbarSupported()) {
             Taskbar taskbar = Taskbar.getTaskbar();
             if(taskbar.isSupported(Feature.ICON_IMAGE)) {
                 final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
@@ -139,6 +139,8 @@ public class App
     {
         Platform.runLater(() -> { userLabel.setText(inEvent.getSessionUser().getUsername());});
         notificationService = applicationContext.getBean(PhotonNotificationService.class);
+        clientStatusUpdater = applicationContext.getBean(ClientStatusUpdater.class,
+                                                         clientStatusImageView);
     }
     /**
      * Receive logout events.
@@ -151,6 +153,10 @@ public class App
         if(notificationService != null) {
             notificationService.stop();
             notificationService = null;
+        }
+        if(clientStatusUpdater != null) {
+            clientStatusUpdater.stop();
+            clientStatusUpdater = null;
         }
         if(SessionUser.getCurrent() != null) {
             SessionUser.getCurrent().setAttribute(ApplicationMenu.class,
@@ -166,6 +172,9 @@ public class App
             }
         });
     }
+    /**
+     * Initialize the workspace footer.
+     */
     private void initializeFooter()
     {
         footer = new HBox();
@@ -175,7 +184,8 @@ public class App
         footerToolBar.setId(getClass().getCanonicalName() + ".footerToolBar");
         statusToolBar = new ToolBar();
         statusToolBar.setId(getClass().getCanonicalName() + ".statusToolBar");
-        statusToolBar.getItems().add(new ImageView(new Image("/images/LedGreen.gif")));
+        clientStatusImageView = new ImageView(new Image("/images/LedNone.gif"));
+        statusToolBar.getItems().add(clientStatusImageView);
         clockLabel = new Label();
         clockLabel.setId(getClass().getCanonicalName() + ".clockLabel");
         // create the clock updater service, though we don't need to refer to it hereafter
@@ -249,6 +259,14 @@ public class App
     {
         launch();
     }
+    /**
+     * footer holder for the server connection status image
+     */
+    private ImageView clientStatusImageView;
+    /**
+     * service to update the server connection status in the footer
+     */
+    private ClientStatusUpdater clientStatusUpdater;
     /**
      * holds main stage object
      */

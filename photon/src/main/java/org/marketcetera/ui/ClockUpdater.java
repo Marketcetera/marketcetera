@@ -35,7 +35,7 @@ public class ClockUpdater
     /**
      * Create a new ClockUpdater instance.
      *
-     * @param inTarget
+     * @param inTarget a <code>Label</code> value
      */
     public ClockUpdater(Label inTarget)
     {

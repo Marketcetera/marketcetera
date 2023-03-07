@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
+import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
@@ -297,6 +298,22 @@ public class DirectTradeClient
     public CollectionPageResponse<AverageFillPrice> getAveragePriceFills(PageRequest inPageRequest)
     {
         return reportService.getAverageFillPrices(inPageRequest);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.BaseClient#addClientStatusListener(org.marketcetera.core.ClientStatusListener)
+     */
+    @Override
+    public void addClientStatusListener(ClientStatusListener inListener)
+    {
+        // no-op
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.BaseClient#removeClientStatusListener(org.marketcetera.core.ClientStatusListener)
+     */
+    @Override
+    public void removeClientStatusListener(ClientStatusListener inListener)
+    {
+        // no-op
     }
     /**
      * Get the applicationContext value.

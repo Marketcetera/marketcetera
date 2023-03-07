@@ -14,6 +14,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserAttribute;
 import org.marketcetera.admin.UserAttributeType;
 import org.marketcetera.brokers.BrokerStatusListener;
+import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixAdminClient;
 import org.marketcetera.fix.FixAdminRpcClientFactory;
@@ -142,6 +143,24 @@ public class AdminClientService
                                                   this);
         }
         return adminClient.isRunning() && fixAdminClient.isRunning();
+    }
+    /**
+     * Add the given client status listener.
+     *
+     * @param inListener a <code>ClientStatusListener</code> value
+     */
+    public void addClientStatusListener(ClientStatusListener inListener)
+    {
+        adminClient.addClientStatusListener(inListener);
+    }
+    /**
+     * Remove the given client status listener.
+     *
+     * @param inListener a <code>ClientStatusListener</code> value
+     */
+    public void removeClientStatusListener(ClientStatusListener inListener)
+    {
+        adminClient.removeClientStatusListener(inListener);
     }
     /**
      * Change the password of the given user.
