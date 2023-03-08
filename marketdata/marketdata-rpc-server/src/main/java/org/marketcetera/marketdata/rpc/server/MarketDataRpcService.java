@@ -352,7 +352,7 @@ public class MarketDataRpcService<SessionClazz>
         private String buildRequestId(String inSessionId,
                                       String inRequestId)
         {
-            return new StringBuilder().append(inSessionId).append('-').append(inRequestId).toString();
+            return new StringBuilder().append("sessionId->").append(inSessionId).append("/requestId->").append(inRequestId).toString();
         }
     }
     /**

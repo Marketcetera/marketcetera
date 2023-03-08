@@ -25,6 +25,10 @@
 - create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
 - add ActivateUser to AdminClient and use in UserView context menu
 - work on blockchains MDA for market data views
+- if md client goes offline, mark all views as disabled
+- md client comes back online, resubmit md requests
+- window onClose not fired on app shutdown so nothing gets saved - can't rely on onClose to save important view info
+- probably need to handle DELETE events in market data list view
 
 * Bugs *
 ========
@@ -58,8 +62,6 @@
 - add admin views
 -- supervisor permissions
 
-- server status toolbar, needs to do something
-
-
+x server status toolbar, needs to do something
 x do the admin views have permissions set for them? - no permissions exist for ViewUsers, ViewRoles, ViewPermissions - need to be added to UserViewFactory
 x go back to old icons 

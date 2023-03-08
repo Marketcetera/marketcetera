@@ -1,6 +1,7 @@
 package org.marketcetera.ui;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -11,6 +12,7 @@ import java.net.URL;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.girod.javafx.svgimage.SVGLoader;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -23,6 +25,8 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
 import javafx.scene.image.Image;
 import javafx.util.Callback;
 
@@ -140,6 +144,43 @@ public abstract class PhotonServices
                 }
             };
         }
+    }
+    public static <T> TableCell<T,BigDecimal> renderNumberCell(TableColumn<T,BigDecimal> inTableColumn)
+    {
+        TableCell<T,BigDecimal> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(BigDecimal inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty && inItem != null){
+                    this.setText(BigDecimalUtil.render(inItem));
+                }
+            }
+        };
+        return tableCell;
+    }
+    public static <T> TableCell<T,BigDecimal> renderCurrencyCell(TableColumn<T,BigDecimal> inTableColumn)
+    {
+        TableCell<T,BigDecimal> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(BigDecimal inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty && inItem != null){
+                    // TODO need to set up decimal preferences
+                    this.setText(BigDecimalUtil.renderCurrency(inItem));
+                }
+            }
+        };
+        return tableCell;
     }
     public static String successMessage = String.format("-fx-text-fill: GREEN;");
     public static String errorMessage = String.format("-fx-text-fill: RED;");

@@ -82,6 +82,7 @@ public class WindowManagerService
         SLF4JLoggerProxy.info(this,
                               "Stopping {}",
                               PlatformServices.getServiceName(getClass()));
+        // TODO call something on every window to update data or on-close or something like that
         webMessageService.unregister(this);
     }
     /**
@@ -138,7 +139,9 @@ public class WindowManagerService
         ContentView contentView = viewFactory.create(newWindow,
                                                      inEvent,
                                                      newWindowWrapper.getProperties());
-        newWindow.setOnCloseRequest(inCloseEvent -> contentView.onClose(inCloseEvent));
+        newWindow.setOnCloseRequest(inCloseEvent -> {
+            contentView.onClose(inCloseEvent);
+        });
         styleService.addStyle(contentView);
         Scene rootScene = contentView.getScene();
         rootScene.getStylesheets().clear();
@@ -167,6 +170,7 @@ public class WindowManagerService
         newWindow.sizeToScene();
         newWindow.show();
         newWindow.requestFocus();
+//        newWindow.setOnCloseRequest(null);
     }
     /**
      * Receive logout events.

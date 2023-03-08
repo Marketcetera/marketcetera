@@ -21,6 +21,7 @@ import org.marketcetera.fix.MutableFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
+import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -152,6 +153,16 @@ public class UiConfiguration
     public FixAdminRpcClientFactory getFixAdminClientFactory()
     {
         return new FixAdminRpcClientFactory();
+    }
+    /**
+     * Get the FIX admin client factory value.
+     *
+     * @return a <code>FixAdminClientFactory</code> value
+     */
+    @Bean
+    public MarketDataRpcClientFactory getMarketDataClientFactory()
+    {
+        return new MarketDataRpcClientFactory();
     }
     /**
      * Get the user attribute factory value.

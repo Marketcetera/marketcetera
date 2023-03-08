@@ -272,4 +272,7 @@ public class PlatformServices
      * hostname value
      */
     private static String hostname;
+    public static final CellStyle cellStyleRightAlign = new CellStyle(HorizontalAlign.right);
+    public static final CellStyle cellStyleLeftAlign = new CellStyle(HorizontalAlign.left);
+    public static final CellStyle cellStyleCenterAlign = new CellStyle(HorizontalAlign.center);
 }
