@@ -3,6 +3,7 @@ package org.marketcetera.ui.marketdata.event;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.ui.events.NewWindowEvent;
+import org.marketcetera.ui.marketdata.view.MarketDataDetailViewFactory;
 import org.marketcetera.ui.view.ContentViewFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -52,8 +53,7 @@ public class MarketDataDetailEvent
     @Override
     public Class<? extends ContentViewFactory> getViewFactoryType()
     {
-//        return MarketDataDetailViewFactory.class;
-        throw new UnsupportedOperationException(); // TODO
+        return MarketDataDetailViewFactory.class;
     }
     /**
      * Create a new MarketDataDetailEvent instance.

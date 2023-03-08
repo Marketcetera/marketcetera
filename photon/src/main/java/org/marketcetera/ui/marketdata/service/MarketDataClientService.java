@@ -1,8 +1,10 @@
 package org.marketcetera.ui.marketdata.service;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataClient;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -105,6 +107,15 @@ public class MarketDataClientService
     public void cancel(String inRequestId)
     {
         marketDataClient.cancel(inRequestId);
+    }
+    /**
+     * Gets the available capabilities of active market data providers.
+     *
+     * @return a <code>Set&lt;Capability&gt;</code> value
+     */
+    public Set<Capability> getAvailableCapability()
+    {
+        return marketDataClient.getAvailableCapability();
     }
     /**
      * Get the instance value.

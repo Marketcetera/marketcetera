@@ -1,16 +1,18 @@
 * New Features *
 ================
+- add strategy view
+- positions view
+- suggestions view
 - order suggestions in order ticket
 - rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
 - need add help menu
 - need about menu with attributions and copyright
 - experiment with style of windows to make them more compact?
-- change windows to use popups instead of new stages?
-- suggestions view
-- add market data view
+-- change windows to use popups instead of new stages?
+-- main workspace probably needs to be a flow pane instead of vbox
+-- investigate Draggable
+-- investigate https://stackoverflow.com/questions/16925612/how-to-resize-component-with-mouse-drag-in-javafx
 - add cluster view
-- add strategy view
-- positions view
 - add view metrics module (with rpc, etc)
 - reports needs add report action
 - configurable way to set number of decimals to display for all types
@@ -32,6 +34,7 @@
 
 * Bugs *
 ========
+- market data client returns no available capabilities
 - broker algos in order ticket
 - custom fields in order ticket
 - transfer text to order in order ticket
@@ -62,6 +65,4 @@
 - add admin views
 -- supervisor permissions
 
-x server status toolbar, needs to do something
-x do the admin views have permissions set for them? - no permissions exist for ViewUsers, ViewRoles, ViewPermissions - need to be added to UserViewFactory
-x go back to old icons 
+- add chart to market data detail view

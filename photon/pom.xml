@@ -99,6 +99,11 @@
       <artifactId>fxsvgimage</artifactId>
       <version>1.1</version>
     </dependency>
+    <dependency>
+      <groupId>de.gsi.chart</groupId>
+      <artifactId>chartfx-chart</artifactId>
+      <version>11.2.7</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -114,8 +119,8 @@
             <configuration>
               <mainClass>org.marketcetera.ui.App</mainClass>
               <workingDirectory>src/test/cmd_exec</workingDirectory>
-	      <options>
-		<option>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+              <options>
+                <option>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</option>
               </options>
             </configuration>
           </execution>

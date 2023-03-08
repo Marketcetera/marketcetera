@@ -18,14 +18,14 @@ import com.google.common.collect.Sets;
 /* $License$ */
 
 /**
- * Creates {@link MarketDataListView} content objects.
+ * Creates {@link MarketDataDetailView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @Component
-public class MarketDataListViewFactory
+public class MarketDataDetailViewFactory
         extends AbstractContentViewFactory
         implements MenuContent
 {
@@ -35,7 +35,7 @@ public class MarketDataListViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "Symbol List";
+        return "Detail";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
@@ -43,7 +43,7 @@ public class MarketDataListViewFactory
     @Override
     public int getWeight()
     {
-        return 100;
+        return 200;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getMenuIcon()
@@ -80,7 +80,7 @@ public class MarketDataListViewFactory
                     @Override
                     public Class<? extends ContentViewFactory> getViewFactoryType()
                     {
-                        return MarketDataListViewFactory.class;
+                        return MarketDataDetailViewFactory.class;
                     }}
                 );
             }
@@ -100,7 +100,7 @@ public class MarketDataListViewFactory
     @Override
     protected Class<? extends ContentView> getViewType()
     {
-        return MarketDataListView.class;
+        return MarketDataDetailView.class;
     }
     /**
      * permission(s) required to execute fix session view

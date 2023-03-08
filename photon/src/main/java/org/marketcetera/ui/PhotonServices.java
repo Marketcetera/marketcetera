@@ -9,10 +9,14 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Date;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.girod.javafx.svgimage.SVGLoader;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.marketcetera.core.BigDecimalUtil;
+import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.persist.SummaryNDEntityBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -182,6 +186,43 @@ public abstract class PhotonServices
         };
         return tableCell;
     }
+    public static <T> TableCell<T,Date> renderDateCell(TableColumn<T,Date> inTableColumn)
+    {
+        TableCell<T,Date> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(Date inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty){
+                    this.setText(isoDateFormatter.print(new DateTime(inItem)));
+                }
+            }
+        };
+        return tableCell;
+    }
+    public static <T> TableCell<T,DateTime> renderDateTimeCell(TableColumn<T,DateTime> inTableColumn)
+    {
+        TableCell<T,DateTime> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(DateTime inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty){
+                    this.setText(isoDateFormatter.print(inItem));
+                }
+            }
+        };
+        return tableCell;
+    }
+    public static final DateTimeFormatter isoDateFormatter = TimeFactoryImpl.FULL_MILLISECONDS;
     public static String successMessage = String.format("-fx-text-fill: GREEN;");
     public static String errorMessage = String.format("-fx-text-fill: RED;");
     public static String errorStyle = String.format("-fx-border-color: RED; -fx-border-width: 2; -fx-border-radius: 5;");

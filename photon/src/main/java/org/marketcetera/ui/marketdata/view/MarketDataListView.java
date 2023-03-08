@@ -65,7 +65,7 @@ import javafx.stage.WindowEvent;
 /* $License$ */
 
 /**
- * Provides a view for FIX Sessions.
+ * Provides a view for the market data list.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -480,5 +480,5 @@ public class MarketDataListView
     /**
      * global name of this view
      */
-    private static final String NAME = "FIX Session View";
+    private static final String NAME = "Market Data List View";
 }
