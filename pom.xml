@@ -163,6 +163,36 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-rpc-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-rpc-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-rpc-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>trade-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1010,20 +1040,6 @@
             </execution>
           </executions>
         </plugin>
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>5.1.4</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.10</version>
-          <configuration>
-            <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
-            <downloadSources>true</downloadSources>
-            <downloadJavadocs>true</downloadJavadocs>
-          </configuration>
-        </plugin>
         <!-- mvn exec:* -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1107,6 +1123,8 @@
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
         <version>1.7.0</version>
+	<!-- see this for building on Eclipse: https://stackoverflow.com/questions/47477194/os-detected-classifier-not-set-os-maven-plugin-and-eclipse-oxygen -->
+	<!-- copy the plugin to the Eclipse plugins directory as instructed -->
       </extension>
     </extensions>
     <resources>
@@ -1193,6 +1211,7 @@
     <module>packages</module>
     <module>photon</module>
     <module>rpc-core</module>
+    <module>strategy</module>
     <module>trade</module>
     <module>tools</module>
     <module>util</module>

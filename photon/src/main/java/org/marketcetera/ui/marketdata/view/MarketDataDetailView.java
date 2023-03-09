@@ -1,7 +1,6 @@
 package org.marketcetera.ui.marketdata.view;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -41,9 +40,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 
-import io.fair_acc.chartfx.XYChart;
-import io.fair_acc.dataset.spi.financial.api.attrs.AttributeModel;
-import io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -420,107 +416,6 @@ public class MarketDataDetailView
 //        chart.getRenderers().clear();
 //        chart.getRenderers().add(candleStickRenderer);
     }
-    private class OhlcvDataSet
-    {
-        
-    }
-    private class OhlcItem
-            implements IOhlcvItem
-    {
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getTimeStamp()
-         */
-        @Override
-        public Date getTimeStamp()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getOpen()
-         */
-        @Override
-        public double getOpen()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getHigh()
-         */
-        @Override
-        public double getHigh()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getLow()
-         */
-        @Override
-        public double getLow()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getClose()
-         */
-        @Override
-        public double getClose()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getVolume()
-         */
-        @Override
-        public double getVolume()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getOpenInterest()
-         */
-        @Override
-        public double getOpenInterest()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getAddon()
-         */
-        @Override
-        public AttributeModel getAddon()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-
-        /* (non-Javadoc)
-         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getAddonOrCreate()
-         */
-        @Override
-        public AttributeModel getAddonOrCreate()
-        {
-            throw new UnsupportedOperationException(); // TODO
-            
-        }
-        
-    }
-    private XYChart chart;
-    private OhlcvDataSet ohlcvDataSet;
     private String depthMarketDataRequestId;
     private final SortedMap<Integer,MarketDataQuoteItem> bids = Maps.newTreeMap();
     private final SortedMap<Integer,MarketDataQuoteItem> asks = Maps.newTreeMap();

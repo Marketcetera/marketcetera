@@ -99,11 +99,11 @@
       <artifactId>fxsvgimage</artifactId>
       <version>1.1</version>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>io.fair-acc</groupId>
       <artifactId>chartfx</artifactId>
       <version>master-SNAPSHOT</version>
-    </dependency>
+    </dependency-->
   </dependencies>
   <build>
     <plugins>

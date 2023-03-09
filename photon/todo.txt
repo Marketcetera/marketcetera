@@ -40,7 +40,6 @@
 - custom fields in order ticket
 - transfer text to order in order ticket
 - peg to midpoint in order ticket
-- stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
 - resize main window not stored in window properties?, should be reset on login
 - cascade and tile not working yet
 - weird always-on-top issue with window system
@@ -65,3 +64,48 @@
 - moving multiple permissions in the role add/update doesn't seem to work
 - add admin views
 -- supervisor permissions
+
+*****************
+* strategy view *
+*****************
+- run on different cluster members? report strategy status on all cluster members
+- special category of events?
+- scp programmatically?
+- strategy meta data on load
+-- md5sum
+-- nonce
+-- filename
+-- name
+-- id
+- compare meta data on activate or discard?
+- build into jar, but need something to identify it before executing, so don't scp it to provisioning dir directly
+- events
+-- strategy started
+-- strategy error
+-- strategy stopped
+-- strategy event
+-- strategy unloaded
+- create strategy listener
+- strategy RPC client
+-- meta data
+-- load
+-- unload
+-- start
+-- stop
+-- add listener
+-- remove listener
+-- event
+-- clear events
+- strategy events should be in db to allow pagination - could be lots and lots
+- permissions
+-- load
+-- start
+-- stop
+-- delete events
+- strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
+
+x stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
+
+- merge 1102 to 4.1.x
+- update build instructions
+- make 4.1.x the main branch

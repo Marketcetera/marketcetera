@@ -112,6 +112,7 @@ public class App
                 ((ConfigurableApplicationContext)applicationContext).close();
             } catch (Exception ignored) {}
             Platform.exit();
+            System.exit(0);
         });
         VBox.setVgrow(menuLayout,
                       Priority.NEVER);
