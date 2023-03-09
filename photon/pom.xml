@@ -100,9 +100,9 @@
       <version>1.1</version>
     </dependency>
     <dependency>
-      <groupId>de.gsi.chart</groupId>
-      <artifactId>chartfx-chart</artifactId>
-      <version>11.2.7</version>
+      <groupId>io.fair-acc</groupId>
+      <artifactId>chartfx</artifactId>
+      <version>master-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <build>

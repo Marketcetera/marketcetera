@@ -37,7 +37,6 @@
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
-    <vaadin.version>22.0.2</vaadin.version>
     <esper.version>8.8.0</esper.version>
     <mvn.flyway.version>8.5.0</mvn.flyway.version>
   </properties>
@@ -362,42 +361,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>metrics-persist</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- compile: web ui -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-package</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-admin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-fix</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-marketdata</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-cluster</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-trade</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- Compile: QuickFIX/J -->

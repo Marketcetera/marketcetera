@@ -1,6 +1,7 @@
 package org.marketcetera.ui.marketdata.view;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -40,8 +41,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 
-import de.gsi.chart.Chart;
-import de.gsi.dataset.spi.financial.OhlcvDataSet;
+import io.fair_acc.chartfx.XYChart;
+import io.fair_acc.dataset.spi.financial.api.attrs.AttributeModel;
+import io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -146,10 +148,12 @@ public class MarketDataDetailView
         marketDataGrid.setVgap(10);
         marketDataGrid.setPadding(new Insets(10,10,10,10));
         initializeTables();
-        initializeChart();
-        marketDataGrid.add(addSymbolLayout,0,0,2,1);
-        marketDataGrid.add(bidMarketDataTable,0,1);
-        marketDataGrid.add(askMarketDataTable,1,1);
+//        initializeChart();
+        int rowCount = 0;
+        marketDataGrid.add(addSymbolLayout,0,rowCount,2,1);
+//        marketDataGrid.add(chart,0,++rowCount,2,1);;
+        marketDataGrid.add(bidMarketDataTable,0,++rowCount);
+        marketDataGrid.add(askMarketDataTable,1,rowCount);
         marketDataGrid.setMaxWidth(Double.MAX_VALUE);
         marketDataGrid.setMaxHeight(Double.MAX_VALUE);
         RowConstraints addSymbolRowConstraint = new RowConstraints();
@@ -385,19 +389,138 @@ public class MarketDataDetailView
     }
     private void initializeChart()
     {
-//        Interval<Calendar> timeRangeInt = CalendarUtils.createByDateTimeInterval(timeRange);
-//        Interval<Calendar> ttInt = CalendarUtils.createByTimeInterval(tt);
-//        Calendar replayFromCal = CalendarUtils.createByDateTime(replayFrom);
-//        ohlcvDataSet = new SimpleOhlcvReplayDataSet(
-//                DataInput.valueOf(resource.substring("REALTIME-".length())),
-//                period,
-//                timeRangeInt,
-//                ttInt,
-//                replayFromCal,
-//                consolidationAddons);
+////        ohlcvDataSet = new OhlcvDataSet("Sample Chart");
+//        
+//        final DefaultNumericAxis xAxis1 = new DefaultNumericAxis("time", "iso");
+//        xAxis1.setOverlapPolicy(AxisLabelOverlapPolicy.SKIP_ALT);
+//        xAxis1.setAutoRangeRounding(false);
+//        xAxis1.setTimeAxis(true);
+//        final DefaultNumericAxis yAxis1 = new DefaultNumericAxis("price", "points");
+//
+//        // prepare chart structure
+//        chart = new XYChart(xAxis1, yAxis1);
+////        chart.setTitle(theme);
+//        chart.setLegendVisible(true);
+////        chart.setPrefSize(prefChartWidth, prefChartHeight);
+//        // set them false to make the plot faster
+//        chart.setAnimated(false);
+//
+//        // prepare plugins
+//        chart.getPlugins().add(new Zoomer(AxisMode.X));
+//        chart.getPlugins().add(new EditAxis());
+//        chart.getPlugins().add(new DataPointTooltip());
+//
+//        // basic chart financial structure style
+//        chart.getGridRenderer().setDrawOnTop(false);
+//        yAxis1.setAutoRangeRounding(true);
+//        yAxis1.setSide(io.fair_acc.chartfx.ui.geometry.Side.RIGHT);
+//        CandleStickRenderer candleStickRenderer = new CandleStickRenderer();
+//        candleStickRenderer.getDatasets().addAll(ohlcvDataSet);
+//
+//        chart.getRenderers().clear();
+//        chart.getRenderers().add(candleStickRenderer);
     }
+    private class OhlcvDataSet
+    {
+        
+    }
+    private class OhlcItem
+            implements IOhlcvItem
+    {
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getTimeStamp()
+         */
+        @Override
+        public Date getTimeStamp()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getOpen()
+         */
+        @Override
+        public double getOpen()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getHigh()
+         */
+        @Override
+        public double getHigh()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getLow()
+         */
+        @Override
+        public double getLow()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getClose()
+         */
+        @Override
+        public double getClose()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getVolume()
+         */
+        @Override
+        public double getVolume()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getOpenInterest()
+         */
+        @Override
+        public double getOpenInterest()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getAddon()
+         */
+        @Override
+        public AttributeModel getAddon()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+
+        /* (non-Javadoc)
+         * @see io.fair_acc.dataset.spi.financial.api.ohlcv.IOhlcvItem#getAddonOrCreate()
+         */
+        @Override
+        public AttributeModel getAddonOrCreate()
+        {
+            throw new UnsupportedOperationException(); // TODO
+            
+        }
+        
+    }
+    private XYChart chart;
     private OhlcvDataSet ohlcvDataSet;
-    private Chart marketDataChart;
     private String depthMarketDataRequestId;
     private final SortedMap<Integer,MarketDataQuoteItem> bids = Maps.newTreeMap();
     private final SortedMap<Integer,MarketDataQuoteItem> asks = Maps.newTreeMap();

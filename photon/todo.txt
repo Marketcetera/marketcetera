@@ -1,6 +1,7 @@
 * New Features *
 ================
 - add strategy view
+- fix sessions target/sender seq num not updating
 - positions view
 - suggestions view
 - order suggestions in order ticket
@@ -18,7 +19,6 @@
 - configurable way to set number of decimals to display for all types
 - remove style service as a bad idea
 - convert fix session panes to use inner classes
-- fix sessions target/sender seq num not updating
 - traderAdmin should have view fix sessions permission
 - expand FIX wizard to allow specification of multiple host/port combinations for failover?
 -- either that or need to do something that allows freeform settings to be added instead of just the normal ones
@@ -31,6 +31,7 @@
 - md client comes back online, resubmit md requests
 - window onClose not fired on app shutdown so nothing gets saved - can't rely on onClose to save important view info
 - probably need to handle DELETE events in market data list view
+- add chart to market data detail view
 
 * Bugs *
 ========
@@ -64,5 +65,3 @@
 - moving multiple permissions in the role add/update doesn't seem to work
 - add admin views
 -- supervisor permissions
-
-- add chart to market data detail view
