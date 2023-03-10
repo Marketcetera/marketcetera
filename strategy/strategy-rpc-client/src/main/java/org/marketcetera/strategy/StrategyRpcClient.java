@@ -3,6 +3,25 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.core.Util;
+import org.marketcetera.core.VersionInfo;
+import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.ws.tags.AppId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
+
 /* $License$ */
 
 /**
@@ -12,87 +31,113 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
-@org.springframework.stereotype.Component
-@org.springframework.context.annotation.Scope(org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Preserve
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyRpcClient
-        extends org.marketcetera.rpc.client.AbstractRpcClient<org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceBlockingStub,org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceStub,StrategyRpcClientParameters>
+        extends AbstractRpcClient<StrategyRpcServiceGrpc.StrategyRpcServiceBlockingStub,StrategyRpcServiceGrpc.StrategyRpcServiceStub,StrategyRpcClientParameters>
         implements StrategyClient
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyClient#getStrategyInstances()
+     * @see StrategyClient#getStrategyInstances()
      */
     @Override
-    public java.util.Collection<org.marketcetera.strategy.StrategyInstance> getStrategyInstances()
+    public Collection<? extends StrategyInstance> getStrategyInstances()
     {
-        return executeCall(new java.util.concurrent.Callable<java.util.Collection<org.marketcetera.strategy.StrategyInstance>>() {
+        return executeCall(new Callable<Collection<? extends StrategyInstance>>() {
             @Override
-            public java.util.Collection<org.marketcetera.strategy.StrategyInstance> call()
+            public Collection<? extends StrategyInstance> call()
                     throws Exception
             {
                 StrategyRpc.ReadStrategyInstancesRequest.Builder requestBuilder = StrategyRpc.ReadStrategyInstancesRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 StrategyRpc.ReadStrategyInstancesRequest request = requestBuilder.build();
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
                 StrategyRpc.ReadStrategyInstancesResponse response = getBlockingStub().getStrategyInstances(request);
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
-                // TODO return value
-                return null;
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                Collection<StrategyInstance> results = Lists.newArrayList();
+                response.getStrategyInstancesList().forEach(rpcStrategyInstance -> StrategyRpcUtil.getStrategyInstance(rpcStrategyInstance,
+                                                                                                                       strategyInstanceFactory,
+                                                                                                                       userFactory).ifPresent(strategyInstance -> results.add(strategyInstance)));
+                return results;
             }}
         );
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#getBlockingStub(io.grpc.Channel)
+     * @see StrategyClient#loadStrategyInstance(StrategyInstance)
      */
     @Override
-    protected org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceBlockingStub getBlockingStub(io.grpc.Channel inChannel)
+    public StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance)
     {
-        return org.marketcetera.strategy.StrategyRpcServiceGrpc.newBlockingStub(inChannel);
+        return executeCall(new Callable<StrategyStatus>() {
+            @Override
+            public StrategyStatus call()
+                    throws Exception
+            {
+                StrategyRpc.LoadStrategyInstanceRequest.Builder requestBuilder = StrategyRpc.LoadStrategyInstanceRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                StrategyRpcUtil.getRpcStrategyInstance(inStrategyInstance).ifPresent(rpcValue->requestBuilder.setStrategyInstance(rpcValue));
+                StrategyRpc.LoadStrategyInstanceRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.LoadStrategyInstanceResponse response = getBlockingStub().loadStrategyInstance(request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                return StrategyRpcUtil.getStrategyStatus(response.getStatus()).orElse(null);
+            }}
+        );
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#getAsyncStub(io.grpc.Channel)
+     * @see AbstractRpcClient#getBlockingStub(io.grpc.Channel)
      */
     @Override
-    protected org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceStub getAsyncStub(io.grpc.Channel inChannel)
+    protected StrategyRpcServiceGrpc.StrategyRpcServiceBlockingStub getBlockingStub(io.grpc.Channel inChannel)
     {
-        return org.marketcetera.strategy.StrategyRpcServiceGrpc.newStub(inChannel);
+        return StrategyRpcServiceGrpc.newBlockingStub(inChannel);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogin(org.marketcetera.rpc.base.BaseRpc.LoginRequest)
+     * @see AbstractRpcClient#getAsyncStub(io.grpc.Channel)
      */
     @Override
-    protected org.marketcetera.rpc.base.BaseRpc.LoginResponse executeLogin(org.marketcetera.rpc.base.BaseRpc.LoginRequest inRequest)
+    protected StrategyRpcServiceGrpc.StrategyRpcServiceStub getAsyncStub(io.grpc.Channel inChannel)
+    {
+        return StrategyRpcServiceGrpc.newStub(inChannel);
+    }
+    /* (non-Javadoc)
+     * @see AbstractRpcClient#executeLogin(BaseRpc.LoginRequest)
+     */
+    @Override
+    protected BaseRpc.LoginResponse executeLogin(BaseRpc.LoginRequest inRequest)
     {
         return getBlockingStub().login(inRequest);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeLogout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest)
+     * @see AbstractRpcClient#executeLogout(BaseRpc.LogoutRequest)
      */
     @Override
-    protected org.marketcetera.rpc.base.BaseRpc.LogoutResponse executeLogout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest inRequest)
+    protected BaseRpc.LogoutResponse executeLogout(BaseRpc.LogoutRequest inRequest)
     {
         return getBlockingStub().logout(inRequest);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest)
+     * @see AbstractRpcClient#executeHeartbeat(BaseRpc.HeartbeatRequest)
      */
     @Override
-    protected org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse executeHeartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest inRequest)
+    protected BaseRpc.HeartbeatResponse executeHeartbeat(BaseRpc.HeartbeatRequest inRequest)
     {
         return getBlockingStub().heartbeat(inRequest);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#getAppId()
+     * @see AbstractRpcClient#getAppId()
      */
     @Override
-    protected org.marketcetera.util.ws.tags.AppId getAppId()
+    protected AppId getAppId()
     {
         return APP_ID;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.rpc.client.AbstractRpcClient#getVersionInfo()
+     * @see AbstractRpcClient#getVersionInfo()
      */
     @Override
-    protected org.marketcetera.core.VersionInfo getVersionInfo()
+    protected VersionInfo getVersionInfo()
     {
         return APP_ID_VERSION;
     }
@@ -106,15 +151,25 @@ public class StrategyRpcClient
         super(inParameters);
     }
     /**
+     * creates new {@link StrategyInstance} objects
+     */
+    @Autowired
+    private StrategyInstanceFactory strategyInstanceFactory;
+    /**
+     * creates new {@link User} objects
+     */
+    @Autowired
+    private UserFactory userFactory;
+    /**
      * The client's application ID: the application name.
      */
     public static final String APP_ID_NAME = "StrategyRpc"; //$NON-NLS-1$
     /**
      * The client's application ID: the version.
      */
-    public static final org.marketcetera.core.VersionInfo APP_ID_VERSION = org.marketcetera.core.ApplicationVersion.getVersion(org.marketcetera.strategy.StrategyClient.class);
+    public static final VersionInfo APP_ID_VERSION = ApplicationVersion.getVersion(StrategyClient.class);
     /**
      * The client's application ID: the ID.
      */
-    public static final org.marketcetera.util.ws.tags.AppId APP_ID = org.marketcetera.core.Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
+    public static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
 }

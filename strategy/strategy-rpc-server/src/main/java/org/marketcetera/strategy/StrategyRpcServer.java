@@ -3,10 +3,7 @@
 //
 package org.marketcetera.strategy;
 
-import org.marketcetera.admin.User;
-import org.marketcetera.admin.service.UserService;
 import org.marketcetera.core.Preserve;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -96,7 +93,6 @@ public class StrategyRpcServer<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StartStrategyAction.name());
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StopStrategyAction.name());
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.newBuilder();
-                //TODO return type
                 java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.getStrategyInstances(sessionHolder.getUser());
                 serviceData.forEach(strategyInstance -> StrategyRpcUtil.getRpcStrategyInstance(strategyInstance).ifPresent(rpcStrategyInstance -> responseBuilder.addStrategyInstances(rpcStrategyInstance)));
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse response = responseBuilder.build();
@@ -107,19 +103,49 @@ public class StrategyRpcServer<SessionClazz>
                 handleError(e,inResponseObserver);
             }
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest ,io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest inLoadStrategyInstanceRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse> inResponseObserver)
+        {
+            try {
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inLoadStrategyInstanceRequest);
+                org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inLoadStrategyInstanceRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.LoadStrategyAction.name());
+                org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse.newBuilder();
+                org.marketcetera.strategy.StrategyInstance strategyInstance = StrategyRpcUtil.getStrategyInstance(inLoadStrategyInstanceRequest.getStrategyInstance(),strategyInstanceFactory,userFactory).orElse(null);
+                org.marketcetera.strategy.StrategyStatus serviceData = strategyService.loadStrategyInstance(strategyInstance);
+                StrategyRpcUtil.getRpcStrategyStatus(serviceData).ifPresent(rpcStatus -> responseBuilder.setStatus(rpcStatus));
+                org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse response = responseBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
     }
-    @Autowired
-    private UserService userService;
     /**
-     * provides access to authorization services
+     * Creates new StrategyInstance objects
      */
     @org.springframework.beans.factory.annotation.Autowired
-    private org.marketcetera.admin.service.AuthorizationService authzService;
+    private org.marketcetera.strategy.StrategyInstanceFactory strategyInstanceFactory;
+    /**
+     * Creates new User objects
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.marketcetera.admin.UserFactory userFactory;
     /**
      * provides services for Strategy
      */
     @org.springframework.beans.factory.annotation.Autowired
     private org.marketcetera.strategy.StrategyService strategyService;
+    /**
+     * provides access to authorization services
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.marketcetera.admin.service.AuthorizationService authzService;
     /**
      * provides the RPC service
      */

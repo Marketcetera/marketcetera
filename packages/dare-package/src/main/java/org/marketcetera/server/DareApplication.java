@@ -48,6 +48,7 @@ import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.strategy.StrategyRpcServer;
+import org.marketcetera.strategy.dao.PersistentStrategyInstanceFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -147,6 +148,16 @@ public class DareApplication
                               "Using the");
         xmlService.setContextPath(contextPathClassEntries);
         return xmlService;
+    }
+    /**
+     * Get the strategy instance factory value.
+     *
+     * @return a <code>StrategyInstanceFactory</code> value
+     */
+    @Bean
+    public PersistentStrategyInstanceFactory getStrategyInstanceFactory()
+    {
+        return new PersistentStrategyInstanceFactory();
     }
     /**
      * Get the average fill price factory value.

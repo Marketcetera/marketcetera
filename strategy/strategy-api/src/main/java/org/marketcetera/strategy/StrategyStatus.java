@@ -26,4 +26,8 @@ public enum StrategyStatus
      * an error occurred trying to load or start the strategy
      */
     ERROR,
+    /**
+     * the strategy is in the process of loading
+     */
+    LOADING,
 }

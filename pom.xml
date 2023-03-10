@@ -427,6 +427,12 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+      <!-- used to generate Docker-like variable names -->
+      <dependency>
+	<groupId>info.schnatterer.moby-names-generator</groupId>
+	<artifactId>moby-names-generator</artifactId>
+	<version>20.10.0-r0</version>
+      </dependency>
       <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>

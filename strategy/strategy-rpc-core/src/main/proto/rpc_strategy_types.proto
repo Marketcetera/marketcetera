@@ -13,6 +13,7 @@ enum StrategyStatus {
     STOPPED = 0;
     RUNNING = 1;
     ERROR = 2;
+    LOADING = 3;
 }
 
 // describes a loaded strategy

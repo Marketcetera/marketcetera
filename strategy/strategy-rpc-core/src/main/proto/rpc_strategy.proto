@@ -20,10 +20,22 @@ message ReadStrategyInstancesResponse {
     repeated StrategyInstance strategyInstances = 2;
 }
 
+// loads a new strategy instance
+message LoadStrategyInstanceRequest {
+    string sessionId = 1; // session id of the authenticated session
+    StrategyInstance strategyInstance = 2;
+}
+
+// returns the load strategy instance response
+message LoadStrategyInstanceResponse {
+    StrategyStatus status = 1;
+}
+
 // services for Strategy
 service StrategyRpcService {
     rpc login(LoginRequest) returns (LoginResponse); // starts the session
     rpc logout(LogoutRequest) returns (LogoutResponse); // ends the session
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse); // keeps the session alive
     rpc getStrategyInstances(ReadStrategyInstancesRequest) returns (ReadStrategyInstancesResponse); // requests loaded strategy instances
+    rpc loadStrategyInstance(LoadStrategyInstanceRequest) returns (LoadStrategyInstanceResponse); // load a new strategy instances
 }

@@ -8,6 +8,7 @@ import org.marketcetera.strategy.StrategyClient;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyRpcClientFactory;
 import org.marketcetera.strategy.StrategyRpcClientParameters;
+import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.ui.service.ConnectableService;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -96,11 +97,21 @@ public class StrategyClientService
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>Collection&lt;StrategyInstance&gt;</code> value
+     * @returns a <code>Collection&lt;? extends StrategyInstance&gt;</code> value
      */
-    public Collection<StrategyInstance> getStrategyInstances()
+    public Collection<? extends StrategyInstance> getStrategyInstances()
     {
         return strategyClient.getStrategyInstances();
+    }
+    /**
+     * Load a new strategy instances.
+     *
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     * @returns an <code>StrategyStatus</code> value
+     */
+    public StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance)
+    {
+        return strategyClient.loadStrategyInstance(inStrategyInstance);
     }
     /**
      * Sets the StrategyClientFactory value.

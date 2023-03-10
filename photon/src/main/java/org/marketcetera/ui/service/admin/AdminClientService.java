@@ -145,6 +145,15 @@ public class AdminClientService
         return adminClient.isRunning() && fixAdminClient.isRunning();
     }
     /**
+     * Get the current user.
+     *
+     * @return a <code>User</code> value
+     */
+    public User getCurrentUser()
+    {
+        return adminClient.getCurrentUser();
+    }
+    /**
      * Add the given client status listener.
      *
      * @param inListener a <code>ClientStatusListener</code> value

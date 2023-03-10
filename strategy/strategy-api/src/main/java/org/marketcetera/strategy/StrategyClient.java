@@ -18,7 +18,14 @@ public interface StrategyClient
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>java.util.Collection<org.marketcetera.strategy.StrategyInstance></code> value
+     * @returns a <code>java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance></code> value
      */
-    java.util.Collection<org.marketcetera.strategy.StrategyInstance> getStrategyInstances();
+    java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> getStrategyInstances();
+    /**
+     * Load a new strategy instances.
+     *
+     * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyInstance</code> value
+     * @returns an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    org.marketcetera.strategy.StrategyStatus loadStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance);
 }

@@ -67,26 +67,11 @@
 *****************
 * strategy view *
 *****************
-- make service return type for collections: ? extends
-- work out SQL to add new permissions to trader role and trader admin role
+- strategy assigned a name on load? assigned a unique id? what's the difference? don't need id and name. name is unique for that user?
 - run on different cluster members? report strategy status on all cluster members
 - special category of events?
-- scp programmatically?
-- strategy instance
--- name
--- filename
--- md5sum
--- status
--- started timestamp
--- owner
-- strategy meta data on load
--- md5sum
--- nonce
--- filename
--- name
--- id
+- scp programmatically? use grpc file transfer for security
 - compare meta data on activate or discard?
-- build into jar, but need something to identify it before executing, so don't scp it to provisioning dir directly
 - events
 -- strategy started
 -- strategy error
@@ -94,24 +79,11 @@
 -- strategy event
 -- strategy unloaded
 - create strategy listener
-- strategy RPC client
--- meta data
--- load
--- unload
--- start
--- stop
--- add listener
--- remove listener
--- event
--- clear events
 - strategy events should be in db to allow pagination - could be lots and lots
-- permissions
--- load
--- start
--- stop
--- delete events
 - strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
 
+x make service return type for collections: ? extends
+x work out SQL to add new permissions to trader role and trader admin role
 x moving multiple permissions in the role add/update doesn't seem to work
 x stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
 

@@ -8,20 +8,21 @@
       </authors>
       <modelEntityAttributes>
         <modelEntityAttribute name="user" description="user which owns this strategy" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true"
-			      cardinality="@javax.persistence.ManyToOne" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
+                              cardinality="@javax.persistence.ManyToOne" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
         <modelEntityAttribute name="name" description="uniquely describes the strategy" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="filename" description="indicates the server-local file which contains the strategy" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="hash" description="indicates the strategy hash value" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="started" description="date strategy was started" type="java.util.Date" useGetters="true" useSetters="true"/>
-	<modelEntityAttribute name="status" description="describes the state of a loaded strategy" type="org.marketcetera.strategy.StrategyStatus" useGetters="true" useSetters="true">
-	  <enumDescriptor name="StrategyStatus" description="Describes the state of a loaded strategy" persistentEnumeratedType="javax.persistence.EnumType.STRING">
-	    <enumAttributes>
-	      <enumAttribute name="STOPPED" description="strategy has been loaded and is not running"/>
-	      <enumAttribute name="RUNNING" description="strategy is running"/>
-	      <enumAttribute name="ERROR" description="an error occurred trying to load or start the strategy"/>
-	    </enumAttributes>
-	  </enumDescriptor>
-	</modelEntityAttribute>
+        <modelEntityAttribute name="status" description="describes the state of a loaded strategy" type="org.marketcetera.strategy.StrategyStatus" useGetters="true" useSetters="true">
+          <enumDescriptor name="StrategyStatus" description="Describes the state of a loaded strategy" persistentEnumeratedType="javax.persistence.EnumType.STRING">
+            <enumAttributes>
+              <enumAttribute name="STOPPED" description="strategy has been loaded and is not running"/>
+              <enumAttribute name="RUNNING" description="strategy is running"/>
+              <enumAttribute name="ERROR" description="an error occurred trying to load or start the strategy"/>
+              <enumAttribute name="LOADING" description="the strategy is in the process of loading"/>
+            </enumAttributes>
+          </enumDescriptor>
+        </modelEntityAttribute>
       </modelEntityAttributes>
     </modelEntity>
   </modelEntities>
@@ -36,13 +37,14 @@
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <rpcEnums>
-	<rpcEnum name="StrategyStatus" description="describes the status of a loaded strategy" javaType="org.marketcetera.strategy.StrategyStatus">
-	  <rpcMessageAttributes>
-	    <rpcMessageAttribute name="STOPPED" description="strategy has been loaded and is not running"/>
-	    <rpcMessageAttribute name="RUNNING" description="strategy is running"/>
-	    <rpcMessageAttribute name="ERROR" description="an error occurred trying to load or start the strategy"/>
-	  </rpcMessageAttributes>
-	</rpcEnum>
+        <rpcEnum name="StrategyStatus" description="describes the status of a loaded strategy" javaType="org.marketcetera.strategy.StrategyStatus">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="STOPPED" description="strategy has been loaded and is not running"/>
+            <rpcMessageAttribute name="RUNNING" description="strategy is running"/>
+            <rpcMessageAttribute name="ERROR" description="an error occurred trying to load or start the strategy"/>
+            <rpcMessageAttribute name="LOADING" description="the strategy is in the process of loading"/>
+          </rpcMessageAttributes>
+        </rpcEnum>
       </rpcEnums>
       <rpcMessages>
         <rpcMessage name="StrategyInstance" description="describes a loaded strategy" javaType="org.marketcetera.strategy.StrategyInstance"
@@ -53,7 +55,7 @@
             <rpcMessageAttribute name="filename" type="string" description="indicates the server-local file which contains the strategy"/>
             <rpcMessageAttribute name="hash" type="string" description="indicates the strategy hash value"/>
             <rpcMessageAttribute name="started" type="google.protobuf.Timestamp" description="date strategy was started" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
-	    <rpcMessageAttribute name="status" type="StrategyStatus" description="describes the status of the strategy" rpcConverter="getRpcStrategyStatus" javaConverter="getStrategyStatus"/>
+            <rpcMessageAttribute name="status" type="StrategyStatus" description="describes the status of the strategy" rpcConverter="getRpcStrategyStatus" javaConverter="getStrategyStatus"/>
           </rpcMessageAttributes>
         </rpcMessage>
       </rpcMessages>
@@ -82,13 +84,24 @@
             <rpcMessageAttribute name="strategyInstances" type="StrategyInstance" repeated="true"/>
           </rpcMessageAttributes>
         </rpcMessage>
+        <rpcMessage name="LoadStrategyInstanceRequest" description="loads a new strategy instance">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
+            <rpcMessageAttribute name="strategyInstance" type="StrategyInstance"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="LoadStrategyInstanceResponse" description="returns the load strategy instance response">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="status" type="StrategyStatus"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
       </rpcMessages>
       <rpcService name="StrategyRpcService" description="services for Strategy">
         <rpcServiceEntries>
           <rpcServiceEntry name="login" description="starts the session" paramType="LoginRequest" returnType="LoginResponse"/>
           <rpcServiceEntry name="logout" description="ends the session" paramType="LogoutRequest" returnType="LogoutResponse"/>
           <rpcServiceEntry name="heartbeat" description="keeps the session alive" paramType="HeartbeatRequest" returnType="HeartbeatResponse"/>
-          <rpcServiceEntry name="getStrategyInstances" description="requests loaded strategy instances" paramType="ReadStrategyInstancesRequest" returnType="ReadStrategyInstancesResponse" paged="false" serviceReturnType="java.util.Collection&lt;org.marketcetera.strategy.StrategyInstance&gt;">
+          <rpcServiceEntry name="getStrategyInstances" description="requests loaded strategy instances" paramType="ReadStrategyInstancesRequest" returnType="ReadStrategyInstancesResponse" paged="false" serviceReturnType="java.util.Collection&lt;? extends org.marketcetera.strategy.StrategyInstance&gt;">
             <rpcMessageAttributes>
             </rpcMessageAttributes>
             <requiredPermissions>
@@ -97,10 +110,24 @@
               <requiredPermission>UnloadStrategyAction</requiredPermission>
               <requiredPermission>StartStrategyAction</requiredPermission>
               <requiredPermission>StopStrategyAction</requiredPermission>
+              <requiredPermission>ClearStrategyEventsAction</requiredPermission>
+            </requiredPermissions>
+          </rpcServiceEntry>
+          <rpcServiceEntry name="loadStrategyInstance" description="load a new strategy instances" paramType="LoadStrategyInstanceRequest" returnType="LoadStrategyInstanceResponse" paged="false" serviceReturnType="org.marketcetera.strategy.StrategyStatus">
+            <rpcMessageAttributes>
+              <rpcMessageAttribute name="strategyInstance" type="org.marketcetera.strategy.StrategyInstance" rpcConverter="StrategyRpcUtil.getRpcStrategyInstance" javaConverter="StrategyRpcUtil.getStrategyInstance"
+                                   factories="strategyInstanceFactory,userFactory" isReadOnly="false"/>
+            </rpcMessageAttributes>
+            <requiredPermissions>
+              <requiredPermission>LoadStrategyAction</requiredPermission>
             </requiredPermissions>
           </rpcServiceEntry>
         </rpcServiceEntries>
       </rpcService>
+      <autowiredServices>
+        <autowiredService name="strategyInstanceFactory" description="Creates new StrategyInstance objects" type="org.marketcetera.strategy.StrategyInstanceFactory"/>
+        <autowiredService name="userFactory" description="Creates new User objects" type="org.marketcetera.admin.UserFactory"/>
+      </autowiredServices>
     </rpcEntity>
   </rpcEntities>
 </model>

@@ -5,9 +5,17 @@ package org.marketcetera.strategy;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.Validate;
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.dao.UserDao;
+import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.strategy.dao.PersistentStrategyInstance;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -19,23 +27,53 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since $Release$
  */
 @Preserve
-@org.springframework.stereotype.Component
+@Component
 public class StrategyServiceImpl
-        implements org.marketcetera.strategy.StrategyService
+        implements StrategyService
 {
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>java.util.Collection<org.marketcetera.strategy.StrategyInstance></code> value
+     * @returns a <code>java.util.Collection<StrategyInstance></code> value
      */
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
+    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public Collection<? extends StrategyInstance> getStrategyInstances(String inCurrentUserName)
     {
         // TODO need to filter by current user
         // TODO probably need to factor in supervisor permissions for "read"
         return strategyInstanceDao.findAll();
     }
+    /**
+     * Load a new strategy instances.
+     *
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     * @returns an <code>StrategyStatus</code> value
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance)
+    {
+        // create a new persistent strategy instance
+        PersistentStrategyInstance pInstance;
+        if(inStrategyInstance instanceof PersistentStrategyInstance) {
+            pInstance = (PersistentStrategyInstance)inStrategyInstance;
+        } else {
+            throw new UnsupportedOperationException("Need to create persistent instance");
+        }
+        pInstance.setStatus(StrategyStatus.LOADING);
+        PersistentUser user = userDao.findByName(inStrategyInstance.getUser().getName());
+        Validate.notNull(user,
+                         "No user for name '" + inStrategyInstance.getUser().getName() + "'");
+        pInstance.setUser(user);
+        pInstance = strategyInstanceDao.save(pInstance);
+        return pInstance.getStatus();
+    }
+    /**
+     * provides access to the {@link User} data store
+     */
+    @Autowired
+    private UserDao userDao;
     /**
      * provides access to the {@link StrategyInstance} data store
      */

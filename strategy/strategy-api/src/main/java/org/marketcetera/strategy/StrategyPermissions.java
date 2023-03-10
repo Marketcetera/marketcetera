@@ -15,11 +15,12 @@ package org.marketcetera.strategy;
 public enum StrategyPermissions
         implements org.springframework.security.core.GrantedAuthority
 {
-    ReadStrategyAction,
+    ClearStrategyEventsAction,
     LoadStrategyAction,
-    UnloadStrategyAction,
+    ReadStrategyAction,
     StartStrategyAction,
-    StopStrategyAction;
+    StopStrategyAction,
+    UnloadStrategyAction;
     /* (non-Javadoc)
      * @see org.springframework.security.core.GrantedAuthority#getAuthority()
      */
