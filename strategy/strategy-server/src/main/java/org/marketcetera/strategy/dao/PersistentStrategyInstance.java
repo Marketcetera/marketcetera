@@ -13,7 +13,7 @@ package org.marketcetera.strategy.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="StrategyInstance")
-@javax.persistence.Table(name="strategy_instances")
+@javax.persistence.Table(name="metc_strategy_instances")
 public class PersistentStrategyInstance
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.strategy.StrategyInstance,org.marketcetera.admin.HasUser
@@ -31,6 +31,10 @@ public class PersistentStrategyInstance
     {
         setUser(inStrategyInstance.getUser());
         setName(inStrategyInstance.getName());
+        setFilename(inStrategyInstance.getFilename());
+        setHash(inStrategyInstance.getHash());
+        setStarted(inStrategyInstance.getStarted());
+        setStatus(inStrategyInstance.getStatus());
     }
     /**
      * Get the user value.
@@ -50,7 +54,7 @@ public class PersistentStrategyInstance
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
     {
-        user = inUser;
+        user = (org.marketcetera.admin.user.PersistentUser)inUser;
     }
     /**
      * Get the name value.
@@ -72,6 +76,86 @@ public class PersistentStrategyInstance
     {
         name = org.apache.commons.lang.StringUtils.trimToNull(inName);
     }
+    /**
+     * Get the filename value.
+     *
+     * @return a <code>String</code> value
+     */
+    @Override
+    public String getFilename()
+    {
+        return filename;
+    }
+    /**
+     * Set the filename value.
+     *
+     * @param inFilename a <code>String</code> value
+     */
+    @Override
+    public void setFilename(String inFilename)
+    {
+        filename = org.apache.commons.lang.StringUtils.trimToNull(inFilename);
+    }
+    /**
+     * Get the hash value.
+     *
+     * @return a <code>String</code> value
+     */
+    @Override
+    public String getHash()
+    {
+        return hash;
+    }
+    /**
+     * Set the hash value.
+     *
+     * @param inHash a <code>String</code> value
+     */
+    @Override
+    public void setHash(String inHash)
+    {
+        hash = org.apache.commons.lang.StringUtils.trimToNull(inHash);
+    }
+    /**
+     * Get the started value.
+     *
+     * @return a <code>java.util.Date</code> value
+     */
+    @Override
+    public java.util.Date getStarted()
+    {
+        return started;
+    }
+    /**
+     * Set the started value.
+     *
+     * @param inStarted a <code>java.util.Date</code> value
+     */
+    @Override
+    public void setStarted(java.util.Date inStarted)
+    {
+        started = inStarted;
+    }
+    /**
+     * Get the status value.
+     *
+     * @return an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    @Override
+    public org.marketcetera.strategy.StrategyStatus getStatus()
+    {
+        return status;
+    }
+    /**
+     * Set the status value.
+     *
+     * @param inStatus an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    @Override
+    public void setStatus(org.marketcetera.strategy.StrategyStatus inStatus)
+    {
+        status = inStatus;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -81,18 +165,44 @@ public class PersistentStrategyInstance
         StringBuilder builder = new StringBuilder();
         builder.append("StrategyInstance [")
             .append("user=").append(user)
-            .append(", name=").append(name).append("]");
+            .append(", name=").append(name)
+            .append(", filename=").append(filename)
+            .append(", hash=").append(hash)
+            .append(", started=").append(started)
+            .append(", status=").append(status).append("]");
         return builder.toString();
     }
     /**
      * user which owns this strategy
      */
-    @javax.persistence.Column(name="user",nullable=true,unique=false)
-    private org.marketcetera.admin.User user;
+    @javax.persistence.ManyToOne
+    @javax.persistence.JoinColumn(name="user_id",nullable=true)
+    private org.marketcetera.admin.user.PersistentUser user;
     /**
      * uniquely describes the strategy
      */
     @javax.persistence.Column(name="name",nullable=true,unique=false)
     private String name;
-    private static final long serialVersionUID = 763820056L;
+    /**
+     * indicates the server-local file which contains the strategy
+     */
+    @javax.persistence.Column(name="filename",nullable=true,unique=false)
+    private String filename;
+    /**
+     * indicates the strategy hash value
+     */
+    @javax.persistence.Column(name="hash",nullable=true,unique=false)
+    private String hash;
+    /**
+     * date strategy was started
+     */
+    @javax.persistence.Column(name="started",nullable=true,unique=false)
+    private java.util.Date started;
+    /**
+     * describes the state of a loaded strategy
+     */
+    @javax.persistence.Enumerated(javax.persistence.EnumType.STRING)
+    @javax.persistence.Column(name="status",nullable=true,unique=false)
+    private org.marketcetera.strategy.StrategyStatus status;
+    private static final long serialVersionUID = -855697822L;
 }

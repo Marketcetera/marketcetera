@@ -22,6 +22,7 @@ import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
+import org.marketcetera.strategy.StrategyRpcClientFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -133,6 +134,16 @@ public class UiConfiguration
     public TradeRpcClientFactory getTradeClientFactory()
     {
         return new TradeRpcClientFactory();
+    }
+    /**
+     * Get the strategy client factory value.
+     *
+     * @return a <code>StrategyRpcClientFactory</code> value
+     */
+    @Bean
+    public StrategyRpcClientFactory getStrategylientFactory()
+    {
+        return new StrategyRpcClientFactory();
     }
     /**
      * Get the admin client factory value.

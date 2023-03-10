@@ -28,7 +28,37 @@ public abstract class StrategyRpcUtil
         StrategyTypesRpc.StrategyInstance.Builder builder = StrategyTypesRpc.StrategyInstance.newBuilder();
         org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inStrategyInstance.getUser()).ifPresent(value->builder.setUser(value));
         builder.setName(inStrategyInstance.getName());
+        builder.setFilename(inStrategyInstance.getFilename());
+        builder.setHash(inStrategyInstance.getHash());
+        org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inStrategyInstance.getStarted()).ifPresent(value->builder.setStarted(value));
+        getRpcStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->builder.setStatus(value));
         return java.util.Optional.of(builder.build());
+    }
+    /**
+     * Get the object from the given RPC value.
+     *
+     * @param inStrategyStatusan <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus</code> value
+     * @return an org.marketcetera.strategy.StrategyStatus value
+     */
+    public static java.util.Optional<org.marketcetera.strategy.StrategyStatus> getStrategyStatus(org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus inStrategyStatus)
+    {
+        if(inStrategyStatus == null) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(org.marketcetera.strategy.StrategyStatus.values()[inStrategyStatus.getNumber()]);
+    }
+    /**
+     * Get the RPC value from the given object.
+     *
+     * @param inRpcStrategyStatus a <code>org.marketcetera.strategy.StrategyStatus</code> value
+     * @return an org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus value
+     */
+    public static java.util.Optional<org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus> getRpcStrategyStatus(org.marketcetera.strategy.StrategyStatus inRpcStrategyStatus)
+    {
+        if(inRpcStrategyStatus == null) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus.forNumber(inRpcStrategyStatus.ordinal()));
     }
     /**
      * Get the object from the given RPC value.
@@ -46,6 +76,10 @@ public abstract class StrategyRpcUtil
         org.marketcetera.strategy.StrategyInstance strategyInstance = inStrategyInstanceFactory.create();
         org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inStrategyInstance.getUser(),inUserFactory).ifPresent(value->strategyInstance.setUser(value));
         strategyInstance.setName(inStrategyInstance.getName());
+        strategyInstance.setFilename(inStrategyInstance.getFilename());
+        strategyInstance.setHash(inStrategyInstance.getHash());
+        org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inStrategyInstance.getStarted()).ifPresent(value->strategyInstance.setStarted(value));
+        getStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->strategyInstance.setStatus(value));
         return java.util.Optional.of(strategyInstance);
     }
 }

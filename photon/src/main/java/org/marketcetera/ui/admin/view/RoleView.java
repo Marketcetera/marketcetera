@@ -84,6 +84,22 @@ public class RoleView
               inEvent,
               inViewProperties);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getViewName()
+     */
+    @Override
+    public String getViewName()
+    {
+        return NAME;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getScene()
+     */
+    @Override
+    public Scene getScene()
+    {
+        return mainScene;
+    }
     /**
      * Validate and start the object.
      */
@@ -250,25 +266,6 @@ public class RoleView
         }
         rolesTable.setContextMenu(rolesTableContextMenu);
     }
-    private static class PermissionCellFactory
-            implements Callback<ListView<Permission>, ListCell<Permission>>
-    {
-        @Override
-        public ListCell<Permission> call(ListView<Permission> param) {
-            return new ListCell<>(){
-                @Override
-                public void updateItem(Permission person, boolean empty) {
-                    super.updateItem(person, empty);
-                    if (empty || person == null) {
-                        setText(null);
-                    } else {
-                        setText(person.getName());
-                    }
-                }
-            };
-        }
-        private static final PermissionCellFactory instance = new PermissionCellFactory();
-    }
     /**
      * Execute an add user or update role action based on the given parameters.
      *
@@ -332,8 +329,8 @@ public class RoleView
             if(selectedItems == null) {
                 return;
             }
+            selectedItems.forEach(permission -> leftListView.getItems().add(permission));
             rightListView.getItems().removeAll(selectedItems);
-            leftListView.getItems().addAll(selectedItems);
             leftListView.getItems().sort(permissionComparator);
             rightListView.getItems().sort(permissionComparator);
         });
@@ -342,8 +339,8 @@ public class RoleView
             if(selectedItems == null) {
                 return;
             }
+            selectedItems.forEach(permission -> rightListView.getItems().add(permission));
             leftListView.getItems().removeAll(selectedItems);
-            rightListView.getItems().addAll(selectedItems);
             leftListView.getItems().sort(permissionComparator);
             rightListView.getItems().sort(permissionComparator);
         });
@@ -446,21 +443,31 @@ public class RoleView
         rolesTable.getColumns().add(nameColumn);
         rolesTable.getColumns().add(descriptionColumn);
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getViewName()
+    /**
+     * Cell factory for displaying {@link Permission} values.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
      */
-    @Override
-    public String getViewName()
+    private static class PermissionCellFactory
+            implements Callback<ListView<Permission>, ListCell<Permission>>
     {
-        return NAME;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
-     */
-    @Override
-    public Scene getScene()
-    {
-        return mainScene;
+        @Override
+        public ListCell<Permission> call(ListView<Permission> param) {
+            return new ListCell<>(){
+                @Override
+                public void updateItem(Permission person, boolean empty) {
+                    super.updateItem(person, empty);
+                    if (empty || person == null) {
+                        setText(null);
+                    } else {
+                        setText(person.getName());
+                    }
+                }
+            };
+        }
+        private static final PermissionCellFactory instance = new PermissionCellFactory();
     }
     /**
      * update user context menu item

@@ -1,18 +1,25 @@
 package org.marketcetera.ui.strategy.view;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.strategy.StrategyInstance;
+import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
+import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -54,6 +61,7 @@ public class StrategyView
     @PostConstruct
     public void start()
     {
+        strategyClient = serviceManager.getService(StrategyClientService.class);
         mainLayout = new VBox(5);
         initializeStrategyTable();
         initializeEventTable();
@@ -95,6 +103,8 @@ public class StrategyView
                                         new Separator(Orientation.HORIZONTAL),
                                         buttonLayout);
         mainScene = new Scene(mainLayout);
+        updateStrategies();
+        updateEvents();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getScene()
@@ -130,6 +140,19 @@ public class StrategyView
     private void updateEvents()
     {
         
+    }
+    private void updateStrategies()
+    {
+        Platform.runLater(() -> {
+            strategyTable.getItems().clear();
+            Collection<StrategyInstance> results = strategyClient.getStrategyInstances();
+            if(results == null) {
+                return;
+            }
+            List<DisplayStrategy> displayStrategies = Lists.newArrayList();
+            results.forEach(result -> displayStrategies.add(new DisplayStrategy(result)));
+            strategyTable.getItems().addAll(displayStrategies);
+        });
     }
     private void initializeStrategyTable()
     {
@@ -236,6 +259,7 @@ public class StrategyView
     private Button loadStrategyButton;
     private TableView<DisplayStrategy> strategyTable;
     private TableView<DisplayStrategyEvent> eventTable;
+    private StrategyClientService strategyClient;
     /**
      * main scene object
      */

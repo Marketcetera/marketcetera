@@ -61,16 +61,24 @@
 - add check to add/update user to see if the username is already in use
 - need to add permissions to roles add or update
 - changing permissions doesn't work in adding/updating permissions
-- moving multiple permissions in the role add/update doesn't seem to work
 - add admin views
 -- supervisor permissions
 
 *****************
 * strategy view *
 *****************
+- make service return type for collections: ? extends
+- work out SQL to add new permissions to trader role and trader admin role
 - run on different cluster members? report strategy status on all cluster members
 - special category of events?
 - scp programmatically?
+- strategy instance
+-- name
+-- filename
+-- md5sum
+-- status
+-- started timestamp
+-- owner
 - strategy meta data on load
 -- md5sum
 -- nonce
@@ -104,6 +112,7 @@
 -- delete events
 - strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
 
+x moving multiple permissions in the role add/update doesn't seem to work
 x stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
 
 - merge 1102 to 4.1.x

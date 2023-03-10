@@ -38,6 +38,14 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>strategy-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>strategy-rpc-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
     </dependency>
     <dependency>
@@ -229,6 +237,7 @@
           <locations>
             <location>classpath:db/migration/${metc.flyway.vendor}</location>
           </locations>
+          <cleanDisabled>false</cleanDisabled>
         </configuration>
       </plugin>
       <plugin>

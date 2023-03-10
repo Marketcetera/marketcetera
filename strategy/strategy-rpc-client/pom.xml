@@ -9,18 +9,21 @@
     <version>4.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera</groupId>
-  <artifactId>strategy-server</artifactId>
+  <artifactId>strategy-rpc-client</artifactId>
   <version>4.1.0-SNAPSHOT</version>
-  <name>Strategy Server</name>
+  <name>Strategy Client RPC Implementation</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
-    <!-- local compile -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>rpc-core</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -28,26 +31,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>strategy-core</artifactId>
+      <artifactId>strategy-rpc-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>admin-server</artifactId>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
     </dependency>
-    <!-- other compile -->
-    <dependency>
-      <groupId>com.querydsl</groupId>
-      <artifactId>querydsl-jpa</artifactId>
-    </dependency>
-    <!-- local test -->
-    <!-- other test -->
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

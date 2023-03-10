@@ -3,6 +3,11 @@
 //
 package org.marketcetera.strategy;
 
+import org.marketcetera.admin.User;
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.core.Preserve;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /* $License$ */
 
 /**
@@ -12,6 +17,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class StrategyRpcServer<SessionClazz>
         extends org.marketcetera.rpc.server.AbstractRpcService<SessionClazz,org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase>
 {
@@ -84,14 +90,15 @@ public class StrategyRpcServer<SessionClazz>
             try {
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inReadStrategyInstancesRequest);
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inReadStrategyInstancesRequest.getSessionId());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.ReadStrategiesPermission.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.LoadStrategyPermission.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.UnloadStrategyPermission.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StartStrategyPermission.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StopStrategyPermission.name());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.ReadStrategyAction.name());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.LoadStrategyAction.name());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.UnloadStrategyAction.name());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StartStrategyAction.name());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StopStrategyAction.name());
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.newBuilder();
                 //TODO return type
-                java.util.Collection<org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.getStrategyInstances();
+                java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.getStrategyInstances(sessionHolder.getUser());
+                serviceData.forEach(strategyInstance -> StrategyRpcUtil.getRpcStrategyInstance(strategyInstance).ifPresent(rpcStrategyInstance -> responseBuilder.addStrategyInstances(rpcStrategyInstance)));
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
                 inResponseObserver.onNext(response);
@@ -101,6 +108,8 @@ public class StrategyRpcServer<SessionClazz>
             }
         }
     }
+    @Autowired
+    private UserService userService;
     /**
      * provides access to authorization services
      */

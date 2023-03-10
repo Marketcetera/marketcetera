@@ -7,12 +7,10 @@ import java.util.Set;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.core.Pair;
 import org.marketcetera.ui.events.NewWindowEvent;
-import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ContentViewFactory;
 import org.marketcetera.ui.view.MenuContent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -119,9 +117,4 @@ public class FixSessionViewFactory
      * permission(s) required to execute fix session view
      */
     private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(AdminPermissions.ViewSessionAction));
-    /**
-     * provides access to web message services
-     */
-    @Autowired
-    private WebMessageService webMessageService;
 }

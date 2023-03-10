@@ -1,13 +1,19 @@
 package org.marketcetera.ui.strategy.view;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
 
+import org.marketcetera.strategy.StrategyPermissions;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ContentViewFactory;
 import org.marketcetera.ui.view.MenuContent;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -39,7 +45,6 @@ public class StrategyViewFactory
     {
         return 100;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.MenuContent#getCategory()
      */
@@ -48,7 +53,6 @@ public class StrategyViewFactory
     {
         return StrategyContentCategory.instance;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.MenuContent#getMenuIcon()
      */
@@ -90,4 +94,16 @@ public class StrategyViewFactory
     {
         return StrategyView.class;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.web.view.MenuContent#getAllPermissions()
+     */
+    @Override
+    public Set<GrantedAuthority> getAllPermissions()
+    {
+        return requiredPermissions;
+    }
+    /**
+     * permission(s) required to execute strategy session view
+     */
+    private static final Set<GrantedAuthority> requiredPermissions = Collections.unmodifiableSet(Sets.newHashSet(StrategyPermissions.ReadStrategyAction));
 }

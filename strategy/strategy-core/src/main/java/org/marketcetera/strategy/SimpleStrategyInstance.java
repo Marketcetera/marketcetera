@@ -28,6 +28,10 @@ public class SimpleStrategyInstance
     {
         setUser(inStrategyInstance.getUser());
         setName(inStrategyInstance.getName());
+        setFilename(inStrategyInstance.getFilename());
+        setHash(inStrategyInstance.getHash());
+        setStarted(inStrategyInstance.getStarted());
+        setStatus(inStrategyInstance.getStatus());
     }
     /**
      * Get the user value.
@@ -69,6 +73,86 @@ public class SimpleStrategyInstance
     {
         name = org.apache.commons.lang.StringUtils.trimToNull(inName);
     }
+    /**
+     * Get the filename value.
+     *
+     * @return a <code>String</code> value
+     */
+    @Override
+    public String getFilename()
+    {
+        return filename;
+    }
+    /**
+     * Set the filename value.
+     *
+     * @param inFilename a <code>String</code> value
+     */
+    @Override
+    public void setFilename(String inFilename)
+    {
+        filename = org.apache.commons.lang.StringUtils.trimToNull(inFilename);
+    }
+    /**
+     * Get the hash value.
+     *
+     * @return a <code>String</code> value
+     */
+    @Override
+    public String getHash()
+    {
+        return hash;
+    }
+    /**
+     * Set the hash value.
+     *
+     * @param inHash a <code>String</code> value
+     */
+    @Override
+    public void setHash(String inHash)
+    {
+        hash = org.apache.commons.lang.StringUtils.trimToNull(inHash);
+    }
+    /**
+     * Get the started value.
+     *
+     * @return a <code>java.util.Date</code> value
+     */
+    @Override
+    public java.util.Date getStarted()
+    {
+        return started;
+    }
+    /**
+     * Set the started value.
+     *
+     * @param inStarted a <code>java.util.Date</code> value
+     */
+    @Override
+    public void setStarted(java.util.Date inStarted)
+    {
+        started = inStarted;
+    }
+    /**
+     * Get the status value.
+     *
+     * @return an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    @Override
+    public org.marketcetera.strategy.StrategyStatus getStatus()
+    {
+        return status;
+    }
+    /**
+     * Set the status value.
+     *
+     * @param inStatus an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    @Override
+    public void setStatus(org.marketcetera.strategy.StrategyStatus inStatus)
+    {
+        status = inStatus;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -78,7 +162,11 @@ public class SimpleStrategyInstance
         StringBuilder builder = new StringBuilder();
         builder.append("StrategyInstance [")
             .append("user=").append(user)
-            .append(", name=").append(name).append("]");
+            .append(", name=").append(name)
+            .append(", filename=").append(filename)
+            .append(", hash=").append(hash)
+            .append(", started=").append(started)
+            .append(", status=").append(status).append("]");
         return builder.toString();
     }
     /**
@@ -89,4 +177,20 @@ public class SimpleStrategyInstance
      * uniquely describes the strategy
      */
     private String name;
+    /**
+     * indicates the server-local file which contains the strategy
+     */
+    private String filename;
+    /**
+     * indicates the strategy hash value
+     */
+    private String hash;
+    /**
+     * date strategy was started
+     */
+    private java.util.Date started;
+    /**
+     * describes the state of a loaded strategy
+     */
+    private org.marketcetera.strategy.StrategyStatus status;
 }

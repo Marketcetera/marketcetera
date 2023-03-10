@@ -1,6 +1,8 @@
 package org.marketcetera.ui.strategy.view;
 
 import org.joda.time.DateTime;
+import org.marketcetera.strategy.StrategyInstance;
+import org.marketcetera.strategy.StrategyStatus;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -22,6 +24,19 @@ public class DisplayStrategy
 {
     public DisplayStrategy() {}
     
+    /**
+     * Create a new DisplayStrategy instance.
+     *
+     * @param inStrategyInstance
+     */
+    public DisplayStrategy(StrategyInstance inStrategyInstance)
+    {
+        strategyName.setValue(inStrategyInstance.getName());
+        owner.setValue(inStrategyInstance.getUser().getName());
+        started.setValue(new DateTime(inStrategyInstance.getStarted()));
+        strategyId.setValue(inStrategyInstance.getName());
+        strategyStatus.setValue(inStrategyInstance.getStatus());
+    }
     /**
      * Get the strategyName value.
      *

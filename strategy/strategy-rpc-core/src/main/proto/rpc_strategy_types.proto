@@ -9,8 +9,18 @@ import "rpc_base.proto";
 import "rpc_admin.proto";
 import "google/protobuf/timestamp.proto";
 
+enum StrategyStatus {
+    STOPPED = 0;
+    RUNNING = 1;
+    ERROR = 2;
+}
+
 // describes a loaded strategy
 message StrategyInstance {
     User user = 1; // user that owns the strategy
     string name = 2; // uniquely describes the strategy
+    string filename = 3; // indicates the server-local file which contains the strategy
+    string hash = 4; // indicates the strategy hash value
+    google.protobuf.Timestamp started = 5; // date strategy was started
+    StrategyStatus status = 6; // describes the status of the strategy
 }

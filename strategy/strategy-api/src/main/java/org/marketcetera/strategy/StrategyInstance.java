@@ -27,4 +27,52 @@ public interface StrategyInstance
      * @param inName a <code>String</code> value
      */
     void setName(String inName);
+    /**
+     * Get the filename value.
+     *
+     * @return a <code>String</code> value
+     */
+    String getFilename();
+    /**
+     * Set the filename value.
+     *
+     * @param inFilename a <code>String</code> value
+     */
+    void setFilename(String inFilename);
+    /**
+     * Get the hash value.
+     *
+     * @return a <code>String</code> value
+     */
+    String getHash();
+    /**
+     * Set the hash value.
+     *
+     * @param inHash a <code>String</code> value
+     */
+    void setHash(String inHash);
+    /**
+     * Get the started value.
+     *
+     * @return a <code>java.util.Date</code> value
+     */
+    java.util.Date getStarted();
+    /**
+     * Set the started value.
+     *
+     * @param inStarted a <code>java.util.Date</code> value
+     */
+    void setStarted(java.util.Date inStarted);
+    /**
+     * Get the status value.
+     *
+     * @return an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    org.marketcetera.strategy.StrategyStatus getStatus();
+    /**
+     * Set the status value.
+     *
+     * @param inStatus an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     */
+    void setStatus(org.marketcetera.strategy.StrategyStatus inStatus);
 }

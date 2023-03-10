@@ -15,7 +15,7 @@
     <module>strategy-api</module>
     <module>strategy-core</module>
     <module>strategy-server</module>
-    <!--module>strategy-rpc-client</module-->
+    <module>strategy-rpc-client</module>
     <module>strategy-rpc-core</module>
     <module>strategy-rpc-server</module>
   </modules>

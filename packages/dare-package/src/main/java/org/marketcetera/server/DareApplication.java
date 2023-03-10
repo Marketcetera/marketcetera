@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.jms.ServerSession;
 
-import org.assertj.core.util.Lists;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -48,6 +47,7 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.strategy.StrategyRpcServer;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -76,6 +76,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.google.common.collect.Lists;
 
 import io.grpc.BindableService;
 import springfox.documentation.builders.PathSelectors;
@@ -358,6 +360,22 @@ public class DareApplication
         tradeRpcService.setAuthenticator(inAuthenticator);
         tradeRpcService.setSessionManager(inSessionManager);
         return tradeRpcService;
+    }
+    /**
+     * Get the Strategy RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @return a <code>TradeRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public StrategyRpcServer<ServerSession> getStrategyRpcService(@Autowired Authenticator inAuthenticator,
+                                                                   @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        StrategyRpcServer<ServerSession> strategyRpcServer = new StrategyRpcServer<>();
+        strategyRpcServer.setAuthenticator(inAuthenticator);
+        strategyRpcServer.setSessionManager(inSessionManager);
+        return strategyRpcServer;
     }
     /**
      * Get the Fix Admin RPC service.
