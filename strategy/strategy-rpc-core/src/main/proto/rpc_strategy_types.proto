@@ -23,8 +23,9 @@ message StrategyInstance {
     string name = 2; // uniquely describes the strategy
     string filename = 3; // indicates the server-local file which contains the strategy
     string hash = 4; // indicates the strategy hash value
-    google.protobuf.Timestamp started = 5; // date strategy was started
-    StrategyStatus status = 6; // describes the status of the strategy
+    string nonce = 5; // uniquely identifies a strategy upload request
+    google.protobuf.Timestamp started = 6; // date strategy was started
+    StrategyStatus status = 7; // describes the status of the strategy
 }
 message FileUploadMetaData {
   string name = 1;

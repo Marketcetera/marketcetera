@@ -36,6 +36,9 @@ public abstract class StrategyRpcUtil
         if(inStrategyInstance.getHash() != null) {
             builder.setHash(inStrategyInstance.getHash());
         }
+        if(inStrategyInstance.getNonce() != null) {
+            builder.setNonce(inStrategyInstance.getNonce());
+        }
         org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inStrategyInstance.getStarted()).ifPresent(value->builder.setStarted(value));
         getRpcStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->builder.setStatus(value));
         return java.util.Optional.of(builder.build());
@@ -84,6 +87,7 @@ public abstract class StrategyRpcUtil
         strategyInstance.setName(inStrategyInstance.getName());
         strategyInstance.setFilename(inStrategyInstance.getFilename());
         strategyInstance.setHash(inStrategyInstance.getHash());
+        strategyInstance.setNonce(inStrategyInstance.getNonce());
         org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inStrategyInstance.getStarted()).ifPresent(value->strategyInstance.setStarted(value));
         getStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->strategyInstance.setStatus(value));
         return java.util.Optional.of(strategyInstance);

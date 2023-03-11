@@ -30,6 +30,7 @@ public class SimpleStrategyInstance
         setName(inStrategyInstance.getName());
         setFilename(inStrategyInstance.getFilename());
         setHash(inStrategyInstance.getHash());
+        setNonce(inStrategyInstance.getNonce());
         setStarted(inStrategyInstance.getStarted());
         setStatus(inStrategyInstance.getStatus());
     }
@@ -114,6 +115,26 @@ public class SimpleStrategyInstance
         hash = org.apache.commons.lang.StringUtils.trimToNull(inHash);
     }
     /**
+     * Get the nonce value.
+     *
+     * @return a <code>String</code> value
+     */
+    @Override
+    public String getNonce()
+    {
+        return nonce;
+    }
+    /**
+     * Set the nonce value.
+     *
+     * @param inNonce a <code>String</code> value
+     */
+    @Override
+    public void setNonce(String inNonce)
+    {
+        nonce = org.apache.commons.lang.StringUtils.trimToNull(inNonce);
+    }
+    /**
      * Get the started value.
      *
      * @return a <code>java.util.Date</code> value
@@ -165,6 +186,7 @@ public class SimpleStrategyInstance
             .append(", name=").append(name)
             .append(", filename=").append(filename)
             .append(", hash=").append(hash)
+            .append(", nonce=").append(nonce)
             .append(", started=").append(started)
             .append(", status=").append(status).append("]");
         return builder.toString();
@@ -185,6 +207,10 @@ public class SimpleStrategyInstance
      * indicates the strategy hash value
      */
     private String hash;
+    /**
+     * uniquely identifies a strategy upload request
+     */
+    private String nonce;
     /**
      * date strategy was started
      */

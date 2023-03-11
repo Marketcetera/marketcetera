@@ -12,6 +12,7 @@
         <modelEntityAttribute name="name" description="uniquely describes the strategy" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="filename" description="indicates the server-local file which contains the strategy" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="hash" description="indicates the strategy hash value" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
+        <modelEntityAttribute name="nonce" description="uniquely identifies a strategy upload request" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
         <modelEntityAttribute name="started" description="date strategy was started" type="java.util.Date" useGetters="true" useSetters="true"/>
         <modelEntityAttribute name="status" description="describes the state of a loaded strategy" type="org.marketcetera.strategy.StrategyStatus" useGetters="true" useSetters="true">
           <enumDescriptor name="StrategyStatus" description="Describes the state of a loaded strategy" persistentEnumeratedType="javax.persistence.EnumType.STRING">
@@ -54,6 +55,7 @@
             <rpcMessageAttribute name="name" type="string" description="uniquely describes the strategy"/>
             <rpcMessageAttribute name="filename" type="string" description="indicates the server-local file which contains the strategy"/>
             <rpcMessageAttribute name="hash" type="string" description="indicates the strategy hash value"/>
+            <rpcMessageAttribute name="nonce" type="string" description="uniquely identifies a strategy upload request"/>
             <rpcMessageAttribute name="started" type="google.protobuf.Timestamp" description="date strategy was started" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
             <rpcMessageAttribute name="status" type="StrategyStatus" description="describes the status of the strategy" rpcConverter="getRpcStrategyStatus" javaConverter="getStrategyStatus"/>
           </rpcMessageAttributes>

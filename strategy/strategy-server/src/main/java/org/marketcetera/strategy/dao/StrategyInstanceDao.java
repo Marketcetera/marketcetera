@@ -3,6 +3,10 @@
 //
 package org.marketcetera.strategy.dao;
 
+import java.util.Optional;
+
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,7 +16,9 @@ package org.marketcetera.strategy.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface StrategyInstanceDao
         extends org.springframework.data.jpa.repository.JpaRepository<PersistentStrategyInstance,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentStrategyInstance>
 {
+    Optional<PersistentStrategyInstance> findByName(String inName);
 }

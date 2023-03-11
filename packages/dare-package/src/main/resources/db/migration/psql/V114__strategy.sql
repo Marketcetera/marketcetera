@@ -9,6 +9,7 @@ CREATE TABLE metc_strategy_instances (
     filename character varying(255),
     hash character varying(255),
     name character varying(255),
+    nonce character varying(255),
     started timestamp without time zone,
     status character varying(255),
     user_id bigint

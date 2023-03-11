@@ -7,15 +7,21 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.Validate;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.strategy.StrategyRpc.FileUploadResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 
 import com.google.protobuf.ByteString;
 
@@ -31,6 +37,7 @@ import io.grpc.stub.StreamObserver;
  * @since $Release$
  */
 @Preserve
+@AutoConfiguration
 public class StrategyRpcServer<SessionClazz>
         extends AbstractRpcService<SessionClazz,StrategyRpcServiceGrpc.StrategyRpcServiceImplBase>
 {
@@ -60,34 +67,71 @@ public class StrategyRpcServer<SessionClazz>
         service = new Service();
         super.start();
     }
-    private OutputStream getFilePath(StrategyRpc.FileUploadRequest request)
+    /**
+     * Write to the appropriate output file with the given upload metadata or file chunk.
+     * 
+     * @param inStrategyPath a <code>Path</code> value 
+     * @return an <code>OutputStream</code> value
+     * @throws IOException if an error occurs creating the file
+     */
+    private OutputStream getOutstreamFromFilePath(Path inStrategyPath)
             throws IOException
     {
-        // write the nonce or the name?
-        String fileName = request.getMetadata().getNonce() + ".jar";
-        Path outputPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve(fileName);
-        SLF4JLoggerProxy.warn(this,
-                              "COCO: writing incoming strategy to {}",
-                              outputPath);
-        return Files.newOutputStream(outputPath,
+        return Files.newOutputStream(inStrategyPath,
                                      StandardOpenOption.CREATE,
                                      StandardOpenOption.APPEND);
     }
-    private void writeFile(OutputStream writer,
-                           ByteString content)
+    /**
+     * Writes the given file chunk to the given file.
+     *
+     * @param inWriter an <code>OutputStream</code> value
+     * @param inContent a <cod>ByteString</code> value
+     * @throws IOException if an error occurs writing to the file
+     */
+    private void writeFile(OutputStream inWriter,
+                           ByteString inContent)
             throws IOException
     {
-        writer.write(content.toByteArray());
-        writer.flush();
+        inWriter.write(inContent.toByteArray());
+        inWriter.flush();
     }
-
-    private void closeFile(OutputStream writer){
-        try {
-            writer.close();
-            // TODO mv the file to the strategy incoming strat dir
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    /**
+     * Closes the given file writer.
+     *
+     * @param inWriter an <code>OutputStream</code> value
+     * @throws IOException if an error occurs closing the file
+     */
+    private void closeFile(OutputStream inWriter)
+            throws IOException
+    {
+        inWriter.close();
+    }
+    private void verifyAndMoveFile(Path inStrategyFile,
+                                   String inNonce,
+                                   String inName)
+            throws NoSuchAlgorithmException, IOException
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Verifying the uploaded strategy with the name '{}'",
+                               inName);
+        // find the incoming upload
+        Optional<? extends StrategyInstance> strategyInstanceOption = strategyService.findByName(inName);
+        Validate.isTrue(strategyInstanceOption.isPresent(),
+                        "No strategy instance with name '" + inName + "' found");
+        StrategyInstance strategyInstance = strategyInstanceOption.get();
+        Validate.isTrue(inNonce.equals(strategyInstance.getNonce()),
+                        "Strategy upload nonce does not match");
+        String hash = PlatformServices.getFileChecksum(inStrategyFile.toFile());
+        Validate.isTrue(hash.equals(strategyInstance.getHash()),
+                        "Strategy upload hash does not match");
+        Path strategyInstanceDirectory = strategyService.getIncomingStrategyDirectory();
+        Path strategyFileTarget = strategyInstanceDirectory.resolve(inStrategyFile.getFileName());
+        SLF4JLoggerProxy.debug(this,
+                               "Verified the uploaded strategy with the name '{}', moving to strategy directory {}",
+                               inName,
+                               strategyFileTarget);
+        FileUtils.moveFile(inStrategyFile.toFile(),
+                           strategyFileTarget.toFile());
     }
     /**
      * StrategyRpc Service implementation.
@@ -100,34 +144,34 @@ public class StrategyRpcServer<SessionClazz>
             extends org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#login(org.marketcetera.rpc.base.BaseRpc.LoginRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#login(BaseRpc.LoginRequest, StreamObserver)
          */
         @Override
-        public void login(org.marketcetera.rpc.base.BaseRpc.LoginRequest inRequest,io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.LoginResponse> inResponseObserver)
+        public void login(BaseRpc.LoginRequest inRequest,StreamObserver<BaseRpc.LoginResponse> inResponseObserver)
         {
             StrategyRpcServer.this.doLogin(inRequest,inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#logout(BaseRpc.LogoutRequest, StreamObserver)
          */
         @Override
-        public void logout(org.marketcetera.rpc.base.BaseRpc.LogoutRequest inRequest,io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.LogoutResponse> inResponseObserver)
+        public void logout(BaseRpc.LogoutRequest inRequest,StreamObserver<BaseRpc.LogoutResponse> inResponseObserver)
         {
             StrategyRpcServer.this.doLogout(inRequest,inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#heartbeat(BaseRpc.HeartbeatRequest, StreamObserver)
          */
         @Override
-        public void heartbeat(org.marketcetera.rpc.base.BaseRpc.HeartbeatRequest inRequest,io.grpc.stub.StreamObserver<org.marketcetera.rpc.base.BaseRpc.HeartbeatResponse> inResponseObserver)
+        public void heartbeat(BaseRpc.HeartbeatRequest inRequest,StreamObserver<BaseRpc.HeartbeatResponse> inResponseObserver)
         {
             StrategyRpcServer.this.doHeartbeat(inRequest,inResponseObserver);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#getStrategyInstances(org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesRequest ,io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#getStrategyInstances(org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesRequest ,StreamObserver)
          */
         @Override
-        public void getStrategyInstances(org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesRequest inReadStrategyInstancesRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse> inResponseObserver)
+        public void getStrategyInstances(org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesRequest inReadStrategyInstancesRequest,StreamObserver<org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse> inResponseObserver)
         {
             try {
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inReadStrategyInstancesRequest);
@@ -149,10 +193,10 @@ public class StrategyRpcServer<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest ,io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest ,StreamObserver)
          */
         @Override
-        public void loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest inLoadStrategyInstanceRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse> inResponseObserver)
+        public void loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest inLoadStrategyInstanceRequest,StreamObserver<org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse> inResponseObserver)
         {
             try {
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inLoadStrategyInstanceRequest);
@@ -171,26 +215,31 @@ public class StrategyRpcServer<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#uploadFile(io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#uploadFile(StreamObserver)
          */
         @Override
         public StreamObserver<StrategyRpc.FileUploadRequest> uploadFile(StreamObserver<StrategyRpc.FileUploadResponse> inResponseObserver)
         {
             return new StreamObserver<StrategyRpc.FileUploadRequest>() {
-                // upload context variables
-                OutputStream writer;
-                StrategyTypesRpc.FileUploadStatus status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS;
                 @Override
-                public void onNext(StrategyRpc.FileUploadRequest fileUploadRequest)
+                public void onNext(StrategyRpc.FileUploadRequest inFileUploadRequest)
                 {
                     try {
-                        switch(fileUploadRequest.getRequestCase()) {
+                        switch(inFileUploadRequest.getRequestCase()) {
                             case FILE:
                                 writeFile(writer,
-                                          fileUploadRequest.getFile().getContent());
+                                          inFileUploadRequest.getFile().getContent());
                                 break;
                             case METADATA:
-                                writer = getFilePath(fileUploadRequest);
+                                uploadNonce = inFileUploadRequest.getMetadata().getNonce();
+                                instanceName = inFileUploadRequest.getMetadata().getName();
+                                // determined to be JAR files right now, might be nice to include file type in the upload request
+                                String fileName = inFileUploadRequest.getMetadata().getNonce() + ".jar";
+                                strategyPath = strategyService.getTemporaryStrategyDirectory().resolve(fileName);
+                                SLF4JLoggerProxy.warn(StrategyRpcServer.this,
+                                                      "COCO: writing incoming strategy to {}",
+                                                      strategyPath);
+                                writer = getOutstreamFromFilePath(strategyPath);
                                 break;
                             case REQUEST_NOT_SET:
                             default:
@@ -211,12 +260,26 @@ public class StrategyRpcServer<SessionClazz>
                 @Override
                 public void onCompleted()
                 {
-                    closeFile(writer);
-                    status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS.equals(status) ? StrategyTypesRpc.FileUploadStatus.SUCCESS : status;
+                    try {
+                        closeFile(writer);
+                        verifyAndMoveFile(strategyPath,
+                                          uploadNonce,
+                                          instanceName);
+                        status = StrategyTypesRpc.FileUploadStatus.SUCCESS;
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(StrategyRpcServer.this,
+                                              e);
+                        status = StrategyTypesRpc.FileUploadStatus.FAILED;
+                    }
                     FileUploadResponse response = FileUploadResponse.newBuilder().setStatus(status).build();
                     inResponseObserver.onNext(response);
                     inResponseObserver.onCompleted();
                 }
+                private String instanceName;
+                private String uploadNonce;
+                private Path strategyPath;
+                private OutputStream writer;
+                private StrategyTypesRpc.FileUploadStatus status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS;
             };
         }
     }

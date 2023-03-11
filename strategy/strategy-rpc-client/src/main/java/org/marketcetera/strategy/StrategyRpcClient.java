@@ -125,7 +125,7 @@ public class StrategyRpcClient
         newStrategyInstance.setHash(fileHash);
         newStrategyInstance.setName(inRequest.getName());
         newStrategyInstance.setUser(inRequest.getOwner());
-//        newStrategyInstance.setNonce(inRequest.getNonce()); TODO
+        newStrategyInstance.setNonce(inRequest.getNonce());
         // send the strategy instance upload to let them know the file is coming with the proper hash and nonce
         loadStrategyInstance(newStrategyInstance);
         StrategyRpc.FileUploadRequest requestMetadata = StrategyRpc.FileUploadRequest.newBuilder().setMetadata(StrategyTypesRpc.FileUploadMetaData.newBuilder()
@@ -149,8 +149,7 @@ public class StrategyRpcClient
         byte[] bytes = new byte[4096];
         int size;
         while((size = inputStream.read(bytes)) > 0) {
-            StrategyRpc.FileUploadRequest uploadRequest = StrategyRpc.FileUploadRequest.newBuilder()
-                    .setFile(StrategyTypesRpc.UploadFile.newBuilder().setContent(ByteString.copyFrom(bytes,0 ,size)).build()).build();
+            StrategyRpc.FileUploadRequest uploadRequest = StrategyRpc.FileUploadRequest.newBuilder().setFile(StrategyTypesRpc.UploadFile.newBuilder().setContent(ByteString.copyFrom(bytes,0,size)).build()).build();
             streamObserver.onNext(uploadRequest);
             fileUploadObserver.incrementBytesUploaded(size);
         }

@@ -3,8 +3,6 @@
 //
 package org.marketcetera.strategy;
 
-import org.marketcetera.core.Preserve;
-
 /* $License$ */
 
 /**
@@ -14,7 +12,6 @@ import org.marketcetera.core.Preserve;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public interface StrategyInstance
         extends org.marketcetera.admin.HasUser
 {
@@ -54,6 +51,18 @@ public interface StrategyInstance
      * @param inHash a <code>String</code> value
      */
     void setHash(String inHash);
+    /**
+     * Get the nonce value.
+     *
+     * @return a <code>String</code> value
+     */
+    String getNonce();
+    /**
+     * Set the nonce value.
+     *
+     * @param inNonce a <code>String</code> value
+     */
+    void setNonce(String inNonce);
     /**
      * Get the started value.
      *

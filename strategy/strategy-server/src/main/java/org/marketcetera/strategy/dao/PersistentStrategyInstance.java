@@ -33,6 +33,7 @@ public class PersistentStrategyInstance
         setName(inStrategyInstance.getName());
         setFilename(inStrategyInstance.getFilename());
         setHash(inStrategyInstance.getHash());
+        setNonce(inStrategyInstance.getNonce());
         setStarted(inStrategyInstance.getStarted());
         setStatus(inStrategyInstance.getStatus());
     }
@@ -117,6 +118,26 @@ public class PersistentStrategyInstance
         hash = org.apache.commons.lang.StringUtils.trimToNull(inHash);
     }
     /**
+     * Get the nonce value.
+     *
+     * @return a <code>String</code> value
+     */
+    @Override
+    public String getNonce()
+    {
+        return nonce;
+    }
+    /**
+     * Set the nonce value.
+     *
+     * @param inNonce a <code>String</code> value
+     */
+    @Override
+    public void setNonce(String inNonce)
+    {
+        nonce = org.apache.commons.lang.StringUtils.trimToNull(inNonce);
+    }
+    /**
      * Get the started value.
      *
      * @return a <code>java.util.Date</code> value
@@ -168,6 +189,7 @@ public class PersistentStrategyInstance
             .append(", name=").append(name)
             .append(", filename=").append(filename)
             .append(", hash=").append(hash)
+            .append(", nonce=").append(nonce)
             .append(", started=").append(started)
             .append(", status=").append(status).append("]");
         return builder.toString();
@@ -194,6 +216,11 @@ public class PersistentStrategyInstance
     @javax.persistence.Column(name="hash",nullable=true,unique=false)
     private String hash;
     /**
+     * uniquely identifies a strategy upload request
+     */
+    @javax.persistence.Column(name="nonce",nullable=true,unique=false)
+    private String nonce;
+    /**
      * date strategy was started
      */
     @javax.persistence.Column(name="started",nullable=true,unique=false)
@@ -204,5 +231,5 @@ public class PersistentStrategyInstance
     @javax.persistence.Enumerated(javax.persistence.EnumType.STRING)
     @javax.persistence.Column(name="status",nullable=true,unique=false)
     private org.marketcetera.strategy.StrategyStatus status;
-    private static final long serialVersionUID = -855697822L;
+    private static final long serialVersionUID = 1020230886L;
 }

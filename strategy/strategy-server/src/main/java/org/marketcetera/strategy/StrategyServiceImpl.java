@@ -4,14 +4,20 @@
 package org.marketcetera.strategy;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
+import org.marketcetera.admin.provisioning.ProvisioningAgent;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
@@ -57,17 +63,20 @@ public class StrategyServiceImpl
                               "{} starting",
                               serviceName);
         clusterData = clusterService.getInstanceData();
-        strategyIncomingDirectory = strategyIncomingDirectory + clusterData.getInstanceNumber();
+        strategyIncomingDirectoryName = strategyIncomingDirectoryName + clusterData.getInstanceNumber();
+        incomingStrategyDirectoryPath = Paths.get(strategyIncomingDirectoryName);
+        // intentionally not modified with the cluster instance number; it's ok if mulitple instances use this directory
+        temporaryStrategyDirectoryPath = Paths.get(strategyTemporaryDirectoryName);
         strategyWatcher = new DirectoryWatcherImpl();
         strategyWatcher.setCreateDirectoriesOnStart(true);
-        strategyWatcher.setDirectoriesToWatch(Lists.newArrayList(new File(strategyIncomingDirectory)));
+        strategyWatcher.setDirectoriesToWatch(Lists.newArrayList(new File(strategyIncomingDirectoryName)));
         strategyWatcher.setPollingInterval(pollingInterval);
         strategyWatcher.addWatcher(this);
         strategyWatcher.start();
         SLF4JLoggerProxy.info(this,
                               "{} watching {} for incoming strategies",
                               serviceName,
-                              strategyIncomingDirectory);
+                              strategyIncomingDirectoryName);
     }
     /**
      * Stop the object.
@@ -100,6 +109,22 @@ public class StrategyServiceImpl
         // TODO probably need to factor in supervisor permissions for "read"
         return strategyInstanceDao.findAll();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#getIncomingStrategyDirectory()
+     */
+    @Override
+    public Path getIncomingStrategyDirectory()
+    {
+        return incomingStrategyDirectoryPath;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#getTemporaryStrategyDirectory()
+     */
+    @Override
+    public Path getTemporaryStrategyDirectory()
+    {
+        return temporaryStrategyDirectoryPath;
+    }
     /**
      * Load a new strategy instances.
      *
@@ -114,7 +139,29 @@ public class StrategyServiceImpl
                                "Received incoming strategy file '{}'",
                                inOriginalFileName);
         // TODO match with strategy instance and update status to LOADED or ERROR
+        // verify and move to provisioning directory
+        // find the incoming upload
+//        Optional<? extends StrategyInstance> strategyInstanceOption = strategyService.findByName(inName);
+//        Validate.isTrue(strategyInstanceOption.isPresent(),
+//                        "No strategy instance with name '" + inName + "' found");
+//        StrategyInstance strategyInstance = strategyInstanceOption.get();
+//        Validate.isTrue(inNonce.equals(strategyInstance.getNonce()),
+//                        "Strategy upload nonce does not match");
+//        String hash = PlatformServices.getFileChecksum(inStrategyFile.toFile());
+//        Validate.isTrue(hash.equals(strategyInstance.getHash()),
+//                        "Strategy upload hash does not match");
+        try {
+            // TODO need to move file to a storage directory
+            FileUtils.moveFileToDirectory(inFile,
+                                          Paths.get(provisioningAgent.getProvisioningDirectory()).toFile(),
+                                          false);
+        } catch (IOException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+        }
     }
+    @Autowired
+    private ProvisioningAgent provisioningAgent;
     /**
      * Load a new strategy instances.
      *
@@ -140,16 +187,32 @@ public class StrategyServiceImpl
         pInstance = strategyInstanceDao.save(pInstance);
         return pInstance.getStatus();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#findByName(java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public Optional<? extends StrategyInstance> findByName(String inStrategyInstanceName)
+    {
+        return strategyInstanceDao.findByName(inStrategyInstanceName);
+    }
+    private Path incomingStrategyDirectoryPath;
+    private Path temporaryStrategyDirectoryPath;
     /**
      * interval at which to poll for provisioning files
      */
     @Value("${metc.strategy.incoming.directory.polling.intervalms:5000}")
     private long pollingInterval;
     /**
-     * provisioning directory base
+     * strategy incoming directory base
      */
     @Value("${metc.strategy.incoming.directory}")
-    private String strategyIncomingDirectory;
+    private String strategyIncomingDirectoryName;
+    /**
+     * strategy temporary directory base
+     */
+    @Value("${metc.strategy.temporary.directory}")
+    private String strategyTemporaryDirectoryName;
     private String serviceName;
     private DirectoryWatcherImpl strategyWatcher;
     /**
