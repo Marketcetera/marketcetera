@@ -14,11 +14,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.rpc.AdminRpcUtil;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
@@ -28,7 +28,6 @@ import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
-import org.marketcetera.strategy.StrategyRpc.FileUploadRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,20 +110,30 @@ public class StrategyRpcClient
     public void uploadFile(org.marketcetera.strategy.FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException
     {
+        SLF4JLoggerProxy.trace(this,
+                               "Preparing {}",
+                               inRequest);
         // TODO this wants to be async, maybe
         FileUploadObserver fileUploadObserver = new FileUploadObserver(inRequest);
         // request observer
         StreamObserver<StrategyRpc.FileUploadRequest> streamObserver = getAsyncStub().uploadFile(fileUploadObserver);
         File uploadFile = new File(inRequest.getFilePath());
         Validate.isTrue(uploadFile.canRead());
-        String fileType = FilenameUtils.getExtension(inRequest.getFilePath());
-        String filename = FilenameUtils.getBaseName(inRequest.getFilePath());
-        String inHash = PlatformServices.getFileChecksum(uploadFile);
-        FileUploadRequest requestMetadata = FileUploadRequest.newBuilder().setMetadata(StrategyTypesRpc.FileUploadMetaData.newBuilder()
-            .setName(filename)
-            .setType(fileType)
-            .setHash(inHash)
+        String fileHash = PlatformServices.getFileChecksum(uploadFile);
+        StrategyInstance newStrategyInstance = strategyInstanceFactory.create();
+        newStrategyInstance.setFilename(uploadFile.getPath());
+        newStrategyInstance.setHash(fileHash);
+        newStrategyInstance.setName(inRequest.getName());
+        newStrategyInstance.setUser(inRequest.getOwner());
+//        newStrategyInstance.setNonce(inRequest.getNonce()); TODO
+        // send the strategy instance upload to let them know the file is coming with the proper hash and nonce
+        loadStrategyInstance(newStrategyInstance);
+        StrategyRpc.FileUploadRequest requestMetadata = StrategyRpc.FileUploadRequest.newBuilder().setMetadata(StrategyTypesRpc.FileUploadMetaData.newBuilder()
+            .setName(inRequest.getName())
+            .setFilename(inRequest.getFilePath())
+            .setHash(fileHash)
             .setNonce(inRequest.getNonce())
+            .setOwner(AdminRpcUtil.getRpcUser(inRequest.getOwner()).get())
             .setRequestTimestamp(BaseRpcUtil.getTimestampValue(new Date()).get())
             .build()).build();
         SLF4JLoggerProxy.trace(this,
@@ -140,7 +149,7 @@ public class StrategyRpcClient
         byte[] bytes = new byte[4096];
         int size;
         while((size = inputStream.read(bytes)) > 0) {
-            FileUploadRequest uploadRequest = FileUploadRequest.newBuilder()
+            StrategyRpc.FileUploadRequest uploadRequest = StrategyRpc.FileUploadRequest.newBuilder()
                     .setFile(StrategyTypesRpc.UploadFile.newBuilder().setContent(ByteString.copyFrom(bytes,0 ,size)).build()).build();
             streamObserver.onNext(uploadRequest);
             fileUploadObserver.incrementBytesUploaded(size);

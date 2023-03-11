@@ -3,6 +3,8 @@
 //
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface StrategyInstance
         extends org.marketcetera.admin.HasUser
 {

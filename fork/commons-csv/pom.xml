@@ -72,6 +72,11 @@
     <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
   </properties>
 
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <testSourceDirectory>src/test</testSourceDirectory>
+  </build>
+
   <reporting>
     <plugins>
       <plugin>

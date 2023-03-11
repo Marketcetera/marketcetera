@@ -10,7 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.core.Preserve;
+import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.strategy.StrategyRpc.FileUploadResponse;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -29,10 +32,10 @@ import io.grpc.stub.StreamObserver;
  */
 @Preserve
 public class StrategyRpcServer<SessionClazz>
-        extends org.marketcetera.rpc.server.AbstractRpcService<SessionClazz,org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase>
+        extends AbstractRpcService<SessionClazz,StrategyRpcServiceGrpc.StrategyRpcServiceImplBase>
 {
     /* (non-Javadoc)
-    * @see org.marketcetera.rpc.server.AbstractRpcService#getServiceDescription()
+    * @see AbstractRpcService#getServiceDescription()
     */
     @Override
     protected String getServiceDescription()
@@ -40,17 +43,17 @@ public class StrategyRpcServer<SessionClazz>
         return description;
     }
     /* (non-Javadoc)
-    * @see org.marketcetera.rpc.server.AbstractRpcService#getService()
+    * @see AbstractRpcService#getService()
     */
     @Override
-    protected org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase getService()
+    protected StrategyRpcServiceGrpc.StrategyRpcServiceImplBase getService()
     {
         return service;
     }
     /**
      * Validate and start the object.
      */
-    @javax.annotation.PostConstruct
+    @PostConstruct
     public void start()
             throws Exception
     {
@@ -60,12 +63,16 @@ public class StrategyRpcServer<SessionClazz>
     private OutputStream getFilePath(StrategyRpc.FileUploadRequest request)
             throws IOException
     {
-        String fileName = request.getMetadata().getName() + ".jar";
-        return Files.newOutputStream(SERVER_BASE_PATH.resolve(fileName),
+        // write the nonce or the name?
+        String fileName = request.getMetadata().getNonce() + ".jar";
+        Path outputPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve(fileName);
+        SLF4JLoggerProxy.warn(this,
+                              "COCO: writing incoming strategy to {}",
+                              outputPath);
+        return Files.newOutputStream(outputPath,
                                      StandardOpenOption.CREATE,
                                      StandardOpenOption.APPEND);
     }
-    private static final Path SERVER_BASE_PATH = Paths.get("/tmp/");
     private void writeFile(OutputStream writer,
                            ByteString content)
             throws IOException
@@ -77,6 +84,7 @@ public class StrategyRpcServer<SessionClazz>
     private void closeFile(OutputStream writer){
         try {
             writer.close();
+            // TODO mv the file to the strategy incoming strat dir
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +180,6 @@ public class StrategyRpcServer<SessionClazz>
                 // upload context variables
                 OutputStream writer;
                 StrategyTypesRpc.FileUploadStatus status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS;
-
                 @Override
                 public void onNext(StrategyRpc.FileUploadRequest fileUploadRequest)
                 {
@@ -227,7 +234,7 @@ public class StrategyRpcServer<SessionClazz>
      * provides services for Strategy
      */
     @org.springframework.beans.factory.annotation.Autowired
-    private org.marketcetera.strategy.StrategyService strategyService;
+    private StrategyService strategyService;
     /**
      * provides access to authorization services
      */

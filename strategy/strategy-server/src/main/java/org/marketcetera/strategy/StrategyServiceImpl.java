@@ -3,19 +3,33 @@
 //
 package org.marketcetera.strategy;
 
+import java.io.File;
 import java.util.Collection;
 
-import org.apache.commons.lang.Validate;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.cluster.ClusterData;
+import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.core.file.DirectoryWatcherImpl;
+import org.marketcetera.core.file.DirectoryWatcherSubscriber;
 import org.marketcetera.strategy.dao.PersistentStrategyInstance;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -28,9 +42,51 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Preserve
 @Component
+@AutoConfiguration
 public class StrategyServiceImpl
-        implements StrategyService
+        implements StrategyService,DirectoryWatcherSubscriber
 {
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        serviceName = PlatformServices.getServiceName(getClass());
+        SLF4JLoggerProxy.info(this,
+                              "{} starting",
+                              serviceName);
+        clusterData = clusterService.getInstanceData();
+        strategyIncomingDirectory = strategyIncomingDirectory + clusterData.getInstanceNumber();
+        strategyWatcher = new DirectoryWatcherImpl();
+        strategyWatcher.setCreateDirectoriesOnStart(true);
+        strategyWatcher.setDirectoriesToWatch(Lists.newArrayList(new File(strategyIncomingDirectory)));
+        strategyWatcher.setPollingInterval(pollingInterval);
+        strategyWatcher.addWatcher(this);
+        strategyWatcher.start();
+        SLF4JLoggerProxy.info(this,
+                              "{} watching {} for incoming strategies",
+                              serviceName,
+                              strategyIncomingDirectory);
+    }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        if(strategyWatcher != null) {
+            try {
+                strategyWatcher.stop();
+            } catch (Exception ignored) {
+            } finally {
+                strategyWatcher = null;
+            }
+        }
+        SLF4JLoggerProxy.info(this,
+                              "{} stopped",
+                              serviceName);
+    }
     /**
      * Requests loaded strategy instances.
      *
@@ -43,6 +99,21 @@ public class StrategyServiceImpl
         // TODO need to filter by current user
         // TODO probably need to factor in supervisor permissions for "read"
         return strategyInstanceDao.findAll();
+    }
+    /**
+     * Load a new strategy instances.
+     *
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     * @returns an <code>StrategyStatus</code> value
+     */
+    @Override
+    public void received(File inFile,
+                         String inOriginalFileName)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received incoming strategy file '{}'",
+                               inOriginalFileName);
+        // TODO match with strategy instance and update status to LOADED or ERROR
     }
     /**
      * Load a new strategy instances.
@@ -69,6 +140,27 @@ public class StrategyServiceImpl
         pInstance = strategyInstanceDao.save(pInstance);
         return pInstance.getStatus();
     }
+    /**
+     * interval at which to poll for provisioning files
+     */
+    @Value("${metc.strategy.incoming.directory.polling.intervalms:5000}")
+    private long pollingInterval;
+    /**
+     * provisioning directory base
+     */
+    @Value("${metc.strategy.incoming.directory}")
+    private String strategyIncomingDirectory;
+    private String serviceName;
+    private DirectoryWatcherImpl strategyWatcher;
+    /**
+     * provides access to cluster services
+     */
+    @Autowired
+    private ClusterService clusterService;
+    /**
+     * generated cluster data
+     */
+    private ClusterData clusterData;
     /**
      * provides access to the {@link User} data store
      */

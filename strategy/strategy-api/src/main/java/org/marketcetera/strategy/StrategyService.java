@@ -3,6 +3,8 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.Collection;
+
 import org.marketcetera.core.Preserve;
 
 /* $License$ */
@@ -21,14 +23,14 @@ public interface StrategyService
      * Requests loaded strategy instances.
      * 
      * @param inCurrentUserName a <code>String</code> value
-     * @returns a <code>java.util.Collection<org.marketcetera.strategy.StrategyInstance></code> value
+     * @returns a <code>Collection&lt;StrategyInstance&gt;</code> value
      */
-    java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> getStrategyInstances(String inCurrentUserName);
+    Collection<? extends StrategyInstance> getStrategyInstances(String inCurrentUserName);
     /**
      * Load a new strategy instances.
      *
-     * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyInstance</code> value
-     * @returns an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     * @returns an <code>StrategyStatus</code> value
      */
-    org.marketcetera.strategy.StrategyStatus loadStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance);
+    StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
 }

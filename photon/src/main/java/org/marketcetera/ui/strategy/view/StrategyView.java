@@ -16,6 +16,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.strategy.FileUploadStatus;
 import org.marketcetera.strategy.SimpleFileUploadRequest;
+import org.marketcetera.strategy.SimpleStrategyInstance;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyInstanceFactory;
 import org.marketcetera.strategy.StrategyPermissions;
@@ -187,16 +188,20 @@ public class StrategyView
                                                              AlertType.WARNING));
                 return;
             }
-            StrategyInstance newStrategyInstance = strategyInstanceFactory.create();
             try {
+                // TODO as soon as the upload is confirmed, create a Strategy Instance on the remote server with status set to PREPARING
+                //  include:
+                //  - user-assigned but unique name
+                //  - root JAR file name
+                //  - owner
+                //  - nonce
                 // TODO allow the user to specify a name
                 // TODO check that the name is unique
-                newStrategyInstance.setFilename(nonce + ".jar");
-                newStrategyInstance.setName(name);
-                newStrategyInstance.setUser(owner);
                 // transfer file - this will block? need to use a callback instead?
-                SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(result.getAbsolutePath(),
-                                                                                    nonce) {
+                SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(name,
+                                                                                    nonce,
+                                                                                    result.getAbsolutePath(),
+                                                                                    owner) {
                     /* (non-Javadoc)
                      * @see org.marketcetera.strategy.FileUploadRequest#onProgress(double)
                      */
@@ -231,24 +236,18 @@ public class StrategyView
                     }
                 };
                 strategyClient.uploadFile(uploadRequest);
-                StrategyStatus status = strategyClient.loadStrategyInstance(newStrategyInstance);
-                SLF4JLoggerProxy.info(this,
-                                      "Strategy '{}' loaded for {} with status {}",
-                                      name,
-                                      owner,
-                                      status);
                 updateStrategies();
-                webMessageService.post(new NotificationEvent("Load Strategy",
-                                                             "Strategy '" + name + "' loaded with status: " + status,
-                                                             AlertType.INFORMATION));
+//                webMessageService.post(new NotificationEvent("Load Strategy",
+//                                                             "Strategy '" + name + "' loaded with status: " + status,
+//                                                             AlertType.INFORMATION));
             } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "Unable to create '{}'",
-                                      newStrategyInstance);
-                webMessageService.post(new NotificationEvent("Load Strategy",
-                                                             "File '" + result.getAbsolutePath() + "' could not be read",
-                                                             AlertType.WARNING));
+//                SLF4JLoggerProxy.warn(this,
+//                                      e,
+//                                      "Unable to create '{}'",
+//                                      newStrategyInstance);
+//                webMessageService.post(new NotificationEvent("Load Strategy",
+//                                                             "File '" + result.getAbsolutePath() + "' could not be read",
+//                                                             AlertType.WARNING));
             }
         }
     }

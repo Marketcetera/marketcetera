@@ -1,5 +1,7 @@
 package org.marketcetera.strategy;
 
+import org.marketcetera.admin.User;
+
 /* $License$ */
 
 /**
@@ -12,11 +14,39 @@ package org.marketcetera.strategy;
 public class SimpleFileUploadRequest
         implements FileUploadRequest
 {
-    public SimpleFileUploadRequest(String inFilePath,
-                                   String inNonce)
+    /**
+     * Create a new SimpleFileUploadRequest instance.
+     *
+     * @param inName
+     * @param inNonce
+     * @param inFilePath
+     * @param inOwner
+     */
+    public SimpleFileUploadRequest(String inName,
+                                   String inNonce,
+                                   String inFilePath,
+                                   User inOwner)
     {
         filePath = inFilePath;
+        name = inName;
+        owner = inOwner;
         nonce = inNonce;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.FileUploadRequest#getName()
+     */
+    @Override
+    public String getName()
+    {
+        return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.FileUploadRequest#getOwner()
+     */
+    @Override
+    public User getOwner()
+    {
+        return owner;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.FileUploadRequest#getFilePath()
@@ -34,24 +64,19 @@ public class SimpleFileUploadRequest
     {
         return nonce;
     }
-    /**
-     * Sets the filePath value.
-     *
-     * @param inFilePath a <code>String</code> value
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-    public void setFilePath(String inFilePath)
+    @Override
+    public String toString()
     {
-        filePath = inFilePath;
+        StringBuilder builder = new StringBuilder();
+        builder.append("SimpleFileUploadRequest [name=").append(name).append(", nonce=").append(nonce)
+                .append(", filePath=").append(filePath).append(", owner=").append(owner).append("]");
+        return builder.toString();
     }
-    /**
-     * Sets the nonce value.
-     *
-     * @param inNonce a <code>String</code> value
-     */
-    public void setNonce(String inNonce)
-    {
-        nonce = inNonce;
-    }
-    private String filePath;
-    private String nonce;
+    private final String nonce;
+    private final String filePath;
+    private final String name;
+    private final User owner;
 }

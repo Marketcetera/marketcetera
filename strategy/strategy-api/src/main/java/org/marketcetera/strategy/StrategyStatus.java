@@ -3,6 +3,8 @@
 //
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public enum StrategyStatus
 {
     /**
@@ -30,4 +33,8 @@ public enum StrategyStatus
      * the strategy is in the process of loading
      */
     LOADING,
+    /**
+     * the strategy is being prepared to be loaded
+     */
+    PREPARING;
 }

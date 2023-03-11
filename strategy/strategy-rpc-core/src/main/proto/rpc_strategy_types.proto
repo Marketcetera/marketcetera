@@ -28,10 +28,11 @@ message StrategyInstance {
 }
 message FileUploadMetaData {
   string name = 1;
-  string type = 2;
-  string hash = 3;
-  string nonce = 4;
-  google.protobuf.Timestamp requestTimestamp = 5; 
+  string filename = 2;
+  string nonce = 3;
+  string hash = 4;
+  User owner = 5;
+  google.protobuf.Timestamp requestTimestamp = 6; 
 }
 
 message UploadFile {

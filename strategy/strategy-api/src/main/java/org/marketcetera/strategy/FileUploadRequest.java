@@ -1,5 +1,7 @@
 package org.marketcetera.strategy;
 
+import org.marketcetera.admin.User;
+
 /* $License$ */
 
 /**
@@ -12,7 +14,9 @@ package org.marketcetera.strategy;
 public interface FileUploadRequest
 {
     String getFilePath();
+    String getName();
     String getNonce();
+    User getOwner();
     default void onProgress(double inPercentComplete)
     {
         

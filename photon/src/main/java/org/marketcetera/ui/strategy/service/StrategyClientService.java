@@ -1,7 +1,6 @@
 package org.marketcetera.ui.strategy.service;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
@@ -11,7 +10,6 @@ import org.marketcetera.strategy.StrategyClient;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyRpcClientFactory;
 import org.marketcetera.strategy.StrategyRpcClientParameters;
-import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.ui.service.ConnectableService;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -106,35 +104,11 @@ public class StrategyClientService
     {
         return strategyClient.getStrategyInstances();
     }
-    /**
-     * Load a new strategy instances.
-     *
-     * @param inStrategyInstance an <code>StrategyInstance</code> value
-     * @returns an <code>StrategyStatus</code> value
-     */
-    public StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance)
-    {
-        return strategyClient.loadStrategyInstance(inStrategyInstance);
-    }
     public void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException
     {
         strategyClient.uploadFile(inRequest);
     }
-    
-//    public void uploadFile(Path path,
-//                           String inFilename,
-//                           String inFileType,
-//                           String inHash,
-//                           String inNonce)
-//            throws IOException
-//    {
-//        strategyClient.uploadFile(path,
-//                                  inFilename,
-//                                  inFileType,
-//                                  inHash,
-//                                  inNonce);
-//    }
     /**
      * Sets the StrategyClientFactory value.
      *

@@ -14,6 +14,7 @@ import org.marketcetera.admin.auth.DBAuthenticator;
 import org.marketcetera.admin.dao.PersistentPermissionFactory;
 import org.marketcetera.admin.dao.PersistentRoleFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.provisioning.ProvisioningAgent;
 import org.marketcetera.admin.rpc.AdminRpcService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
@@ -48,6 +49,8 @@ import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.strategy.StrategyRpcServer;
+import org.marketcetera.strategy.StrategyService;
+import org.marketcetera.strategy.StrategyServiceImpl;
 import org.marketcetera.strategy.dao.PersistentStrategyInstanceFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
@@ -128,6 +131,29 @@ public class DareApplication
                               org.marketcetera.core.Version.build_time,
                               org.marketcetera.core.Version.build_repository,
                               org.marketcetera.core.Version.build_path);
+    }
+    /**
+     * Get the strategy service bean.
+     *
+     * @return a <code>StrategyService</code> value
+     */
+    @Bean
+    public StrategyService getStrategyService()
+    {
+        // some bizarre something is making this be explicitly declared here even though it's a Component
+        return new StrategyServiceImpl();
+    }
+    /**
+     * Get the provisioning agent bean.
+     *
+     * @return a <code>ProvisioningAgent</code> value
+     */
+    @Bean
+    public ProvisioningAgent getProvisioningAgent()
+    {
+        ProvisioningAgent provisioningAgent = new ProvisioningAgent();
+        provisioningAgent.setProvisioningDirectory(provisioningDirectory);
+        return provisioningAgent;
     }
     /**
      * Get the XmlService value.
@@ -344,7 +370,7 @@ public class DareApplication
      * Get the admin RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return an <code>AdminRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -360,7 +386,7 @@ public class DareApplication
      * Get the Trade RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>TradeRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -376,12 +402,12 @@ public class DareApplication
      * Get the Strategy RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionbManager&lt;ServerSession&gt;</code> value
      * @return a <code>TradeRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
     public StrategyRpcServer<ServerSession> getStrategyRpcService(@Autowired Authenticator inAuthenticator,
-                                                                   @Autowired SessionManager<ServerSession> inSessionManager)
+                                                                  @Autowired SessionManager<ServerSession> inSessionManager)
     {
         StrategyRpcServer<ServerSession> strategyRpcServer = new StrategyRpcServer<>();
         strategyRpcServer.setAuthenticator(inAuthenticator);
@@ -392,7 +418,7 @@ public class DareApplication
      * Get the Fix Admin RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>FixAdminRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -408,7 +434,7 @@ public class DareApplication
      * Get the Data Flow RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>DataFlowRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -424,7 +450,7 @@ public class DareApplication
      * Get the Market Data RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -440,7 +466,7 @@ public class DareApplication
      * Get the Cluster RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>ClusterRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -686,4 +712,9 @@ public class DareApplication
      */
     @Value("${metc.xml.context.path.classes}")
     private List<String> contextPathClasses;
+    /**
+     * provisioning directory base
+     */
+    @Value("${metc.provisioning.directory:./instances/provisioning}")
+    private String provisioningDirectory;
 }

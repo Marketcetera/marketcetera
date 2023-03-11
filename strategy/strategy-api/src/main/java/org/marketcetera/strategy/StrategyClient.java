@@ -36,12 +36,14 @@ public interface StrategyClient
      * @returns an <code>StrategyStatus</code> value
      */
     StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
-//    void uploadFile(Path path,
-//                    String inFilename,
-//                    String inFileType,
-//                    String inHash,
-//                    String inNonce)
-//            throws IOException;
+    /**
+     * 
+     *
+     *
+     * @param inRequest
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
     void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException;
 }
