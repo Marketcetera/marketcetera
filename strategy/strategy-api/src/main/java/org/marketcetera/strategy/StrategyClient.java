@@ -3,6 +3,13 @@
 //
 package org.marketcetera.strategy;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+
+import org.marketcetera.core.BaseClient;
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,20 +19,29 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface StrategyClient
-        extends org.marketcetera.core.BaseClient
+        extends BaseClient
 {
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance></code> value
+     * @returns a <code>Collection&lt;? extends StrategyInstance&gt;</code> value
      */
-    java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> getStrategyInstances();
+    Collection<? extends StrategyInstance> getStrategyInstances();
     /**
      * Load a new strategy instances.
      *
-     * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyInstance</code> value
-     * @returns an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     * @param inStrategyInstance a <code>StrategyInstance</code> value
+     * @returns an <code>StrategyStatus</code> value
      */
-    org.marketcetera.strategy.StrategyStatus loadStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance);
+    StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
+//    void uploadFile(Path path,
+//                    String inFilename,
+//                    String inFileType,
+//                    String inHash,
+//                    String inNonce)
+//            throws IOException;
+    void uploadFile(FileUploadRequest inRequest)
+            throws IOException, NoSuchAlgorithmException;
 }

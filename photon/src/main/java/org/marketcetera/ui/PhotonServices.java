@@ -1,7 +1,5 @@
 package org.marketcetera.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
@@ -11,8 +9,6 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -21,8 +17,6 @@ import org.girod.javafx.svgimage.SVGLoader;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.time.TimeFactoryImpl;
@@ -61,38 +55,6 @@ public abstract class PhotonServices
     {
         // TODO maybe cache these?
         return new Image(inName);
-    }
-    public static String getFileChecksum(File inFile)
-            throws NoSuchAlgorithmException, IOException
-    {
-        return getFileChecksum(MessageDigest.getInstance("SHA-256"),
-                               inFile);
-    }
-    public static String getFileChecksum(MessageDigest inDigest,
-                                         File inFile)
-            throws IOException
-    {
-        //Get file input stream for reading the file content
-        FileInputStream fis = new FileInputStream(inFile);
-        //Create byte array to read data in chunks
-        byte[] byteArray = new byte[1024];
-        int bytesCount = 0; 
-        //Read file data and update in message digest
-        while ((bytesCount = fis.read(byteArray)) != -1) {
-            inDigest.update(byteArray, 0, bytesCount);
-        };
-        //close the stream; We don't need it now.
-        fis.close();
-        //Get the hash's bytes
-        byte[] bytes = inDigest.digest();
-        //This bytes[] has bytes in decimal format;
-        //Convert it to hexadecimal format
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i< bytes.length ;i++) {
-            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-        }
-        //return complete hash
-        return sb.toString();
     }
     public static Optional<User> getCurrentUser()
     {
@@ -293,19 +255,12 @@ public abstract class PhotonServices
                 this.setText(null);
                 this.setGraphic(null);
                 if(!isEmpty){
-                    this.setText(periodFormatter.print(inItem));
+                    this.setText(TimeFactoryImpl.periodFormatter.print(inItem));
                 }
             }
         };
         return tableCell;
     }
-    public static final PeriodFormatter periodFormatter = new PeriodFormatterBuilder().minimumPrintedDigits(2)
-            .appendYears().appendSeparator(":")
-            .appendMonths().appendSeparator(":")
-            .appendDays().appendSeparator(":").printZeroAlways()
-            .appendHours().appendSeparator(":")
-            .appendMinutes().appendSeparator(":")
-            .appendSeconds().toFormatter();
     public static final DateTimeFormatter isoDateFormatter = TimeFactoryImpl.FULL_MILLISECONDS;
     public static String successMessage = String.format("-fx-text-fill: GREEN;");
     public static String errorMessage = String.format("-fx-text-fill: RED;");

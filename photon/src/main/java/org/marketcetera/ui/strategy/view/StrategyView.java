@@ -14,6 +14,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.strategy.FileUploadStatus;
+import org.marketcetera.strategy.SimpleFileUploadRequest;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyInstanceFactory;
 import org.marketcetera.strategy.StrategyPermissions;
@@ -192,9 +194,43 @@ public class StrategyView
                 newStrategyInstance.setFilename(nonce + ".jar");
                 newStrategyInstance.setName(name);
                 newStrategyInstance.setUser(owner);
-                String shaChecksum = PhotonServices.getFileChecksum(result);
-                newStrategyInstance.setHash(shaChecksum);
-                // TODO transfer file
+                // transfer file - this will block? need to use a callback instead?
+                SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(result.getAbsolutePath(),
+                                                                                    nonce) {
+                    /* (non-Javadoc)
+                     * @see org.marketcetera.strategy.FileUploadRequest#onProgress(double)
+                     */
+                    @Override
+                    public void onProgress(double inPercentComplete)
+                    {
+                        SLF4JLoggerProxy.trace(StrategyView.class,
+                                               "Reporting file upload progress: {}",
+                                               inPercentComplete);
+                        // TODO update progress bar in strategy table
+                    }
+                    /* (non-Javadoc)
+                     * @see org.marketcetera.strategy.FileUploadRequest#onStatus(org.marketcetera.strategy.FileUploadStatus)
+                     */
+                    @Override
+                    public void onStatus(FileUploadStatus inStatus)
+                    {
+                        SLF4JLoggerProxy.trace(StrategyView.class,
+                                               "Reporting file upload status: {}",
+                                               inStatus);
+                        // TODO update status in progress bar and
+                    }
+                    /* (non-Javadoc)
+                     * @see org.marketcetera.strategy.FileUploadRequest#onError(java.lang.Throwable)
+                     */
+                    @Override
+                    public void onError(Throwable inThrowable)
+                    {
+                        SLF4JLoggerProxy.trace(StrategyView.class,
+                                               inThrowable,
+                                               "Reporting file upload error");
+                    }
+                };
+                strategyClient.uploadFile(uploadRequest);
                 StrategyStatus status = strategyClient.loadStrategyInstance(newStrategyInstance);
                 SLF4JLoggerProxy.info(this,
                                       "Strategy '{}' loaded for {} with status {}",

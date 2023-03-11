@@ -3,21 +3,6 @@
 //
 package org.marketcetera.strategy;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-
-import org.marketcetera.core.Preserve;
-import org.marketcetera.strategy.StrategyRpc.FileUploadResponse;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-
-import com.google.protobuf.ByteString;
-
-import io.grpc.stub.StreamObserver;
-
 /* $License$ */
 
 /**
@@ -27,7 +12,6 @@ import io.grpc.stub.StreamObserver;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public class StrategyRpcServer<SessionClazz>
         extends org.marketcetera.rpc.server.AbstractRpcService<SessionClazz,org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase>
 {
@@ -56,30 +40,6 @@ public class StrategyRpcServer<SessionClazz>
     {
         service = new Service();
         super.start();
-    }
-    private OutputStream getFilePath(StrategyRpc.FileUploadRequest request)
-            throws IOException
-    {
-        String fileName = request.getMetadata().getName() + ".jar";
-        return Files.newOutputStream(SERVER_BASE_PATH.resolve(fileName),
-                                     StandardOpenOption.CREATE,
-                                     StandardOpenOption.APPEND);
-    }
-    private static final Path SERVER_BASE_PATH = Paths.get("/tmp/");
-    private void writeFile(OutputStream writer,
-                           ByteString content)
-            throws IOException
-    {
-        writer.write(content.toByteArray());
-        writer.flush();
-    }
-
-    private void closeFile(OutputStream writer){
-        try {
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
     /**
      * StrategyRpc Service implementation.
@@ -129,9 +89,10 @@ public class StrategyRpcServer<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.UnloadStrategyAction.name());
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StartStrategyAction.name());
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StopStrategyAction.name());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.ClearStrategyEventsAction.name());
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.newBuilder();
-                java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.getStrategyInstances(sessionHolder.getUser());
-                serviceData.forEach(strategyInstance -> StrategyRpcUtil.getRpcStrategyInstance(strategyInstance).ifPresent(rpcStrategyInstance -> responseBuilder.addStrategyInstances(rpcStrategyInstance)));
+                //TODO return type
+                java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.getStrategyInstances();
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
                 inResponseObserver.onNext(response);
@@ -152,8 +113,8 @@ public class StrategyRpcServer<SessionClazz>
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.LoadStrategyAction.name());
                 org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse.newBuilder();
                 org.marketcetera.strategy.StrategyInstance strategyInstance = StrategyRpcUtil.getStrategyInstance(inLoadStrategyInstanceRequest.getStrategyInstance(),strategyInstanceFactory,userFactory).orElse(null);
+                //TODO return type
                 org.marketcetera.strategy.StrategyStatus serviceData = strategyService.loadStrategyInstance(strategyInstance);
-                StrategyRpcUtil.getRpcStrategyStatus(serviceData).ifPresent(rpcStatus -> responseBuilder.setStatus(rpcStatus));
                 org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
                 inResponseObserver.onNext(response);
@@ -161,56 +122,6 @@ public class StrategyRpcServer<SessionClazz>
             } catch (Exception e) {
                 handleError(e,inResponseObserver);
             }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#uploadFile(io.grpc.stub.StreamObserver)
-         */
-        @Override
-        public StreamObserver<StrategyRpc.FileUploadRequest> uploadFile(StreamObserver<StrategyRpc.FileUploadResponse> inResponseObserver)
-        {
-            return new StreamObserver<StrategyRpc.FileUploadRequest>() {
-                // upload context variables
-                OutputStream writer;
-                StrategyTypesRpc.FileUploadStatus status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS;
-
-                @Override
-                public void onNext(StrategyRpc.FileUploadRequest fileUploadRequest)
-                {
-                    try {
-                        switch(fileUploadRequest.getRequestCase()) {
-                            case FILE:
-                                writeFile(writer,
-                                          fileUploadRequest.getFile().getContent());
-                                break;
-                            case METADATA:
-                                writer = getFilePath(fileUploadRequest);
-                                break;
-                            case REQUEST_NOT_SET:
-                            default:
-                                throw new UnsupportedOperationException("Request case not set in file upload request");
-                        }
-                    } catch (IOException e) {
-                        SLF4JLoggerProxy.error(StrategyRpcServer.this,
-                                               e);
-                        this.onError(e);
-                    }
-                }
-                @Override
-                public void onError(Throwable throwable)
-                {
-                    status = StrategyTypesRpc.FileUploadStatus.FAILED;
-                    this.onCompleted();
-                }
-                @Override
-                public void onCompleted()
-                {
-                    closeFile(writer);
-                    status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS.equals(status) ? StrategyTypesRpc.FileUploadStatus.SUCCESS : status;
-                    FileUploadResponse response = FileUploadResponse.newBuilder().setStatus(status).build();
-                    inResponseObserver.onNext(response);
-                    inResponseObserver.onCompleted();
-                }
-            };
         }
     }
     /**

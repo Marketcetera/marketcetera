@@ -67,11 +67,16 @@
 *****************
 * strategy view *
 *****************
+- cancel big uploads
 - strategy assigned a name on load? assigned a unique id? what's the difference? don't need id and name. name is unique for that user?
 - run on different cluster members? report strategy status on all cluster members
 - special category of events?
-- scp programmatically? use grpc file transfer for security
+x scp programmatically? use grpc file transfer for security
+- need a progress upload callback for file upload
+x do hash only once - create file upload request
 - compare meta data on activate or discard?
+- run multiple versions of an uploaded stratergy w/o having to upload it again (duplicate from strategy context menu?)
+- run a strategy with passed parameters
 - events
 -- strategy started
 -- strategy error

@@ -3,16 +3,32 @@
 //
 package org.marketcetera.strategy;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.Validate;
+import org.joda.time.Period;
+import org.marketcetera.admin.User;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.strategy.StrategyRpc.FileUploadRequest;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +37,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.protobuf.ByteString;
+
+import io.grpc.stub.StreamObserver;
 
 /* $License$ */
 
@@ -85,6 +104,121 @@ public class StrategyRpcClient
             }}
         );
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#uploadFile(org.marketcetera.strategy.FileUploadRequest)
+     */
+    @Override
+    public void uploadFile(org.marketcetera.strategy.FileUploadRequest inRequest)
+            throws IOException, NoSuchAlgorithmException
+    {
+        // TODO this wants to be async, maybe
+        FileUploadObserver fileUploadObserver = new FileUploadObserver(inRequest);
+        // request observer
+        StreamObserver<StrategyRpc.FileUploadRequest> streamObserver = getAsyncStub().uploadFile(fileUploadObserver);
+        File uploadFile = new File(inRequest.getFilePath());
+        Validate.isTrue(uploadFile.canRead());
+        String fileType = FilenameUtils.getExtension(inRequest.getFilePath());
+        String filename = FilenameUtils.getBaseName(inRequest.getFilePath());
+        String inHash = PlatformServices.getFileChecksum(uploadFile);
+        FileUploadRequest requestMetadata = FileUploadRequest.newBuilder().setMetadata(StrategyTypesRpc.FileUploadMetaData.newBuilder()
+            .setName(filename)
+            .setType(fileType)
+            .setHash(inHash)
+            .setNonce(inRequest.getNonce())
+            .setRequestTimestamp(BaseRpcUtil.getTimestampValue(new Date()).get())
+            .build()).build();
+        SLF4JLoggerProxy.trace(this,
+                               "Submitting {}",
+                               requestMetadata);
+        long startTimeMillis = System.currentTimeMillis();
+        streamObserver.onNext(requestMetadata);
+        Path filePath = Paths.get(inRequest.getFilePath());
+        long fileSize = Files.size(filePath);
+        fileUploadObserver.setFileSize(fileSize);
+        // upload file as chunk
+        InputStream inputStream = Files.newInputStream(filePath);
+        byte[] bytes = new byte[4096];
+        int size;
+        while((size = inputStream.read(bytes)) > 0) {
+            FileUploadRequest uploadRequest = FileUploadRequest.newBuilder()
+                    .setFile(StrategyTypesRpc.UploadFile.newBuilder().setContent(ByteString.copyFrom(bytes,0 ,size)).build()).build();
+            streamObserver.onNext(uploadRequest);
+            fileUploadObserver.incrementBytesUploaded(size);
+        }
+        // close the stream
+        inputStream.close();
+        streamObserver.onCompleted();
+        long endTimeMillis = System.currentTimeMillis();
+        long elapsedTimeMillis = endTimeMillis - startTimeMillis;
+        Period fileUploadPeriod = new Period(elapsedTimeMillis);
+        SLF4JLoggerProxy.trace(this,
+                               "File upload completed in {}, status: {}",
+                               TimeFactoryImpl.periodFormatter.print(fileUploadPeriod),
+                               fileUploadObserver.currentStatus);
+    }
+    private static class FileUploadObserver
+            implements StreamObserver<StrategyRpc.FileUploadResponse>
+    {
+        /**
+         * Create a new FileUploadObserver instance.
+         *
+         * @param inRequest
+         */
+        public FileUploadObserver(org.marketcetera.strategy.FileUploadRequest inRequest)
+        {
+            request = inRequest;
+        }
+        /**
+         *
+         *
+         * @param inSize
+         */
+        public void incrementBytesUploaded(int inSize)
+        {
+            bytesUploaded += inSize;
+            double percentComplete = bytesUploaded / fileSize;
+            request.onProgress(percentComplete);
+        }
+        private double bytesUploaded = 0;
+        /**
+         *
+         *
+         * @param inFileSize
+         */
+        private void setFileSize(long inFileSize)
+        {
+            fileSize = inFileSize;
+        }
+        private double fileSize;
+        private final org.marketcetera.strategy.FileUploadRequest request;
+        @Override
+        public void onNext(StrategyRpc.FileUploadResponse inFileUploadResponse)
+        {
+            currentStatus = inFileUploadResponse.getStatus();
+            SLF4JLoggerProxy.trace(StrategyRpcClient.class,
+                                   "File upload status: {}",
+                                   currentStatus);
+        }
+        @Override
+        public void onError(Throwable inError)
+        {
+            request.onError(inError);
+            request.onStatus(FileUploadStatus.FAILED);
+        }
+        @Override
+        public void onCompleted()
+        {
+            completed = true;
+            SLF4JLoggerProxy.trace(StrategyRpcClient.class,
+                                   "File upload completed, status is: {}, error is: {}",
+                                   currentStatus,
+                                   uploadError);
+            request.onStatus(uploadError == null ? FileUploadStatus.SUCCESS : FileUploadStatus.FAILED);
+        }
+        private boolean completed = false;
+        private Throwable uploadError;
+        private StrategyTypesRpc.FileUploadStatus currentStatus = StrategyTypesRpc.FileUploadStatus.UNRECOGNIZED;
+    }    
     /* (non-Javadoc)
      * @see AbstractRpcClient#getBlockingStub(io.grpc.Channel)
      */
