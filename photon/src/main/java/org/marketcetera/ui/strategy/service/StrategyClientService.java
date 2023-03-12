@@ -3,6 +3,7 @@ package org.marketcetera.ui.strategy.service;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.strategy.FileUploadRequest;
@@ -94,6 +95,16 @@ public class StrategyClientService
     public static StrategyClientService getInstance()
     {
         return ServiceManager.getInstance().getService(StrategyClientService.class);
+    }
+    /**
+     * Finds the strategy instance with the given name.
+     *
+     * @param inName a <code>String</code> value
+     * @returns a <code>java.util.Optional<? extends StrategyInstance></code> value
+     */
+    public Optional<? extends StrategyInstance> findByName(String inName)
+    {
+        return strategyClient.findByName(inName);
     }
     /**
      * Requests loaded strategy instances.

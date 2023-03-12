@@ -193,6 +193,28 @@ public class StrategyRpcServer<SessionClazz>
             }
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#findByName(org.marketcetera.strategy.StrategyRpc.FindStrategyInstanceByNameRequest ,io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void findByName(org.marketcetera.strategy.StrategyRpc.FindStrategyInstanceByNameRequest inFindStrategyInstanceByNameRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.FindStrategyInstanceByNameResponse> inResponseObserver)
+        {
+            try {
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received findByNameRequest for {}",inFindStrategyInstanceByNameRequest);
+                org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inFindStrategyInstanceByNameRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.ReadStrategyAction.name());
+                org.marketcetera.strategy.StrategyRpc.FindStrategyInstanceByNameResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.FindStrategyInstanceByNameResponse.newBuilder();
+                String name = inFindStrategyInstanceByNameRequest.getName();
+                java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.findByName(name);
+                serviceData.ifPresent(strategyInstance -> StrategyRpcUtil.getRpcStrategyInstance(strategyInstance).ifPresent(rpcStrategyInstance -> responseBuilder.setStrategyInstance(rpcStrategyInstance)));
+                org.marketcetera.strategy.StrategyRpc.FindStrategyInstanceByNameResponse response = responseBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#loadStrategyInstance(org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceRequest ,StreamObserver)
          */
         @Override
@@ -207,6 +229,29 @@ public class StrategyRpcServer<SessionClazz>
                 org.marketcetera.strategy.StrategyStatus serviceData = strategyService.loadStrategyInstance(strategyInstance);
                 StrategyRpcUtil.getRpcStrategyStatus(serviceData).ifPresent(rpcStatus -> responseBuilder.setStatus(rpcStatus));
                 org.marketcetera.strategy.StrategyRpc.LoadStrategyInstanceResponse response = responseBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#unloadStrategyInstance(org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceRequest ,io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void unloadStrategyInstance(org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceRequest inUnloadStrategyInstanceRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse> inResponseObserver)
+        {
+            try {
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inUnloadStrategyInstanceRequest);
+                org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inUnloadStrategyInstanceRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.UnloadStrategyAction.name());
+                org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse.newBuilder();
+                org.marketcetera.strategy.StrategyInstance strategyInstance = StrategyRpcUtil.getStrategyInstance(inUnloadStrategyInstanceRequest.getStrategyInstance(),
+                                                                                                                  strategyInstanceFactory,
+                                                                                                                  userFactory).orElse(null);
+                strategyService.unloadStrategyInstance(strategyInstance);
+                org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();

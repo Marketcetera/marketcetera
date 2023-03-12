@@ -99,7 +99,7 @@ public class StrategyServiceImpl
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>java.util.Collection<StrategyInstance></code> value
+     * @returns a <code>Collection<StrategyInstance></code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
@@ -109,8 +109,29 @@ public class StrategyServiceImpl
         // TODO probably need to factor in supervisor permissions for "read"
         return strategyInstanceDao.findAll();
     }
+    /**
+     * Unload a strategy instance.
+     *
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void unloadStrategyInstance(StrategyInstance inStrategyInstance)
+    {
+        Validate.notNull(inStrategyInstance,
+                         "Strategy instance required");
+        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstance.getName());
+        Validate.isTrue(strategyInstanceOption.isPresent(),
+                        "No strategy instance by name '" + inStrategyInstance.getName() + "'");
+        PersistentStrategyInstance strategyInstance = strategyInstanceOption.get();
+        Validate.isTrue(strategyInstance.getStatus().isUnloadable(),
+                        "Strategy '" + strategyInstance.getName() + "' cannot be unloaded at status '" + strategyInstance.getStatus() + "'");
+        // TODO need to put the correct filename in here
+//        FileUtils.deleteQuietly(new File(strategyInstance.getFilename()));
+        strategyInstanceDao.delete(strategyInstance);
+    }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyService#getIncomingStrategyDirectory()
+     * @see StrategyService#getIncomingStrategyDirectory()
      */
     @Override
     public Path getIncomingStrategyDirectory()
@@ -118,7 +139,7 @@ public class StrategyServiceImpl
         return incomingStrategyDirectoryPath;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyService#getTemporaryStrategyDirectory()
+     * @see StrategyService#getTemporaryStrategyDirectory()
      */
     @Override
     public Path getTemporaryStrategyDirectory()
@@ -187,14 +208,17 @@ public class StrategyServiceImpl
         pInstance = strategyInstanceDao.save(pInstance);
         return pInstance.getStatus();
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyService#findByName(java.lang.String)
+    /**
+     * Finds the strategy instance with the given name.
+     *
+     * @param inName a <code>String</code> value
+     * @returns a <code>Optional<? extends StrategyInstance></code> value
      */
     @Override
-    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public Optional<? extends StrategyInstance> findByName(String inStrategyInstanceName)
+    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+    public Optional<? extends StrategyInstance> findByName(String inName)
     {
-        return strategyInstanceDao.findByName(inStrategyInstanceName);
+        return strategyInstanceDao.findByName(inName);
     }
     private Path incomingStrategyDirectoryPath;
     private Path temporaryStrategyDirectoryPath;

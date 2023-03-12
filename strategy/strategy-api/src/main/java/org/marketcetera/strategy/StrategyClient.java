@@ -6,6 +6,7 @@ package org.marketcetera.strategy;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.Preserve;
@@ -37,12 +38,24 @@ public interface StrategyClient
      */
     StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
     /**
-     * 
+     * Finds the strategy instance with the given name.
      *
+     * @param inName a <code>String</code> value
+     * @returns a <code>Optional<? extends StrategyInstance></code> value
+     */
+    Optional<? extends StrategyInstance> findByName(String inName);
+    /**
+     * Unload a strategy instance.
      *
-     * @param inRequest
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     */
+    void unloadStrategyInstance(StrategyInstance inStrategyInstance);
+    /**
+     * Upload the file in the given file request.
+     *
+     * @param inRequest a <code>FileUploadRequest</code> value
+     * @throws IOException if the file could not be read
+     * @throws NoSuchAlgorithmException if the file could not be hashed
      */
     void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException;

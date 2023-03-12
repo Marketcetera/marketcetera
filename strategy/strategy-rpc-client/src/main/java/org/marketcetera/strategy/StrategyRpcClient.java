@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang3.Validate;
@@ -57,6 +58,34 @@ public class StrategyRpcClient
         implements StrategyClient
 {
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#findByName(String)
+     */
+    @Override
+    public java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance> findByName(String inName)
+    {
+        return executeCall(new java.util.concurrent.Callable<java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance>>() {
+            @Override
+            public java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance> call()
+                    throws Exception
+            {
+                StrategyRpc.FindStrategyInstanceByNameRequest.Builder requestBuilder = StrategyRpc.FindStrategyInstanceByNameRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setName(inName);
+                StrategyRpc.FindStrategyInstanceByNameRequest request = requestBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.FindStrategyInstanceByNameResponse response = getBlockingStub().findByName(request);
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                if(response.hasStrategyInstance()) {
+                    return StrategyRpcUtil.getStrategyInstance(response.getStrategyInstance(),
+                                                               strategyInstanceFactory,
+                                                               userFactory);
+                } else {
+                    return Optional.empty();
+                }
+            }}
+        );
+    }
+    /* (non-Javadoc)
      * @see StrategyClient#getStrategyInstances()
      */
     @Override
@@ -78,6 +107,28 @@ public class StrategyRpcClient
                                                                                                                        strategyInstanceFactory,
                                                                                                                        userFactory).ifPresent(strategyInstance -> results.add(strategyInstance)));
                 return results;
+            }}
+        );
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#unloadStrategyInstance(org.marketcetera.strategy.StrategyInstance)
+     */
+    @Override
+    public void unloadStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance)
+    {
+        executeCall(new java.util.concurrent.Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                StrategyRpc.UnloadStrategyInstanceRequest.Builder requestBuilder = StrategyRpc.UnloadStrategyInstanceRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                StrategyRpcUtil.getRpcStrategyInstance(inStrategyInstance).ifPresent(rpcStrategyInstance -> requestBuilder.setStrategyInstance(rpcStrategyInstance));
+                StrategyRpc.UnloadStrategyInstanceRequest request = requestBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.UnloadStrategyInstanceResponse response = getBlockingStub().unloadStrategyInstance(request);
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                return null;
             }}
         );
     }
@@ -197,8 +248,6 @@ public class StrategyRpcClient
         {
             fileSize = inFileSize;
         }
-        private double fileSize;
-        private final org.marketcetera.strategy.FileUploadRequest request;
         @Override
         public void onNext(StrategyRpc.FileUploadResponse inFileUploadResponse)
         {
@@ -223,6 +272,8 @@ public class StrategyRpcClient
                                    uploadError);
             request.onStatus(uploadError == null ? FileUploadStatus.SUCCESS : FileUploadStatus.FAILED);
         }
+        private double fileSize;
+        private final org.marketcetera.strategy.FileUploadRequest request;
         private boolean completed = false;
         private Throwable uploadError;
         private StrategyTypesRpc.FileUploadStatus currentStatus = StrategyTypesRpc.FileUploadStatus.UNRECOGNIZED;

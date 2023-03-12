@@ -29,13 +29,12 @@ public interface StrategyService
      */
     Collection<? extends StrategyInstance> getStrategyInstances(String inCurrentUserName);
     /**
-     * 
+     * Finds the strategy instance with the given name.
      *
-     *
-     * @param inStrategyInstanceName
-     * @return
+     * @param inName a <code>String</code> value
+     * @returns an <code>Optional<? extends StrategyInstance></code> value
      */
-    Optional<? extends StrategyInstance> findByName(String inStrategyInstanceName);
+    Optional<? extends StrategyInstance> findByName(String inName);
     /**
      * Load a new strategy instances.
      *
@@ -43,6 +42,12 @@ public interface StrategyService
      * @returns an <code>StrategyStatus</code> value
      */
     StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
+    /**
+     * Unload a strategy instance.
+     *
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     */
+    void unloadStrategyInstance(StrategyInstance inStrategyInstance);
     /**
      * 
      *

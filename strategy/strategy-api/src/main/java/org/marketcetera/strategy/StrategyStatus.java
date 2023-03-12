@@ -3,6 +3,9 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.marketcetera.core.Preserve;
 
 /* $License$ */
@@ -37,4 +40,17 @@ public enum StrategyStatus
      * the strategy is being prepared to be loaded
      */
     PREPARING;
+    /**
+     * Indicates that a strategy can be unloaded.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isUnloadable()
+    {
+        return unloadable.contains(this);
+    }
+    /**
+     * strategy statuses that indicate a strategy can be unloaded
+     */
+    private static final Set<StrategyStatus> unloadable = EnumSet.of(STOPPED,ERROR,LOADING,PREPARING);
 }

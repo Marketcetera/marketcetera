@@ -32,6 +32,16 @@ message LoadStrategyInstanceResponse {
     StrategyStatus status = 1;
 }
 
+// unloads a new strategy instance
+message UnloadStrategyInstanceRequest {
+    string sessionId = 1; // session id of the authenticated session
+    StrategyInstance strategyInstance = 2;
+}
+
+// returns the unload strategy instance response
+message UnloadStrategyInstanceResponse {
+}
+
 message FileUploadRequest {
   oneof request {
     FileUploadMetaData metadata = 1;
@@ -44,6 +54,17 @@ message FileUploadResponse {
   FileUploadStatus status = 2;
 }
 
+// get the strategy instance with the given name
+message FindStrategyInstanceByNameRequest {
+    string sessionId = 1; // session id of the authenticated session
+    string name = 2; // name of the strategy instance to find
+}
+
+// returns the find by name strategy instance response
+message FindStrategyInstanceByNameResponse {
+    StrategyInstance strategyInstance = 1;
+}
+
 // services for Strategy
 service StrategyRpcService {
     rpc login(LoginRequest) returns (LoginResponse); // starts the session
@@ -51,5 +72,7 @@ service StrategyRpcService {
     rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse); // keeps the session alive
     rpc getStrategyInstances(ReadStrategyInstancesRequest) returns (ReadStrategyInstancesResponse); // requests loaded strategy instances
     rpc loadStrategyInstance(LoadStrategyInstanceRequest) returns (LoadStrategyInstanceResponse); // load a new strategy instances
+    rpc unloadStrategyInstance(UnloadStrategyInstanceRequest) returns (UnloadStrategyInstanceResponse); // unload a strategy instance
+    rpc findByName(FindStrategyInstanceByNameRequest) returns (FindStrategyInstanceByNameResponse); // finds the strategy instance with the given name
     rpc uploadFile(stream FileUploadRequest) returns(FileUploadResponse);
 }

@@ -5,9 +5,11 @@ import org.joda.time.Period;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyStatus;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -27,7 +29,21 @@ public class DisplayStrategy
      * Create a new DisplayStrategy instance.
      */
     public DisplayStrategy() {}
-    
+    /**
+     * Create a new DisplayStrategy instance.
+     *
+     * @param inName
+     * @param inOwnerName
+     */
+    public DisplayStrategy(String inName,
+                           String inOwnerName)
+    {
+        strategyName.setValue(inName);
+        owner.setValue(inOwnerName);
+        strategyStatus.setValue(StrategyStatus.PREPARING);
+        uploadProgress.setValue(0.0);
+        started.setValue(new Period(0));
+    }
     /**
      * Create a new DisplayStrategy instance.
      *
@@ -81,14 +97,19 @@ public class DisplayStrategy
     /**
      * Get the strategyStatus value.
      *
-     * @return a <code>ReadOnlyObjectProperty&lt;StrategyStatus&gt;</code> value
+     * @return an <code>ObjectProperty&lt;StrategyStatus&gt;</code> value
      */
-    public ReadOnlyObjectProperty<StrategyStatus> strategyStatusProperty()
+    public ObjectProperty<StrategyStatus> strategyStatusProperty()
     {
         return strategyStatus;
+    }
+    public DoubleProperty uploadProgressProperty()
+    {
+        return uploadProgress;
     }
     private final StringProperty strategyName = new SimpleStringProperty();
     private final ObjectProperty<Period> started = new SimpleObjectProperty<>();
     private final StringProperty owner = new SimpleStringProperty();
     private final ObjectProperty<StrategyStatus> strategyStatus = new SimpleObjectProperty<>();
+    private final DoubleProperty uploadProgress = new SimpleDoubleProperty();
 }

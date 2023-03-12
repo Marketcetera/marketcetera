@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -16,9 +17,7 @@ import org.marketcetera.admin.User;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.strategy.FileUploadStatus;
 import org.marketcetera.strategy.SimpleFileUploadRequest;
-import org.marketcetera.strategy.SimpleStrategyInstance;
 import org.marketcetera.strategy.StrategyInstance;
-import org.marketcetera.strategy.StrategyInstanceFactory;
 import org.marketcetera.strategy.StrategyPermissions;
 import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.ui.PhotonServices;
@@ -27,13 +26,14 @@ import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -41,22 +41,30 @@ import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /* $License$ */
@@ -174,8 +182,6 @@ public class StrategyView
         }
         User owner = ownerOption.get();
         // TODO to avoid duplicates, check the existing strategies for this user and add a retry
-        String name = MobyNamesGenerator.getRandomName();
-        String nonce = UUID.randomUUID().toString();
         FileChooser strategyFileChooser = new FileChooser();
         strategyFileChooser.setTitle("Choose the Strategy JAR File");
         strategyFileChooser.getExtensionFilters().add(new ExtensionFilter("JAR Files",
@@ -188,16 +194,78 @@ public class StrategyView
                                                              AlertType.WARNING));
                 return;
             }
+            String name = MobyNamesGenerator.getRandomName();
+            Dialog<String> nameConfirmationDialog = new Dialog<>();
+            GridPane nameConfirmationGrid = new GridPane();
+            nameConfirmationGrid.setHgap(10);
+            nameConfirmationGrid.setVgap(10);
+            nameConfirmationGrid.setPadding(new Insets(20,150,10,10));
+            TextField nameField = new TextField();
+            Label adviceLabel = new Label();
+            int rowCount = 0,colCount = 0;
+            nameConfirmationGrid.add(new Label("Strategy Name"),colCount,rowCount);
+            nameConfirmationGrid.add(nameField,++colCount,rowCount); colCount = 0;
+            nameConfirmationGrid.add(adviceLabel,colCount,++rowCount,2,1); colCount = 0;
+            final BooleanProperty disableOkButton = new SimpleBooleanProperty(false);
+            ButtonType okButtonType = new ButtonType("Ok",
+                                                     ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButton = new ButtonType("Cancel",
+                                                     ButtonBar.ButtonData.CANCEL_CLOSE);
+            nameField.textProperty().addListener((observableValue,oldValue,newValue) -> {
+                String value = StringUtils.trimToNull(newValue);
+                adviceLabel.textProperty().set("");
+                adviceLabel.setStyle(PhotonServices.successMessage);
+                nameField.setStyle(PhotonServices.successStyle);
+                if(value == null) {
+                    adviceLabel.textProperty().set("Unique name required");
+                    adviceLabel.setStyle(PhotonServices.errorMessage);
+                    nameField.setStyle(PhotonServices.errorStyle);
+                    disableOkButton.set(true);
+                    return;
+                }
+                Optional<? extends StrategyInstance> strategyInstanceOption = strategyClient.findByName(value);
+                if(strategyInstanceOption.isPresent()) {
+                    adviceLabel.textProperty().set("Unique name required");
+                    adviceLabel.setStyle(PhotonServices.errorMessage);
+                    nameField.setStyle(PhotonServices.errorStyle);
+                    disableOkButton.set(true);
+                } else {
+                    adviceLabel.textProperty().set("");
+                    adviceLabel.setStyle(PhotonServices.successMessage);
+                    nameField.setStyle(PhotonServices.successStyle);
+                    disableOkButton.set(false);
+                }
+            });
+            nameField.textProperty().set(name);
+            DialogPane nameConfirmationDialogPane = new DialogPane();
+            nameConfirmationDialogPane.setContent(nameConfirmationGrid);
+            nameConfirmationDialog.dialogPaneProperty().set(nameConfirmationDialogPane);
+            nameConfirmationDialog.setTitle("Confirm Strategy Name");
+            nameConfirmationDialogPane.getButtonTypes().setAll(okButtonType,
+                                                               cancelButton);
+            nameConfirmationDialog.getDialogPane().lookupButton(okButtonType).disableProperty().bind(disableOkButton);
+            PhotonServices.style(nameConfirmationDialogPane.getScene());
+            nameConfirmationDialog.initModality(Modality.APPLICATION_MODAL);
+            nameConfirmationDialog.setResultConverter(dialogButton -> {
+                if(dialogButton == okButtonType) {
+                    return StringUtils.trimToNull(nameField.getText());
+                }
+                return null;
+            });
+            Optional<String> nameOption = nameConfirmationDialog.showAndWait();
+            if(nameOption.isEmpty()) {
+                webMessageService.post(new NotificationEvent("Load Strategy",
+                                                             "Strategy load canceled",
+                                                             AlertType.INFORMATION));
+                return;
+            }
+            name = nameOption.get();
+            String nonce = UUID.randomUUID().toString();
+            final DisplayStrategy newItem = new DisplayStrategy(name,
+                                                                owner.getName());
+            strategyTable.getItems().add(newItem);
             try {
-                // TODO as soon as the upload is confirmed, create a Strategy Instance on the remote server with status set to PREPARING
-                //  include:
-                //  - user-assigned but unique name
-                //  - root JAR file name
-                //  - owner
-                //  - nonce
-                // TODO allow the user to specify a name
-                // TODO check that the name is unique
-                // transfer file - this will block? need to use a callback instead?
+                // TODO transfer file - this will block? need to use a callback instead?
                 SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(name,
                                                                                     nonce,
                                                                                     result.getAbsolutePath(),
@@ -212,6 +280,8 @@ public class StrategyView
                                                "Reporting file upload progress: {}",
                                                inPercentComplete);
                         // TODO update progress bar in strategy table
+                        // TODO we've shoehorned in a new value that won't display if we refresh strategies - need to factor that in
+                        newItem.uploadProgressProperty().set(inPercentComplete);
                     }
                     /* (non-Javadoc)
                      * @see org.marketcetera.strategy.FileUploadRequest#onStatus(org.marketcetera.strategy.FileUploadStatus)
@@ -222,7 +292,8 @@ public class StrategyView
                         SLF4JLoggerProxy.trace(StrategyView.class,
                                                "Reporting file upload status: {}",
                                                inStatus);
-                        // TODO update status in progress bar and
+                        // TODO transloate upload status or use strategystatus values in rpc
+//                        newItem.strategyStatusProperty().setValue(inStatus.s)
                     }
                     /* (non-Javadoc)
                      * @see org.marketcetera.strategy.FileUploadRequest#onError(java.lang.Throwable)
@@ -233,6 +304,7 @@ public class StrategyView
                         SLF4JLoggerProxy.trace(StrategyView.class,
                                                inThrowable,
                                                "Reporting file upload error");
+                        // TODO update item, display error
                     }
                 };
                 strategyClient.uploadFile(uploadRequest);
@@ -310,10 +382,15 @@ public class StrategyView
         strategyUptimeColumn.setCellFactory(tableColumn -> PhotonServices.renderPeriodCell(tableColumn));
         strategyOwnerColumn = new TableColumn<>("Owner");
         strategyOwnerColumn.setCellValueFactory(new PropertyValueFactory<>("owner"));
+        strategyProgressColumn = new TableColumn<>("Upload Progress");
+        strategyProgressColumn.setCellValueFactory(new PropertyValueFactory<>("uploadProgress"));
+        strategyProgressColumn.setCellFactory(tableColumn -> new TableCell<DisplayStrategy,Double>() {});
+        strategyProgressColumn.setCellFactory(ProgressBarTableCell.<DisplayStrategy> forTableColumn());
         strategyTable.getColumns().add(strategyNameColumn);
         strategyTable.getColumns().add(strategyStatusColumn);
         strategyTable.getColumns().add(strategyUptimeColumn);
         strategyTable.getColumns().add(strategyOwnerColumn);
+        strategyTable.getColumns().add(strategyProgressColumn);
         strategyTable.getSelectionModel().selectedItemProperty().addListener((ChangeListener<DisplayStrategy>) (inObservable,inOldValue,inNewValue) -> {
             enableStrategyContextMenuItems(inNewValue);
         });
@@ -357,6 +434,12 @@ public class StrategyView
                 unloadStrategyMenuItem.setDisable(false);
                 clearEventsMenuItem.setDisable(false);
                 break;
+            case LOADING:
+                // TODO cancel?
+                break;
+            case PREPARING:
+                // TODO cancel?
+                break;
             default:
                 throw new UnsupportedOperationException("Unexpected strategy status: " + status);
         }
@@ -389,8 +472,6 @@ public class StrategyView
         }
         strategyTable.setContextMenu(strategyTableContextMenu);
     }
-    @Autowired
-    private StrategyInstanceFactory strategyInstanceFactory;
     protected int eventTableCurrentPage;
     protected int eventTablePageSize;
     protected Pagination eventTablePagination;
@@ -411,6 +492,7 @@ public class StrategyView
     private TableColumn<DisplayStrategy,StrategyStatus> strategyStatusColumn;
     private TableColumn<DisplayStrategy,Period> strategyUptimeColumn;
     private TableColumn<DisplayStrategy,String> strategyOwnerColumn;
+    private TableColumn<DisplayStrategy,Double> strategyProgressColumn;
     private TableColumn<DisplayStrategyEvent,String> eventStrategyIdColumn;
     private TableColumn<DisplayStrategyEvent,DateTime> eventTimestampColumn;
     private TableColumn<DisplayStrategyEvent,Severity> eventSeverityColumn;

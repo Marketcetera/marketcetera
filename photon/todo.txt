@@ -77,6 +77,7 @@ x do hash only once - create file upload request
 - compare meta data on activate or discard?
 - run multiple versions of an uploaded stratergy w/o having to upload it again (duplicate from strategy context menu?)
 - nonce should not be in the strategy instance - pass it as a parameter to the new strategy instance and it can be stored adjacently
+- combine upload progress bar and status, perhaps using a VBox as the cell type
 - hash should not be returned to the client as this is a security risk. someone could calculate a hash-collision for a jar and push that one up instead?
 - remove hash from FileUploadMetaData
 - add type to FileUploadMetaData and remove hardcoded type in StrategyRpcServer
