@@ -88,6 +88,15 @@ public class StrategyClientService
         return strategyClient != null && strategyClient.isRunning();
     }
     /**
+     * Unload a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    public void unloadStrategyInstance(String inStrategyInstanceName)
+    {
+        strategyClient.unloadStrategyInstance(inStrategyInstanceName);
+    }
+    /**
      * Get the instance value.
      *
      * @return a <code>StrategyClientService</code> value

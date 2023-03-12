@@ -45,12 +45,6 @@ public interface StrategyClient
      */
     Optional<? extends StrategyInstance> findByName(String inName);
     /**
-     * Unload a strategy instance.
-     *
-     * @param inStrategyInstance an <code>StrategyInstance</code> value
-     */
-    void unloadStrategyInstance(StrategyInstance inStrategyInstance);
-    /**
      * Upload the file in the given file request.
      *
      * @param inRequest a <code>FileUploadRequest</code> value
@@ -59,4 +53,10 @@ public interface StrategyClient
      */
     void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException;
+    /**
+     * Unload a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void unloadStrategyInstance(String inStrategyInstanceName);
 }

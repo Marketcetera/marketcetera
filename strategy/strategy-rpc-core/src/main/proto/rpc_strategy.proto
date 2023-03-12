@@ -35,7 +35,7 @@ message LoadStrategyInstanceResponse {
 // unloads a new strategy instance
 message UnloadStrategyInstanceRequest {
     string sessionId = 1; // session id of the authenticated session
-    StrategyInstance strategyInstance = 2;
+    string name = 2;
 }
 
 // returns the unload strategy instance response

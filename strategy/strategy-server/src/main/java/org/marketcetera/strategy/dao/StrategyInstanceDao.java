@@ -20,5 +20,18 @@ import org.marketcetera.core.Preserve;
 public interface StrategyInstanceDao
         extends org.springframework.data.jpa.repository.JpaRepository<PersistentStrategyInstance,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentStrategyInstance>
 {
+    /**
+     * Find the strategy instance with the given name, if it exists.
+     *
+     * @param inName a <code>String</code> value
+     * @return an <code>Optional&lt;PersistentStrategyInstance&gt;</code> value
+     */
     Optional<PersistentStrategyInstance> findByName(String inName);
+    /**
+     * Find the strategy instance with the given nonce, if it exists.
+     *
+     * @param inNonce a <code>String</code> value
+     * @return an <code>Optional&lt;PersistentStrategyInstance&gt;</code> value
+     */
+    Optional<PersistentStrategyInstance> findByNonce(String inNonce);
 }

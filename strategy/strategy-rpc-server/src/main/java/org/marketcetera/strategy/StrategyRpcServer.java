@@ -247,10 +247,8 @@ public class StrategyRpcServer<SessionClazz>
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inUnloadStrategyInstanceRequest.getSessionId());
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.UnloadStrategyAction.name());
                 org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse.newBuilder();
-                org.marketcetera.strategy.StrategyInstance strategyInstance = StrategyRpcUtil.getStrategyInstance(inUnloadStrategyInstanceRequest.getStrategyInstance(),
-                                                                                                                  strategyInstanceFactory,
-                                                                                                                  userFactory).orElse(null);
-                strategyService.unloadStrategyInstance(strategyInstance);
+                String strategyInstanceName = inUnloadStrategyInstanceRequest.getName();
+                strategyService.unloadStrategyInstance(strategyInstanceName);
                 org.marketcetera.strategy.StrategyRpc.UnloadStrategyInstanceResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
                 inResponseObserver.onNext(response);

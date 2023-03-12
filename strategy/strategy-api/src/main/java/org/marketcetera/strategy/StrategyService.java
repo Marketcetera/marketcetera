@@ -45,9 +45,9 @@ public interface StrategyService
     /**
      * Unload a strategy instance.
      *
-     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     * @param inStrategyInstanceName a <code>String</code> value
      */
-    void unloadStrategyInstance(StrategyInstance inStrategyInstance);
+    void unloadStrategyInstance(String inStrategyInstanceName);
     /**
      * 
      *

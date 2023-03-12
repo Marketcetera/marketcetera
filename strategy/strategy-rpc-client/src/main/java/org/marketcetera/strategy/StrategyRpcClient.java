@@ -111,10 +111,10 @@ public class StrategyRpcClient
         );
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyClient#unloadStrategyInstance(org.marketcetera.strategy.StrategyInstance)
+     * @see org.marketcetera.strategy.StrategyClient#unloadStrategyInstance(String)
      */
     @Override
-    public void unloadStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance)
+    public void unloadStrategyInstance(String inStrategyInstanceName)
     {
         executeCall(new java.util.concurrent.Callable<Void>() {
             @Override
@@ -123,7 +123,7 @@ public class StrategyRpcClient
             {
                 StrategyRpc.UnloadStrategyInstanceRequest.Builder requestBuilder = StrategyRpc.UnloadStrategyInstanceRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
-                StrategyRpcUtil.getRpcStrategyInstance(inStrategyInstance).ifPresent(rpcStrategyInstance -> requestBuilder.setStrategyInstance(rpcStrategyInstance));
+                requestBuilder.setName(inStrategyInstanceName);
                 StrategyRpc.UnloadStrategyInstanceRequest request = requestBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
                 StrategyRpc.UnloadStrategyInstanceResponse response = getBlockingStub().unloadStrategyInstance(request);

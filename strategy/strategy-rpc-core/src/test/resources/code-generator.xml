@@ -100,7 +100,7 @@
         <rpcMessage name="UnloadStrategyInstanceRequest" description="unloads a new strategy instance">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
-            <rpcMessageAttribute name="strategyInstance" type="StrategyInstance"/>
+            <rpcMessageAttribute name="name" type="string"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="UnloadStrategyInstanceResponse" description="returns the unload strategy instance response"/>
@@ -137,6 +137,7 @@
               <requiredPermission>StartStrategyAction</requiredPermission>
               <requiredPermission>StopStrategyAction</requiredPermission>
               <requiredPermission>ClearStrategyEventsAction</requiredPermission>
+              <requiredPermission>CancelStrategyUploadAction</requiredPermission>
             </requiredPermissions>
           </rpcServiceEntry>
           <rpcServiceEntry name="unloadStrategyInstance" description="unload a strategy instance" paramType="UnloadStrategyInstanceRequest" returnType="UnloadStrategyInstanceResponse" paged="false" isReadOnly="false">
@@ -144,7 +145,7 @@
               <requiredPermission>UnloadStrategyAction</requiredPermission>
             </requiredPermissions>
             <rpcMessageAttributes>
-              <rpcMessageAttribute name="strategyInstance" type="org.marketcetera.strategy.StrategyInstance" description="name of the strategy instance to unload"/>
+              <rpcMessageAttribute name="strategyInstanceName" type="String" description="name of the strategy instance to unload"/>
             </rpcMessageAttributes>
           </rpcServiceEntry>
           <rpcServiceEntry name="loadStrategyInstance" description="load a new strategy instances" paramType="LoadStrategyInstanceRequest" returnType="LoadStrategyInstanceResponse" paged="false" serviceReturnType="org.marketcetera.strategy.StrategyStatus">

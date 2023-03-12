@@ -23,6 +23,7 @@ import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
+import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -38,6 +39,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -265,6 +267,7 @@ public class StrategyView
                                                                 owner.getName());
             strategyTable.getItems().add(newItem);
             try {
+                getScene().setCursor(Cursor.WAIT);
                 // TODO transfer file - this will block? need to use a callback instead?
                 SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(name,
                                                                                     nonce,
@@ -292,8 +295,17 @@ public class StrategyView
                         SLF4JLoggerProxy.trace(StrategyView.class,
                                                "Reporting file upload status: {}",
                                                inStatus);
-                        // TODO transloate upload status or use strategystatus values in rpc
-//                        newItem.strategyStatusProperty().setValue(inStatus.s)
+                        // TODO
+                        switch(inStatus) {
+                            case SUCCESS:
+                            case FAILED:
+                                break;
+                            case IN_PROGRESS:
+                            case PENDING:
+                                break;
+                            default:
+                                throw new UnsupportedOperationException("Unexpected file upload status: " + inStatus);
+                        }
                     }
                     /* (non-Javadoc)
                      * @see org.marketcetera.strategy.FileUploadRequest#onError(java.lang.Throwable)
@@ -320,8 +332,26 @@ public class StrategyView
 //                webMessageService.post(new NotificationEvent("Load Strategy",
 //                                                             "File '" + result.getAbsolutePath() + "' could not be read",
 //                                                             AlertType.WARNING));
+            } finally {
+                getScene().setCursor(Cursor.DEFAULT);
             }
         }
+    }
+    private void unloadStrategy(DisplayStrategy inSelectedItem)
+    {
+        if(inSelectedItem == null) {
+            return;
+        }
+        SLF4JLoggerProxy.info(this,
+                              "{} unloading strategy instance {}",
+                              SessionUser.getCurrent().getUsername(),
+                              inSelectedItem.strategyNameProperty().get());
+        strategyClient.unloadStrategyInstance(inSelectedItem.strategyNameProperty().get());
+        updateStrategies();
+    }
+    private void cancelStrategyUpload(DisplayStrategy inSelectedItem)
+    {
+        // TODO
     }
     private void updateStrategies()
     {
@@ -421,24 +451,29 @@ public class StrategyView
                 stopStrategyMenuItem.setDisable(true);
                 unloadStrategyMenuItem.setDisable(false);
                 clearEventsMenuItem.setDisable(false);
+                cancelStrategyUploadMenuItem.setDisable(true);
                 break;
             case RUNNING:
                 startStrategyMenuItem.setDisable(true);
                 stopStrategyMenuItem.setDisable(false);
                 unloadStrategyMenuItem.setDisable(true);
                 clearEventsMenuItem.setDisable(false);
+                cancelStrategyUploadMenuItem.setDisable(true);
                 break;
             case STOPPED:
                 startStrategyMenuItem.setDisable(false);
                 stopStrategyMenuItem.setDisable(true);
                 unloadStrategyMenuItem.setDisable(false);
                 clearEventsMenuItem.setDisable(false);
+                cancelStrategyUploadMenuItem.setDisable(true);
                 break;
             case LOADING:
-                // TODO cancel?
-                break;
             case PREPARING:
-                // TODO cancel?
+                startStrategyMenuItem.setDisable(true);
+                stopStrategyMenuItem.setDisable(true);
+                unloadStrategyMenuItem.setDisable(true);
+                clearEventsMenuItem.setDisable(true);
+                cancelStrategyUploadMenuItem.setDisable(false);
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected strategy status: " + status);
@@ -451,6 +486,21 @@ public class StrategyView
         stopStrategyMenuItem = new MenuItem("Stop");
         unloadStrategyMenuItem = new MenuItem("Unload");
         clearEventsMenuItem = new MenuItem("Clear Events");
+        cancelStrategyUploadMenuItem = new MenuItem("Cancel Upload");
+        unloadStrategyMenuItem.setOnAction(event -> {
+            DisplayStrategy selectedStrategy = strategyTable.getSelectionModel().getSelectedItem();
+            if(selectedStrategy == null) {
+                return;
+            }
+            unloadStrategy(selectedStrategy);
+        });
+        cancelStrategyUploadMenuItem.setOnAction(event -> {
+            DisplayStrategy selectedStrategy = strategyTable.getSelectionModel().getSelectedItem();
+            if(selectedStrategy == null) {
+                return;
+            }
+            cancelStrategyUpload(selectedStrategy);
+        });
         boolean firstGroup = false;
         if(authzHelperService.hasPermission(StrategyPermissions.StartStrategyAction)) {
             firstGroup = true;
@@ -463,6 +513,10 @@ public class StrategyView
         if(authzHelperService.hasPermission(StrategyPermissions.UnloadStrategyAction)) {
             firstGroup = true;
             strategyTableContextMenu.getItems().add(unloadStrategyMenuItem);
+        }
+        if(authzHelperService.hasPermission(StrategyPermissions.CancelStrategyUploadAction)) {
+            firstGroup = true;
+            strategyTableContextMenu.getItems().add(cancelStrategyUploadMenuItem);
         }
         if(authzHelperService.hasPermission(StrategyPermissions.ClearStrategyEventsAction)) {
             if(firstGroup) {
@@ -481,6 +535,7 @@ public class StrategyView
     private MenuItem clearEventsMenuItem;
     private MenuItem copyStrategyEventMenuItem;
     private MenuItem deleteStrategyEventMenuItem;
+    private MenuItem cancelStrategyUploadMenuItem;
     private ContextMenu strategyTableContextMenu;
     private ContextMenu eventTableContextMenu;
     private ComboBox<String> strategyIdComboBox;

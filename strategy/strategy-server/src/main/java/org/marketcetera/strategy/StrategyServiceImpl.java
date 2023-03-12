@@ -4,7 +4,6 @@
 package org.marketcetera.strategy;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -14,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
@@ -112,17 +112,17 @@ public class StrategyServiceImpl
     /**
      * Unload a strategy instance.
      *
-     * @param inStrategyInstance an <code>StrategyInstance</code> value
+     * @param inStrategyInstanceName a <code>String</code> value
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public void unloadStrategyInstance(StrategyInstance inStrategyInstance)
+    public void unloadStrategyInstance(String inStrategyInstanceName)
     {
-        Validate.notNull(inStrategyInstance,
-                         "Strategy instance required");
-        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstance.getName());
+        Validate.notNull(inStrategyInstanceName,
+                         "Strategy instance name required");
+        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstanceName);
         Validate.isTrue(strategyInstanceOption.isPresent(),
-                        "No strategy instance by name '" + inStrategyInstance.getName() + "'");
+                        "No strategy instance by name '" + inStrategyInstanceName + "'");
         PersistentStrategyInstance strategyInstance = strategyInstanceOption.get();
         Validate.isTrue(strategyInstance.getStatus().isUnloadable(),
                         "Strategy '" + strategyInstance.getName() + "' cannot be unloaded at status '" + strategyInstance.getStatus() + "'");
@@ -153,6 +153,7 @@ public class StrategyServiceImpl
      * @returns an <code>StrategyStatus</code> value
      */
     @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void received(File inFile,
                          String inOriginalFileName)
     {
@@ -171,18 +172,35 @@ public class StrategyServiceImpl
 //        String hash = PlatformServices.getFileChecksum(inStrategyFile.toFile());
 //        Validate.isTrue(hash.equals(strategyInstance.getHash()),
 //                        "Strategy upload hash does not match");
+        PersistentStrategyInstance strategyInstance = null;
         try {
+            String nonce = FilenameUtils.getBaseName(inOriginalFileName);
+            Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByNonce(nonce);
+            SLF4JLoggerProxy.debug(this,
+                                   "Received uploaded file with nonce: '{}' found: {}",
+                                   nonce,
+                                   strategyInstanceOption);
+            Validate.isTrue(strategyInstanceOption.isPresent(),
+                            "No strategy instance with nonce: '" + nonce + "'");
+            strategyInstance = strategyInstanceOption.get();
             // TODO need to move file to a storage directory
-            FileUtils.moveFileToDirectory(inFile,
-                                          Paths.get(provisioningAgent.getProvisioningDirectory()).toFile(),
-                                          false);
-        } catch (IOException e) {
+            // TODO need to rename file to use the nonce
+//            FileUtils.moveFileToDirectory(inFile,
+//                                          Paths.get(provisioningAgent.getProvisioningDirectory()).toFile(),
+//                                          false);
+            strategyInstance.setStatus(StrategyStatus.STOPPED);
+            strategyInstance = strategyInstanceDao.save(strategyInstance);
+            // TODO send strategy load event
+        } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
+            if(strategyInstance != null) {
+                strategyInstance.setStatus(StrategyStatus.ERROR);
+                strategyInstance = strategyInstanceDao.save(strategyInstance);
+            }
+            // TODO send strategy load failed event
         }
     }
-    @Autowired
-    private ProvisioningAgent provisioningAgent;
     /**
      * Load a new strategy instances.
      *
@@ -258,4 +276,9 @@ public class StrategyServiceImpl
      */
     @Autowired
     private StrategyInstanceDao strategyInstanceDao;
+    /**
+     * provides access to provisioning services
+     */
+    @Autowired
+    private ProvisioningAgent provisioningAgent;
 }
