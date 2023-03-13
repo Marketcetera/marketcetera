@@ -49,31 +49,39 @@ public interface StrategyService
      */
     void unloadStrategyInstance(String inStrategyInstanceName);
     /**
-     * 
+     * Start a strategy instance.
      *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void startStrategyInstance(String inStrategyInstanceName);
+    /**
+     * Stop a strategy instance.
      *
-     * @return
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void stopStrategyInstance(String inStrategyInstanceName);
+    /**
+     * Get the incoming strategy directory.
+     *
+     * @return a <code>Path</code> value
      */
     Path getIncomingStrategyDirectory();
     /**
-     * 
+     * Get the strategy temporary strategy directory.
      *
-     *
-     * @return
+     * @return a <code>Path</code> value
      */
     Path getTemporaryStrategyDirectory();
     /**
-     * 
+     * Add the given strategy event listener.
      *
-     *
-     * @param inListener
+     * @param inListener a <code>StrategyEventListener</code> value
      */
     void addStrategyEventListener(StrategyEventListener inListener);
     /**
-     * 
+     * Remove the given strategy event listener. 
      *
-     *
-     * @param inListener
+     * @param inListener a <code>StrategyEventListener</code> value
      */
     void removeStrategyEventListener(StrategyEventListener inListener);
 }

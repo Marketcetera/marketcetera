@@ -181,14 +181,52 @@ public class StrategyRpcServer<SessionClazz>
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inReadStrategyInstancesRequest);
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inReadStrategyInstancesRequest.getSessionId());
                 authzService.authorize(sessionHolder.getUser(),StrategyPermissions.ReadStrategyAction.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.LoadStrategyAction.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.UnloadStrategyAction.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StartStrategyAction.name());
-                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StopStrategyAction.name());
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse.newBuilder();
                 java.util.Collection<? extends org.marketcetera.strategy.StrategyInstance> serviceData = strategyService.getStrategyInstances(sessionHolder.getUser());
                 serviceData.forEach(strategyInstance -> StrategyRpcUtil.getRpcStrategyInstance(strategyInstance).ifPresent(rpcStrategyInstance -> responseBuilder.addStrategyInstances(rpcStrategyInstance)));
                 org.marketcetera.strategy.StrategyRpc.ReadStrategyInstancesResponse response = responseBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#startStrategyInstance(org.marketcetera.strategy.StrategyRpc.StartStrategyInstanceRequest ,io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void startStrategyInstance(org.marketcetera.strategy.StrategyRpc.StartStrategyInstanceRequest inStartStrategyInstanceRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.StartStrategyInstanceResponse> inResponseObserver)
+        {
+            try {
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inStartStrategyInstanceRequest);
+                org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inStartStrategyInstanceRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StartStrategyAction.name());
+                org.marketcetera.strategy.StrategyRpc.StartStrategyInstanceResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.StartStrategyInstanceResponse.newBuilder();
+                String strategyInstanceName = inStartStrategyInstanceRequest.getName();
+                strategyService.startStrategyInstance(strategyInstanceName);
+                org.marketcetera.strategy.StrategyRpc.StartStrategyInstanceResponse response = responseBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#stopStrategyInstance(org.marketcetera.strategy.StrategyRpc.StopStrategyInstanceRequest ,io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void stopStrategyInstance(org.marketcetera.strategy.StrategyRpc.StopStrategyInstanceRequest inStopStrategyInstanceRequest,io.grpc.stub.StreamObserver<org.marketcetera.strategy.StrategyRpc.StopStrategyInstanceResponse> inResponseObserver)
+        {
+            try {
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Received {}",inStopStrategyInstanceRequest);
+                org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inStopStrategyInstanceRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.StopStrategyAction.name());
+                org.marketcetera.strategy.StrategyRpc.StopStrategyInstanceResponse.Builder responseBuilder = org.marketcetera.strategy.StrategyRpc.StopStrategyInstanceResponse.newBuilder();
+                String strategyInstanceName = inStopStrategyInstanceRequest.getName();
+                strategyService.stopStrategyInstance(strategyInstanceName);
+                org.marketcetera.strategy.StrategyRpc.StopStrategyInstanceResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
@@ -283,9 +321,6 @@ public class StrategyRpcServer<SessionClazz>
                                 // determined to be JAR files right now, might be nice to include file type in the upload request
                                 String fileName = inFileUploadRequest.getMetadata().getNonce() + ".jar";
                                 strategyPath = strategyService.getTemporaryStrategyDirectory().resolve(fileName);
-                                SLF4JLoggerProxy.warn(StrategyRpcServer.this,
-                                                      "COCO: writing incoming strategy to {}",
-                                                      strategyPath);
                                 writer = getOutstreamFromFilePath(strategyPath);
                                 break;
                             case REQUEST_NOT_SET:

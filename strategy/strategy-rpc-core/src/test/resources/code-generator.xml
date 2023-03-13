@@ -10,6 +10,35 @@
                              type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
       </modelEventAttributes>
     </modelEvent>
+    <modelEvent name="StrategyStartedEvent" description="Indicates that a strategy was started" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.events.StrategyEvent,org.marketcetera.strategy.HasStrategyInstance">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was successfully started" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
+      </modelEventAttributes>
+    </modelEvent>
+    <modelEvent name="StrategyStartFailedEvent" description="Indicates that a strategy did not start successfully" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.events.StrategyEvent,org.marketcetera.strategy.HasStrategyInstance">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was not successfully started" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
+        <modelEventAttribute name="errorMessage" description="describes the error that occurred" useGetters="true" useSetters="true" interfaceProvided="false"
+                             type="String" pojoType="String" apiType="String"/>
+      </modelEventAttributes>
+    </modelEvent>
+    <modelEvent name="StrategyStoppedEvent" description="Indicates that a strategy was stopped" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.events.StrategyEvent,org.marketcetera.strategy.HasStrategyInstance">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was successfully stopped" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
+      </modelEventAttributes>
+    </modelEvent>
     <modelEvent name="StrategyUploadFailedEvent" description="Indicates that a strategy upload failed" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyInstance,org.marketcetera.strategy.events.StrategyEvent">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
@@ -139,6 +168,20 @@
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="UnloadStrategyInstanceResponse" description="returns the unload strategy instance response"/>
+        <rpcMessage name="StartStrategyInstanceRequest" description="starts a new strategy instance">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
+            <rpcMessageAttribute name="name" type="string"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="StartStrategyInstanceResponse" description="returns the start strategy instance response"/>
+        <rpcMessage name="StopStrategyInstanceRequest" description="stops a new strategy instance">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
+            <rpcMessageAttribute name="name" type="string"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="StopStrategyInstanceResponse" description="returns the stop strategy instance response"/>
         <rpcMessage name="FindStrategyInstanceByNameRequest" description="get the strategy instance with the given name">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
@@ -167,9 +210,6 @@
           <rpcServiceEntry name="getStrategyInstances" description="requests loaded strategy instances" paramType="ReadStrategyInstancesRequest" returnType="ReadStrategyInstancesResponse" paged="false" serviceReturnType="java.util.Collection&lt;? extends org.marketcetera.strategy.StrategyInstance&gt;">
             <requiredPermissions>
               <requiredPermission>ReadStrategyAction</requiredPermission>
-              <requiredPermission>LoadStrategyAction</requiredPermission>
-              <requiredPermission>UnloadStrategyAction</requiredPermission>
-              <requiredPermission>StartStrategyAction</requiredPermission>
               <requiredPermission>StopStrategyAction</requiredPermission>
               <requiredPermission>ClearStrategyEventsAction</requiredPermission>
               <requiredPermission>CancelStrategyUploadAction</requiredPermission>
@@ -181,6 +221,22 @@
             </requiredPermissions>
             <rpcMessageAttributes>
               <rpcMessageAttribute name="strategyInstanceName" type="String" description="name of the strategy instance to unload"/>
+            </rpcMessageAttributes>
+          </rpcServiceEntry>
+          <rpcServiceEntry name="startStrategyInstance" description="start a strategy instance" paramType="StartStrategyInstanceRequest" returnType="StartStrategyInstanceResponse" paged="false" isReadOnly="false">
+            <requiredPermissions>
+              <requiredPermission>StartStrategyAction</requiredPermission>
+            </requiredPermissions>
+            <rpcMessageAttributes>
+              <rpcMessageAttribute name="strategyInstanceName" type="String" description="name of the strategy instance to start"/>
+            </rpcMessageAttributes>
+          </rpcServiceEntry>
+          <rpcServiceEntry name="stopStrategyInstance" description="stop a strategy instance" paramType="StopStrategyInstanceRequest" returnType="StopStrategyInstanceResponse" paged="false" isReadOnly="false">
+            <requiredPermissions>
+              <requiredPermission>StopStrategyAction</requiredPermission>
+            </requiredPermissions>
+            <rpcMessageAttributes>
+              <rpcMessageAttribute name="strategyInstanceName" type="String" description="name of the strategy instance to stop"/>
             </rpcMessageAttributes>
           </rpcServiceEntry>
           <rpcServiceEntry name="loadStrategyInstance" description="load a new strategy instances" paramType="LoadStrategyInstanceRequest" returnType="LoadStrategyInstanceResponse" paged="false" serviceReturnType="org.marketcetera.strategy.StrategyStatus">

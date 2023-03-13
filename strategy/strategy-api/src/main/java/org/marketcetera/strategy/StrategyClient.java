@@ -54,6 +54,18 @@ public interface StrategyClient
     void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException;
     /**
+     * Start a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void startStrategyInstance(String inStrategyInstanceName);
+    /**
+     * Stop a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void stopStrategyInstance(String inStrategyInstanceName);
+    /**
      * Unload a strategy instance.
      *
      * @param inStrategyInstanceName a <code>String</code> value

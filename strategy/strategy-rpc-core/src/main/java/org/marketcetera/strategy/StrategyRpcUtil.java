@@ -7,12 +7,18 @@ import java.util.Optional;
 
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyStoppedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.strategy.events.StrategyStartFailedEvent;
+import org.marketcetera.strategy.events.StrategyStartedEvent;
 import org.marketcetera.strategy.events.StrategyStatusChangedEvent;
+import org.marketcetera.strategy.events.StrategyStoppedEvent;
 import org.marketcetera.strategy.events.StrategyUnloadedEvent;
 import org.marketcetera.strategy.events.StrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.StrategyUploadSucceededEvent;
@@ -127,6 +133,11 @@ public abstract class StrategyRpcUtil
             rpcEventBuilder.setMessage(failedEvent.getErrorMessage());
         } else if(inStrategyEvent instanceof StrategyUploadSucceededEvent) {
         } else if(inStrategyEvent instanceof StrategyUnloadedEvent) {
+        } else if(inStrategyEvent instanceof StrategyStartedEvent) {
+        } else if(inStrategyEvent instanceof StrategyStartFailedEvent) {
+            StrategyStartFailedEvent failedEvent = (StrategyStartFailedEvent)inStrategyEvent;
+            rpcEventBuilder.setMessage(failedEvent.getErrorMessage());
+        } else if(inStrategyEvent instanceof StrategyStoppedEvent) {
         } else if(inStrategyEvent instanceof StrategyStatusChangedEvent) {
             StrategyStatusChangedEvent statusChangedEvent = (StrategyStatusChangedEvent)inStrategyEvent;
             getRpcStrategyStatus(statusChangedEvent.getNewValue()).ifPresent(rpcStrategyStatus -> rpcEventBuilder.setNewStatusValue(rpcStrategyStatus));
@@ -137,10 +148,12 @@ public abstract class StrategyRpcUtil
         inResponseBuilder.setEvent(rpcEventBuilder.build());
     }
     /**
+     * Get the strategy event from the given RPC event, if possible.
      *
-     *
-     * @param inResponse
-     * @return
+     * @param inResponse a <code>StrategyRpc.StrategyEventListenerResponse</code> value 
+     * @param inStrategyInstanceFactory a <code>StrategyInstanceFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return a <code>StrategyEvent</code> or <code>null</code>
      */
     public static StrategyEvent getStrategyEvent(StrategyRpc.StrategyEventListenerResponse inResponse,
                                                  StrategyInstanceFactory inStrategyInstanceFactory,
@@ -155,6 +168,19 @@ public abstract class StrategyRpcUtil
                 if(strategyInstanceOption.isPresent()) {
                     StrategyInstance strategyInstance = strategyInstanceOption.get();
                     switch(rpcEvent.getEventType()) {
+                        case "SimpleStrategyStartedEvent":
+                            SimpleStrategyStartedEvent startEvent = new SimpleStrategyStartedEvent();
+                            startEvent.setStrategyInstance(strategyInstance);
+                            return startEvent;
+                        case "SimpleStrategyStartFailedEvent":
+                            SimpleStrategyStartFailedEvent startFailedEvent = new SimpleStrategyStartFailedEvent();
+                            startFailedEvent.setErrorMessage(rpcEvent.getMessage());
+                            startFailedEvent.setStrategyInstance(strategyInstance);
+                            return startFailedEvent;
+                        case "SimpleStrategyStoppedEvent":
+                            SimpleStrategyStoppedEvent stopEvent = new SimpleStrategyStoppedEvent();
+                            stopEvent.setStrategyInstance(strategyInstance);
+                            return stopEvent;
                         case "SimpleStrategyUploadFailedEvent":
                             SimpleStrategyUploadFailedEvent failedEvent = new SimpleStrategyUploadFailedEvent();
                             failedEvent.setErrorMessage(rpcEvent.getMessage());

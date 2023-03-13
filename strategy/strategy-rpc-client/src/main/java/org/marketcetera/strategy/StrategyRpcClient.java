@@ -161,6 +161,50 @@ public class StrategyRpcClient
         );
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#startStrategyInstance(String)
+     */
+    @Override
+    public void startStrategyInstance(String inStrategyInstanceName)
+    {
+        executeCall(new java.util.concurrent.Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                StrategyRpc.StartStrategyInstanceRequest.Builder requestBuilder = StrategyRpc.StartStrategyInstanceRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setName(inStrategyInstanceName);
+                StrategyRpc.StartStrategyInstanceRequest request = requestBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.StartStrategyInstanceResponse response = getBlockingStub().startStrategyInstance(request);
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                return null;
+            }}
+        );
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#stopStrategyInstance(String)
+     */
+    @Override
+    public void stopStrategyInstance(String inStrategyInstanceName)
+    {
+        executeCall(new java.util.concurrent.Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                StrategyRpc.StopStrategyInstanceRequest.Builder requestBuilder = StrategyRpc.StopStrategyInstanceRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setName(inStrategyInstanceName);
+                StrategyRpc.StopStrategyInstanceRequest request = requestBuilder.build();
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.StopStrategyInstanceResponse response = getBlockingStub().stopStrategyInstance(request);
+                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                return null;
+            }}
+        );
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyClient#uploadFile(org.marketcetera.strategy.FileUploadRequest)
      */
     @Override

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,6 +31,8 @@ import org.marketcetera.core.file.DirectoryWatcherSubscriber;
 import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.strategy.dao.PersistentStrategyInstance;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
+import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
@@ -127,6 +130,94 @@ public class StrategyServiceImpl
         // TODO need to filter by current user
         // TODO probably need to factor in supervisor permissions for "read"
         return strategyInstanceDao.findAll();
+    }
+    /**
+     * Start a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void startStrategyInstance(String inStrategyInstanceName)
+    {
+        boolean success = true;
+        String errorMessage = null;
+        StrategyStatus newStatus = null;
+        StrategyStatus oldStatus = null;
+        PersistentStrategyInstance strategyInstance = null;
+        try {
+            Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstanceName);
+            if(strategyInstanceOption.isEmpty()) {
+                success = false;
+                errorMessage = "No loaded strategy with name '" + inStrategyInstanceName + "'";
+                newStatus = StrategyStatus.ERROR;
+            } else {
+                strategyInstance = strategyInstanceOption.get();
+                oldStatus = strategyInstance.getStatus();
+                if(strategyInstance.getStatus().isRunnable()) {
+                    Path strategySource = Paths.get(strategyStorageDirectoryName,
+                                                    strategyInstance.getFilename());
+                    if(strategySource.toFile().canRead()) {
+                        success = true;
+                        newStatus = StrategyStatus.RUNNING;
+                        // TODO somehow set the parameters for the strategy to read
+                        Path strategyTargetDirectory = Paths.get(provisioningAgent.getProvisioningDirectory());
+                        SLF4JLoggerProxy.info(this,
+                                              "Starting strategy {} by copying {} to {}",
+                                              strategyInstance.getName(),
+                                              strategySource,
+                                              strategyTargetDirectory);
+                        FileUtils.copyFileToDirectory(strategySource.toFile(),
+                                                      strategyTargetDirectory.toFile());
+                        strategyInstance.setStarted(new Date());
+                        newStatus = StrategyStatus.RUNNING;
+                    } else {
+                        success = false;
+                        errorMessage = "Unable to read cached strategy with name '" + inStrategyInstanceName + "'";
+                        newStatus = StrategyStatus.ERROR;
+                        SLF4JLoggerProxy.warn(this,
+                                              "Unable to read cached strategy '{}' with filename {}",
+                                              inStrategyInstanceName,
+                                              strategySource);
+                    }
+                } else {
+                    success = false;
+                    errorMessage = "Strategy '" + inStrategyInstanceName + "' at status " + oldStatus.name() + " cannot be started";
+                    newStatus = oldStatus;
+                }
+            }
+        } catch (RuntimeException | IOException e) {
+            success = false;
+            errorMessage = PlatformServices.getMessage(e);
+            newStatus = StrategyStatus.ERROR;
+        } finally {
+            if(strategyInstance != null) {
+                strategyInstance.setStatus(newStatus);
+                strategyInstance = strategyInstanceDao.save(strategyInstance);
+            }
+            if(success) {
+                eventBusService.post(new SimpleStrategyStartedEvent(strategyInstance));
+            } else {
+                eventBusService.post(new SimpleStrategyStartFailedEvent(strategyInstance,
+                                                                        errorMessage));
+            }
+            if(oldStatus != newStatus) {
+                eventBusService.post(new SimpleStrategyStatusChangedEvent(strategyInstance,
+                                                                          oldStatus,
+                                                                          newStatus));
+            }
+        }
+    }
+    /**
+     * Stop a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void stopStrategyInstance(String inStrategyInstanceName)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Unload a strategy instance.

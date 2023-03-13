@@ -144,6 +144,24 @@ public class StrategyClientService
         strategyClient.removeStrategyEventListener(inListener);
     }
     /**
+     * Start a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    public void startStrategyInstance(String inStrategyInstanceName)
+    {
+        strategyClient.startStrategyInstance(inStrategyInstanceName);
+    }
+    /**
+     * Stop a strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    public void stopStrategyInstance(String inStrategyInstanceName)
+    {
+        strategyClient.stopStrategyInstance(inStrategyInstanceName);
+    }
+    /**
      * Upload the file in the given file request.
      *
      * @param inRequest a <code>FileUploadRequest</code> value

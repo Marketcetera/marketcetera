@@ -82,6 +82,26 @@ message RemoveStrategyEventListenerRequest {
 message RemoveStrategyEventListenerResponse {
 }
 
+// starts a new strategy instance
+message StartStrategyInstanceRequest {
+    string sessionId = 1; // session id of the authenticated session
+    string name = 2;
+}
+
+// returns the start strategy instance response
+message StartStrategyInstanceResponse {
+}
+
+// stops a new strategy instance
+message StopStrategyInstanceRequest {
+    string sessionId = 1; // session id of the authenticated session
+    string name = 2;
+}
+
+// returns the stop strategy instance response
+message StopStrategyInstanceResponse {
+}
+
 // services for Strategy
 service StrategyRpcService {
     rpc login(LoginRequest) returns (LoginResponse); // starts the session
@@ -94,4 +114,6 @@ service StrategyRpcService {
     rpc uploadFile(stream FileUploadRequest) returns(FileUploadResponse);
     rpc addStrategyEventListener(AddStrategyEventListenerRequest) returns (stream StrategyEventListenerResponse);
     rpc removeStrategyEventListener(RemoveStrategyEventListenerRequest) returns (RemoveStrategyEventListenerResponse);
+    rpc startStrategyInstance(StartStrategyInstanceRequest) returns (StartStrategyInstanceResponse); // start a strategy instance
+    rpc stopStrategyInstance(StopStrategyInstanceRequest) returns (StopStrategyInstanceResponse); // stop a strategy instance
 }

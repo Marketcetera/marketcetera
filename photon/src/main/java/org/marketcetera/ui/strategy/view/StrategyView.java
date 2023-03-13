@@ -14,6 +14,7 @@ import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.strategy.FileUploadStatus;
 import org.marketcetera.strategy.SimpleFileUploadRequest;
@@ -526,6 +527,20 @@ public class StrategyView
             }
             cancelStrategyUpload(selectedStrategy);
         });
+        startStrategyMenuItem.setOnAction(event -> {
+            DisplayStrategy selectedStrategy = strategyTable.getSelectionModel().getSelectedItem();
+            if(selectedStrategy == null) {
+                return;
+            }
+            startStrategy(selectedStrategy);
+        });
+        stopStrategyMenuItem.setOnAction(event -> {
+            DisplayStrategy selectedStrategy = strategyTable.getSelectionModel().getSelectedItem();
+            if(selectedStrategy == null) {
+                return;
+            }
+            stopStrategy(selectedStrategy);
+        });
         boolean firstGroup = false;
         if(authzHelperService.hasPermission(StrategyPermissions.StartStrategyAction)) {
             firstGroup = true;
@@ -550,6 +565,56 @@ public class StrategyView
             strategyTableContextMenu.getItems().add(clearEventsMenuItem);
         }
         strategyTable.setContextMenu(strategyTableContextMenu);
+    }
+    /**
+     * stops the given strategy.
+     *
+     * @param inSelectedStrategy a <code>DisplayStrategy</code> value
+     */
+    private void stopStrategy(DisplayStrategy inSelectedStrategy)
+    {
+        SLF4JLoggerProxy.info(this,
+                              "{} stopping '{}'",
+                              SessionUser.getCurrent().getUsername(),
+                              inSelectedStrategy.strategyNameProperty().get());
+        try {
+            strategyClient.stopStrategyInstance(inSelectedStrategy.strategyNameProperty().get());
+            webMessageService.post(new NotificationEvent("Stop Strategy",
+                                                         "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " stopped",
+                                                         AlertType.INFORMATION));
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            webMessageService.post(new NotificationEvent("Stop Strategy",
+                                                         "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " stop failed: " + PlatformServices.getMessage(e),
+                                                         AlertType.ERROR));
+        }
+        updateStrategies();
+    }
+    /**
+     * Starts the given strategy.
+     *
+     * @param inSelectedStrategy a <code>DisplayStrategy</code> value
+     */
+    private void startStrategy(DisplayStrategy inSelectedStrategy)
+    {
+        SLF4JLoggerProxy.info(this,
+                              "{} starting '{}'",
+                              SessionUser.getCurrent().getUsername(),
+                              inSelectedStrategy.strategyNameProperty().get());
+        try {
+            strategyClient.startStrategyInstance(inSelectedStrategy.strategyNameProperty().get());
+            webMessageService.post(new NotificationEvent("Start Strategy",
+                                                         "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " started",
+                                                         AlertType.INFORMATION));
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            webMessageService.post(new NotificationEvent("Start Strategy",
+                                                         "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " start failed: " + PlatformServices.getMessage(e),
+                                                         AlertType.ERROR));
+        }
+        updateStrategies();
     }
     protected int eventTableCurrentPage;
     protected int eventTablePageSize;

@@ -50,7 +50,20 @@ public enum StrategyStatus
         return unloadable.contains(this);
     }
     /**
+     * Indicates that a strategy can be started.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isRunnable()
+    {
+        return runnable.contains(this);
+    }
+    /**
      * strategy statuses that indicate a strategy can be unloaded
      */
     private static final Set<StrategyStatus> unloadable = EnumSet.of(STOPPED,ERROR,LOADING,PREPARING);
+    /**
+     * strategy statuses that indicate a strategy can be run
+     */
+    private static final Set<StrategyStatus> runnable = EnumSet.of(STOPPED);
 }

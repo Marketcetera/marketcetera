@@ -61,7 +61,7 @@ public class DisplayStrategy
                 started.setValue(new Period(0));
                 break;
             case RUNNING:
-                started.setValue(new Period(DateTime.now().minus(inStrategyInstance.getStarted().getTime())));
+                started.setValue(new Period(DateTime.now().minus(inStrategyInstance.getStarted().getTime()).getMillis()));
                 break;
             default:
                 break;
