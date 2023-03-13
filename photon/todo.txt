@@ -68,14 +68,12 @@
 * strategy view *
 *****************
 - cancel big uploads
-- strategy assigned a name on load? assigned a unique id? what's the difference? don't need id and name. name is unique for that user?
 - run on different cluster members? report strategy status on all cluster members
 - special category of events?
 - compare meta data on activate or discard?
 - run multiple versions of an uploaded stratergy w/o having to upload it again (duplicate from strategy context menu?)
 - nonce should not be in the strategy instance - pass it as a parameter to the new strategy instance and it can be stored adjacently
 - combine upload progress bar and status, perhaps using a VBox as the cell type
-- check for duplicate name in StrategyServiceImpl for load strategy
 - hash should not be returned to the client as this is a security risk. someone could calculate a hash-collision for a jar and push that one up instead?
 - remove hash from FileUploadMetaData
 - add type to FileUploadMetaData and remove hardcoded type in StrategyRpcServer
@@ -86,22 +84,9 @@
 - run a strategy with passed parameters
 - events
 -- strategy started
--- strategy error
 -- strategy stopped
--- strategy event
--- strategy unloaded
-- create strategy listener
 - strategy events should be in db to allow pagination - could be lots and lots
 - strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
-
-x need a progress upload callback for file upload
-x scp programmatically? use grpc file transfer for security
-x do hash only once - create file upload request
-x unload strategy should take name only as parameter
-x make service return type for collections: ? extends
-x work out SQL to add new permissions to trader role and trader admin role
-x moving multiple permissions in the role add/update doesn't seem to work
-x stop all running threads when main workspace closes (might be an issue with underlying grpc and netty)
 
 - merge 1102 to 4.1.x
 - update build instructions

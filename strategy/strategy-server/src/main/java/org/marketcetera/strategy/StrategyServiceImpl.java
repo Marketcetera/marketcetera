@@ -4,6 +4,7 @@
 package org.marketcetera.strategy;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
@@ -62,9 +64,12 @@ public class StrategyServiceImpl
 {
     /**
      * Validate and start the object.
+     *
+     * @throws IOException if an error occurs managing strategy and provisioning directories 
      */
     @PostConstruct
     public void start()
+            throws IOException
     {
         serviceName = PlatformServices.getServiceName(getClass());
         SLF4JLoggerProxy.info(this,
@@ -73,8 +78,16 @@ public class StrategyServiceImpl
         clusterData = clusterService.getInstanceData();
         strategyIncomingDirectoryName = strategyIncomingDirectoryName + clusterData.getInstanceNumber();
         incomingStrategyDirectoryPath = Paths.get(strategyIncomingDirectoryName);
-        // intentionally not modified with the cluster instance number; it's ok if mulitple instances use this directory
+        // intentionally not modified with the cluster instance number; it's ok if multiple instances use these directories
+        storageStrategyDirectoryPath = Paths.get(strategyStorageDirectoryName);
         temporaryStrategyDirectoryPath = Paths.get(strategyTemporaryDirectoryName);
+        FileUtils.createParentDirectories(storageStrategyDirectoryPath.toFile());
+        SLF4JLoggerProxy.info(this,
+                              "{} monitoring {} for uploaded strategies, storing strategies in {}, and using {} to start strategies",
+                              serviceName,
+                              strategyIncomingDirectoryName,
+                              strategyStorageDirectoryName,
+                              provisioningAgent.getProvisioningDirectory());
         strategyWatcher = new DirectoryWatcherImpl();
         strategyWatcher.setCreateDirectoriesOnStart(true);
         strategyWatcher.setDirectoriesToWatch(Lists.newArrayList(new File(strategyIncomingDirectoryName)));
@@ -82,10 +95,6 @@ public class StrategyServiceImpl
         strategyWatcher.addWatcher(this);
         strategyWatcher.start();
         eventBusService.register(this);
-        SLF4JLoggerProxy.info(this,
-                              "{} watching {} for incoming strategies",
-                              serviceName,
-                              strategyIncomingDirectoryName);
     }
     /**
      * Stop the object.
@@ -137,7 +146,9 @@ public class StrategyServiceImpl
         Validate.isTrue(strategyInstance.getStatus().isUnloadable(),
                         "Strategy '" + strategyInstance.getName() + "' cannot be unloaded at status '" + strategyInstance.getStatus() + "'");
         // TODO need to put the correct filename in here
-//        FileUtils.deleteQuietly(new File(strategyInstance.getFilename()));
+        Path strategyTarget = Paths.get(strategyStorageDirectoryName,
+                                        strategyInstance.getFilename());
+        FileUtils.deleteQuietly(strategyTarget.toFile());
         strategyInstanceDao.delete(strategyInstance);
         eventBusService.post(new SimpleStrategyUnloadedEvent(strategyInstance));
     }
@@ -194,11 +205,13 @@ public class StrategyServiceImpl
             Validate.isTrue(strategyInstanceOption.isPresent(),
                             "No strategy instance with nonce: '" + nonce + "'");
             strategyInstance = strategyInstanceOption.get();
-            // TODO need to move file to a storage directory
-            // TODO need to rename file to use the nonce
-//            FileUtils.moveFileToDirectory(inFile,
-//                                          Paths.get(provisioningAgent.getProvisioningDirectory()).toFile(),
-//                                          false);
+            // TODO should use the file type uploaded
+            String finalStrategyFilename = nonce + ".jar";
+            strategyInstance.setFilename(finalStrategyFilename);
+            Path strategyTarget = Paths.get(strategyStorageDirectoryName,
+                                            finalStrategyFilename);
+            FileUtils.moveFile(inFile,
+                               strategyTarget.toFile());
             StrategyStatus oldStatus = strategyInstance.getStatus();
             strategyInstance.setStatus(StrategyStatus.STOPPED);
             strategyInstance = strategyInstanceDao.save(strategyInstance);
@@ -302,10 +315,19 @@ public class StrategyServiceImpl
      */
     private Path temporaryStrategyDirectoryPath;
     /**
+     * directory which is used to store uploaded strategies after they are verified
+     */
+    private Path storageStrategyDirectoryPath;
+    /**
      * interval at which to poll for provisioning files
      */
     @Value("${metc.strategy.incoming.directory.polling.intervalms:5000}")
     private long pollingInterval;
+    /**
+     * strategy storage directory base
+     */
+    @Value("${metc.strategy.storage.directory}")
+    private String strategyStorageDirectoryName;
     /**
      * strategy incoming directory base
      */
