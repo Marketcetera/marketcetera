@@ -18,11 +18,15 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.rpc.base.BaseRpc;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.strategy.StrategyRpc.FileUploadResponse;
+import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.protobuf.ByteString;
 
 import io.grpc.stub.StreamObserver;
@@ -325,7 +329,114 @@ public class StrategyRpcServer<SessionClazz>
                 private StrategyTypesRpc.FileUploadStatus status = StrategyTypesRpc.FileUploadStatus.IN_PROGRESS;
             };
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#addStrategyEventListener(org.marketcetera.trade.rpc.TradeRpc.AddStrategyEventListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void addStrategyEventListener(StrategyRpc.AddStrategyEventListenerRequest inRequest,
+                                             StreamObserver<StrategyRpc.StrategyEventListenerResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Received add strategy event listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                BaseRpcUtil.AbstractServerListenerProxy<?> StrategyEventListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                if(StrategyEventListenerProxy == null) {
+                    StrategyEventListenerProxy = new StrategyEventListenerProxy(listenerId,
+                                                                                inResponseObserver);
+                    listenerProxiesById.put(StrategyEventListenerProxy.getId(),
+                                            StrategyEventListenerProxy);
+                    strategyService.addStrategyEventListener((StrategyEventListener)StrategyEventListenerProxy);
+                }
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#removeStrategyEventListener(org.marketcetera.trade.rpc.TradeRpc.RemoveStrategyEventListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void removeStrategyEventListener(StrategyRpc.RemoveStrategyEventListenerRequest inRequest,
+                                                StreamObserver<StrategyRpc.RemoveStrategyEventListenerResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Received remove strategy event listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                BaseRpcUtil.AbstractServerListenerProxy<?> StrategyEventListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                listenerProxiesById.invalidate(listenerId);
+                if(StrategyEventListenerProxy != null) {
+                    strategyService.removeStrategyEventListener((StrategyEventListener)StrategyEventListenerProxy);
+                    StrategyEventListenerProxy.close();
+                }
+                StrategyRpc.RemoveStrategyEventListenerResponse.Builder responseBuilder = StrategyRpc.RemoveStrategyEventListenerResponse.newBuilder();
+                StrategyRpc.RemoveStrategyEventListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
     }
+    /**
+     * Wraps a {@link StrategyEventListener} with the RPC call from the client.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class StrategyEventListenerProxy
+            extends BaseRpcUtil.AbstractServerListenerProxy<StrategyRpc.StrategyEventListenerResponse>
+            implements StrategyEventListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.StrategyEventListener#receiveStrategyEvent(org.marketcetera.trade.StrategyEvent)
+         */
+        @Override
+        public void receiveStrategyEvent(StrategyEvent inStrategyEvent)
+        {
+            StrategyRpcUtil.setStrategyEvent(inStrategyEvent,
+                                             responseBuilder);
+            StrategyRpc.StrategyEventListenerResponse response = responseBuilder.build();
+            SLF4JLoggerProxy.trace(StrategyRpcServer.class,
+                                   "{} received trade message {}, sending {}",
+                                   getId(),
+                                   inStrategyEvent,
+                                   response);
+            // TODO does the user have permissions (including supervisor) to view this report?
+            getObserver().onNext(response);
+            responseBuilder.clear();
+        }
+        /**
+         * Create a new StrategyEventListenerProxy instance.
+         *
+         * @param inId a <code>String</code> value
+         * @param inObserver a <code>StreamObserver&lt;StrategyEventListenerResponse&gt;</code> value
+         */
+        private StrategyEventListenerProxy(String inId,
+                                          StreamObserver<StrategyRpc.StrategyEventListenerResponse> inObserver)
+        {
+            super(inId,
+                  inObserver);
+        }
+        /**
+         * builder used to construct messages
+         */
+        private final StrategyRpc.StrategyEventListenerResponse.Builder responseBuilder = StrategyRpc.StrategyEventListenerResponse.newBuilder();
+    }
+    /**
+     * holds trade message listeners by id
+     */
+    private final Cache<String,BaseRpcUtil.AbstractServerListenerProxy<?>> listenerProxiesById = CacheBuilder.newBuilder().build();
     /**
      * Creates new StrategyInstance objects
      */

@@ -23,6 +23,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>strategy-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>admin-rpc-core</artifactId>
     </dependency>
     <dependency>

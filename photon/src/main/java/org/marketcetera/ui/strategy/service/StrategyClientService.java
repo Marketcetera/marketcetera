@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.strategy.FileUploadRequest;
 import org.marketcetera.strategy.StrategyClient;
+import org.marketcetera.strategy.StrategyEventListener;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyRpcClientFactory;
 import org.marketcetera.strategy.StrategyRpcClientParameters;
@@ -124,6 +125,31 @@ public class StrategyClientService
     {
         return strategyClient.getStrategyInstances();
     }
+    /**
+     * Add the given strategy event listener to start receiving strategy events.
+     *
+     * @param inListener a <code>StrategyEventListener</code> value
+     */
+    public void addStrategyEventListener(StrategyEventListener inListener)
+    {
+        strategyClient.addStrategyEventListener(inListener);
+    }
+    /**
+     * Remove the given event listener to stop receiving strategy events.
+     *
+     * @param inListener a <code>StrategyEventListener</code> value
+     */
+    public void removeStrategyEventListener(StrategyEventListener inListener)
+    {
+        strategyClient.removeStrategyEventListener(inListener);
+    }
+    /**
+     * Upload the file in the given file request.
+     *
+     * @param inRequest a <code>FileUploadRequest</code> value
+     * @throws IOException if the file could not be read
+     * @throws NoSuchAlgorithmException if the file could not be hashed
+     */
     public void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException
     {

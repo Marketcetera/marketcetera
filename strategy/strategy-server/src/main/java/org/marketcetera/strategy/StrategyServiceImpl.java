@@ -8,11 +8,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
@@ -25,8 +25,14 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.core.file.DirectoryWatcherImpl;
 import org.marketcetera.core.file.DirectoryWatcherSubscriber;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.strategy.dao.PersistentStrategyInstance;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
+import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
+import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +42,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 /* $License$ */
 
@@ -73,6 +81,7 @@ public class StrategyServiceImpl
         strategyWatcher.setPollingInterval(pollingInterval);
         strategyWatcher.addWatcher(this);
         strategyWatcher.start();
+        eventBusService.register(this);
         SLF4JLoggerProxy.info(this,
                               "{} watching {} for incoming strategies",
                               serviceName,
@@ -84,6 +93,7 @@ public class StrategyServiceImpl
     @PreDestroy
     public void stop()
     {
+        eventBusService.unregister(this);
         if(strategyWatcher != null) {
             try {
                 strategyWatcher.stop();
@@ -129,6 +139,7 @@ public class StrategyServiceImpl
         // TODO need to put the correct filename in here
 //        FileUtils.deleteQuietly(new File(strategyInstance.getFilename()));
         strategyInstanceDao.delete(strategyInstance);
+        eventBusService.post(new SimpleStrategyUnloadedEvent(strategyInstance));
     }
     /* (non-Javadoc)
      * @see StrategyService#getIncomingStrategyDirectory()
@@ -188,9 +199,13 @@ public class StrategyServiceImpl
 //            FileUtils.moveFileToDirectory(inFile,
 //                                          Paths.get(provisioningAgent.getProvisioningDirectory()).toFile(),
 //                                          false);
+            StrategyStatus oldStatus = strategyInstance.getStatus();
             strategyInstance.setStatus(StrategyStatus.STOPPED);
             strategyInstance = strategyInstanceDao.save(strategyInstance);
-            // TODO send strategy load event
+            eventBusService.post(new SimpleStrategyUploadSucceededEvent(strategyInstance));
+            eventBusService.post(new SimpleStrategyStatusChangedEvent(strategyInstance,
+                                                                      oldStatus,
+                                                                      strategyInstance.getStatus()));
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
@@ -198,7 +213,8 @@ public class StrategyServiceImpl
                 strategyInstance.setStatus(StrategyStatus.ERROR);
                 strategyInstance = strategyInstanceDao.save(strategyInstance);
             }
-            // TODO send strategy load failed event
+            eventBusService.post(new SimpleStrategyUploadFailedEvent(strategyInstance,
+                                                                     PlatformServices.getMessage(e)));
         }
     }
     /**
@@ -227,6 +243,45 @@ public class StrategyServiceImpl
         return pInstance.getStatus();
     }
     /**
+     * Receive incoming strategy events.
+     *
+     * @param inEvent a <code>StrategyEvent</code> value
+     */
+    @Subscribe
+    public void receiveStrategyEvent(StrategyEvent inEvent)
+    {
+        synchronized(strategyEventListeners) {
+            for(StrategyEventListener listener : strategyEventListeners) {
+                try {
+                    listener.receiveStrategyEvent(inEvent);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
+                }
+            }
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#addStrategyEventListener(org.marketcetera.strategy.StrategyEventListener)
+     */
+    @Override
+    public void addStrategyEventListener(StrategyEventListener inListener)
+    {
+        synchronized(strategyEventListeners) {
+            strategyEventListeners.add(inListener);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#removeStrategyEventListener(org.marketcetera.strategy.StrategyEventListener)
+     */
+    @Override
+    public void removeStrategyEventListener(StrategyEventListener inListener)
+    {
+        synchronized(strategyEventListeners) {
+            strategyEventListeners.remove(inListener);
+        }
+    }
+    /**
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value
@@ -238,7 +293,13 @@ public class StrategyServiceImpl
     {
         return strategyInstanceDao.findByName(inName);
     }
+    /**
+     * directory which is monitored for incoming strategies
+     */
     private Path incomingStrategyDirectoryPath;
+    /**
+     * directory which is used to store uploaded strategies before they are verified
+     */
     private Path temporaryStrategyDirectoryPath;
     /**
      * interval at which to poll for provisioning files
@@ -255,13 +316,24 @@ public class StrategyServiceImpl
      */
     @Value("${metc.strategy.temporary.directory}")
     private String strategyTemporaryDirectoryName;
+    /**
+     * name of this service
+     */
     private String serviceName;
+    /**
+     * watches the incoming strategy directory
+     */
     private DirectoryWatcherImpl strategyWatcher;
     /**
      * provides access to cluster services
      */
     @Autowired
     private ClusterService clusterService;
+    /**
+     * provides access to event bus services
+     */
+    @Autowired
+    private EventBusService eventBusService;
     /**
      * generated cluster data
      */
@@ -281,4 +353,8 @@ public class StrategyServiceImpl
      */
     @Autowired
     private ProvisioningAgent provisioningAgent;
+    /**
+     * holds event listener subscribers
+     */
+    private final Set<StrategyEventListener> strategyEventListeners = Sets.newConcurrentHashSet();
 }

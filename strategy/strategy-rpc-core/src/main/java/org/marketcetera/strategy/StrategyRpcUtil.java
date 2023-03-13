@@ -3,6 +3,20 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.Optional;
+
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
+import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.strategy.events.StrategyStatusChangedEvent;
+import org.marketcetera.strategy.events.StrategyUnloadedEvent;
+import org.marketcetera.strategy.events.StrategyUploadFailedEvent;
+import org.marketcetera.strategy.events.StrategyUploadSucceededEvent;
+
 /* $License$ */
 
 /**
@@ -12,6 +26,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public abstract class StrategyRpcUtil
 {
     /**
@@ -91,5 +106,80 @@ public abstract class StrategyRpcUtil
         org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inStrategyInstance.getStarted()).ifPresent(value->strategyInstance.setStarted(value));
         getStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->strategyInstance.setStatus(value));
         return java.util.Optional.of(strategyInstance);
+    }
+    /**
+     *
+     *
+     * @param inStrategyEvent
+     * @param inResponseBuilder
+     */
+    public static void setStrategyEvent(StrategyEvent inStrategyEvent,
+                                        StrategyRpc.StrategyEventListenerResponse.Builder inResponseBuilder)
+    {
+        StrategyTypesRpc.StrategyEvent.Builder rpcEventBuilder = StrategyTypesRpc.StrategyEvent.newBuilder();
+        rpcEventBuilder.setEventType(inStrategyEvent.getClass().getSimpleName());
+        if(inStrategyEvent.getStrategyInstance() != null) {
+            getRpcStrategyInstance(inStrategyEvent.getStrategyInstance()).ifPresent(rpcStrategyInstance -> rpcEventBuilder.setStrategyInstance(rpcStrategyInstance));
+        }
+        rpcEventBuilder.setEventType(inStrategyEvent.getClass().getSimpleName());
+        if(inStrategyEvent instanceof StrategyUploadFailedEvent) {
+            StrategyUploadFailedEvent failedEvent = (StrategyUploadFailedEvent)inStrategyEvent;
+            rpcEventBuilder.setMessage(failedEvent.getErrorMessage());
+        } else if(inStrategyEvent instanceof StrategyUploadSucceededEvent) {
+        } else if(inStrategyEvent instanceof StrategyUnloadedEvent) {
+        } else if(inStrategyEvent instanceof StrategyStatusChangedEvent) {
+            StrategyStatusChangedEvent statusChangedEvent = (StrategyStatusChangedEvent)inStrategyEvent;
+            getRpcStrategyStatus(statusChangedEvent.getNewValue()).ifPresent(rpcStrategyStatus -> rpcEventBuilder.setNewStatusValue(rpcStrategyStatus));
+            getRpcStrategyStatus(statusChangedEvent.getOldValue()).ifPresent(rpcStrategyStatus -> rpcEventBuilder.setOldStatusValue(rpcStrategyStatus));
+        } else {
+            throw new UnsupportedOperationException("Unexpected strategy event type: " + inStrategyEvent.getClass().getSimpleName());
+        }
+        inResponseBuilder.setEvent(rpcEventBuilder.build());
+    }
+    /**
+     *
+     *
+     * @param inResponse
+     * @return
+     */
+    public static StrategyEvent getStrategyEvent(StrategyRpc.StrategyEventListenerResponse inResponse,
+                                                 StrategyInstanceFactory inStrategyInstanceFactory,
+                                                 UserFactory inUserFactory)
+    {
+        if(inResponse.hasEvent()) {
+            StrategyTypesRpc.StrategyEvent rpcEvent = inResponse.getEvent();
+            if(rpcEvent.hasStrategyInstance()) {
+                Optional<? extends StrategyInstance> strategyInstanceOption = getStrategyInstance(rpcEvent.getStrategyInstance(),
+                                                                                                  inStrategyInstanceFactory,
+                                                                                                  inUserFactory);
+                if(strategyInstanceOption.isPresent()) {
+                    StrategyInstance strategyInstance = strategyInstanceOption.get();
+                    switch(rpcEvent.getEventType()) {
+                        case "SimpleStrategyUploadFailedEvent":
+                            SimpleStrategyUploadFailedEvent failedEvent = new SimpleStrategyUploadFailedEvent();
+                            failedEvent.setErrorMessage(rpcEvent.getMessage());
+                            failedEvent.setStrategyInstance(strategyInstance);
+                            return failedEvent;
+                        case "SimpleStrategyUploadSucceededEvent":
+                            SimpleStrategyUploadSucceededEvent succeededEvent = new SimpleStrategyUploadSucceededEvent();
+                            succeededEvent.setStrategyInstance(strategyInstance);
+                            return succeededEvent;
+                        case "SimpleStrategyStatusChangedEvent":
+                            SimpleStrategyStatusChangedEvent statusChangedEvent = new SimpleStrategyStatusChangedEvent();
+                            statusChangedEvent.setStrategyInstance(strategyInstance);
+                            getStrategyStatus(rpcEvent.getNewStatusValue()).ifPresent(strategyStatus -> statusChangedEvent.setNewValue(strategyStatus));
+                            getStrategyStatus(rpcEvent.getOldStatusValue()).ifPresent(strategyStatus -> statusChangedEvent.setOldValue(strategyStatus));
+                            return statusChangedEvent;
+                        case "SimpleStrategyUnloadedEvent":
+                            SimpleStrategyUnloadedEvent unloadedEvent = new SimpleStrategyUnloadedEvent();
+                            unloadedEvent.setStrategyInstance(strategyInstance);
+                            return unloadedEvent;
+                        default:
+                            throw new UnsupportedOperationException("Unexpected strategy event type: " + rpcEvent.getEventType());
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

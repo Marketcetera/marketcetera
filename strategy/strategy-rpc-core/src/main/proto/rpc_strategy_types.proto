@@ -46,3 +46,11 @@ enum FileUploadStatus {
   SUCCESS = 2;
   FAILED = 3;
 }
+
+message StrategyEvent {
+    StrategyInstance strategyInstance = 1;
+    string message = 2;
+    string eventType = 3;
+    StrategyStatus oldStatusValue = 4;
+    StrategyStatus newStatusValue = 5;
+}

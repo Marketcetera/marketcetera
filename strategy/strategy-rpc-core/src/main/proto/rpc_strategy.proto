@@ -65,6 +65,23 @@ message FindStrategyInstanceByNameResponse {
     StrategyInstance strategyInstance = 1;
 }
 
+message AddStrategyEventListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message StrategyEventListenerResponse {
+    StrategyEvent event = 1;
+}
+
+message RemoveStrategyEventListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveStrategyEventListenerResponse {
+}
+
 // services for Strategy
 service StrategyRpcService {
     rpc login(LoginRequest) returns (LoginResponse); // starts the session
@@ -75,4 +92,6 @@ service StrategyRpcService {
     rpc unloadStrategyInstance(UnloadStrategyInstanceRequest) returns (UnloadStrategyInstanceResponse); // unload a strategy instance
     rpc findByName(FindStrategyInstanceByNameRequest) returns (FindStrategyInstanceByNameResponse); // finds the strategy instance with the given name
     rpc uploadFile(stream FileUploadRequest) returns(FileUploadResponse);
+    rpc addStrategyEventListener(AddStrategyEventListenerRequest) returns (stream StrategyEventListenerResponse);
+    rpc removeStrategyEventListener(RemoveStrategyEventListenerRequest) returns (RemoveStrategyEventListenerResponse);
 }

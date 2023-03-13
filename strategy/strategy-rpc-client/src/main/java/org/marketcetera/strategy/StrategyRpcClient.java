@@ -28,7 +28,9 @@ import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.rpc.base.BaseRpcUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,10 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 
@@ -215,6 +221,126 @@ public class StrategyRpcClient
                                TimeFactoryImpl.periodFormatter.print(fileUploadPeriod),
                                fileUploadObserver.currentStatus);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#addStrategyEventListener(org.marketcetera.strategy.StrategyEventListener)
+     */
+    @Override
+    public void addStrategyEventListener(StrategyEventListener inListener)
+    {
+        // check to see if this listener is already registered
+        if(listenerProxies.asMap().containsKey(inListener)) {
+            return;
+        }
+        // make sure that this listener wasn't just whisked out from under us
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inListener);
+        if(listener == null) {
+            return;
+        }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,
+                                       "{} adding strategy event listener",
+                                       getSessionId());
+                StrategyRpc.AddStrategyEventListenerRequest.Builder requestBuilder = StrategyRpc.AddStrategyEventListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(listener.getId());
+                StrategyRpc.AddStrategyEventListenerRequest addStrategyEventListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addStrategyEventListenerRequest);
+                getAsyncStub().addStrategyEventListener(addStrategyEventListenerRequest,
+                                                        (StrategyEventListenerProxy)listener);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#removeStrategyEventListener(org.marketcetera.strategy.StrategyEventListener)
+     */
+    @Override
+    public void removeStrategyEventListener(StrategyEventListener inListener)
+    {
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inListener);
+        listenerProxies.invalidate(inListener);
+        if(proxy == null) {
+            return;
+        }
+        listenerProxiesById.invalidate(proxy.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,
+                                       "{} removing report listener",
+                                       getSessionId());
+                StrategyRpc.RemoveStrategyEventListenerRequest.Builder requestBuilder = StrategyRpc.RemoveStrategyEventListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(proxy.getId());
+                StrategyRpc.RemoveStrategyEventListenerRequest removeStrategyEventListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       removeStrategyEventListenerRequest);
+                StrategyRpc.RemoveStrategyEventListenerResponse response = getBlockingStub().removeStrategyEventListener(removeStrategyEventListenerRequest);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
+    }
+    /**
+     * Provides an interface between trade message stream listeners and their handlers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class StrategyEventListenerProxy
+            extends BaseRpcUtil.AbstractClientListenerProxy<StrategyRpc.StrategyEventListenerResponse,StrategyEvent,StrategyEventListener>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.StrategyRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
+         */
+        @Override
+        protected StrategyEvent translateMessage(StrategyRpc.StrategyEventListenerResponse inResponse)
+        {
+            return StrategyRpcUtil.getStrategyEvent(inResponse,
+                                                    strategyInstanceFactory,
+                                                    userFactory);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.StrategyRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        protected void sendMessage(StrategyEventListener inMessageListener,
+                                   StrategyEvent inMessage)
+        {
+            inMessageListener.receiveStrategyEvent(inMessage);
+        }
+        /**
+         * Create a new StrategyEventListenerProxy instance.
+         *
+         * @param inStrategyEventListener a <code>StrategyEventListener</code> value
+         */
+        protected StrategyEventListenerProxy(StrategyEventListener inStrategyEventListener)
+        {
+            super(inStrategyEventListener);
+        }
+    }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private static class FileUploadObserver
             implements StreamObserver<StrategyRpc.FileUploadResponse>
     {
@@ -343,6 +469,38 @@ public class StrategyRpcClient
     {
         super(inParameters);
     }
+    /**
+     * Creates the appropriate proxy for the given listener.
+     *
+     * @param inListener an <code>Object</code> value
+     * @return an <code>AbstractListenerProxy&lt;?,?,?&gt;</code> value
+     */
+    private AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
+    {
+        if(inListener instanceof StrategyEventListener) {
+            return new StrategyEventListenerProxy((StrategyEventListener)inListener);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    /**
+     * holds report listeners by their id
+     */
+    private final Cache<String,BaseRpcUtil.AbstractClientListenerProxy<?,?,?>> listenerProxiesById = CacheBuilder.newBuilder().build();
+    /**
+     * holds listener proxies keyed by the listener
+     */
+    private final LoadingCache<Object,BaseRpcUtil.AbstractClientListenerProxy<?,?,?>> listenerProxies = CacheBuilder.newBuilder().build(new CacheLoader<Object,AbstractClientListenerProxy<?,?,?>>() {
+        @Override
+        public BaseRpcUtil.AbstractClientListenerProxy<?,?,?> load(Object inKey)
+                throws Exception
+        {
+            BaseRpcUtil.AbstractClientListenerProxy<?,?,?> proxy = getListenerFor(inKey);
+            listenerProxiesById.put(proxy.getId(),
+                                    proxy);
+            return proxy;
+        }}
+    );
     /**
      * creates new {@link StrategyInstance} objects
      */

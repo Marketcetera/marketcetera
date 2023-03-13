@@ -17,9 +17,11 @@ import org.marketcetera.admin.User;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.strategy.FileUploadStatus;
 import org.marketcetera.strategy.SimpleFileUploadRequest;
+import org.marketcetera.strategy.StrategyEventListener;
 import org.marketcetera.strategy.StrategyInstance;
 import org.marketcetera.strategy.StrategyPermissions;
 import org.marketcetera.strategy.StrategyStatus;
+import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
@@ -68,6 +70,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -82,6 +85,7 @@ import javafx.stage.Stage;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyView
         extends AbstractContentView
+        implements StrategyEventListener
 {
     /**
      * Validate and start the object.
@@ -135,6 +139,27 @@ public class StrategyView
         mainScene = new Scene(mainLayout);
         updateStrategies();
         updateEvents();
+        strategyClient.addStrategyEventListener(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     */
+    @Override
+    public void onClose(WindowEvent inEvent)
+    {
+        strategyClient.removeStrategyEventListener(this);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyEventListener#receiveStrategyEvent(org.marketcetera.strategy.events.StrategyEvent)
+     */
+    @Override
+    public void receiveStrategyEvent(StrategyEvent inEvent)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Received {}",
+                               inEvent);
+        updateStrategies();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getScene()

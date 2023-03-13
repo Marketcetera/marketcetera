@@ -34,6 +34,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>admin-server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eventbus-api</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>com.querydsl</groupId>

@@ -59,4 +59,16 @@ public interface StrategyClient
      * @param inStrategyInstanceName a <code>String</code> value
      */
     void unloadStrategyInstance(String inStrategyInstanceName);
+    /**
+     * Add the given strategy event listener to start receiving strategy events.
+     *
+     * @param inListener a <code>StrategyEventListener</code> value
+     */
+    void addStrategyEventListener(StrategyEventListener inListener);
+    /**
+     * Remove the given event listener to stop receiving strategy events.
+     *
+     * @param inListener a <code>StrategyEventListener</code> value
+     */
+    void removeStrategyEventListener(StrategyEventListener inListener);
 }

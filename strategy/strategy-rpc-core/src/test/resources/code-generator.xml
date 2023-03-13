@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <model>
+  <modelEvents>
+    <modelEvent name="StrategyUnloadedEvent" description="Indicates that a strategy was unloaded" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.events.StrategyEvent,org.marketcetera.strategy.HasStrategyInstance">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was successfully uploaded" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
+      </modelEventAttributes>
+    </modelEvent>
+    <modelEvent name="StrategyUploadFailedEvent" description="Indicates that a strategy upload failed" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyInstance,org.marketcetera.strategy.events.StrategyEvent">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was successfully uploaded" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
+        <modelEventAttribute name="errorMessage" description="describes the error that occurred" useGetters="true" useSetters="true" interfaceProvided="false"
+                             type="String" pojoType="String" apiType="String"/>
+      </modelEventAttributes>
+    </modelEvent>
+    <modelEvent name="StrategyStatusChangedEvent" description="Indicates that a strategy status has changed" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyInstance,org.marketcetera.strategy.events.StrategyEvent">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEventAttributes>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was successfully uploaded" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
+        <modelEventAttribute name="newValue" description="new strategy status value" useGetters="true" useSetters="true" interfaceProvided="false"
+                             type="org.marketcetera.strategy.StrategyStatus" pojoType="org.marketcetera.strategy.StrategyStatus" apiType="org.marketcetera.strategy.StrategyStatus"/>
+        <modelEventAttribute name="oldValue" description="old strategy status value" useGetters="true" useSetters="true" interfaceProvided="false"
+                             type="org.marketcetera.strategy.StrategyStatus" pojoType="org.marketcetera.strategy.StrategyStatus" apiType="org.marketcetera.strategy.StrategyStatus"/>
+      </modelEventAttributes>
+    </modelEvent>
+  </modelEvents>
   <modelEntities>
     <modelEntity name="StrategyInstance" description="Identifies a unique strategy instance" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" persistentProject="strategy/strategy-server" 
                  packageName="org.marketcetera.strategy" hasInterfaceProject="strategy/strategy-api" apiExtends="org.marketcetera.admin.HasUser">

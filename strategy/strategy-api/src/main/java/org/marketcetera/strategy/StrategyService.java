@@ -62,4 +62,18 @@ public interface StrategyService
      * @return
      */
     Path getTemporaryStrategyDirectory();
+    /**
+     * 
+     *
+     *
+     * @param inListener
+     */
+    void addStrategyEventListener(StrategyEventListener inListener);
+    /**
+     * 
+     *
+     *
+     * @param inListener
+     */
+    void removeStrategyEventListener(StrategyEventListener inListener);
 }
