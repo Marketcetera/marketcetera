@@ -3,9 +3,12 @@
 //
 package org.marketcetera.strategy.dao;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import org.marketcetera.core.Preserve;
+import org.marketcetera.strategy.StrategyStatus;
 
 /* $License$ */
 
@@ -34,4 +37,11 @@ public interface StrategyInstanceDao
      * @return an <code>Optional&lt;PersistentStrategyInstance&gt;</code> value
      */
     Optional<PersistentStrategyInstance> findByNonce(String inNonce);
+    /**
+     * Find the strategy instances with status values in the given values.
+     *
+     * @param inStatus a <code>Set&lt;StrategyStatus&gt;</code> value
+     * @return a <code>Collection&lt;PersistentStrategyInstance&gt;</code> value
+     */
+    Collection<PersistentStrategyInstance> findAllByStatusIn(Set<StrategyStatus> inStatus);
 }

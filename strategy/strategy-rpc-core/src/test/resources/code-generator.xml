@@ -63,14 +63,13 @@
                              type="org.marketcetera.strategy.StrategyStatus" pojoType="org.marketcetera.strategy.StrategyStatus" apiType="org.marketcetera.strategy.StrategyStatus"/>
       </modelEventAttributes>
     </modelEvent>
-    <modelEvent name="StrategyRuntimeUpdateEvent" description="Indicates that a strategy status has changed" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyInstance,org.marketcetera.strategy.events.StrategyEvent">
+    <modelEvent name="StrategyRuntimeUpdateEvent" description="Indicates that a strategy runtime has changed" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyInstance,org.marketcetera.strategy.events.StrategyEvent">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEventAttributes>
         <modelEventAttribute name="strategyInstance" description="strategy instance for which the runtime is being updated" useGetters="true" useSetters="true" interfaceProvided="true"
                              type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
-        <modelEntityAttribute name="started" description="date strategy was started" type="java.util.Date" useGetters="true" useSetters="true"/>
       </modelEventAttributes>
     </modelEvent>
   </modelEvents>

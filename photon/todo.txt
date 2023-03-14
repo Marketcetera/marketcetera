@@ -1,6 +1,5 @@
 * New Features *
 ================
-- add strategy view
 - fix sessions target/sender seq num not updating
 - positions view
 - suggestions view
@@ -68,10 +67,6 @@
 * strategy view *
 *****************
 - reverify strategy before starting
-- ability to pass params when starting a strategy (and for autostarting it, somehow)
--- maybe make params part of the instance in a subtable?
-- need a third strategy directory for strategy caching, reload on startup from cache dir to incoming strategy dir (for verification)
-- strategy running update events
 
 - cancel big uploads
 - run on different cluster members? report strategy status on all cluster members
@@ -93,6 +88,8 @@
 - update build instructions
 - make 4.1.x the main branch
 
+x add strategy view
+x strategy running update events
 x implement stop strategy
 xx stop strategy is fundamentally simple: just stop the context that was started
 xx simplify strategy start by directly creating the context, don't use provisioning agent
