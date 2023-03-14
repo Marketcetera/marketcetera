@@ -9,6 +9,7 @@
   <groupId>org.marketcetera</groupId>
   <artifactId>photon</artifactId>
   <version>4.1.0-SNAPSHOT</version>
+  <name>Photon Application</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javafx.version>19.0.2.1</javafx.version>

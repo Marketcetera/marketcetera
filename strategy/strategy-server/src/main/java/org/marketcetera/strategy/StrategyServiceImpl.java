@@ -4,13 +4,20 @@
 package org.marketcetera.strategy;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,7 +27,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
-import org.marketcetera.admin.provisioning.ProvisioningAgent;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
@@ -34,6 +40,7 @@ import org.marketcetera.strategy.dao.StrategyInstanceDao;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
+import org.marketcetera.strategy.events.SimpleStrategyStoppedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
@@ -42,10 +49,14 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -71,6 +82,7 @@ public class StrategyServiceImpl
      * @throws IOException if an error occurs managing strategy and provisioning directories 
      */
     @PostConstruct
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void start()
             throws IOException
     {
@@ -86,11 +98,10 @@ public class StrategyServiceImpl
         temporaryStrategyDirectoryPath = Paths.get(strategyTemporaryDirectoryName);
         FileUtils.createParentDirectories(storageStrategyDirectoryPath.toFile());
         SLF4JLoggerProxy.info(this,
-                              "{} monitoring {} for uploaded strategies, storing strategies in {}, and using {} to start strategies",
+                              "{} monitoring {} for uploaded strategies, storing strategies in {}",
                               serviceName,
                               strategyIncomingDirectoryName,
-                              strategyStorageDirectoryName,
-                              provisioningAgent.getProvisioningDirectory());
+                              strategyStorageDirectoryName);
         strategyWatcher = new DirectoryWatcherImpl();
         strategyWatcher.setCreateDirectoriesOnStart(true);
         strategyWatcher.setDirectoriesToWatch(Lists.newArrayList(new File(strategyIncomingDirectoryName)));
@@ -98,6 +109,16 @@ public class StrategyServiceImpl
         strategyWatcher.addWatcher(this);
         strategyWatcher.start();
         eventBusService.register(this);
+        // verify all existing strategies
+        for(PersistentStrategyInstance existingStrategyInstance : strategyInstanceDao.findAll()) {
+            Path fullStrategyPath = storageStrategyDirectoryPath.resolve(existingStrategyInstance.getFilename());
+            if(!fullStrategyPath.toFile().canRead()) {
+                SLF4JLoggerProxy.warn(this,
+                                      "{} is unreadable, unloading",
+                                      fullStrategyPath);
+                strategyInstanceDao.delete(existingStrategyInstance);
+            }
+        }
     }
     /**
      * Stop the object.
@@ -149,7 +170,6 @@ public class StrategyServiceImpl
             Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstanceName);
             if(strategyInstanceOption.isEmpty()) {
                 success = false;
-                errorMessage = "No loaded strategy with name '" + inStrategyInstanceName + "'";
                 newStatus = StrategyStatus.ERROR;
             } else {
                 strategyInstance = strategyInstanceOption.get();
@@ -158,18 +178,15 @@ public class StrategyServiceImpl
                     Path strategySource = Paths.get(strategyStorageDirectoryName,
                                                     strategyInstance.getFilename());
                     if(strategySource.toFile().canRead()) {
+                        // TODO need to re-verify hash
                         success = true;
-                        newStatus = StrategyStatus.RUNNING;
                         // TODO somehow set the parameters for the strategy to read
-                        Path strategyTargetDirectory = Paths.get(provisioningAgent.getProvisioningDirectory());
-                        SLF4JLoggerProxy.info(this,
-                                              "Starting strategy {} by copying {} to {}",
-                                              strategyInstance.getName(),
-                                              strategySource,
-                                              strategyTargetDirectory);
-                        FileUtils.copyFileToDirectory(strategySource.toFile(),
-                                                      strategyTargetDirectory.toFile());
+                        RunningStrategy runningStrategy = new RunningStrategy(strategyInstance,
+                                                                              strategySource.toFile());
+                        runningStrategy.start();
                         strategyInstance.setStarted(new Date());
+                        strategiesByName.put(strategyInstance.getName(),
+                                             runningStrategy);
                         newStatus = StrategyStatus.RUNNING;
                     } else {
                         success = false;
@@ -184,11 +201,20 @@ public class StrategyServiceImpl
                     success = false;
                     errorMessage = "Strategy '" + inStrategyInstanceName + "' at status " + oldStatus.name() + " cannot be started";
                     newStatus = oldStatus;
+                    SLF4JLoggerProxy.warn(this,
+                                          "Unable to start strategy '{}' at status {}",
+                                          inStrategyInstanceName,
+                                          oldStatus);
                 }
             }
-        } catch (RuntimeException | IOException e) {
-            success = false;
+        } catch (Throwable e) {
             errorMessage = PlatformServices.getMessage(e);
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Unable to start strategy '{}': {}",
+                                  inStrategyInstanceName,
+                                  errorMessage);
+            success = false;
             newStatus = StrategyStatus.ERROR;
         } finally {
             if(strategyInstance != null) {
@@ -217,7 +243,37 @@ public class StrategyServiceImpl
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void stopStrategyInstance(String inStrategyInstanceName)
     {
-        throw new UnsupportedOperationException(); // TODO
+        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstanceName);
+        Validate.isTrue(strategyInstanceOption.isPresent(),
+                        "No strategy by name '" + inStrategyInstanceName + "'");
+        PersistentStrategyInstance strategyInstance = strategyInstanceOption.get();
+        Validate.isTrue(strategyInstance.getStatus().isRunning(),
+                        "Strategy '" + inStrategyInstanceName + "' is not running");
+        RunningStrategy runningStrategy = strategiesByName.getIfPresent(inStrategyInstanceName);
+        StrategyStatus oldStatus = strategyInstance.getStatus();
+        StrategyStatus newStatus = StrategyStatus.STOPPED;
+        strategyInstance.setStarted(new Date(0));
+        if(runningStrategy == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "No running strategy found for '{}'",
+                                  inStrategyInstanceName);
+        } else {
+            strategiesByName.invalidate(inStrategyInstanceName);
+            try {
+                runningStrategy.stop();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        strategyInstance.setStatus(newStatus);
+        strategyInstance = strategyInstanceDao.save(strategyInstance);
+        eventBusService.post(new SimpleStrategyStoppedEvent(strategyInstance));
+        if(oldStatus != newStatus) {
+            eventBusService.post(new SimpleStrategyStatusChangedEvent(strategyInstance,
+                                                                      oldStatus,
+                                                                      newStatus));
+        }
     }
     /**
      * Unload a strategy instance.
@@ -397,6 +453,84 @@ public class StrategyServiceImpl
     {
         return strategyInstanceDao.findByName(inName);
     }
+    private class RunningStrategy
+    {
+        private void start()
+                throws Throwable
+        {
+            // prepare a new class loader based on the current one to load this class
+            URL url = jarFile.toURI().toURL();
+            // create a new class loader for this operation that will be closed at its conclusion
+            newClassloader = new URLClassLoader(new URL[] { url },ClassLoader.getSystemClassLoader());
+            String mainClass = getMainClassName(jarFile);
+            SLF4JLoggerProxy.debug(StrategyServiceImpl.this,
+                                   "Selected {} as the mainClass",
+                                   mainClass);
+            Validate.notNull(mainClass,
+                    "No 'Main-Class' attribute in JAR");
+            Class<?> provisioningClass = newClassloader.loadClass(mainClass);
+            // create a new Spring context as a sandbox for the loaded code. this allows us to discard the loaded code when done
+            newContext = new AnnotationConfigApplicationContext();
+            // explicitly use the new class loader
+            newContext.setClassLoader(newClassloader);
+            // add the parent context to give the provisioning JAR access to all our resources
+            newContext.setParent(applicationContext);
+            // register the new class
+            newContext.register(provisioningClass);
+            // refresh the context, which allows it to prepare to use the provisioning JAR
+            newContext.refresh();
+            // start the context
+            newContext.start();
+        }
+        private void stop()
+        {
+            try {
+                newContext.stop();
+                newContext.close();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(StrategyServiceImpl.this,
+                                      e);
+            }
+            try {
+                newClassloader.close();
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(StrategyServiceImpl.this,
+                                      e);
+            }
+        }
+        /**
+         * Determines the main class name from the given JAR.
+         *
+         * <p>The current implementation optimistically assumes the given File is a JAR and contains a <code>Main-Class</code> attribute.
+         * 
+         * @param inJarFile a <code>File</code> value
+         * @return a <code>String</code> value or <code>null</code> if the appropriate attribute cannot be extracted from the given file
+         * @throws FileNotFoundException if the file does not exist
+         * @throws IOException if the file could otherwise not be read
+         */
+        private String getMainClassName(File inJarFile)
+                throws FileNotFoundException, IOException
+        {
+            String mainClassName;
+            try(JarInputStream jarStream = new JarInputStream(new FileInputStream(inJarFile))) {
+                Manifest manifest = jarStream.getManifest();
+                Attributes mainAttributes = manifest.getMainAttributes();
+                mainClassName = mainAttributes.getValue("Main-Class");
+            }
+            return mainClassName;
+        }
+        private RunningStrategy(StrategyInstance inStrategyInstance,
+                                File inJar)
+        {
+            strategyInstance = inStrategyInstance;
+            jarFile = inJar;
+        }
+        private final File jarFile;
+        private final StrategyInstance strategyInstance;
+        private URLClassLoader newClassloader;
+        private AnnotationConfigApplicationContext newContext;
+    }
+    private final Cache<String,RunningStrategy> strategiesByName = CacheBuilder.newBuilder().build();
     /**
      * directory which is monitored for incoming strategies
      */
@@ -409,6 +543,8 @@ public class StrategyServiceImpl
      * directory which is used to store uploaded strategies after they are verified
      */
     private Path storageStrategyDirectoryPath;
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * interval at which to poll for provisioning files
      */
@@ -461,11 +597,6 @@ public class StrategyServiceImpl
      */
     @Autowired
     private StrategyInstanceDao strategyInstanceDao;
-    /**
-     * provides access to provisioning services
-     */
-    @Autowired
-    private ProvisioningAgent provisioningAgent;
     /**
      * holds event listener subscribers
      */

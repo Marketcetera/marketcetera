@@ -443,11 +443,11 @@ public class StrategyRpcServer<SessionClazz>
                                              responseBuilder);
             StrategyRpc.StrategyEventListenerResponse response = responseBuilder.build();
             SLF4JLoggerProxy.trace(StrategyRpcServer.class,
-                                   "{} received trade message {}, sending {}",
+                                   "{} received strategy event {}, sending {}",
                                    getId(),
                                    inStrategyEvent,
                                    response);
-            // TODO does the user have permissions (including supervisor) to view this report?
+            // TODO does the user have permissions (including supervisor) to view this strategy event?
             getObserver().onNext(response);
             responseBuilder.clear();
         }

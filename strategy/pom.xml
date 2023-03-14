@@ -18,5 +18,6 @@
     <module>strategy-rpc-client</module>
     <module>strategy-rpc-core</module>
     <module>strategy-rpc-server</module>
+    <module>strategy-sample</module>
   </modules>
 </project>

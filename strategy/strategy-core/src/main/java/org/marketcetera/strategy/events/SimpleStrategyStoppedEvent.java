@@ -3,6 +3,9 @@
 //
 package org.marketcetera.strategy.events;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.strategy.StrategyInstance;
+
 /* $License$ */
 
 /**
@@ -12,6 +15,7 @@ package org.marketcetera.strategy.events;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimpleStrategyStoppedEvent
         implements StrategyStoppedEvent
 {
@@ -19,6 +23,15 @@ public class SimpleStrategyStoppedEvent
      * Create a new SimpleStrategyStoppedEvent instance.
      */
     public SimpleStrategyStoppedEvent() {}
+    /**
+     * Create a new SimpleStrategyStoppedEvent instance.
+     *
+     * @param inStrategyInstance a <code>StrategyInstance</code> value
+     */
+    public SimpleStrategyStoppedEvent(StrategyInstance inStrategyInstance)
+    {
+        strategyInstance = inStrategyInstance;
+    }
     /**
      * Get the strategyInstance value.
      *

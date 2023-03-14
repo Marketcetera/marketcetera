@@ -67,6 +67,12 @@
 *****************
 * strategy view *
 *****************
+- reverify strategy before starting
+- ability to pass params when starting a strategy (and for autostarting it, somehow)
+-- maybe make params part of the instance in a subtable?
+- need a third strategy directory for strategy caching, reload on startup from cache dir to incoming strategy dir (for verification)
+- strategy running update events
+
 - cancel big uploads
 - run on different cluster members? report strategy status on all cluster members
 - special category of events?
@@ -78,16 +84,16 @@
 - remove hash from FileUploadMetaData
 - add type to FileUploadMetaData and remove hardcoded type in StrategyRpcServer
 - move verification from StrategyRPCServer to StrategyServiceImpl
-- need a third strategy directory for strategy caching, reload on startup from cache dir to incoming strategy dir (for verification)
 - add attribute to strategy instance:
 -- auto start
-- run a strategy with passed parameters
-- events
--- strategy started
--- strategy stopped
 - strategy events should be in db to allow pagination - could be lots and lots
 - strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
 
 - merge 1102 to 4.1.x
 - update build instructions
 - make 4.1.x the main branch
+
+x implement stop strategy
+xx stop strategy is fundamentally simple: just stop the context that was started
+xx simplify strategy start by directly creating the context, don't use provisioning agent
+xx cache the context when a strategy is started. to stop it, just call .stop() on the context

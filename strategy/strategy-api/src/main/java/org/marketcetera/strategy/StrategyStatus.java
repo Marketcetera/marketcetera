@@ -54,9 +54,18 @@ public enum StrategyStatus
      *
      * @return a <code>boolean</code> value
      */
-    boolean isRunnable()
+    public boolean isRunnable()
     {
         return runnable.contains(this);
+    }
+    /**
+     * Indicates if the strategy is running.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isRunning()
+    {
+        return RUNNING.equals(this);
     }
     /**
      * strategy statuses that indicate a strategy can be unloaded
