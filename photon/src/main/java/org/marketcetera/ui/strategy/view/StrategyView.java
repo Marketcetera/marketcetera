@@ -30,6 +30,7 @@ import org.marketcetera.strategy.StrategyMessage;
 import org.marketcetera.strategy.StrategyPermissions;
 import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.strategy.events.StrategyMessageEvent;
 import org.marketcetera.strategy.events.StrategyStartFailedEvent;
 import org.marketcetera.strategy.events.StrategyStartedEvent;
 import org.marketcetera.strategy.events.StrategyStatusChangedEvent;
@@ -223,13 +224,15 @@ public class StrategyView
                         displayStrategyInstance.strategyStatusProperty().set(event.getNewValue());
                     } else if(inEvent instanceof StrategyUnloadedEvent) {
                         strategyTable.getItems().remove(displayStrategyInstance);
+                    } else if(inEvent instanceof StrategyMessageEvent) {
+                        updateEvents();
                     }
                 }}
             );
         } else {
             updateStrategies();
+            updateEvents();
         }
-        updateEvents();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getScene()

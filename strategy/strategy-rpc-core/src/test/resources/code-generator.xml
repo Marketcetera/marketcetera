@@ -63,13 +63,15 @@
                              type="org.marketcetera.strategy.StrategyStatus" pojoType="org.marketcetera.strategy.StrategyStatus" apiType="org.marketcetera.strategy.StrategyStatus"/>
       </modelEventAttributes>
     </modelEvent>
-    <modelEvent name="StrategyMessageEvent" description="Indicates that a strategy message was added" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyMessage">
+    <modelEvent name="StrategyMessageEvent" description="Indicates that a strategy message was added" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" packageName="org.marketcetera.strategy.events" apiExtends="org.marketcetera.strategy.HasStrategyMessage,org.marketcetera.strategy.events.StrategyEvent">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
       <modelEventAttributes>
         <modelEventAttribute name="strategyMessage" description="strategy message that was created" useGetters="true" useSetters="true" interfaceProvided="true"
                              type="org.marketcetera.strategy.StrategyMessage" pojoType="org.marketcetera.strategy.StrategyMessage" apiType="org.marketcetera.strategy.StrategyMessage"/>
+        <modelEventAttribute name="strategyInstance" description="strategy instance which was successfully uploaded" useGetters="true" useSetters="true" interfaceProvided="true"
+                             type="org.marketcetera.strategy.StrategyInstance" pojoType="org.marketcetera.strategy.StrategyInstance" apiType="org.marketcetera.strategy.StrategyInstance"/>
       </modelEventAttributes>
     </modelEvent>
   </modelEvents>

@@ -44,6 +44,7 @@ import org.marketcetera.strategy.dao.PersistentStrategyMessage;
 import org.marketcetera.strategy.dao.QPersistentStrategyMessage;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
 import org.marketcetera.strategy.dao.StrategyMessageDao;
+import org.marketcetera.strategy.events.SimpleStrategyMessageEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
@@ -501,6 +502,7 @@ public class StrategyServiceImpl
         Validate.isTrue(strategyInstanceOption.isPresent());
         strategyMessage.setStrategyInstance(strategyInstanceOption.get());
         strategyMessage = strategyMessageDao.save(strategyMessage);
+        eventBusService.post(new SimpleStrategyMessageEvent(strategyMessage));
         return strategyMessage;
     }
     /**

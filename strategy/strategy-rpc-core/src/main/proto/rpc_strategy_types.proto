@@ -68,4 +68,6 @@ message StrategyEvent {
     string eventType = 3;
     StrategyStatus oldStatusValue = 4;
     StrategyStatus newStatusValue = 5;
+    StrategyMessageSeverity severity = 6;
+    google.protobuf.Timestamp messageTimestamp = 7;
 }

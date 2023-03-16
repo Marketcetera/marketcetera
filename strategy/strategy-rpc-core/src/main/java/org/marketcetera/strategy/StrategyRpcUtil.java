@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.strategy.events.SimpleStrategyMessageEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
@@ -16,6 +17,7 @@ import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.strategy.events.StrategyMessageEvent;
 import org.marketcetera.strategy.events.StrategyStartFailedEvent;
 import org.marketcetera.strategy.events.StrategyStartedEvent;
 import org.marketcetera.strategy.events.StrategyStatusChangedEvent;
@@ -212,6 +214,11 @@ public abstract class StrategyRpcUtil
             StrategyStatusChangedEvent statusChangedEvent = (StrategyStatusChangedEvent)inStrategyEvent;
             getRpcStrategyStatus(statusChangedEvent.getNewValue()).ifPresent(rpcStrategyStatus -> rpcEventBuilder.setNewStatusValue(rpcStrategyStatus));
             getRpcStrategyStatus(statusChangedEvent.getOldValue()).ifPresent(rpcStrategyStatus -> rpcEventBuilder.setOldStatusValue(rpcStrategyStatus));
+        } else if(inStrategyEvent instanceof StrategyMessageEvent) {
+            StrategyMessageEvent messageEvent = (StrategyMessageEvent)inStrategyEvent;
+            rpcEventBuilder.setMessage(messageEvent.getStrategyMessage().getMessage());
+            getRpcStrategyMessageSeverity(messageEvent.getStrategyMessage().getSeverity()).ifPresent(rpcSeverity -> rpcEventBuilder.setSeverity(rpcSeverity));
+            BaseRpcUtil.getTimestampValue(messageEvent.getStrategyMessage().getMessageTimestamp()).ifPresent(rpcTimestamp -> rpcEventBuilder.setMessageTimestamp(rpcTimestamp));
         } else {
             throw new UnsupportedOperationException("Unexpected strategy event type: " + inStrategyEvent.getClass().getSimpleName());
         }
@@ -238,6 +245,15 @@ public abstract class StrategyRpcUtil
                 if(strategyInstanceOption.isPresent()) {
                     StrategyInstance strategyInstance = strategyInstanceOption.get();
                     switch(rpcEvent.getEventType()) {
+                        case "SimpleStrategyMessageEvent":
+                            SimpleStrategyMessageEvent messageEvent = new SimpleStrategyMessageEvent();
+                            SimpleStrategyMessage message = new SimpleStrategyMessage();
+                            message.setMessage(rpcEvent.getMessage());
+                            getStrategyMessageSeverity(rpcEvent.getSeverity()).ifPresent(severity -> message.setSeverity(severity));
+                            BaseRpcUtil.getDateValue(rpcEvent.getMessageTimestamp()).ifPresent(timestamp -> message.setMessageTimestamp(timestamp));
+                            message.setStrategyInstance(strategyInstance);
+                            messageEvent.setStrategyMessage(message);
+                            return messageEvent;
                         case "SimpleStrategyStartedEvent":
                             SimpleStrategyStartedEvent startEvent = new SimpleStrategyStartedEvent();
                             startEvent.setStrategyInstance(strategyInstance);
