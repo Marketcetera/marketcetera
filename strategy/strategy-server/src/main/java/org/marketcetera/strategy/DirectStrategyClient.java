@@ -3,6 +3,7 @@ package org.marketcetera.strategy;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 
 import org.apache.commons.lang.Validate;
@@ -143,6 +144,7 @@ public class DirectStrategyClient
         strategyMessage.setSeverity(inSeverity);
         strategyMessage.setMessage(inMessage);
         strategyMessage.setStrategyInstance(getStrategyInstanceHolder().getStrategyInstance());
+        strategyMessage.setMessageTimestamp(new Date());
         getStrategyService().createStrategyMessage(strategyMessage);
     }
     /* (non-Javadoc)

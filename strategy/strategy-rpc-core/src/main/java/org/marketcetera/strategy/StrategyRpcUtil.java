@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.rpc.base.BaseRpcUtil;
-import org.marketcetera.strategy.events.SimpleStrategyRuntimeUpdateEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
@@ -17,7 +16,6 @@ import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
-import org.marketcetera.strategy.events.StrategyRuntimeUpdateEvent;
 import org.marketcetera.strategy.events.StrategyStartFailedEvent;
 import org.marketcetera.strategy.events.StrategyStartedEvent;
 import org.marketcetera.strategy.events.StrategyStatusChangedEvent;
@@ -201,7 +199,6 @@ public abstract class StrategyRpcUtil
         if(inStrategyEvent instanceof StrategyUploadFailedEvent) {
             StrategyUploadFailedEvent failedEvent = (StrategyUploadFailedEvent)inStrategyEvent;
             rpcEventBuilder.setMessage(failedEvent.getErrorMessage());
-        } else if(inStrategyEvent instanceof StrategyRuntimeUpdateEvent) {
         } else if(inStrategyEvent instanceof StrategyUploadSucceededEvent) {
         } else if(inStrategyEvent instanceof StrategyUnloadedEvent) {
         } else if(inStrategyEvent instanceof StrategyStartedEvent) {
@@ -241,10 +238,6 @@ public abstract class StrategyRpcUtil
                 if(strategyInstanceOption.isPresent()) {
                     StrategyInstance strategyInstance = strategyInstanceOption.get();
                     switch(rpcEvent.getEventType()) {
-                        case "SimpleStrategyRuntimeUpdateEvent":
-                            SimpleStrategyRuntimeUpdateEvent updateEvent = new SimpleStrategyRuntimeUpdateEvent();
-                            updateEvent.setStrategyInstance(strategyInstance);
-                            return updateEvent;
                         case "SimpleStrategyStartedEvent":
                             SimpleStrategyStartedEvent startEvent = new SimpleStrategyStartedEvent();
                             startEvent.setStrategyInstance(strategyInstance);

@@ -66,6 +66,7 @@
 *****************
 * strategy view *
 *****************
+- don't need runtime update - can calculate locally until the status changes
 - reverify strategy before starting
 - how to identify the strategy instance for events emitted through the strategy client? maybe create a special kind of client that knows the strategy instance? otherwise, we run the risk of a strategy impersonating another strategy.
 - cancel big uploads

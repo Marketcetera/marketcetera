@@ -13,12 +13,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -47,7 +44,6 @@ import org.marketcetera.strategy.dao.PersistentStrategyMessage;
 import org.marketcetera.strategy.dao.QPersistentStrategyMessage;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
 import org.marketcetera.strategy.dao.StrategyMessageDao;
-import org.marketcetera.strategy.events.SimpleStrategyRuntimeUpdateEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStatusChangedEvent;
@@ -68,13 +64,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -144,18 +136,6 @@ public class StrategyServiceImpl
                 strategyInstanceDao.delete(existingStrategyInstance);
             }
         }
-        strategyUpdateTimer = new Timer();
-        strategyUpdateTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run()
-            {
-                try {
-                    updateRunningStrategies();
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(StrategyServiceImpl.this,
-                                          e);
-                }
-            }},new Date(System.currentTimeMillis() + strategyRuntimeUpdateInterval),strategyRuntimeUpdateInterval);
     }
     /**
      * Stop the object.
@@ -163,7 +143,6 @@ public class StrategyServiceImpl
     @PreDestroy
     public void stop()
     {
-        strategyUpdateTimer.cancel();
         eventBusService.unregister(this);
         if(strategyWatcher != null) {
             try {
@@ -210,9 +189,11 @@ public class StrategyServiceImpl
                                       new Sort.Order(Sort.Direction.DESC,
                                                      QPersistentStrategyMessage.persistentStrategyMessage.severity.getMetadata().getName())));
         SLF4JLoggerProxy.debug(this,
-                               "getStrategyMessages sort order is {} renders: {}",
+                               "getStrategyMessages sort order is {} renders: {} with strategy name {} and severity {}",
                                inPageRequest.getSortOrder(),
-                               sort);
+                               sort,
+                               inStrategyName,
+                               inSeverity);
         Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
                                               inPageRequest.getPageSize(),
                                               sort);
@@ -597,29 +578,6 @@ public class StrategyServiceImpl
         }
     }
     /**
-     * Sends out update events for all running strategies.
-     */
-    private void updateRunningStrategies()
-    {
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setName("updateRunningStrategiesTransaction");
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        def.setReadOnly(true);
-        TransactionStatus status = txManager.getTransaction(def);
-        try {
-            for(PersistentStrategyInstance runningStrategyInstance : strategyInstanceDao.findAllByStatusIn(EnumSet.of(StrategyStatus.RUNNING))) {
-                try {
-                    eventBusService.post(new SimpleStrategyRuntimeUpdateEvent(runningStrategyInstance));
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
-                }
-            }
-        } finally {
-            txManager.commit(status);
-        }
-    }
-    /**
      * Tracks a running strategy instance.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -764,10 +722,6 @@ public class StrategyServiceImpl
      */
     private Path storageStrategyDirectoryPath;
     /**
-     * timer used to send out strategy runtime updates
-     */
-    private Timer strategyUpdateTimer;
-    /**
      * main application context
      */
     @Autowired
@@ -777,11 +731,6 @@ public class StrategyServiceImpl
      */
     @Value("${metc.strategy.incoming.directory.polling.intervalms:5000}")
     private long pollingInterval;
-    /**
-     * interval at which runtime update events will be sent out
-     */
-    @Value("${metc.strategy.runtime.update.interval:1000}")
-    private long strategyRuntimeUpdateInterval;
     /**
      * strategy storage directory base
      */
@@ -805,11 +754,6 @@ public class StrategyServiceImpl
      * watches the incoming strategy directory
      */
     private DirectoryWatcherImpl strategyWatcher;
-    /**
-     * provides access to the transaction manager
-     */
-    @Autowired
-    private JpaTransactionManager txManager;
     /**
      * provides access to cluster services
      */

@@ -2,9 +2,13 @@ package org.marketcetera.ui.strategy.view;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +30,6 @@ import org.marketcetera.strategy.StrategyMessage;
 import org.marketcetera.strategy.StrategyPermissions;
 import org.marketcetera.strategy.StrategyStatus;
 import org.marketcetera.strategy.events.StrategyEvent;
-import org.marketcetera.strategy.events.StrategyRuntimeUpdateEvent;
 import org.marketcetera.strategy.events.StrategyStartFailedEvent;
 import org.marketcetera.strategy.events.StrategyStartedEvent;
 import org.marketcetera.strategy.events.StrategyStatusChangedEvent;
@@ -41,7 +44,9 @@ import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -94,6 +99,7 @@ import javafx.stage.WindowEvent;
  * @since $Release$
  */
 @Component
+@AutoConfiguration
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyView
         extends AbstractContentView
@@ -106,7 +112,7 @@ public class StrategyView
     public void start()
     {
         strategyClient = serviceManager.getService(StrategyClientService.class);
-        mainLayout = new VBox(5);
+        mainLayout = new VBox(10);
         initializeStrategyTable();
         initializeEventTable();
         eventTableCurrentPage = 0;
@@ -126,8 +132,12 @@ public class StrategyView
             }}
         );
         strategyIdComboBox = new ComboBox<>();
+        strategyIdComboBox.getItems().add(ALL_STRATEGIES);
+        strategyIdComboBox.valueProperty().addListener((observableValue,oldValue,newValue) -> updateEvents());
         severityComboBox = new ComboBox<>();
         severityComboBox.getItems().addAll(Severity.values());
+        severityComboBox.setValue(Severity.INFO);
+        severityComboBox.valueProperty().addListener((observableValue,oldValue,newValue) -> updateEvents());
         filterLayout = new GridPane();
         filterLayout.setHgap(10);
         filterLayout.setVgap(10);
@@ -141,7 +151,7 @@ public class StrategyView
         loadStrategyButton = new Button("Load Strategy");
         loadStrategyButton.setDisable(!authzHelperService.hasPermission(StrategyPermissions.LoadStrategyAction));
         loadStrategyButton.setOnAction(event -> loadStrategy());
-        buttonLayout = new HBox(5);
+        buttonLayout = new HBox(10);
         buttonLayout.getChildren().add(loadStrategyButton);
         mainLayout.getChildren().addAll(strategyTable,
                                         new Separator(Orientation.HORIZONTAL),
@@ -154,14 +164,28 @@ public class StrategyView
         updateStrategies();
         updateEvents();
         strategyClient.addStrategyEventListener(this);
+        strategyRuntimeUpdateTimer = new Timer();
+        strategyRuntimeUpdateTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run()
+            {
+                try {
+                    updateStrategyRuntime();
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(StrategyView.this,
+                                          e);
+                }
+            }},new Date(System.currentTimeMillis() + strategyRuntimeUpdateInterval),strategyRuntimeUpdateInterval);
     }
-    
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
      */
     @Override
     public void onClose(WindowEvent inEvent)
     {
+        try {
+            strategyRuntimeUpdateTimer.cancel();
+        } catch (Exception ignored) {}
         strategyClient.removeStrategyEventListener(this);
     }
     /* (non-Javadoc)
@@ -188,11 +212,9 @@ public class StrategyView
                 public void run()
                 {
                     if(inEvent instanceof StrategyStoppedEvent) {
-                        displayStrategyInstance.updateRunningProperty(null);
-                    } else if(inEvent instanceof StrategyRuntimeUpdateEvent) {
-                        StrategyRuntimeUpdateEvent event = (StrategyRuntimeUpdateEvent)inEvent;
-                        displayStrategyInstance.updateRunningProperty(event.getStrategyInstance().getStarted());
+                        displayStrategyInstance.startedProperty().set(null);
                     } else if(inEvent instanceof StrategyStartedEvent) {
+                        displayStrategyInstance.startedProperty().set(inEvent.getStrategyInstance().getStarted());
                     } else if(inEvent instanceof StrategyUploadFailedEvent) {
                     } else if(inEvent instanceof StrategyUploadSucceededEvent) {
                     } else if(inEvent instanceof StrategyStartFailedEvent) {
@@ -240,12 +262,21 @@ public class StrategyView
               inEvent,
               inProperties);
     }
+    private void updateStrategyRuntime()
+    {
+        Platform.runLater(() -> {
+            for(DisplayStrategyInstance displayStrategyInstance : strategyTable.getItems()) {
+                displayStrategyInstance.updateRunningProperty();
+            }
+        });
+    }
     private void updateEvents()
     {
         PageRequest pageRequest = new PageRequest(eventTableCurrentPage,
                                                   eventTablePageSize);
-        CollectionPageResponse<? extends StrategyMessage> response = strategyClient.getStrategyMessages(null, // TODO strategy name filter
-                                                                                                        null, // TODO strategy severity filter
+        String selectedStrategyName = strategyIdComboBox.valueProperty().get();
+        CollectionPageResponse<? extends StrategyMessage> response = strategyClient.getStrategyMessages(selectedStrategyName == null || ALL_STRATEGIES.equals(selectedStrategyName) ? null : selectedStrategyName,
+                                                                                                        severityComboBox.getValue(),
                                                                                                         pageRequest);
         Platform.runLater(new Runnable() {
             @Override
@@ -272,7 +303,6 @@ public class StrategyView
             return;
         }
         User owner = ownerOption.get();
-        // TODO to avoid duplicates, check the existing strategies for this user and add a retry
         FileChooser strategyFileChooser = new FileChooser();
         strategyFileChooser.setTitle("Choose the Strategy JAR File");
         strategyFileChooser.getExtensionFilters().add(new ExtensionFilter("JAR Files",
@@ -353,7 +383,7 @@ public class StrategyView
             name = nameOption.get();
             String nonce = UUID.randomUUID().toString();
             final DisplayStrategyInstance newItem = new DisplayStrategyInstance(name,
-                                                                owner.getName());
+                                                                                owner.getName());
             strategyTable.getItems().add(newItem);
             try {
                 getScene().setCursor(Cursor.WAIT);
@@ -373,7 +403,7 @@ public class StrategyView
                                                inPercentComplete);
                         // TODO update progress bar in strategy table
                         // TODO we've shoehorned in a new value that won't display if we refresh strategies - need to factor that in
-                        newItem.uploadProgressProperty().set(inPercentComplete);
+                        Platform.runLater(() -> newItem.uploadProgressProperty().set(inPercentComplete));
                     }
                     /* (non-Javadoc)
                      * @see org.marketcetera.strategy.FileUploadRequest#onStatus(org.marketcetera.strategy.FileUploadStatus)
@@ -410,17 +440,17 @@ public class StrategyView
                 };
                 strategyClient.uploadFile(uploadRequest);
                 updateStrategies();
-//                webMessageService.post(new NotificationEvent("Load Strategy",
-//                                                             "Strategy '" + name + "' loaded with status: " + status,
-//                                                             AlertType.INFORMATION));
+                webMessageService.post(new NotificationEvent("Load Strategy",
+                                                             "Strategy '" + name + "' loaded",
+                                                             AlertType.INFORMATION));
             } catch (Exception e) {
-//                SLF4JLoggerProxy.warn(this,
-//                                      e,
-//                                      "Unable to create '{}'",
-//                                      newStrategyInstance);
-//                webMessageService.post(new NotificationEvent("Load Strategy",
-//                                                             "File '" + result.getAbsolutePath() + "' could not be read",
-//                                                             AlertType.WARNING));
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to create '{}'",
+                                      name);
+                webMessageService.post(new NotificationEvent("Load Strategy",
+                                                             "File '" + result.getAbsolutePath() + "' could not be read",
+                                                             AlertType.WARNING));
             } finally {
                 getScene().setCursor(Cursor.DEFAULT);
             }
@@ -445,14 +475,28 @@ public class StrategyView
     private void updateStrategies()
     {
         Platform.runLater(() -> {
+            String selectedStrategyName = strategyIdComboBox.valueProperty().get();
+            strategyIdComboBox.getItems().clear();
             strategyTable.getItems().clear();
             Collection<? extends StrategyInstance> results = strategyClient.getStrategyInstances();
             if(results == null) {
                 return;
             }
             List<DisplayStrategyInstance> displayStrategies = Lists.newArrayList();
-            results.forEach(result -> displayStrategies.add(new DisplayStrategyInstance(result)));
+            List<String> strategyNames = Lists.newArrayList();
+            results.forEach(result -> {
+                displayStrategies.add(new DisplayStrategyInstance(result));
+                strategyNames.add(result.getName());
+            });
+            Collections.sort(strategyNames);
+            strategyIdComboBox.getItems().add(ALL_STRATEGIES);
+            strategyIdComboBox.getItems().addAll(strategyNames);
             strategyTable.getItems().addAll(displayStrategies);
+            if(strategyIdComboBox.getItems().contains(selectedStrategyName)) {
+                strategyIdComboBox.valueProperty().set(selectedStrategyName);
+            } else {
+                strategyIdComboBox.valueProperty().set(ALL_STRATEGIES);
+            }
         });
     }
     private void initializeStrategyTable()
@@ -473,21 +517,18 @@ public class StrategyView
     }
     private void initializeEventTableColumns()
     {
-        eventStrategyIdColumn = new TableColumn<>("Strategy");
-        eventStrategyIdColumn.setCellValueFactory(new PropertyValueFactory<>("strategyId"));
+        eventStrategyNameColumn = new TableColumn<>("Strategy");
+        eventStrategyNameColumn.setCellValueFactory(new PropertyValueFactory<>("strategyId"));
         eventTimestampColumn = new TableColumn<>("Timestamp");
         eventTimestampColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
         eventTimestampColumn.setCellFactory(tableColumn -> PhotonServices.renderDateTimeCell(tableColumn));
         eventSeverityColumn = new TableColumn<>("Severity");
         eventSeverityColumn.setCellValueFactory(new PropertyValueFactory<>("severity"));
-        eventTypeColumn = new TableColumn<>("Event Type");
-        eventTypeColumn.setCellValueFactory(new PropertyValueFactory<>("eventType"));
         eventMessageColumn = new TableColumn<>("Message");
         eventMessageColumn.setCellValueFactory(new PropertyValueFactory<>("message"));
-        eventTable.getColumns().add(eventStrategyIdColumn);
+        eventTable.getColumns().add(eventStrategyNameColumn);
         eventTable.getColumns().add(eventTimestampColumn);
         eventTable.getColumns().add(eventSeverityColumn);
-        eventTable.getColumns().add(eventTypeColumn);
         eventTable.getColumns().add(eventMessageColumn);
     }
     private void initializeStrategyTableColumns()
@@ -497,7 +538,7 @@ public class StrategyView
         strategyStatusColumn = new TableColumn<>("Status");
         strategyStatusColumn.setCellValueFactory(new PropertyValueFactory<>("strategyStatus"));
         strategyUptimeColumn = new TableColumn<>("Uptime");
-        strategyUptimeColumn.setCellValueFactory(new PropertyValueFactory<>("started"));
+        strategyUptimeColumn.setCellValueFactory(new PropertyValueFactory<>("uptime"));
         strategyUptimeColumn.setCellFactory(tableColumn -> PhotonServices.renderPeriodCell(tableColumn));
         strategyOwnerColumn = new TableColumn<>("Owner");
         strategyOwnerColumn.setCellValueFactory(new PropertyValueFactory<>("owner"));
@@ -679,9 +720,30 @@ public class StrategyView
         }
         updateStrategies();
     }
-    protected int eventTableCurrentPage;
-    protected int eventTablePageSize;
-    protected Pagination eventTablePagination;
+//    private static class StringComparator
+//            implements Comparator<String>
+//    {
+//        /* (non-Javadoc)
+//         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+//         */
+//        @Override
+//        public int compare(String inO1,
+//                           String inO2)
+//        {
+//            return new CompareToBuilder().append(inO1,inO2).toComparison();
+//        }
+//        private final static StringComparator instance = new StringComparator();
+//    }
+    /**
+     * interval at which runtime update events will be sent out
+     */
+    @Value("${metc.strategy.runtime.update.interval:1000}")
+    private long strategyRuntimeUpdateInterval;
+    private Timer strategyRuntimeUpdateTimer;
+    private final String ALL_STRATEGIES = "<all strategies>";
+    private int eventTableCurrentPage;
+    private int eventTablePageSize;
+    private Pagination eventTablePagination;
     private MenuItem startStrategyMenuItem;
     private MenuItem stopStrategyMenuItem;
     private MenuItem unloadStrategyMenuItem;
@@ -701,10 +763,9 @@ public class StrategyView
     private TableColumn<DisplayStrategyInstance,Period> strategyUptimeColumn;
     private TableColumn<DisplayStrategyInstance,String> strategyOwnerColumn;
     private TableColumn<DisplayStrategyInstance,Double> strategyProgressColumn;
-    private TableColumn<DisplayStrategyMessage,String> eventStrategyIdColumn;
+    private TableColumn<DisplayStrategyMessage,String> eventStrategyNameColumn;
     private TableColumn<DisplayStrategyMessage,DateTime> eventTimestampColumn;
     private TableColumn<DisplayStrategyMessage,Severity> eventSeverityColumn;
-    private TableColumn<DisplayStrategyMessage,String> eventTypeColumn;
     private TableColumn<DisplayStrategyMessage,String> eventMessageColumn;
     private Button loadStrategyButton;
     private TableView<DisplayStrategyInstance> strategyTable;
