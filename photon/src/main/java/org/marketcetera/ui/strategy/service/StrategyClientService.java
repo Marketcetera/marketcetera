@@ -6,10 +6,14 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.strategy.FileUploadRequest;
 import org.marketcetera.strategy.StrategyClient;
 import org.marketcetera.strategy.StrategyEventListener;
 import org.marketcetera.strategy.StrategyInstance;
+import org.marketcetera.strategy.StrategyMessage;
 import org.marketcetera.strategy.StrategyRpcClientFactory;
 import org.marketcetera.strategy.StrategyRpcClientParameters;
 import org.marketcetera.ui.service.ConnectableService;
@@ -124,6 +128,22 @@ public class StrategyClientService
     public Collection<? extends StrategyInstance> getStrategyInstances()
     {
         return strategyClient.getStrategyInstances();
+    }
+    /**
+     * Requests strategy messages.
+     *
+     * @param inStrategyName a <code>String</code> value
+     * @param inSeverity a <code>Severity</code> value
+     * @param inPageRequest an <code>PageRequest</code> value
+     * @returns a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
+     */
+    public CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
+                                                                                 Severity inSeverity,
+                                                                                 PageRequest inPageRequest)
+    {
+        return strategyClient.getStrategyMessages(inStrategyName,
+                                                  inSeverity,
+                                                  inPageRequest);
     }
     /**
      * Add the given strategy event listener to start receiving strategy events.

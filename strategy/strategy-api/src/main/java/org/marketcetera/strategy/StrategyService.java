@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.marketcetera.core.Preserve;
+import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 
 /* $License$ */
 
@@ -28,6 +31,25 @@ public interface StrategyService
      * @returns a <code>Collection&lt;StrategyInstance&gt;</code> value
      */
     Collection<? extends StrategyInstance> getStrategyInstances(String inCurrentUserName);
+    /**
+     * Requests strategy messages.
+     *
+     * @param inStrategyName a <code>String</code> value
+     * @param inSeverity a <code>Severity</code> value
+     * @param inPageRequest an <code>PageRequest</code> value
+     * @returns a <code>CollectionPageResponse<? extends StrategyMessage></code> value
+     */
+    CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
+                                                                          Severity inSeverity,
+                                                                          PageRequest inPageRequest);
+    /**
+     * 
+     *
+     *
+     * @param inStrategyMessage
+     * @return
+     */
+    StrategyMessage createStrategyMessage(StrategyMessage inStrategyMessage);
     /**
      * Finds the strategy instance with the given name.
      *

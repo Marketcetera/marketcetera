@@ -2,6 +2,7 @@ package org.marketcetera.ui.strategy.view;
 
 import org.joda.time.DateTime;
 import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.strategy.StrategyMessage;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -19,8 +20,20 @@ import javafx.beans.property.StringProperty;
  * @version $Id$
  * @since $Release$
  */
-public class DisplayStrategyEvent
+public class DisplayStrategyMessage
 {
+    /**
+     * Create a new DisplayStrategyEvent instance.
+     *
+     * @param inStrategyMessage a <code>StrategyMessage</code> value
+     */
+    public DisplayStrategyMessage(StrategyMessage inStrategyMessage)
+    {
+        messageProperty.set(inStrategyMessage.getMessage());
+        severityProperty.set(inStrategyMessage.getSeverity());
+        strategyIdProperty.set(inStrategyMessage.getStrategyInstance().getName());
+        timestampProperty.set(new DateTime(inStrategyMessage.getMessageTimestamp()));
+    }
     /**
      *  the strategyIdProperty value.
      *

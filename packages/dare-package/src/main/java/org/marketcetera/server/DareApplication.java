@@ -48,10 +48,12 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.strategy.DirectStrategyClientFactory;
 import org.marketcetera.strategy.StrategyRpcServer;
 import org.marketcetera.strategy.StrategyService;
 import org.marketcetera.strategy.StrategyServiceImpl;
 import org.marketcetera.strategy.dao.PersistentStrategyInstanceFactory;
+import org.marketcetera.strategy.dao.PersistentStrategyMessageFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
@@ -174,6 +176,27 @@ public class DareApplication
                               "Using the");
         xmlService.setContextPath(contextPathClassEntries);
         return xmlService;
+    }
+    /**
+     * Get the strategy client factory value.
+     *
+     * @return a <code>DirectStrategyClientFactory</code> value
+     */
+    @Bean
+    public DirectStrategyClientFactory getStrategyClientFactory()
+    {
+        DirectStrategyClientFactory strategyClientFactory = new DirectStrategyClientFactory();
+        return strategyClientFactory;
+    }
+    /**
+     * Get the strategy message factory value.
+     *
+     * @return a <code>PersistentStrategyMessageFactory</code> value
+     */
+    @Bean
+    public PersistentStrategyMessageFactory getStrategyMessageFactory()
+    {
+        return new PersistentStrategyMessageFactory();
     }
     /**
      * Get the strategy instance factory value.

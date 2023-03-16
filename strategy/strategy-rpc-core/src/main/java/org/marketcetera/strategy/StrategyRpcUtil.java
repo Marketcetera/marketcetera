@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.strategy.events.SimpleStrategyRuntimeUpdateEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
@@ -93,6 +94,47 @@ public abstract class StrategyRpcUtil
         return java.util.Optional.of(org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus.forNumber(inRpcStrategyStatus.ordinal()));
     }
     /**
+     * Get the RPC object from the given value.
+     *
+     * @param inStrategyMessage a <code>org.marketcetera.strategy.StrategyMessage</code> value
+     * @return a java.util.Optional<StrategyTypesRpc.StrategyMessage> value
+     */
+    public static java.util.Optional<StrategyTypesRpc.StrategyMessage> getRpcStrategyMessage(org.marketcetera.strategy.StrategyMessage inStrategyMessage)
+    {
+        if(inStrategyMessage == null) {
+            return java.util.Optional.empty();
+        }
+        StrategyTypesRpc.StrategyMessage.Builder builder = StrategyTypesRpc.StrategyMessage.newBuilder();
+        org.marketcetera.strategy.StrategyRpcUtil.getRpcStrategyInstance(inStrategyMessage.getStrategyInstance()).ifPresent(value->builder.setStrategyInstance(value));
+        getRpcStrategyMessageSeverity(inStrategyMessage.getSeverity()).ifPresent(value->builder.setSeverity(value));
+        BaseRpcUtil.getTimestampValue(inStrategyMessage.getMessageTimestamp()).ifPresent(rpcTimestamp -> builder.setMessageTimestamp(rpcTimestamp));
+        if(inStrategyMessage.getMessage() != null) {
+            builder.setMessage(inStrategyMessage.getMessage());
+        }
+        return java.util.Optional.of(builder.build());
+    }
+    /**
+     * Get the object from the given RPC value.
+     *
+     * @param inStrategyMessage an <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyMessage</code> value
+     * @param inStrategyMessageFactory an <code>org.marketcetera.strategy.StrategyMessageFactory</code> value
+     * @param inStrategyInstanceFactory an <code>org.marketcetera.strategy.StrategyInstanceFactory</code> value
+     * @param inUserFactory an <code>org.marketcetera.admin.UserFactory</code> value
+     * @return an org.marketcetera.strategy.StrategyMessage value
+     */
+    public static java.util.Optional<org.marketcetera.strategy.StrategyMessage> getStrategyMessage(org.marketcetera.strategy.StrategyTypesRpc.StrategyMessage inStrategyMessage,org.marketcetera.strategy.StrategyMessageFactory inStrategyMessageFactory,org.marketcetera.strategy.StrategyInstanceFactory inStrategyInstanceFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    {
+        if(inStrategyMessage == null) {
+            return java.util.Optional.empty();
+        }
+        org.marketcetera.strategy.StrategyMessage strategyMessage = inStrategyMessageFactory.create();
+        org.marketcetera.strategy.StrategyRpcUtil.getStrategyInstance(inStrategyMessage.getStrategyInstance(),inStrategyInstanceFactory,inUserFactory).ifPresent(value->strategyMessage.setStrategyInstance(value));
+        getStrategyMessageSeverity(inStrategyMessage.getSeverity()).ifPresent(value->strategyMessage.setSeverity(value));
+        BaseRpcUtil.getDateValue(inStrategyMessage.getMessageTimestamp()).ifPresent(messageTimestamp -> strategyMessage.setMessageTimestamp(messageTimestamp));
+        strategyMessage.setMessage(inStrategyMessage.getMessage());
+        return java.util.Optional.of(strategyMessage);
+    }
+    /**
      * Get the object from the given RPC value.
      *
      * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyInstance</code> value
@@ -114,6 +156,32 @@ public abstract class StrategyRpcUtil
         org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inStrategyInstance.getStarted()).ifPresent(value->strategyInstance.setStarted(value));
         getStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->strategyInstance.setStatus(value));
         return java.util.Optional.of(strategyInstance);
+    }
+    /**
+     * Get the object from the given RPC value.
+     *
+     * @param inSeverityan <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity</code> value
+     * @return an org.marketcetera.core.notifications.INotification.Severity value
+     */
+    public static java.util.Optional<org.marketcetera.core.notifications.INotification.Severity> getStrategyMessageSeverity(org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity inSeverity)
+    {
+        if(inSeverity == null) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(org.marketcetera.core.notifications.INotification.Severity.values()[inSeverity.getNumber()]);
+    }
+    /**
+     * Get the RPC value from the given object.
+     *
+     * @param inRpcSeverity a <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @return an org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity value
+     */
+    public static java.util.Optional<org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity> getRpcStrategyMessageSeverity(org.marketcetera.core.notifications.INotification.Severity inRpcSeverity)
+    {
+        if(inRpcSeverity == null) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity.forNumber(inRpcSeverity.ordinal()));
     }
     /**
      *
@@ -139,7 +207,9 @@ public abstract class StrategyRpcUtil
         } else if(inStrategyEvent instanceof StrategyStartedEvent) {
         } else if(inStrategyEvent instanceof StrategyStartFailedEvent) {
             StrategyStartFailedEvent failedEvent = (StrategyStartFailedEvent)inStrategyEvent;
-            rpcEventBuilder.setMessage(failedEvent.getErrorMessage());
+            if(failedEvent.getErrorMessage() != null) {
+                rpcEventBuilder.setMessage(failedEvent.getErrorMessage());
+            }
         } else if(inStrategyEvent instanceof StrategyStoppedEvent) {
         } else if(inStrategyEvent instanceof StrategyStatusChangedEvent) {
             StrategyStatusChangedEvent statusChangedEvent = (StrategyStatusChangedEvent)inStrategyEvent;

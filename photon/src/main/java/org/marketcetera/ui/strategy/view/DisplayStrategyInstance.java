@@ -1,5 +1,7 @@
 package org.marketcetera.ui.strategy.view;
 
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.strategy.StrategyInstance;
@@ -7,7 +9,6 @@ import org.marketcetera.strategy.StrategyStatus;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,20 +24,20 @@ import javafx.beans.property.StringProperty;
  * @version $Id$
  * @since $Release$
  */
-public class DisplayStrategy
+public class DisplayStrategyInstance
 {
     /**
      * Create a new DisplayStrategy instance.
      */
-    public DisplayStrategy() {}
+    public DisplayStrategyInstance() {}
     /**
      * Create a new DisplayStrategy instance.
      *
-     * @param inName
-     * @param inOwnerName
+     * @param inName a <code>String</code> value
+     * @param inOwnerName a <code>String</code> value
      */
-    public DisplayStrategy(String inName,
-                           String inOwnerName)
+    public DisplayStrategyInstance(String inName,
+                                   String inOwnerName)
     {
         strategyName.setValue(inName);
         owner.setValue(inOwnerName);
@@ -49,7 +50,7 @@ public class DisplayStrategy
      *
      * @param inStrategyInstance
      */
-    public DisplayStrategy(StrategyInstance inStrategyInstance)
+    public DisplayStrategyInstance(StrategyInstance inStrategyInstance)
     {
         strategyName.setValue(inStrategyInstance.getName());
         owner.setValue(inStrategyInstance.getUser().getName());
@@ -61,10 +62,24 @@ public class DisplayStrategy
                 started.setValue(new Period(0));
                 break;
             case RUNNING:
-                started.setValue(new Period(DateTime.now().minus(inStrategyInstance.getStarted().getTime()).getMillis()));
+                updateRunningProperty(inStrategyInstance.getStarted());
                 break;
             default:
                 break;
+        }
+    }
+    /**
+     * 
+     *
+     *
+     * @param inRunningValue
+     */
+    public void updateRunningProperty(Date inRunningValue)
+    {
+        if(inRunningValue == null) {
+            started.setValue(new Period(0));
+        } else {
+            started.setValue(new Period(DateTime.now().minus(inRunningValue.getTime()).getMillis()));
         }
     }
     /**
@@ -79,9 +94,9 @@ public class DisplayStrategy
     /**
      * Get the started value.
      *
-     * @return a <code>ReadOnlyObjectProperty&lt;Period&gt;</code> value
+     * @return an <code>ObjectProperty&lt;Period&gt;</code> value
      */
-    public ReadOnlyObjectProperty<Period> startedProperty()
+    public ObjectProperty<Period> startedProperty()
     {
         return started;
     }

@@ -17,6 +17,21 @@ enum StrategyStatus {
     LOADING = 3;
 }
 
+enum StrategyMessageSeverity {
+    SEVERITY_DEBUG = 0;
+    SEVERITY_INFO = 1;
+    SEVERITY_WARN = 2;
+    SEVERITY_ERROR = 3;
+}
+
+// contains a message from the strategy
+message StrategyMessage {
+    StrategyInstance strategyInstance = 1; // strategy that produced the message
+    StrategyMessageSeverity severity = 2; // describes the severity of the message
+    string message = 3; // strategy message
+    google.protobuf.Timestamp messageTimestamp = 4; // date strategy was started
+}
+
 // describes a loaded strategy
 message StrategyInstance {
     User user = 1; // user that owns the strategy

@@ -10,6 +10,9 @@ import java.util.Optional;
 
 import org.marketcetera.core.BaseClient;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 
 /* $License$ */
 
@@ -38,10 +41,21 @@ public interface StrategyClient
      */
     StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
     /**
+     * Requests strategy messages.
+     *
+     * @param inStrategyName a <code>String</code> value
+     * @param inSeverity a <code>Severity</code> value
+     * @param inPageRequest an <code>PageRequest</code> value
+     * @returns a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
+     */
+    CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
+                                                                          Severity inSeverity,
+                                                                          PageRequest inPageRequest);
+    /**
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value
-     * @returns a <code>Optional<? extends StrategyInstance></code> value
+     * @returns an <code>Optional&lt;? extends StrategyInstance&gt;</code> value
      */
     Optional<? extends StrategyInstance> findByName(String inName);
     /**
@@ -53,6 +67,15 @@ public interface StrategyClient
      */
     void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException;
+    /**
+     * 
+     *
+     *
+     * @param inSeverity
+     * @param inMessage
+     */
+    void emitMessage(Severity inSeverity,
+                     String inMessage);
     /**
      * Start a strategy instance.
      *

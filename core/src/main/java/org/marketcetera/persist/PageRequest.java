@@ -103,6 +103,17 @@ public class PageRequest
         pageNumber = inPage;
         pageSize = inSize;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PageRequest [pageNumber=").append(pageNumber).append(", pageSize=").append(pageSize)
+                .append(", sortOrder=").append(sortOrder).append("]");
+        return builder.toString();
+    }
     /**
      * page request which requests all data in a single page
      */

@@ -23,7 +23,9 @@ import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptorFactory;
 import org.marketcetera.fix.impl.SimpleFixSessionFactory;
 import org.marketcetera.marketdata.rpc.client.MarketDataRpcClientFactory;
 import org.marketcetera.strategy.SimpleStrategyInstanceFactory;
+import org.marketcetera.strategy.SimpleStrategyMessageFactory;
 import org.marketcetera.strategy.StrategyInstanceFactory;
+import org.marketcetera.strategy.StrategyMessageFactory;
 import org.marketcetera.strategy.StrategyRpcClientFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
@@ -86,6 +88,16 @@ public class UiConfiguration
         xmlService.getContextPath().addAll(Arrays.asList(new TradeContextClassProvider().getContextClasses()));
         xmlService.getContextPath().add(SimpleAverageFillPrice.class);
         return xmlService;
+    }
+    /**
+     * Get the strategy message factory value.
+     *
+     * @return a <code>StrategyMessageFactory</code> value
+     */
+    @Bean
+    public StrategyMessageFactory getStrategyMessageFactory()
+    {
+        return new SimpleStrategyMessageFactory();
     }
     /**
      * Get the strategy instance factory value.
@@ -153,7 +165,7 @@ public class UiConfiguration
      * @return a <code>StrategyRpcClientFactory</code> value
      */
     @Bean
-    public StrategyRpcClientFactory getStrategylientFactory()
+    public StrategyRpcClientFactory getStrategyClientFactory()
     {
         return new StrategyRpcClientFactory();
     }

@@ -99,6 +99,19 @@
         </modelEntityAttribute>
       </modelEntityAttributes>
     </modelEntity>
+    <modelEntity name="StrategyMessage" description="Represents a message emitted by a strategy" pojoProject="strategy/strategy-core" apiProject="strategy/strategy-api" persistentProject="strategy/strategy-server" 
+                 packageName="org.marketcetera.strategy" hasInterfaceProject="strategy/strategy-api" apiExtends="org.marketcetera.strategy.HasStrategyInstance">
+      <authors>
+        <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
+      </authors>
+      <modelEntityAttributes>
+        <modelEntityAttribute name="strategyInstance" description="strategy which created this message" type="org.marketcetera.strategy.StrategyInstance" useGetters="true" useSetters="true" interfaceProvided="true"
+                              cardinality="@javax.persistence.ManyToOne" joinColumn="strategy_instance_id" persistentType="org.marketcetera.strategy.dao.PersistentStrategyInstance"/>
+        <modelEntityAttribute name="messageTimestamp" description="date message was created" type="java.util.Date" useGetters="true" useSetters="true"/>
+	<modelEntityAttribute name="severity" description="strategy message severity" type="org.marketcetera.core.notifications.INotification.Severity" persistentEnumeratedType="javax.persistence.EnumType.STRING" useGetters="true" useSetters="true"/>
+        <modelEntityAttribute name="message" description="message from the strategy" type="String" useGetters="true" useSetters="true" interfaceProvided="false"/>
+      </modelEntityAttributes>
+    </modelEntity>
   </modelEntities>
   <rpcEntities>
     <rpcEntity project="strategy/strategy-rpc-core" protoPrefix="strategy_types" javaPackage="org.marketcetera.strategy" javaClassName="StrategyTypesRpc" utilName="Strategy">
@@ -119,18 +132,31 @@
             <rpcMessageAttribute name="LOADING" description="the strategy is in the process of loading"/>
           </rpcMessageAttributes>
         </rpcEnum>
+        <rpcEnum name="StrategyMessageSeverity" description="describes the severity of a strategy message" javaType="org.marketcetera.core.notifications.INotification.Severity">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="SEVERITY_DEBUG" description="debug level message"/>
+            <rpcMessageAttribute name="SEVERITY_INFO" description="info level message"/>
+            <rpcMessageAttribute name="SEVERITY_WARN" description="warn level message"/>
+            <rpcMessageAttribute name="SEVERITY_ERROR" description="error level message"/>
+          </rpcMessageAttributes>
+        </rpcEnum>
       </rpcEnums>
       <rpcMessages>
         <rpcMessage name="StrategyInstance" description="describes a loaded strategy" javaType="org.marketcetera.strategy.StrategyInstance"
                     primaryFactory="org.marketcetera.strategy.StrategyInstanceFactory" factories="org.marketcetera.admin.UserFactory">
           <rpcMessageAttributes>
             <rpcMessageAttribute name="user" type="User" description="user that owns the strategy" factories="org.marketcetera.admin.UserFactory" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUser"/>
-            <rpcMessageAttribute name="name" type="string" description="uniquely describes the strategy"/>
-            <rpcMessageAttribute name="filename" type="string" description="indicates the server-local file which contains the strategy"/>
-            <rpcMessageAttribute name="hash" type="string" description="indicates the strategy hash value"/>
-            <rpcMessageAttribute name="nonce" type="string" description="uniquely identifies a strategy upload request"/>
-            <rpcMessageAttribute name="started" type="google.protobuf.Timestamp" description="date strategy was started" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
-            <rpcMessageAttribute name="status" type="StrategyStatus" description="describes the status of the strategy" rpcConverter="getRpcStrategyStatus" javaConverter="getStrategyStatus"/>
+            <rpcMessageAttribute name="messageTimestamp" description="date message was created" type="google.protobuf.Timestamp" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
+            <rpcMessageAttribute name="severity" type="StrategyMessageSeverity" description="describes the severity of the message" rpcConverter="getRpcStrategyMessageSeverity" javaConverter="getStrategyMessageSeverity"/>
+            <rpcMessageAttribute name="message" type="string" description="strategy message contents"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="StrategyMessage" description="contains a message from the strategy" javaType="org.marketcetera.strategy.StrategyMessage"
+                    primaryFactory="org.marketcetera.strategy.StrategyMessageFactory" factories="org.marketcetera.strategy.StrategyInstanceFactory,org.marketcetera.admin.UserFactory">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="strategyInstance" type="StrategyInstance" description="strategy that produced the message" factories="org.marketcetera.strategy.StrategyInstanceFactory,org.marketcetera.admin.UserFactory" rpcConverter="org.marketcetera.strategy.StrategyRpcUtil.getStrategyMessage" javaConverter="org.marketcetera.strategy.StrategyRpcUtil.getStrategyInstance"/>
+            <rpcMessageAttribute name="severity" type="StrategyMessageSeverity" description="describes the severity of the message" rpcConverter="getRpcStrategyMessageSeverity" javaConverter="getStrategyMessageSeverity"/>
+            <rpcMessageAttribute name="message" type="string" description="strategy message"/>
           </rpcMessageAttributes>
         </rpcMessage>
       </rpcMessages>
@@ -157,6 +183,20 @@
           <rpcMessageAttributes>
             <rpcMessageAttribute name="pageResponse" type="PageResponse"/>
             <rpcMessageAttribute name="strategyInstances" type="StrategyInstance" repeated="true"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="ReadStrategyMessagesRequest" description="request a set of strategy messages">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="sessionId" type="string" description="session id of the authenticated session"/>
+	    <rpcMessageAttribute name="strategyName" type="string" description="optional strategy name to filter by"/>
+	    <rpcMessageAttribute name="severity" type="string" description="optional severity to filter by"/>
+            <rpcMessageAttribute name="pageRequest" type="PageRequest" description="page request which indicates which page of data to return"/>
+          </rpcMessageAttributes>
+        </rpcMessage>
+        <rpcMessage name="ReadStrategyMessagesResponse" description="return the strategy messages">
+          <rpcMessageAttributes>
+            <rpcMessageAttribute name="pageResponse" type="PageResponse"/>
+            <rpcMessageAttribute name="strategyMessages" type="StrategyMessage" repeated="true"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="LoadStrategyInstanceRequest" description="loads a new strategy instance">
@@ -223,6 +263,15 @@
               <requiredPermission>ClearStrategyEventsAction</requiredPermission>
               <requiredPermission>CancelStrategyUploadAction</requiredPermission>
             </requiredPermissions>
+          </rpcServiceEntry>
+          <rpcServiceEntry name="getStrategyMessages" description="requests strategy messages" paramType="ReadStrategyMessagesRequest" returnType="ReadStrategyMessagesResponse" paged="true" serviceReturnType="java.util.Collection&lt;? extends org.marketcetera.strategy.StrategyMessage&gt;">
+            <requiredPermissions>
+              <requiredPermission>ReadStrategyMessagesAction</requiredPermission>
+            </requiredPermissions>
+            <rpcMessageAttributes>
+	      <rpcMessageAttribute name="strategyName" type="String" description="optional strategy name to filter by"/>
+	      <rpcMessageAttribute name="severity" type="String" description="optional severity to filter by"/>
+            </rpcMessageAttributes>
           </rpcServiceEntry>
           <rpcServiceEntry name="unloadStrategyInstance" description="unload a strategy instance" paramType="UnloadStrategyInstanceRequest" returnType="UnloadStrategyInstanceResponse" paged="false" isReadOnly="false">
             <requiredPermissions>

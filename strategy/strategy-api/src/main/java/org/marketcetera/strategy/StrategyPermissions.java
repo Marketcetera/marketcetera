@@ -3,6 +3,9 @@
 //
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.Preserve;
+import org.springframework.security.core.GrantedAuthority;
+
 /* $License$ */
 
 /**
@@ -12,18 +15,21 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public enum StrategyPermissions
-        implements org.springframework.security.core.GrantedAuthority
+        implements GrantedAuthority
 {
     CancelStrategyUploadAction,
     ClearStrategyEventsAction,
+    CreateStrategyMessagesAction,
     LoadStrategyAction,
     ReadStrategyAction,
+    ReadStrategyMessagesAction,
     StartStrategyAction,
     StopStrategyAction,
     UnloadStrategyAction;
     /* (non-Javadoc)
-     * @see org.springframework.security.core.GrantedAuthority#getAuthority()
+     * @see GrantedAuthority#getAuthority()
      */
     @Override
     public String getAuthority()

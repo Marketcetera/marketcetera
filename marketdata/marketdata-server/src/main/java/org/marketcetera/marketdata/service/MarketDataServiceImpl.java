@@ -90,6 +90,7 @@ public class MarketDataServiceImpl
                 PlatformServices.handleException(this,
                                                  "Reporting market data status",
                                                  e);
+                removeMarketDataStatusListener(listener);
             }
         }
     }

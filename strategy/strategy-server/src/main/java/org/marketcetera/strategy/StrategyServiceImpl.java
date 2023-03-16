@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
@@ -27,6 +28,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
@@ -37,9 +39,14 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.core.file.DirectoryWatcherImpl;
 import org.marketcetera.core.file.DirectoryWatcherSubscriber;
+import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.strategy.dao.PersistentStrategyInstance;
+import org.marketcetera.strategy.dao.PersistentStrategyMessage;
+import org.marketcetera.strategy.dao.QPersistentStrategyMessage;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
+import org.marketcetera.strategy.dao.StrategyMessageDao;
 import org.marketcetera.strategy.events.SimpleStrategyRuntimeUpdateEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartedEvent;
@@ -52,9 +59,15 @@ import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
@@ -68,6 +81,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.querydsl.core.BooleanBuilder;
 
 /* $License$ */
 
@@ -124,6 +138,9 @@ public class StrategyServiceImpl
                 SLF4JLoggerProxy.warn(this,
                                       "{} is unreadable, unloading",
                                       fullStrategyPath);
+                BooleanBuilder where = new BooleanBuilder();
+                where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(existingStrategyInstance));
+                strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
                 strategyInstanceDao.delete(existingStrategyInstance);
             }
         }
@@ -172,6 +189,69 @@ public class StrategyServiceImpl
         // TODO need to filter by current user
         // TODO probably need to factor in supervisor permissions for "read"
         return strategyInstanceDao.findAll();
+    }
+    /**
+     * Requests strategy messages.
+     *
+     * @param inStrategyName a <code>String</code> value
+     * @param inSeverity a <code>Severity</code> value
+     * @param inPageRequest an <code>PageRequest</code> value
+     * @returns a <code>CollectionPageResut<? extends StrategyMessage></code> value
+     */
+    @Override
+    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+    public CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
+                                                                                 Severity inSeverity,
+                                                                                 org.marketcetera.persist.PageRequest inPageRequest)
+    {
+        Sort sort = buildSort(inPageRequest,
+                              Sort.by(new Sort.Order(Sort.Direction.DESC,
+                                                     QPersistentStrategyMessage.persistentStrategyMessage.messageTimestamp.getMetadata().getName()),
+                                      new Sort.Order(Sort.Direction.DESC,
+                                                     QPersistentStrategyMessage.persistentStrategyMessage.severity.getMetadata().getName())));
+        SLF4JLoggerProxy.debug(this,
+                               "getStrategyMessages sort order is {} renders: {}",
+                               inPageRequest.getSortOrder(),
+                               sort);
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                              inPageRequest.getPageSize(),
+                                              sort);
+        inStrategyName = StringUtils.trimToNull(inStrategyName);
+        BooleanBuilder where = null;
+        if(inStrategyName != null || inSeverity != null) {
+            where = new BooleanBuilder();
+            if(inStrategyName != null) {
+                where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.name.eq(inStrategyName));
+            }
+            if(inSeverity != null) {
+                BooleanBuilder severityBuilder = new BooleanBuilder();
+                switch(inSeverity) {
+                    case DEBUG:
+                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.DEBUG));
+                    case INFO:
+                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.INFO));
+                    case WARN:
+                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.WARN));
+                    case ERROR:
+                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.ERROR));
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unexpected severity: " + inSeverity);
+                }
+                where = where.and(severityBuilder);
+            }
+        }
+        Page<PersistentStrategyMessage> pageResponse;
+        if(where == null) {
+            pageResponse = strategyMessageDao.findAll(pageRequest);
+        } else {
+            SLF4JLoggerProxy.debug(this,
+                                   "Selecting strategy messages with: {}",
+                                   where);
+            pageResponse = strategyMessageDao.findAll(where,
+                                                      pageRequest);
+        }
+        return new CollectionPageResponse<>(pageResponse);
     }
     /**
      * Start a strategy instance.
@@ -423,6 +503,25 @@ public class StrategyServiceImpl
         pInstance = strategyInstanceDao.save(pInstance);
         return pInstance.getStatus();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#createStrategyMessage(org.marketcetera.strategy.StrategyMessage)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public PersistentStrategyMessage createStrategyMessage(StrategyMessage inStrategyMessage)
+    {
+        PersistentStrategyMessage strategyMessage;
+        if(inStrategyMessage instanceof PersistentStrategyMessage) {
+            strategyMessage = (PersistentStrategyMessage)inStrategyMessage;
+        } else {
+            throw new UnsupportedOperationException("Need to create persistent instance");
+        }
+        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(strategyMessage.getStrategyInstance().getName());
+        Validate.isTrue(strategyInstanceOption.isPresent());
+        strategyMessage.setStrategyInstance(strategyInstanceOption.get());
+        strategyMessage = strategyMessageDao.save(strategyMessage);
+        return strategyMessage;
+    }
     /**
      * Receive incoming strategy events.
      *
@@ -438,12 +537,13 @@ public class StrategyServiceImpl
                 } catch (Exception e) {
                     SLF4JLoggerProxy.warn(this,
                                           e);
+                    removeStrategyEventListener(listener);
                 }
             }
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyService#addStrategyEventListener(org.marketcetera.strategy.StrategyEventListener)
+     * @see StrategyService#addStrategyEventListener(StrategyEventListener)
      */
     @Override
     public void addStrategyEventListener(StrategyEventListener inListener)
@@ -453,7 +553,7 @@ public class StrategyServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyService#removeStrategyEventListener(org.marketcetera.strategy.StrategyEventListener)
+     * @see StrategyService#removeStrategyEventListener(StrategyEventListener)
      */
     @Override
     public void removeStrategyEventListener(StrategyEventListener inListener)
@@ -473,6 +573,28 @@ public class StrategyServiceImpl
     public Optional<? extends StrategyInstance> findByName(String inName)
     {
         return strategyInstanceDao.findByName(inName);
+    }
+    /**
+     * Build the sort statement for a query using the given attributes.
+     *
+     * @param inPageRequest an <code>org.marketcetera.persist.PageRequest</code> value
+     * @param inDefaultSort a <code>Sort</code> value
+     * @return a <code>Sort</code> value
+     */
+    private Sort buildSort(org.marketcetera.persist.PageRequest inPageRequest,
+                           Sort inDefaultSort)
+    {
+        if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
+            return inDefaultSort;
+        } else {
+            List<Sort.Order> specifiedSorts = Lists.newArrayList();
+            for(org.marketcetera.persist.Sort requestedSort : inPageRequest.getSortOrder()) {
+                String property = requestedSort.getProperty();
+                specifiedSorts.add(new Sort.Order(requestedSort.getDirection().getSpringSortDirection(),
+                                                  property));
+            }
+            return Sort.by(specifiedSorts);
+        }
     }
     /**
      * Sends out update events for all running strategies.
@@ -523,7 +645,7 @@ public class StrategyServiceImpl
                                    "Selected {} as the mainClass",
                                    mainClass);
             Validate.notNull(mainClass,
-                    "No 'Main-Class' attribute in JAR");
+                             "No 'Main-Class' attribute in JAR");
             Class<?> provisioningClass = newClassloader.loadClass(mainClass);
             // create a new Spring context as a sandbox for the loaded code. this allows us to discard the loaded code when done
             newContext = new AnnotationConfigApplicationContext();
@@ -533,10 +655,26 @@ public class StrategyServiceImpl
             newContext.setParent(applicationContext);
             // register the new class
             newContext.register(provisioningClass);
-            // refresh the context, which allows it to prepare to use the provisioning JAR
+            ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext)newContext).getBeanFactory();
+            beanFactory.registerSingleton(StrategyInstanceHolder.class.getCanonicalName(),
+                                          new StrategyInstanceHolder() {
+                @Override
+                public StrategyInstance getStrategyInstance()
+                {
+                    return strategyInstance;
+                }}
+            );
+            // TODO this needs to be configurable - this could be a direct client for DARE or an RPC client for an SE
+            DirectStrategyClient strategyClient = new DirectStrategyClient(newContext,
+                                                                           "trader");
+            beanFactory.registerSingleton(StrategyClient.class.getCanonicalName(),
+                                          strategyClient);
+            // refresh the context, which allows it to prepare to use the strategy JAR
             newContext.refresh();
             // start the context
             newContext.start();
+            // start the embedded strategy client
+            strategyClient.start();
         }
         private void stop()
         {
@@ -575,17 +713,43 @@ public class StrategyServiceImpl
             }
             return mainClassName;
         }
+        /**
+         * Create a new RunningStrategy instance.
+         *
+         * @param inStrategyInstance a <code>StrategyInstance</code> value
+         * @param inStrategyJar a <code>File</code> value
+         */
         private RunningStrategy(StrategyInstance inStrategyInstance,
-                                File inJar)
+                                File inStrategyJar)
         {
             strategyInstance = inStrategyInstance;
-            jarFile = inJar;
+            jarFile = inStrategyJar;
         }
+        /**
+         * JAR file that contains the strategy to run
+         */
         private final File jarFile;
+        /**
+         * strategy instance associated with the running strategy
+         */
         private final StrategyInstance strategyInstance;
+        /**
+         * class loader used for the strategy
+         */
         private URLClassLoader newClassloader;
+        /**
+         * new application context used for the strategy
+         */
         private AnnotationConfigApplicationContext newContext;
     }
+    /**
+     * provides access to the {@link StrategyMessage} data store
+     */
+    @Autowired
+    private StrategyMessageDao strategyMessageDao;
+    /**
+     * stores running strategies by name
+     */
     private final Cache<String,RunningStrategy> strategiesByName = CacheBuilder.newBuilder().build();
     /**
      * directory which is monitored for incoming strategies

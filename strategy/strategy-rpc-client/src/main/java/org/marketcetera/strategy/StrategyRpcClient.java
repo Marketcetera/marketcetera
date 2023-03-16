@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
@@ -25,11 +26,15 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.core.time.TimeFactoryImpl;
+import org.marketcetera.persist.CollectionPageResponse;
+import org.marketcetera.persist.PageRequest;
 import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.base.BaseRpcUtil.AbstractClientListenerProxy;
 import org.marketcetera.rpc.client.AbstractRpcClient;
+import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
@@ -67,20 +72,20 @@ public class StrategyRpcClient
      * @see org.marketcetera.strategy.StrategyClient#findByName(String)
      */
     @Override
-    public java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance> findByName(String inName)
+    public Optional<? extends org.marketcetera.strategy.StrategyInstance> findByName(String inName)
     {
-        return executeCall(new java.util.concurrent.Callable<java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance>>() {
+        return executeCall(new Callable<Optional<? extends org.marketcetera.strategy.StrategyInstance>>() {
             @Override
-            public java.util.Optional<? extends org.marketcetera.strategy.StrategyInstance> call()
+            public Optional<? extends org.marketcetera.strategy.StrategyInstance> call()
                     throws Exception
             {
                 StrategyRpc.FindStrategyInstanceByNameRequest.Builder requestBuilder = StrategyRpc.FindStrategyInstanceByNameRequest.newBuilder();
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setName(inName);
                 StrategyRpc.FindStrategyInstanceByNameRequest request = requestBuilder.build();
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
                 StrategyRpc.FindStrategyInstanceByNameResponse response = getBlockingStub().findByName(request);
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
                 if(response.hasStrategyInstance()) {
                     return StrategyRpcUtil.getStrategyInstance(response.getStrategyInstance(),
                                                                strategyInstanceFactory,
@@ -117,12 +122,48 @@ public class StrategyRpcClient
         );
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#getStrategyMessages(String,String,PageRequest)
+     */
+    @Override
+    public CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
+                                                                                 Severity inSeverity,
+                                                                                 PageRequest inPageRequest)
+    {
+        return executeCall(new Callable<CollectionPageResponse<? extends StrategyMessage>>() {
+            @Override
+            public CollectionPageResponse<? extends StrategyMessage> call()
+                    throws Exception
+            {
+                StrategyRpc.ReadStrategyMessagesRequest.Builder requestBuilder = StrategyRpc.ReadStrategyMessagesRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                if(inStrategyName != null) {
+                    requestBuilder.setStrategyName(inStrategyName);
+                }
+                StrategyRpcUtil.getRpcStrategyMessageSeverity(inSeverity).ifPresent(rpcSeverity -> requestBuilder.setSeverity(rpcSeverity));
+                requestBuilder.setPageRequest(PagingRpcUtil.buildPageRequest(inPageRequest));
+                StrategyRpc.ReadStrategyMessagesRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.ReadStrategyMessagesResponse response = getBlockingStub().getStrategyMessages(request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                CollectionPageResponse<StrategyMessage> results = new CollectionPageResponse<>();
+                response.getStrategyMessagesList().forEach(rpcStrategyMessage -> StrategyRpcUtil.getStrategyMessage(rpcStrategyMessage,
+                                                                                                                     strategyMessageFactory,
+                                                                                                                     strategyInstanceFactory,
+                                                                                                                     userFactory).ifPresent(strategyMessage -> results.getElements().add(strategyMessage)));
+                PagingRpcUtil.setPageResponse(inPageRequest,
+                                              response.getPageResponse(),
+                                              results);
+                return results;
+            }}
+        );
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyClient#unloadStrategyInstance(String)
      */
     @Override
     public void unloadStrategyInstance(String inStrategyInstanceName)
     {
-        executeCall(new java.util.concurrent.Callable<Void>() {
+        executeCall(new Callable<Void>() {
             @Override
             public Void call()
                     throws Exception
@@ -131,9 +172,9 @@ public class StrategyRpcClient
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setName(inStrategyInstanceName);
                 StrategyRpc.UnloadStrategyInstanceRequest request = requestBuilder.build();
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
                 StrategyRpc.UnloadStrategyInstanceResponse response = getBlockingStub().unloadStrategyInstance(request);
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
                 return null;
             }}
         );
@@ -166,7 +207,7 @@ public class StrategyRpcClient
     @Override
     public void startStrategyInstance(String inStrategyInstanceName)
     {
-        executeCall(new java.util.concurrent.Callable<Void>() {
+        executeCall(new Callable<Void>() {
             @Override
             public Void call()
                     throws Exception
@@ -175,9 +216,9 @@ public class StrategyRpcClient
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setName(inStrategyInstanceName);
                 StrategyRpc.StartStrategyInstanceRequest request = requestBuilder.build();
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
                 StrategyRpc.StartStrategyInstanceResponse response = getBlockingStub().startStrategyInstance(request);
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
                 return null;
             }}
         );
@@ -188,7 +229,7 @@ public class StrategyRpcClient
     @Override
     public void stopStrategyInstance(String inStrategyInstanceName)
     {
-        executeCall(new java.util.concurrent.Callable<Void>() {
+        executeCall(new Callable<Void>() {
             @Override
             public Void call()
                     throws Exception
@@ -197,9 +238,9 @@ public class StrategyRpcClient
                 requestBuilder.setSessionId(getSessionId().getValue());
                 requestBuilder.setName(inStrategyInstanceName);
                 StrategyRpc.StopStrategyInstanceRequest request = requestBuilder.build();
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
                 StrategyRpc.StopStrategyInstanceResponse response = getBlockingStub().stopStrategyInstance(request);
-                org.marketcetera.util.log.SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
                 return null;
             }}
         );
@@ -338,6 +379,39 @@ public class StrategyRpcClient
                 return null;
             }
         });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#emitMessage(org.marketcetera.core.notifications.INotification.Severity, java.lang.String)
+     */
+    @Override
+    public void emitMessage(Severity inSeverity,
+                            String inMessage)
+    {
+        if(strategyInstanceHolder == null) {
+            throw new UnsupportedOperationException("No strategy instance holder provided");
+        }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                StrategyRpc.CreateStrategyMessageRequest.Builder requestBuilder = StrategyRpc.CreateStrategyMessageRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                StrategyTypesRpc.StrategyMessage.Builder strategyMessageBuilder = StrategyTypesRpc.StrategyMessage.newBuilder();
+                StrategyRpcUtil.getRpcStrategyInstance(strategyInstanceHolder.getStrategyInstance()).ifPresent(rpcStrategyInstance -> strategyMessageBuilder.setStrategyInstance(rpcStrategyInstance));
+                StrategyRpcUtil.getRpcStrategyMessageSeverity(inSeverity).ifPresent(rpcSeverity -> strategyMessageBuilder.setSeverity(rpcSeverity));
+                String message = StringUtils.trimToNull(inMessage);
+                if(message != null) {
+                    strategyMessageBuilder.setMessage(message);
+                }
+                requestBuilder.setStrategyMessage(strategyMessageBuilder.build());
+                StrategyRpc.CreateStrategyMessageRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} sending {}",getSessionId(),request);
+                StrategyRpc.CreateStrategyMessageResponse response = getBlockingStub().createStrategyMessage(request);
+                SLF4JLoggerProxy.trace(StrategyRpcClient.this,"{} received {}",getSessionId(),response);
+                return null;
+            }}
+        );
     }
     /**
      * Provides an interface between trade message stream listeners and their handlers.
@@ -545,6 +619,16 @@ public class StrategyRpcClient
             return proxy;
         }}
     );
+    /**
+     * provides access to the current strategy instance
+     */
+    @Autowired(required=false)
+    private StrategyInstanceHolder strategyInstanceHolder;
+    /**
+     * creates new {@link StrategyMessage} objects
+     */
+    @Autowired
+    private StrategyMessageFactory strategyMessageFactory;
     /**
      * creates new {@link StrategyInstance} objects
      */
