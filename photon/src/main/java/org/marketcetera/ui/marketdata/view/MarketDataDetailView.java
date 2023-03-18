@@ -62,7 +62,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -88,10 +87,10 @@ public class MarketDataDetailView
         return rootLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         SLF4JLoggerProxy.trace(this,
                                "{} {} stop",

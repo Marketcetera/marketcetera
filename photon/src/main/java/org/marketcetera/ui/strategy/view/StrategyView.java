@@ -88,7 +88,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -178,10 +177,10 @@ public class StrategyView
             }},new Date(System.currentTimeMillis() + strategyRuntimeUpdateInterval),strategyRuntimeUpdateInterval);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         try {
             strategyRuntimeUpdateTimer.cancel();

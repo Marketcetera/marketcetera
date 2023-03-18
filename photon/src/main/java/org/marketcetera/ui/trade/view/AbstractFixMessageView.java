@@ -56,7 +56,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -130,10 +129,10 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         updateReports();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         tradeClientService.removeTradeMessageListener(this);
     }

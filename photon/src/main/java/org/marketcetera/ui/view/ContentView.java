@@ -1,7 +1,6 @@
 package org.marketcetera.ui.view;
 
 import javafx.scene.Node;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -28,8 +27,6 @@ public interface ContentView
     String getViewName();
     /**
      * Invoked when the content view is closed.
-     *
-     * @param inEvent a <code>WindowEvent</code> value
      */
-    default void onClose(WindowEvent inEvent) {}
+    default void onClose() {}
 }

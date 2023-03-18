@@ -1,6 +1,7 @@
 package org.marketcetera.ui.service;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -16,11 +17,11 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.assertj.core.util.Lists;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
 import org.marketcetera.ui.DragResizeMod;
 import org.marketcetera.ui.DragResizeMod.OnDragResizeEventListener;
-import org.marketcetera.ui.Draggable;
 import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.events.CascadeWindowsEvent;
 import org.marketcetera.ui.events.CloseWindowsEvent;
@@ -55,6 +56,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -132,7 +134,6 @@ public class WindowManagerService
                                inEvent.getWindowTitle());
         // create the UI window element
         final WindowLayout newWindow = createNewWindowLayout();
-//        newWindow.initOwner(PhotonApp.getPrimaryStage());
         if(inEvent.getWindowIcon() != null) {
             // TODO need to convert to Image to show here
 //            newWindow.getIcons().add(PhotonServices.getSvgResource(inEvent.getWindowIcon()));
@@ -148,6 +149,7 @@ public class WindowManagerService
         ContentView contentView = viewFactory.create(newWindow.getMainLayout(),
                                                      inEvent,
                                                      newWindowWrapper.getProperties());
+        newWindow.setContentView(contentView);
         newWindow.setTitle(inEvent.getWindowTitle());
         // set properties of the new window based on the received event
         newWindow.setDraggable(inEvent.isDraggable());
@@ -166,11 +168,12 @@ public class WindowManagerService
         // TODO pretty sure this isn't right
         newWindow.getProperties().put(WindowManagerService.windowUuidProp,
                                       inEvent.getWindowStyleId());
-        PhotonApp.getWorkspace().getChildren().add(newWindow.getMainLayout());
-        newWindow.requestFocus();
+        newWindow.show();
     }
-    private class WindowLayout
+    private static class WindowLayout
     {
+        private final ObjectProperty<ContentView> contentViewProperty = new SimpleObjectProperty<>();
+        private final static Collection<WindowLayout> windowLayouts = Lists.newArrayList();
         private WindowLayout()
         {
             windowLayout = new VBox();
@@ -185,11 +188,10 @@ public class WindowManagerService
             windowTitle = new Label();
             windowTitle.textProperty().bind(windowTitleProperty);
             closeLabel = new Label("X");
-            // TODO trigger this when the X is pushed
-//          newWindow.setOnCloseRequest(inCloseEvent -> {
-//              contentView.onClose(inCloseEvent);
-//          });
-            
+            closeLabel.setOnMouseClicked(event -> {
+                contentViewProperty.get().onClose();
+                close();
+            });
             titleLayout.getChildren().addAll(windowTitle);
             closeButtonLayout.getChildren().addAll(closeLabel);
             windowTitleLayout.getStyleClass().add("title-bar");
@@ -206,7 +208,6 @@ public class WindowManagerService
             contentLayout.setAlignment(Pos.CENTER);
             VBox.setVgrow(contentLayout,
                           Priority.ALWAYS);
-            Draggable.Nature nature = new Draggable.Nature(windowLayout);
             DragResizeMod.makeResizable(windowLayout,
                                         new OnDragResizeEventListener() {
                 @Override
@@ -216,11 +217,10 @@ public class WindowManagerService
                                    double inH,
                                    double inW)
                 {
-                    System.out.println("COCO: drag " + inNode + " x=" + inX + " y=" + inY + " height=" + inH + " width=" + inW);
                     xProperty.set(inX);
                     yProperty.set(inY);
-                    heightProperty.set(inH);
-                    widthProperty.set(inW);
+                    getMainLayout().translateXProperty().set(inX);
+                    getMainLayout().translateYProperty().set(inY);
                 }
                 @Override
                 public void onResize(Node inNode,
@@ -229,9 +229,6 @@ public class WindowManagerService
                                      double inH,
                                      double inW)
                 {
-                    System.out.println("COCO: resize " + inNode + " x=" + inX + " y=" + inY + " height=" + inH + " width=" + inW);
-                    xProperty.set(inX);
-                    yProperty.set(inY);
                     heightProperty.set(inH);
                     widthProperty.set(inW);
                 }
@@ -241,30 +238,24 @@ public class WindowManagerService
             windowLayout.getStylesheets().add("dark-mode.css");
             windowLayout.minWidthProperty().bindBidirectional(widthProperty);
             windowLayout.minHeightProperty().bindBidirectional(heightProperty);
-//            windowLayout.setAlignment(Pos.CENTER);
-//            windowLayout.setOnMouseClicked(event -> {
-////                windowLayout.toFront();
-//                // TODO this warps the window to the upper left
-//            });
-//            windowLayout.addEventHandler(MouseEvent.ANY, this);
-
-//            windowLayout.heightProperty().addListener((observableValue,oldValue,newValue)->{
-//                System.out.println("COCO: " + windowTitleProperty.get() + " height: " + newValue);
-//                heightProperty.set((double)newValue);
-//            });
-//            windowLayout.widthProperty().addListener((observableValue,oldValue,newValue)->{
-//                System.out.println("COCO: " + windowTitleProperty.get() + " width: " + newValue);
-//                widthProperty.set((double)newValue);
-//            });
-//            windowLayout.layoutXProperty().addListener((observableValue,oldValue,newValue)->{
-//                System.out.println("COCO: " + windowTitleProperty.get() + " layoutX: " + newValue);
-//                xProperty.set((double)newValue);
-//            });
-//            windowLayout.layoutYProperty().addListener((observableValue,oldValue,newValue)->{
-//                System.out.println("COCO: " + windowTitleProperty.get() + " layoutY: " + newValue);
-//                yProperty.set((double)newValue);
-//            });
-//            windowLayout.relocate(200,200);
+            synchronized(windowLayouts) {
+                windowLayouts.add(this);
+            }
+            windowLayout.setOnMouseClicked(event -> {
+                synchronized(windowLayouts) {
+                    for(WindowLayout windowLayout : windowLayouts) {
+                        windowLayout.getMainLayout().viewOrderProperty().set(1.0);
+                    }
+                }
+                windowLayout.viewOrderProperty().set(-1.0);
+            });
+//            DropShadow dropShadow = new DropShadow(BlurType.THREE_PASS_BOX,new Color(0,0,0,0.8),10,0,0,0);
+//            windowLayout.setEffect(dropShadow);
+//            windowLayout.setPickOnBounds(false);
+        }
+        private void setContentView(ContentView inContentView)
+        {
+            contentViewProperty.set(inContentView);
         }
         /**
          *
@@ -494,9 +485,23 @@ public class WindowManagerService
          *
          *
          */
-        public void close()
+        private void close()
         {
-            throw new UnsupportedOperationException(); // TODO
+//            if(!windowRegistry.isLoggingOut()) {
+//                windowRegistry.removeWindow(inWindowWrapper);
+//                updateDisplayLayout();
+//            }
+            PhotonApp.getWorkspace().getChildren().remove(getMainLayout());
+        }
+        private void show()
+        {
+            getMainLayout().translateXProperty().set(200);
+            getMainLayout().translateYProperty().set(200);
+            windowLayout.setMinHeight(Region.USE_COMPUTED_SIZE);
+            windowLayout.setMinWidth(Region.USE_COMPUTED_SIZE);
+            windowLayout.setViewOrder(-1);
+            PhotonApp.getWorkspace().getChildren().add(getMainLayout());
+            requestFocus();
         }
         private final DoubleProperty heightProperty = new SimpleDoubleProperty();
         private final DoubleProperty widthProperty = new SimpleDoubleProperty();
@@ -800,6 +805,7 @@ public class WindowManagerService
                                                                     new RestartNewWindowEvent(contentViewFactory,
                                                                                               properties.getProperty(windowTitleProp)),
                                                                     properties);
+                inWindow.contentViewProperty.set(contentView);
                 window.setRoot(contentView.getNode());
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
@@ -863,14 +869,6 @@ public class WindowManagerService
                                    String.valueOf(window.getScrollLeft()));
             properties.setProperty(windowFocusProp,
                                    String.valueOf(hasFocus()));
-            Object windowId = window.getProperties().getOrDefault(windowStyleId,
-                                                                  null);
-            if(windowId == null) {
-                properties.remove(windowStyleId);
-            } else {
-                properties.setProperty(windowStyleId,
-                                       String.valueOf(windowId));
-            }
         }
         /**
          * Update the window object with the stored telemetry.
@@ -879,7 +877,7 @@ public class WindowManagerService
         {
             window.setWidth(Double.parseDouble(properties.getProperty(windowWidthProp)));
             window.setHeight(Double.parseDouble(properties.getProperty(windowHeightProp)));
-            window.setModality(Modality.valueOf(properties.getProperty(windowModalProp)));
+            window.setModality(properties.getProperty(windowModalProp) == null ? Modality.NONE:Modality.valueOf(properties.getProperty(windowModalProp)));
             Boolean isMaximized = Boolean.parseBoolean(properties.getProperty(windowModeProp));
             window.setMaximized(isMaximized);
             window.setScrollLeft(Double.parseDouble(properties.getProperty(windowScrollLeftProp)));
@@ -891,8 +889,6 @@ public class WindowManagerService
                                        windowPosXProp));
             window.setY(getDoubleValue(properties,
                                        windowPosYProp));
-            window.getProperties().put(windowStyleId,
-                                       properties.getProperty(windowStyleId));
             setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
             if(hasFocus) {
                 window.requestFocus();
@@ -1013,13 +1009,14 @@ public class WindowManagerService
             }
             try {
                 synchronized(activeWindows) {
-                    int xPos = desktopCascadeWindowOffset;
-                    int yPos = desktopCascadeWindowOffset;
+                    double xPos = desktopCascadeWindowOffset;
+                    double yPos = desktopCascadeWindowOffset;
                     DesktopParameters params = SessionUser.getCurrent().getAttribute(DesktopParameters.class);
                     double maxX = params.getRight();
                     double maxY = params.getBottom();
                     for(WindowMetaData activeWindow : activeWindows) {
-                        double windowWidth = getWindowWidth(activeWindow.getWindow());
+//                        double windowWidth = getWindowWidth(activeWindow.getWindow());
+                        double windowWidth = activeWindow.getWindow().getWidth();
                         double windowHeight = getWindowHeight(activeWindow.getWindow());
                         double proposedX = xPos;
                         if(proposedX + windowWidth > maxX) {
@@ -1029,8 +1026,10 @@ public class WindowManagerService
                         if(proposedY + windowHeight > maxY) {
                             proposedY = desktopCascadeWindowOffset;
                         }
-                        activeWindow.getWindow().setX(proposedX);
-                        activeWindow.getWindow().setY(proposedY);
+                        activeWindow.getWindow().getMainLayout().translateXProperty().set(proposedX);
+                        activeWindow.getWindow().getMainLayout().translateYProperty().set(proposedY);
+//                        activeWindow.getWindow().setX(proposedX);
+//                        activeWindow.getWindow().setY(proposedY);
                         activeWindow.getWindow().requestFocus();
                         xPos += desktopCascadeWindowOffset;
                         yPos += desktopCascadeWindowOffset;
@@ -1538,10 +1537,6 @@ public class WindowManagerService
      * window scroll top key name
      */
     private static final String windowScrollTopProp = propId + "_scrollTop";
-    /**
-     * window style id key name
-     */
-    private static final String windowStyleId = propId + "_windowStyleId";
     /**
      * web message service value
      */

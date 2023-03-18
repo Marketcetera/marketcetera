@@ -85,7 +85,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -123,10 +122,10 @@ public class FixSessionView
         updateSessions();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         try {
             fixAdminClient.removeBrokerStatusListener(this);

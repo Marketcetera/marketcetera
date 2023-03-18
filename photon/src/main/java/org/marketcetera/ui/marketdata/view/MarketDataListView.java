@@ -85,10 +85,10 @@ public class MarketDataListView
         return rootLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         SLF4JLoggerProxy.trace(this,
                                "{} {} stop",

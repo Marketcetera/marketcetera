@@ -88,7 +88,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -161,10 +160,10 @@ public class OrderTicketView
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         try {
             serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
