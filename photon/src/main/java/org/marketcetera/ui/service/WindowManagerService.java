@@ -18,7 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Util;
-import org.marketcetera.ui.App;
+import org.marketcetera.ui.DragResizeMod;
+import org.marketcetera.ui.DragResizeMod.OnDragResizeEventListener;
+import org.marketcetera.ui.Draggable;
+import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.events.CascadeWindowsEvent;
 import org.marketcetera.ui.events.CloseWindowsEvent;
 import org.marketcetera.ui.events.LoginEvent;
@@ -39,16 +42,22 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -122,8 +131,8 @@ public class WindowManagerService
                                "onWindow: {}",
                                inEvent.getWindowTitle());
         // create the UI window element
-        final Stage newWindow = new Stage();
-        newWindow.initOwner(App.getPrimaryStage());
+        final WindowLayout newWindow = createNewWindowLayout();
+//        newWindow.initOwner(PhotonApp.getPrimaryStage());
         if(inEvent.getWindowIcon() != null) {
             // TODO need to convert to Image to show here
 //            newWindow.getIcons().add(PhotonServices.getSvgResource(inEvent.getWindowIcon()));
@@ -136,22 +145,12 @@ public class WindowManagerService
         WindowMetaData newWindowWrapper = new WindowMetaData(inEvent,
                                                              newWindow,
                                                              viewFactory);
-        ContentView contentView = viewFactory.create(newWindow,
+        ContentView contentView = viewFactory.create(newWindow.getMainLayout(),
                                                      inEvent,
                                                      newWindowWrapper.getProperties());
-        newWindow.setOnCloseRequest(inCloseEvent -> {
-            contentView.onClose(inCloseEvent);
-        });
-        styleService.addStyle(contentView);
-        Scene rootScene = contentView.getScene();
-        rootScene.getStylesheets().clear();
-        rootScene.getStylesheets().add("dark-mode.css");
         newWindow.setTitle(inEvent.getWindowTitle());
         // set properties of the new window based on the received event
-//        newWindow.initModality(inEvent.isModal()?Modality.APPLICATION_MODAL:Modality.NONE);
-//        newWindow.initModality(Modality.NONE);
-        // TODO not sure how to disallow dragging
-//        newWindow.setDraggable(inEvent.isDraggable());
+        newWindow.setDraggable(inEvent.isDraggable());
         newWindow.setResizable(inEvent.isResizable());
         if(inEvent.getWindowSize().getFirstMember() > 0) {
             newWindow.setWidth(inEvent.getWindowSize().getFirstMember());
@@ -161,16 +160,367 @@ public class WindowManagerService
         }
         windowRegistry.addWindow(newWindowWrapper);
         // set the content of the new window
-        newWindow.setScene(rootScene);
+        newWindow.setRoot(contentView.getNode());
         windowRegistry.addWindowListeners(newWindowWrapper);
         windowRegistry.updateDisplayLayout();
         // TODO pretty sure this isn't right
         newWindow.getProperties().put(WindowManagerService.windowUuidProp,
                                       inEvent.getWindowStyleId());
-        newWindow.sizeToScene();
-        newWindow.show();
+        PhotonApp.getWorkspace().getChildren().add(newWindow.getMainLayout());
         newWindow.requestFocus();
-//        newWindow.setOnCloseRequest(null);
+    }
+    private class WindowLayout
+    {
+        private WindowLayout()
+        {
+            windowLayout = new VBox();
+            windowTitleLayout = new HBox();
+            titleLayout = new HBox();
+            closeButtonLayout = new HBox();
+            contentLayout = new VBox();
+            windowLayout.getChildren().addAll(windowTitleLayout,
+                                              contentLayout);
+            windowTitleLayout.getChildren().addAll(titleLayout,
+                                                   closeButtonLayout);
+            windowTitle = new Label();
+            windowTitle.textProperty().bind(windowTitleProperty);
+            closeLabel = new Label("X");
+            // TODO trigger this when the X is pushed
+//          newWindow.setOnCloseRequest(inCloseEvent -> {
+//              contentView.onClose(inCloseEvent);
+//          });
+            
+            titleLayout.getChildren().addAll(windowTitle);
+            closeButtonLayout.getChildren().addAll(closeLabel);
+            windowTitleLayout.getStyleClass().add("title-bar");
+            
+            HBox.setHgrow(windowTitleLayout,
+                          Priority.ALWAYS);
+            HBox.setHgrow(titleLayout,
+                          Priority.ALWAYS);
+            HBox.setHgrow(closeButtonLayout,
+                          Priority.NEVER);
+            windowTitleLayout.setAlignment(Pos.CENTER);
+            closeButtonLayout.setAlignment(Pos.BASELINE_RIGHT);
+            closeButtonLayout.setPrefWidth(20);
+            contentLayout.setAlignment(Pos.CENTER);
+            VBox.setVgrow(contentLayout,
+                          Priority.ALWAYS);
+            Draggable.Nature nature = new Draggable.Nature(windowLayout);
+            DragResizeMod.makeResizable(windowLayout,
+                                        new OnDragResizeEventListener() {
+                @Override
+                public void onDrag(Node inNode,
+                                   double inX,
+                                   double inY,
+                                   double inH,
+                                   double inW)
+                {
+                    System.out.println("COCO: drag " + inNode + " x=" + inX + " y=" + inY + " height=" + inH + " width=" + inW);
+                    xProperty.set(inX);
+                    yProperty.set(inY);
+                    heightProperty.set(inH);
+                    widthProperty.set(inW);
+                }
+                @Override
+                public void onResize(Node inNode,
+                                     double inX,
+                                     double inY,
+                                     double inH,
+                                     double inW)
+                {
+                    System.out.println("COCO: resize " + inNode + " x=" + inX + " y=" + inY + " height=" + inH + " width=" + inW);
+                    xProperty.set(inX);
+                    yProperty.set(inY);
+                    heightProperty.set(inH);
+                    widthProperty.set(inW);
+                }
+            });
+            windowLayout.getStyleClass().add("view");
+            windowLayout.getStylesheets().clear();
+            windowLayout.getStylesheets().add("dark-mode.css");
+            windowLayout.minWidthProperty().bindBidirectional(widthProperty);
+            windowLayout.minHeightProperty().bindBidirectional(heightProperty);
+//            windowLayout.setAlignment(Pos.CENTER);
+//            windowLayout.setOnMouseClicked(event -> {
+////                windowLayout.toFront();
+//                // TODO this warps the window to the upper left
+//            });
+//            windowLayout.addEventHandler(MouseEvent.ANY, this);
+
+//            windowLayout.heightProperty().addListener((observableValue,oldValue,newValue)->{
+//                System.out.println("COCO: " + windowTitleProperty.get() + " height: " + newValue);
+//                heightProperty.set((double)newValue);
+//            });
+//            windowLayout.widthProperty().addListener((observableValue,oldValue,newValue)->{
+//                System.out.println("COCO: " + windowTitleProperty.get() + " width: " + newValue);
+//                widthProperty.set((double)newValue);
+//            });
+//            windowLayout.layoutXProperty().addListener((observableValue,oldValue,newValue)->{
+//                System.out.println("COCO: " + windowTitleProperty.get() + " layoutX: " + newValue);
+//                xProperty.set((double)newValue);
+//            });
+//            windowLayout.layoutYProperty().addListener((observableValue,oldValue,newValue)->{
+//                System.out.println("COCO: " + windowTitleProperty.get() + " layoutY: " + newValue);
+//                yProperty.set((double)newValue);
+//            });
+//            windowLayout.relocate(200,200);
+        }
+        /**
+         *
+         *
+         */
+        private void requestFocus()
+        {
+            windowLayout.requestFocus();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private Properties getProperties()
+        {
+            return windowProperties;
+        }
+        /**
+         *
+         *
+         * @param inNode
+         */
+        private void setRoot(Node inNode)
+        {
+            contentLayout.getChildren().add(inNode);
+        }
+        /**
+         *
+         *
+         * @param inDraggable
+         */
+        private void setDraggable(boolean inDraggable)
+        {
+            draggableProperty.set(inDraggable);
+        }
+        /**
+         *
+         *
+         * @param inHeight
+         */
+        private void setHeight(double inHeight)
+        {
+            windowLayout.setPrefHeight(inHeight);
+        }
+        /**
+         *
+         *
+         * @param inWidth
+         */
+        private void setWidth(double inWidth)
+        {
+            windowLayout.setPrefWidth(inWidth);
+        }
+        /**
+         *
+         *
+         * @param inResizable
+         */
+        public void setResizable(boolean inResizable)
+        {
+            resizableProperty.set(inResizable);
+        }
+        /**
+         *
+         *
+         * @param inWindowTitle
+         */
+        private void setTitle(String inWindowTitle)
+        {
+            windowTitleProperty.set(inWindowTitle);
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private Node getMainLayout()
+        {
+            return windowLayout;
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private double getX()
+        {
+            return xProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private double getY()
+        {
+            return yProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private double getHeight()
+        {
+            return heightProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private double getWidth()
+        {
+            return widthProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private boolean isMaximized()
+        {
+            return maximizedProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private String getTitle()
+        {
+            return windowTitle.getText();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private Modality getModality()
+        {
+            return modalityProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private boolean isDraggable()
+        {
+            return draggableProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private boolean isResizable()
+        {
+            return resizableProperty.get();
+        }
+        /**
+         *
+         *
+         * @return
+         */
+        private double getScrollLeft()
+        {
+            return scrollLeftProperty.get();
+        }
+        /**
+         *
+         *
+         * @param inModality
+         */
+        private void setModality(Modality inModality)
+        {
+            modalityProperty.set(inModality);
+        }
+        /**
+         *
+         *
+         * @param inMaximized
+         */
+        private void setMaximized(boolean inMaximized)
+        {
+            maximizedProperty.set(inMaximized);
+        }
+        /**
+         *
+         *
+         * @param inScrollLeft
+         */
+        private void setScrollLeft(double inScrollLeft)
+        {
+            scrollLeftProperty.set(inScrollLeft);
+        }
+        /**
+         *
+         *
+         * @param inScrollTop
+         */
+        private void setScrollTop(double inScrollTop)
+        {
+            scrollTopProperty.set(inScrollTop);
+        }
+        /**
+         *
+         *
+         * @param inX
+         */
+        private void setX(double inX)
+        {
+            xProperty.set(inX);
+        }
+        /**
+         *
+         *
+         * @param inY
+         */
+        private void setY(double inY)
+        {
+            yProperty.set(inY);
+        }
+        /**
+         *
+         *
+         */
+        public void close()
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        private final DoubleProperty heightProperty = new SimpleDoubleProperty();
+        private final DoubleProperty widthProperty = new SimpleDoubleProperty();
+        private final DoubleProperty xProperty = new SimpleDoubleProperty();
+        private final DoubleProperty yProperty = new SimpleDoubleProperty();
+        private final BooleanProperty maximizedProperty = new SimpleBooleanProperty();
+        private final BooleanProperty draggableProperty = new SimpleBooleanProperty();
+        private final BooleanProperty resizableProperty = new SimpleBooleanProperty();
+        private final DoubleProperty scrollLeftProperty = new SimpleDoubleProperty();
+        private final DoubleProperty scrollTopProperty = new SimpleDoubleProperty();
+        private final ObjectProperty<Modality> modalityProperty = new SimpleObjectProperty<>();
+        private final Properties windowProperties = new Properties();
+        private final StringProperty windowTitleProperty = new SimpleStringProperty();
+        private VBox windowLayout;
+        private HBox windowTitleLayout;
+        private HBox titleLayout;
+        private HBox closeButtonLayout;
+        private VBox contentLayout;
+        private Label windowTitle;
+        private Label closeLabel;
+    }
+    private WindowLayout createNewWindowLayout()
+    {
+        return new WindowLayout();
     }
     /**
      * Receive logout events.
@@ -232,10 +582,10 @@ public class WindowManagerService
     /**
      * Determine if the given window is outside the viewable desktop area or not.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>boolean</code> value
      */
-    private boolean isWindowOutsideDesktop(Window inWindow)
+    private boolean isWindowOutsideDesktop(WindowLayout inWindow)
     {
         DesktopParameters params = SessionUser.getCurrent().getAttribute(DesktopParameters.class);
         return (getWindowBottom(inWindow) > params.getBottom()) || (getWindowLeft(inWindow) < params.getLeft()) || (getWindowTop(inWindow) < params.getTop()) || (getWindowRight(inWindow) > params.getRight());
@@ -243,60 +593,60 @@ public class WindowManagerService
     /**
      * Get the window top edge coordinate in pixels.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>double</code> value
      */
-    private double getWindowTop(Window inWindow)
+    private double getWindowTop(WindowLayout inWindow)
     {
         return inWindow.getY();
     }
     /**
      * Get the window left edge coordinate in pixels.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>double</code> value
      */
-    private double getWindowLeft(Window inWindow)
+    private double getWindowLeft(WindowLayout inWindow)
     {
         return inWindow.getX();
     }
     /**
      * Get the window bottom edge coordinate in pixels.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>double</code> value
      */
-    private double getWindowBottom(Window inWindow)
+    private double getWindowBottom(WindowLayout inWindow)
     {
         return getWindowTop(inWindow) + getWindowHeight(inWindow);
     }
     /**
      * Get the window right edge coordinate in pixels.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>double</code> value
      */
-    private double getWindowRight(Window inWindow)
+    private double getWindowRight(WindowLayout inWindow)
     {
         return getWindowLeft(inWindow) + getWindowWidth(inWindow);
     }
     /**
      * Get the window height in pixels.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>double</code> value
      */
-    private double getWindowHeight(Window inWindow)
+    private double getWindowHeight(WindowLayout inWindow)
     {
         return inWindow.getHeight();
     }
     /**
      * Get the window width in pixels.
      *
-     * @param inWindow a <code>Window</code> value
+     * @param inWindow a <code>WindowLayout</code> value
      * @return a <code>double</code> value
      */
-    private double getWindowWidth(Window inWindow)
+    private double getWindowWidth(WindowLayout inWindow)
     {
         return inWindow.getWidth();
     }
@@ -417,11 +767,11 @@ public class WindowManagerService
          * <p>This constructor is invoked for a new window.
          * 
          * @param inEvent a <code>NewWindowEvent</code> value
-         * @param inWindow a <code>Stage</code> value
+         * @param inWindow a <code>WindowLayout</code> value
          * @param inContentViewFactory a <code>ContentViewFactory</code> value
          */
         private WindowMetaData(NewWindowEvent inEvent,
-                               Stage inWindow,
+                               WindowLayout inWindow,
                                ContentViewFactory inContentViewFactory)
         {
             properties = inEvent.getProperties();
@@ -436,25 +786,21 @@ public class WindowManagerService
          * <p>This constructor is invoked to recreate a previously-created window.
          * 
          * @param inProperties a <code>Properties</code> value
-         * @param inWindow a <code>Stage</code> value
+         * @param inWindow a <code>WindowLayout</code> value
          */
         private WindowMetaData(Properties inProperties,
-                               Stage inWindow)
+                               WindowLayout inWindow)
         {
             // TODO need to do a permissions re-check, perhaps
             window = inWindow;
             properties = inProperties;
             try {
                 ContentViewFactory contentViewFactory = (ContentViewFactory)applicationContext.getBean(Class.forName(inProperties.getProperty(windowContentViewFactoryProp)));
-                ContentView contentView = contentViewFactory.create(window,
+                ContentView contentView = contentViewFactory.create(window.getMainLayout(),
                                                                     new RestartNewWindowEvent(contentViewFactory,
                                                                                               properties.getProperty(windowTitleProp)),
                                                                     properties);
-                styleService.addStyle(contentView);
-                Scene scene = contentView.getScene();
-                scene.getStylesheets().clear();
-                scene.getStylesheets().add("dark-mode.css");
-                window.setScene(scene);
+                window.setRoot(contentView.getNode());
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -482,9 +828,9 @@ public class WindowManagerService
         /**
          * Get the window value.
          *
-         * @return a <code>Stage</code> value
+         * @return a <code>WindowLayout</code> value
          */
-        private Stage getWindow()
+        private WindowLayout getWindow()
         {
             return window;
         }
@@ -496,7 +842,7 @@ public class WindowManagerService
             properties.setProperty(windowPosXProp,
                                    String.valueOf(window.getX()));
             properties.setProperty(windowPosYProp,
-                                   String.valueOf(window.getY()));
+                                   String.valueOf(window.getX()));
             properties.setProperty(windowHeightProp,
                                    String.valueOf(window.getHeight()));
             properties.setProperty(windowWidthProp,
@@ -507,17 +853,14 @@ public class WindowManagerService
                 properties.setProperty(windowTitleProp,
                                        window.getTitle());
             }
-            properties.setProperty(windowModalProp,
-                                   String.valueOf(window.getModality()));
-            // TODO not sure what to do about dragging yet
-//            properties.setProperty(windowDraggableProp,
-//                                   String.valueOf(window.isDraggable()));
+            properties.setProperty(windowDraggableProp,
+                                   String.valueOf(window.isDraggable()));
             properties.setProperty(windowResizableProp,
                                    String.valueOf(window.isResizable()));
-//            properties.setProperty(windowScrollLeftProp,
-//                                   String.valueOf(window.getScrollLeft()));
-//            properties.setProperty(windowScrollTopProp,
-//                                   String.valueOf(window.getScrollTop()));
+            properties.setProperty(windowScrollLeftProp,
+                                   String.valueOf(window.getScrollLeft()));
+            properties.setProperty(windowScrollTopProp,
+                                   String.valueOf(window.getScrollLeft()));
             properties.setProperty(windowFocusProp,
                                    String.valueOf(hasFocus()));
             Object windowId = window.getProperties().getOrDefault(windowStyleId,
@@ -536,14 +879,12 @@ public class WindowManagerService
         {
             window.setWidth(Double.parseDouble(properties.getProperty(windowWidthProp)));
             window.setHeight(Double.parseDouble(properties.getProperty(windowHeightProp)));
-//            window.initModality(Modality.valueOf(properties.getProperty(windowModalProp)));
-            window.initModality(Modality.NONE);
+            window.setModality(Modality.valueOf(properties.getProperty(windowModalProp)));
             Boolean isMaximized = Boolean.parseBoolean(properties.getProperty(windowModeProp));
             window.setMaximized(isMaximized);
-            // TODO not sure about these yet
-//            window.setScrollLeft(Integer.parseInt(properties.getProperty(windowScrollLeftProp)));
-//            window.setScrollTop(Integer.parseInt(properties.getProperty(windowScrollTopProp)));
-//            window.setDraggable(Boolean.parseBoolean(properties.getProperty(windowDraggableProp)));
+            window.setScrollLeft(Double.parseDouble(properties.getProperty(windowScrollLeftProp)));
+            window.setScrollTop(Double.parseDouble(properties.getProperty(windowScrollTopProp)));
+            window.setDraggable(Boolean.parseBoolean(properties.getProperty(windowDraggableProp)));
             window.setResizable(Boolean.parseBoolean(properties.getProperty(windowResizableProp)));
             window.setTitle(properties.getProperty(windowTitleProp));
             window.setX(getDoubleValue(properties,
@@ -552,10 +893,10 @@ public class WindowManagerService
                                        windowPosYProp));
             window.getProperties().put(windowStyleId,
                                        properties.getProperty(windowStyleId));
-//            setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
-//            if(hasFocus) {
-//                window.requestFocus();
-//            }
+            setHasFocus(Boolean.parseBoolean(properties.getProperty(windowFocusProp)));
+            if(hasFocus) {
+                window.requestFocus();
+            }
         }
         /**
          * Set the immutable properties of this window to the underlying properties storage.
@@ -576,7 +917,7 @@ public class WindowManagerService
          */
         private void close()
         {
-            ((Stage)getWindow().getScene().getWindow()).close();
+            getWindow().close();
         }
         /**
          * Get the window uuid value.
@@ -623,7 +964,7 @@ public class WindowManagerService
         /**
          * underlying UI element
          */
-        private final Stage window;
+        private final WindowLayout window;
     }
     /**
      * Provides a registry of all windows.
@@ -782,14 +1123,12 @@ public class WindowManagerService
                                            "Restoring {} {}",
                                            windowUid,
                                            windowProperties);
-                    Stage newWindow = new Stage();
-                    newWindow.initOwner(App.getPrimaryStage());
+                    WindowLayout newWindow = createNewWindowLayout();
                     WindowMetaData newWindowMetaData = new WindowMetaData(windowProperties,
                                                                           newWindow);
                     addWindow(newWindowMetaData);
                     addWindowListeners(newWindowMetaData);
-                    styleService.addStyle(newWindowMetaData.getWindow().getScene());
-                    newWindowMetaData.getWindow().show();
+                    PhotonApp.getWorkspace().getChildren().add(newWindowMetaData.getWindow().getMainLayout());
                 }
             }
         }
@@ -819,105 +1158,105 @@ public class WindowManagerService
         private void addWindowListeners(WindowMetaData inWindowWrapper)
         {
             WindowRegistry windowRegistry = this;
-            Stage newWindow = inWindowWrapper.getWindow();
-            newWindow.addEventHandler(MouseEvent.MOUSE_CLICKED,
-                                      new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent inEvent)
-                {
-                    SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                           "Click: {}",
-                                           inEvent);
-                    verifyWindowLocation(newWindow);
-                    inWindowWrapper.updateProperties();
-                    updateDisplayLayout();
-                }}
-            );
-            newWindow.setOnShown(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent inEvent)
-                {
-                    SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                           "Shown: {}",
-                                           inEvent);
-                    verifyWindowLocation(newWindow);
-                    inWindowWrapper.updateProperties();
-                    updateDisplayLayout();
-                }}
-            );
-//            newWindow.addWindowModeChangeListener(inEvent -> {
-//                SLF4JLoggerProxy.trace(WindowManagerService.this,
-//                                       "Mode change: {}",
-//                                       inEvent);
-//                // TODO might want to do this, might not. a maximized window currently tromps all over the menu bar
+            WindowLayout newWindow = inWindowWrapper.getWindow();
+//            newWindow.addEventHandler(MouseEvent.MOUSE_CLICKED,
+//                                      new EventHandler<MouseEvent>() {
+//                @Override
+//                public void handle(MouseEvent inEvent)
+//                {
+//                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+//                                           "Click: {}",
+//                                           inEvent);
+//                    verifyWindowLocation(newWindow);
+//                    inWindowWrapper.updateProperties();
+//                    updateDisplayLayout();
+//                }}
+//            );
+//            newWindow.setOnShown(new EventHandler<WindowEvent>() {
+//                @Override
+//                public void handle(WindowEvent inEvent)
+//                {
+//                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+//                                           "Shown: {}",
+//                                           inEvent);
+//                    verifyWindowLocation(newWindow);
+//                    inWindowWrapper.updateProperties();
+//                    updateDisplayLayout();
+//                }}
+//            );
+////            newWindow.addWindowModeChangeListener(inEvent -> {
+////                SLF4JLoggerProxy.trace(WindowManagerService.this,
+////                                       "Mode change: {}",
+////                                       inEvent);
+////                // TODO might want to do this, might not. a maximized window currently tromps all over the menu bar
+//////                verifyWindowLocation(newWindow);
+////                inWindowWrapper.updateProperties();
+////                updateDisplayLayout();
+////            });
+//            newWindow.widthProperty().addListener(new ChangeListener<Number>() {
+//                @Override
+//                public void changed(ObservableValue<? extends Number> inObservable,
+//                                    Number inOldValue,
+//                                    Number inNewValue)
+//                {
+//                    newWindowResize("width",
+//                                    inWindowWrapper);
+//                }}
+//            );
+//            newWindow.heightProperty().addListener(new ChangeListener<Number>() {
+//                @Override
+//                public void changed(ObservableValue<? extends Number> inObservable,
+//                                    Number inOldValue,
+//                                    Number inNewValue)
+//                {
+//                    newWindowResize("height",
+//                                    inWindowWrapper);
+//                }}
+//            );
+//            newWindow.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST,new EventHandler<WindowEvent>() {
+//                @Override
+//                public void handle(WindowEvent inEvent)
+//                {
+//                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+//                                           "Close: {}",
+//                                           inEvent);
+//                    // this listener will be fired during log out, but, we don't want to update the display layout in that case
+//                    if(!windowRegistry.isLoggingOut()) {
+//                        windowRegistry.removeWindow(inWindowWrapper);
+//                        updateDisplayLayout();
+//                    }
+//                }}
+//            );
+////            newWindow.addBlurListener(inEvent -> {
+////                SLF4JLoggerProxy.trace(WindowManagerService.this,
+////                                       "Blur: {}",
+////                                       inEvent);
 ////                verifyWindowLocation(newWindow);
-//                inWindowWrapper.updateProperties();
-//                updateDisplayLayout();
-//            });
-            newWindow.widthProperty().addListener(new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> inObservable,
-                                    Number inOldValue,
-                                    Number inNewValue)
-                {
-                    newWindowResize("width",
-                                    inWindowWrapper);
-                }}
-            );
-            newWindow.heightProperty().addListener(new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> inObservable,
-                                    Number inOldValue,
-                                    Number inNewValue)
-                {
-                    newWindowResize("height",
-                                    inWindowWrapper);
-                }}
-            );
-            newWindow.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST,new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent inEvent)
-                {
-                    SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                           "Close: {}",
-                                           inEvent);
-                    // this listener will be fired during log out, but, we don't want to update the display layout in that case
-                    if(!windowRegistry.isLoggingOut()) {
-                        windowRegistry.removeWindow(inWindowWrapper);
-                        updateDisplayLayout();
-                    }
-                }}
-            );
-//            newWindow.addBlurListener(inEvent -> {
-//                SLF4JLoggerProxy.trace(WindowManagerService.this,
-//                                       "Blur: {}",
-//                                       inEvent);
-//                verifyWindowLocation(newWindow);
-//                inWindowWrapper.setHasFocus(false);
-//                inWindowWrapper.updateProperties();
-//                updateDisplayLayout();
-//            });
-//            newWindow.addFocusListener(inEvent -> {
-//                SLF4JLoggerProxy.trace(WindowManagerService.this,
-//                                       "Focus: {}",
-//                                       inEvent);
-//                verifyWindowLocation(newWindow);
-//                inWindowWrapper.setHasFocus(true);
-//                inWindowWrapper.updateProperties();
-//                updateDisplayLayout();
-//            });
-            newWindow.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED,new EventHandler<ContextMenuEvent>() {
-                @Override
-                public void handle(ContextMenuEvent inEvent)
-                {
-                    SLF4JLoggerProxy.trace(WindowManagerService.this,
-                                           "Context click: {}",
-                                           inEvent);
-                    verifyWindowLocation(newWindow);
-                    inWindowWrapper.updateProperties();
-                    updateDisplayLayout();
-                }}
-            );
+////                inWindowWrapper.setHasFocus(false);
+////                inWindowWrapper.updateProperties();
+////                updateDisplayLayout();
+////            });
+////            newWindow.addFocusListener(inEvent -> {
+////                SLF4JLoggerProxy.trace(WindowManagerService.this,
+////                                       "Focus: {}",
+////                                       inEvent);
+////                verifyWindowLocation(newWindow);
+////                inWindowWrapper.setHasFocus(true);
+////                inWindowWrapper.updateProperties();
+////                updateDisplayLayout();
+////            });
+//            newWindow.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED,new EventHandler<ContextMenuEvent>() {
+//                @Override
+//                public void handle(ContextMenuEvent inEvent)
+//                {
+//                    SLF4JLoggerProxy.trace(WindowManagerService.this,
+//                                           "Context click: {}",
+//                                           inEvent);
+//                    verifyWindowLocation(newWindow);
+//                    inWindowWrapper.updateProperties();
+//                    updateDisplayLayout();
+//                }}
+//            );
         }
         private void newWindowResize(String inDimension,
                                      WindowMetaData inWindowWrapper)
@@ -932,9 +1271,9 @@ public class WindowManagerService
         /**
          * Verify that the given window is within the acceptable bounds of the desktop viewable area.
          *
-         * @param inWindow a <code>Stage</code> value
+         * @param inWindow a <code>WindowLayout</code> value
          */
-        private void verifyWindowLocation(Stage inWindow)
+        private void verifyWindowLocation(WindowLayout inWindow)
         {
             synchronized(activeWindows) {
                 if(isWindowOutsideDesktop(inWindow)) {
@@ -954,9 +1293,9 @@ public class WindowManagerService
          *
          * <p>If the window is already within the acceptable bounds of the desktop viewable area, it will not be repositioned.
          * 
-         * @param inWindow a <code>Window</code> value
+         * @param inWindow a <code>WindowLayout</code> value
          */
-        private void returnWindowToDesktop(Window inWindow)
+        private void returnWindowToDesktop(WindowLayout inWindow)
         {
             int pad = desktopViewableAreaPad;
             DesktopParameters params = SessionUser.getCurrent().getAttribute(DesktopParameters.class);
@@ -1092,10 +1431,7 @@ public class WindowManagerService
                             SLF4JLoggerProxy.warn(WindowManagerService.this,
                                                   ExceptionUtils.getRootCauseMessage(e));
                         }
-                    }},
-                                                                                                  desktopWindowPositionMonitorInterval,
-                                                                                                  desktopWindowPositionMonitorInterval,
-                                                                                                  TimeUnit.MILLISECONDS);
+                    }},desktopWindowPositionMonitorInterval,desktopWindowPositionMonitorInterval,TimeUnit.MILLISECONDS);
             }
         }
         /**
@@ -1206,11 +1542,6 @@ public class WindowManagerService
      * window style id key name
      */
     private static final String windowStyleId = propId + "_windowStyleId";
-    /**
-     * provides access to style services
-     */
-    @Autowired
-    private StyleService styleService;
     /**
      * web message service value
      */

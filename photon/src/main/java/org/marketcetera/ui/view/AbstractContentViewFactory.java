@@ -7,7 +7,7 @@ import org.marketcetera.ui.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import javafx.stage.Window;
+import javafx.scene.Node;
 
 /* $License$ */
 
@@ -25,7 +25,7 @@ public abstract class AbstractContentViewFactory
      * @see org.marketcetera.web.view.ContentViewFactory#create(com.vaadin.ui.Window, org.marketcetera.web.events.NewWindowEvent, java.util.Properties)
      */
     @Override
-    public ContentView create(Window inParent,
+    public ContentView create(Node inParent,
                               NewWindowEvent inEvent,
                               Properties inViewProperties)
     {

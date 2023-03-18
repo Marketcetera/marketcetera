@@ -42,7 +42,7 @@ import com.google.common.collect.Maps;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -59,7 +59,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /* $License$ */
@@ -78,12 +77,12 @@ public class MarketDataListView
         implements ContentView
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#getNode()
      */
     @Override
-    public Scene getScene()
+    public Node getNode()
     {
-        return scene;
+        return rootLayout;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
@@ -139,7 +138,6 @@ public class MarketDataListView
                event.consume(); 
             }
         });
-        scene = new Scene(rootLayout);
     }
     @PreDestroy
     public void stop()
@@ -149,18 +147,17 @@ public class MarketDataListView
     /**
      * Create a new MarketDataListView instance.
      *
-     * @param inParent a <code>Window</code> value
+     * @param inParent a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public MarketDataListView(Stage inParent,
+    public MarketDataListView(Node inParent,
                               NewWindowEvent inEvent,
                               Properties inProperties)
     {
         super(inParent,
               inEvent,
               inProperties);
-        System.out.println("COCO: view properties: " + inProperties);
     }
     private void updateViewProperties()
     {
@@ -458,7 +455,6 @@ public class MarketDataListView
     private TableView<MarketDataItem> marketDataTable;
     private MarketDataClientService marketdataClient;
     private TradeClientService tradeClient;
-    private Scene scene;
     private VBox rootLayout;
     private final String symbolsKey = "SYMBOLS";
     private HBox addSymbolLayout;

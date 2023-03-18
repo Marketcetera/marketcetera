@@ -31,23 +31,24 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /* $License$ */
 
 /**
- *
+ * Main Photon Application.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  * @see https://openjfx.io/openjfx-docs/#maven
  */
-public class App
+public class PhotonApp
         extends Application
 {
     /* (non-Javadoc)
@@ -77,7 +78,7 @@ public class App
         windowManagerService.initializeMainStage(primaryStage);
         root = new VBox();
         menuLayout = new VBox();
-        workspace = new VBox();
+        workspace = new FlowPane();
         workspace.setId(getClass().getCanonicalName() + ".workspace");
         workspace.setPrefWidth(1024);
         workspace.setPrefHeight(768);
@@ -87,8 +88,8 @@ public class App
                                   workspace,
                                   separator,
                                   footer);
-        Scene mainScene = new Scene(root);
-        inPrimaryStage.setScene(mainScene);
+        scene = new Scene(root);
+        inPrimaryStage.setScene(scene);
         inPrimaryStage.setTitle("Marketcetera Automated Trading Platform");
         inPrimaryStage.getIcons().addAll(new Image("/images/photon-16x16.png"),
                                          new Image("/images/photon-24x24.png"),
@@ -125,8 +126,8 @@ public class App
                                    separator,
                                    footer,
                                    root);
-        mainScene.getStylesheets().clear();
-        mainScene.getStylesheets().add("dark-mode.css");
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add("dark-mode.css");
         inPrimaryStage.show();
         doLogin();
     }
@@ -221,7 +222,7 @@ public class App
         }
         ApplicationMenu applicationMenu = currentUser.getAttribute(ApplicationMenu.class);
         if(applicationMenu == null) {
-            SLF4JLoggerProxy.debug(App.class,
+            SLF4JLoggerProxy.debug(PhotonApp.class,
                                    "Session is now logged in, building application menu");
             applicationMenu = applicationContext.getBean(ApplicationMenu.class);
             menuLayout.getChildren().add(applicationMenu.getMenu());
@@ -245,14 +246,14 @@ public class App
     private static Parent loadFXML(String fxml)
             throws IOException
     {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(PhotonApp.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
     public static Stage getPrimaryStage()
     {
         return primaryStage;
     }
-    public static Region getWorkspace()
+    public static Pane getWorkspace()
     {
         return workspace;
     }
@@ -292,7 +293,7 @@ public class App
     private HBox footer;
     private Label clockLabel;
     private Label userLabel;
-    private static VBox workspace;
+    private static FlowPane workspace;
     private ToolBar statusToolBar;
     private ToolBar footerToolBar;
     private PhotonNotificationService notificationService;

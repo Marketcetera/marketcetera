@@ -134,7 +134,7 @@
             <!-- Usage: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>org.marketcetera.ui.App</mainClass>
+              <mainClass>org.marketcetera.ui.PhotonApp</mainClass>
               <workingDirectory>src/test/cmd_exec</workingDirectory>
               <options>
                 <option>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</option>

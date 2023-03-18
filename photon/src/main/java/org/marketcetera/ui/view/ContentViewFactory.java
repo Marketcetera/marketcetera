@@ -4,7 +4,7 @@ import java.util.Properties;
 
 import org.marketcetera.ui.events.NewWindowEvent;
 
-import javafx.stage.Window;
+import javafx.scene.Node;
 
 /* $License$ */
 
@@ -20,12 +20,12 @@ public interface ContentViewFactory
     /**
      * Create a new content view.
      *
-     * @param inParent a <code>Window</code> value
+     * @param inParent a <code>Node</code> value
      * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      * @return a <code>T</code> value
      */
-    ContentView create(Window inParent,
+    ContentView create(Node inParent,
                        NewWindowEvent inEvent,
                        Properties inViewProperties);
 }

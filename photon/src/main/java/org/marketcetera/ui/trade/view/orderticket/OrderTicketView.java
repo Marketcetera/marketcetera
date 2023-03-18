@@ -63,7 +63,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -88,7 +88,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /* $License$ */
@@ -106,13 +105,14 @@ public class OrderTicketView
         extends AbstractContentView
         implements ContentView,BrokerStatusListener
 {
+    
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#getNode()
      */
     @Override
-    public Scene getScene()
+    public Node getNode()
     {
-        return scene;
+        return rootLayout;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
@@ -190,7 +190,6 @@ public class OrderTicketView
                                hashCode());
         rootLayout = new VBox();
         orderTicketLayout = new GridPane();
-        scene = new Scene(rootLayout);
         // create controls and layouts
         brokerLabel = new Label("Broker");
         brokerComboBox = new ComboBox<>();
@@ -614,7 +613,7 @@ public class OrderTicketView
         KeyCombination sendKeyCombination = new KeyCodeCombination(KeyCode.ENTER);
         Mnemonic sendMnemonic = new Mnemonic(sendButton,
                                              sendKeyCombination);
-        scene.addMnemonic(sendMnemonic);
+        // TODO add mnemonic?
         sendClearLayout.getChildren().addAll(sendButton,
                                              clearButton);
         sendButton.setOnMouseClicked(inEvent -> {
@@ -706,7 +705,8 @@ public class OrderTicketView
 //                                  Type.TRAY_NOTIFICATION);
                 if(replaceExecutionReportOption.isPresent()) {
                     // close containing ticket
-                    getParentWindow().close();
+                    // TODO need to trigger a close action
+                    getParentWindow().setVisible(false);
                 } else {
                     // partially clear ticket
                     resetTicket(false);
@@ -739,11 +739,11 @@ public class OrderTicketView
     /**
      * Create a new OrderTicketView instance.
      *
-     * @param inParent a <code>Window</code> value
+     * @param inParent a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public OrderTicketView(Stage inParent,
+    public OrderTicketView(Node inParent,
                            NewWindowEvent inEvent,
                            Properties inProperties)
     {
@@ -931,10 +931,6 @@ public class OrderTicketView
      * root container for the scene
      */
     private GridPane orderTicketLayout;
-    /**
-     * main scene object
-     */
-    private Scene scene;
     /**
      * provides access to style services
      */

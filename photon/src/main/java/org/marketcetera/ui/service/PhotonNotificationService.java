@@ -5,7 +5,7 @@ import javax.annotation.PreDestroy;
 
 import org.controlsfx.control.Notifications;
 import org.marketcetera.core.PlatformServices;
-import org.marketcetera.ui.App;
+import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +75,7 @@ public class PhotonNotificationService
                         .darkStyle()
                         .title(inEvent.getTitle())
                         .text(inEvent.getMessage())
-                        .owner(App.getWorkspace())
+                        .owner(PhotonApp.getWorkspace())
                         .hideAfter(Duration.seconds(notificationDelay));
                 notification.threshold(notificationThreshold,
                                        notification);

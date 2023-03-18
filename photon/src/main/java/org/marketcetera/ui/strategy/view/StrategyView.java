@@ -38,6 +38,7 @@ import org.marketcetera.strategy.events.StrategyStoppedEvent;
 import org.marketcetera.strategy.events.StrategyUnloadedEvent;
 import org.marketcetera.strategy.events.StrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.StrategyUploadSucceededEvent;
+import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
@@ -60,7 +61,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -87,7 +88,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /* $License$ */
@@ -161,7 +161,6 @@ public class StrategyView
                                         eventTablePagination,
                                         new Separator(Orientation.HORIZONTAL),
                                         buttonLayout);
-        mainScene = new Scene(mainLayout);
         updateStrategies();
         updateEvents();
         strategyClient.addStrategyEventListener(this);
@@ -235,12 +234,12 @@ public class StrategyView
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#getNode()
      */
     @Override
-    public Scene getScene()
+    public Node getNode()
     {
-        return mainScene;
+        return mainLayout;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
@@ -253,11 +252,11 @@ public class StrategyView
     /**
      * Create a new StrategyView instance.
      *
-     * @param inParent a <code>Window</code> value
+     * @param inParent a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public StrategyView(Stage inParent,
+    public StrategyView(Node inParent,
                         NewWindowEvent inEvent,
                         Properties inProperties)
     {
@@ -310,7 +309,7 @@ public class StrategyView
         strategyFileChooser.setTitle("Choose the Strategy JAR File");
         strategyFileChooser.getExtensionFilters().add(new ExtensionFilter("JAR Files",
                                                                           "*.jar"));
-        File result = strategyFileChooser.showOpenDialog(getParentWindow());
+        File result = strategyFileChooser.showOpenDialog(PhotonApp.getPrimaryStage());
         if(result != null) {
             if(!(result.exists() && result.canRead())) {
                 webMessageService.post(new NotificationEvent("Load Strategy",
@@ -368,7 +367,7 @@ public class StrategyView
             nameConfirmationDialogPane.getButtonTypes().setAll(okButtonType,
                                                                cancelButton);
             nameConfirmationDialog.getDialogPane().lookupButton(okButtonType).disableProperty().bind(disableOkButton);
-            PhotonServices.style(nameConfirmationDialogPane.getScene());
+            PhotonServices.styleDialog(nameConfirmationDialog);
             nameConfirmationDialog.initModality(Modality.APPLICATION_MODAL);
             nameConfirmationDialog.setResultConverter(dialogButton -> {
                 if(dialogButton == okButtonType) {
@@ -389,7 +388,7 @@ public class StrategyView
                                                                                 owner.getName());
             strategyTable.getItems().add(newItem);
             try {
-                getScene().setCursor(Cursor.WAIT);
+                getNode().setCursor(Cursor.WAIT);
                 // TODO transfer file - this will block? need to use a callback instead?
                 SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(name,
                                                                                     nonce,
@@ -455,7 +454,7 @@ public class StrategyView
                                                              "File '" + result.getAbsolutePath() + "' could not be read",
                                                              AlertType.WARNING));
             } finally {
-                getScene().setCursor(Cursor.DEFAULT);
+                getNode().setCursor(Cursor.DEFAULT);
             }
         }
     }
@@ -774,10 +773,6 @@ public class StrategyView
     private TableView<DisplayStrategyInstance> strategyTable;
     private TableView<DisplayStrategyMessage> eventTable;
     private StrategyClientService strategyClient;
-    /**
-     * main scene object
-     */
-    private Scene mainScene;
     /**
      * global name of the strategy
      */

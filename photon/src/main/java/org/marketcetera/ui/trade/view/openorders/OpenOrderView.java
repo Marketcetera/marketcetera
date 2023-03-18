@@ -18,7 +18,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 
 /* $License$ */
@@ -47,11 +46,11 @@ public class OpenOrderView
     /**
      * Create a new OpenOrderView instance.
      *
-     * @param inParentWindow a <code>Stage</code> value
+     * @param inParentWindow a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public OpenOrderView(Stage inParentWindow,
+    public OpenOrderView(Node inParentWindow,
                          NewWindowEvent inEvent,
                          Properties inViewProperties)
     {

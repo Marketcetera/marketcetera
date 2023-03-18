@@ -45,7 +45,7 @@ public class StyleService
      */
     public void addStyle(ContentView inContentView)
     {
-        addStyle(inContentView.getScene());
+//        addStyle(inContentView.getScene());
     }
     /**
      *

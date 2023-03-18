@@ -39,7 +39,7 @@ import org.marketcetera.fix.impl.SimpleFixSessionAttributeDescriptor;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.ui.App;
+import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
@@ -63,7 +63,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -104,12 +103,12 @@ public class FixSessionView
         implements ContentView,BrokerStatusListener
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#getNode()
      */
     @Override
-    public Scene getScene()
+    public Node getNode()
     {
-        return scene;
+        return rootLayout;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
@@ -171,19 +170,18 @@ public class FixSessionView
         initializeTable();
         rootLayout.getChildren().addAll(fixSessionsTable,
                                         buttonLayout);
-        scene = new Scene(rootLayout);
         updateSessions();
     }
     /**
-     * Create a new OrderTicketView instance.
+     * Create a new FixSessionView instance.
      *
-     * @param inParent a <code>Window</code> value
+     * @param inParent a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public FixSessionView(Stage inParent,
-                           NewWindowEvent inEvent,
-                           Properties inProperties)
+    public FixSessionView(Node inParent,
+                          NewWindowEvent inEvent,
+                          Properties inProperties)
     {
         super(inParent,
               inEvent,
@@ -454,7 +452,7 @@ public class FixSessionView
         final String acceptorString = "Acceptor";
         final String initiatorString = "Initiator";
         final String incomingFixSessionName = inFixSession.getSource().getFixSession().getName();
-        Wizard wizard = new Wizard(App.getPrimaryStage());
+        Wizard wizard = new Wizard(PhotonApp.getPrimaryStage());
         wizard.setTitle((inIsNew ? "Add" : "Edit") + " Session");
         final ComboBox<String> connectionTypeComboBox = new ComboBox<>();
         connectionTypeComboBox.getItems().addAll(acceptorString,
@@ -1700,7 +1698,6 @@ public class FixSessionView
     private TableColumn<DisplayFixSession,Integer> senderSequenceNumberTableColumn;
     private TableColumn<DisplayFixSession,Integer> targetSequenceNumberTableColumn;
     private AdminClientService fixAdminClient;
-    private Scene scene;
     private VBox rootLayout;
     private TableView<DisplayFixSession> fixSessionsTable;
     /**
