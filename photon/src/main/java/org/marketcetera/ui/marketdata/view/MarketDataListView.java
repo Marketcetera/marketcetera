@@ -142,7 +142,6 @@ public class MarketDataListView
     @PreDestroy
     public void stop()
     {
-        System.out.println("COCO: stopping market data list view");
     }
     /**
      * Create a new MarketDataListView instance.
@@ -165,7 +164,6 @@ public class MarketDataListView
             getViewProperties().setProperty(symbolsKey,
                                             String.valueOf(symbolsByRequestId.values()));
         }
-        System.out.println("COCO: view properties are now: " + getViewProperties());
     }
     private void initializeAddSymbol()
     {

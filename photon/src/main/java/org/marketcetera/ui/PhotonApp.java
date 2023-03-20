@@ -31,7 +31,6 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -78,7 +77,7 @@ public class PhotonApp
         windowManagerService.initializeMainStage(primaryStage);
         root = new VBox();
         menuLayout = new VBox();
-        workspace = new FlowPane();
+        workspace = new Pane();
         workspace.setId(getClass().getCanonicalName() + ".workspace");
         workspace.setPrefWidth(1024);
         workspace.setPrefHeight(768);
@@ -293,7 +292,7 @@ public class PhotonApp
     private HBox footer;
     private Label clockLabel;
     private Label userLabel;
-    private static FlowPane workspace;
+    private static Pane workspace;
     private ToolBar statusToolBar;
     private ToolBar footerToolBar;
     private PhotonNotificationService notificationService;

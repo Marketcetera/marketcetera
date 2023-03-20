@@ -65,8 +65,8 @@ public interface NewWindowEvent
      */
     default Pair<Double,Double> getWindowSize()
     {
-        return Pair.create(50.0,
-                           50.0);
+        return Pair.create(200.0,
+                           200.0);
     }
     /**
      * Indicate if the new window should be resizable.
