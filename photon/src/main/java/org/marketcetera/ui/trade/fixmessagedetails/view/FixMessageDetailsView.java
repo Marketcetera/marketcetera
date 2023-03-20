@@ -18,14 +18,13 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import quickfix.InvalidMessage;
 
 /* $License$ */
@@ -52,7 +51,6 @@ public class FixMessageDetailsView
         mainLayout = new VBox();
         initializeTable();
         mainLayout.getChildren().add(fixMessageGrid);
-        mainScene = new Scene(mainLayout);
         updateRows(fixMessage);
     }
     private void updateRows(quickfix.Message fixMessage)
@@ -125,21 +123,21 @@ public class FixMessageDetailsView
         return NAME;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#getNode()
      */
     @Override
-    public Scene getScene()
+    public Node getNode()
     {
-        return mainScene;
+        return mainLayout;
     }
     /**
      * Create a new FixMessageDetailsView instance.
      *
-     * @param inParentWindow a <code>Stage</code> value
+     * @param inParentWindow a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public FixMessageDetailsView(Stage inParent,
+    public FixMessageDetailsView(Node inParent,
                                  NewWindowEvent inEvent,
                                  Properties inViewProperties)
     {
@@ -225,7 +223,6 @@ public class FixMessageDetailsView
         private final String type;
         private final String value;
     }
-    private Scene mainScene;
     private VBox mainLayout;
     private TableView<DisplayFixMessageValue> fixMessageGrid;
     /**

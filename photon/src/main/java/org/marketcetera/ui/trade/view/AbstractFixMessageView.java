@@ -41,7 +41,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -57,8 +56,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -92,7 +89,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
         initializeColumns(reportsTableView);
         initializeContextMenu(reportsTableView);
-        mainScene = new Scene(mainLayout);
         pagination = new Pagination();
         pagination.setPageCount(10);
         pagination.setCurrentPageIndex(1);
@@ -114,6 +110,14 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         updateReports();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getNode()
+     */
+    @Override
+    public Node getNode()
+    {
+        return mainLayout;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.TradeMessageListener#receiveTradeMessage(org.marketcetera.trade.TradeMessage)
      */
     @Override
@@ -125,18 +129,10 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         updateReports();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public Scene getScene()
-    {
-        return mainScene;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
-     */
-    @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         tradeClientService.removeTradeMessageListener(this);
     }
@@ -489,11 +485,11 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
     /**
      * Create a new AbstractFixMessageView instance.
      *
-     * @param inParentWindow a <code>Stage</code> value
+     * @param inParentWindow a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractFixMessageView(Stage inParentWindow,
+    protected AbstractFixMessageView(Node inParentWindow,
                                      NewWindowEvent inEvent,
                                      Properties inViewProperties)
     {
@@ -502,7 +498,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
               inViewProperties);
     }
     protected static final DateTimeFormatter isoDateFormatter = TimeFactoryImpl.FULL_MILLISECONDS;
-    protected Scene mainScene;
     protected TradeClientService tradeClientService;
     protected int currentPage;
     protected int pageSize;

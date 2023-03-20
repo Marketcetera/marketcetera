@@ -4,14 +4,15 @@ import java.awt.Taskbar;
 import java.awt.Taskbar.Feature;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.Properties;
 
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.events.LogoutEvent;
+import org.marketcetera.ui.service.DisplayLayoutService;
 import org.marketcetera.ui.service.PhotonNotificationService;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
 import org.marketcetera.ui.service.WebMessageService;
-import org.marketcetera.ui.service.WindowManagerService;
 import org.marketcetera.ui.view.ApplicationMenu;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
@@ -32,22 +33,22 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /* $License$ */
 
 /**
- *
+ * Main Photon Application.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  * @see https://openjfx.io/openjfx-docs/#maven
  */
-public class App
+public class PhotonApp
         extends Application
 {
     /* (non-Javadoc)
@@ -60,8 +61,8 @@ public class App
         super.init();
         applicationContext = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
         webMessageService = applicationContext.getBean(WebMessageService.class);
-        windowManagerService = applicationContext.getBean(WindowManagerService.class);
         styleService = applicationContext.getBean(StyleService.class);
+        displayLayoutService = applicationContext.getBean(DisplayLayoutService.class);
         webMessageService.register(this);
     }
     /* (non-Javadoc)
@@ -74,10 +75,9 @@ public class App
         SLF4JLoggerProxy.info(this,
                               "Starting main stage");
         primaryStage = inPrimaryStage;
-        windowManagerService.initializeMainStage(primaryStage);
         root = new VBox();
         menuLayout = new VBox();
-        workspace = new VBox();
+        workspace = new Pane();
         workspace.setId(getClass().getCanonicalName() + ".workspace");
         workspace.setPrefWidth(1024);
         workspace.setPrefHeight(768);
@@ -87,8 +87,8 @@ public class App
                                   workspace,
                                   separator,
                                   footer);
-        Scene mainScene = new Scene(root);
-        inPrimaryStage.setScene(mainScene);
+        scene = new Scene(root);
+        inPrimaryStage.setScene(scene);
         inPrimaryStage.setTitle("Marketcetera Automated Trading Platform");
         inPrimaryStage.getIcons().addAll(new Image("/images/photon-16x16.png"),
                                          new Image("/images/photon-24x24.png"),
@@ -125,8 +125,8 @@ public class App
                                    separator,
                                    footer,
                                    root);
-        mainScene.getStylesheets().clear();
-        mainScene.getStylesheets().add("dark-mode.css");
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add("dark-mode.css");
         inPrimaryStage.show();
         doLogin();
     }
@@ -221,7 +221,7 @@ public class App
         }
         ApplicationMenu applicationMenu = currentUser.getAttribute(ApplicationMenu.class);
         if(applicationMenu == null) {
-            SLF4JLoggerProxy.debug(App.class,
+            SLF4JLoggerProxy.debug(PhotonApp.class,
                                    "Session is now logged in, building application menu");
             applicationMenu = applicationContext.getBean(ApplicationMenu.class);
             menuLayout.getChildren().add(applicationMenu.getMenu());
@@ -245,14 +245,14 @@ public class App
     private static Parent loadFXML(String fxml)
             throws IOException
     {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(PhotonApp.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
     public static Stage getPrimaryStage()
     {
         return primaryStage;
     }
-    public static Region getWorkspace()
+    public static Pane getWorkspace()
     {
         return workspace;
     }
@@ -260,6 +260,23 @@ public class App
     {
         launch();
     }
+    private Properties displayProperties;
+    /**
+     * base key for {@see UserAttributeType} display layout properties
+     */
+    private static final String propId = PhotonApp.class.getSimpleName();
+    /**
+     * workspace width key name
+     */
+    private static final String workspaceWidthProp = propId + "_workspaceWidth";
+    /**
+     * workspace height key name
+     */
+    private static final String workspaceHeightProp = propId + "_workspaceHeight";
+    /**
+     * workspace layout key name
+     */
+    private static final String mainWorkspaceLayoutKey = propId + "_workspaceDisplayLayout";
     /**
      * footer holder for the server connection status image
      */
@@ -285,15 +302,18 @@ public class App
      * web message service value
      */
     private WebMessageService webMessageService;
-    private WindowManagerService windowManagerService;
     private VBox menuLayout;
     private ApplicationContext applicationContext;
     private VBox root;
     private HBox footer;
     private Label clockLabel;
     private Label userLabel;
-    private static VBox workspace;
+    private static Pane workspace;
     private ToolBar statusToolBar;
     private ToolBar footerToolBar;
     private PhotonNotificationService notificationService;
+    /**
+     * provides access to display layout services
+     */
+    private DisplayLayoutService displayLayoutService;
 }

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 
+import org.marketcetera.core.Pair;
 import org.marketcetera.marketdata.MarketDataPermissions;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
@@ -72,6 +73,14 @@ public class MarketDataDetailViewFactory
             public void run()
             {
                 webMessageService.post(new NewWindowEvent() {
+                    /* (non-Javadoc)
+                     * @see org.marketcetera.ui.events.NewWindowEvent#getWindowSize()
+                     */
+                    @Override
+                    public Pair<Double,Double> getWindowSize()
+                    {
+                        return Pair.create(635.0,365.0);
+                    }
                     @Override
                     public String getWindowTitle()
                     {

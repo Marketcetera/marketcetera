@@ -11,7 +11,7 @@ import org.marketcetera.ui.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import javafx.stage.Stage;
+import javafx.scene.Node;
 
 /* $License$ */
 
@@ -37,9 +37,9 @@ public abstract class AbstractContentView
     /**
      * Get the parentWindow value.
      *
-     * @return a <code>Stage</code> value
+     * @return a <code>Node</code> value
      */
-    protected Stage getParentWindow()
+    protected Node getParentWindow()
     {
         return parentWindow;
     }
@@ -55,11 +55,11 @@ public abstract class AbstractContentView
     /**
      * Create a new AbstractContentView instance.
      *
-     * @param inParentWindow a <code>Stage</code> value
+     * @param inParentWindow a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractContentView(Stage inParentWindow,
+    protected AbstractContentView(Node inParentWindow,
                                   NewWindowEvent inEvent,
                                   Properties inViewProperties)
     {
@@ -104,7 +104,7 @@ public abstract class AbstractContentView
     /**
      * parent window that owns the view
      */
-    private final Stage parentWindow;
+    private final Node parentWindow;
     /**
      * properties used to seed the view
      */

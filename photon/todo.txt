@@ -66,12 +66,10 @@
 *****************
 * strategy view *
 *****************
-- don't need runtime update - can calculate locally until the status changes
 - reverify strategy before starting
 - how to identify the strategy instance for events emitted through the strategy client? maybe create a special kind of client that knows the strategy instance? otherwise, we run the risk of a strategy impersonating another strategy.
 - cancel big uploads
 - run on different cluster members? report strategy status on all cluster members
-- special category of events?
 - compare meta data on activate or discard?
 - run multiple versions of an uploaded stratergy w/o having to upload it again (duplicate from strategy context menu?)
 - nonce should not be in the strategy instance - pass it as a parameter to the new strategy instance and it can be stored adjacently
@@ -82,13 +80,15 @@
 - move verification from StrategyRPCServer to StrategyServiceImpl
 - add attribute to strategy instance:
 -- auto start
-- strategy events should be in db to allow pagination - could be lots and lots
-- strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
 
 - merge 1102 to 4.1.x
 - update build instructions
 - make 4.1.x the main branch
 
+x strategy events should be in db to allow pagination - could be lots and lots
+x strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
+x special category of events?
+x don't need runtime update - can calculate locally until the status changes
 x add strategy view
 x strategy running update events
 x implement stop strategy

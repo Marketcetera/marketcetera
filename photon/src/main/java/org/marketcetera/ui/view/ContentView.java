@@ -1,7 +1,6 @@
 package org.marketcetera.ui.view;
 
-import javafx.scene.Scene;
-import javafx.stage.WindowEvent;
+import javafx.scene.Node;
 
 /* $License$ */
 
@@ -15,11 +14,11 @@ import javafx.stage.WindowEvent;
 public interface ContentView
 {
     /**
-     * Get the scene which contains the content.
+     * Contains the root content of the view.
      *
-     * @return a <code>Scene</code> value
+     * @return a <code>Node</code> value
      */
-    Scene getScene();
+    Node getNode();
     /**
      * Get the Vaadin name of the view.
      *
@@ -28,8 +27,6 @@ public interface ContentView
     String getViewName();
     /**
      * Invoked when the content view is closed.
-     *
-     * @param inEvent a <code>WindowEvent</code> value
      */
-    default void onClose(WindowEvent inEvent) {}
+    default void onClose() {}
 }

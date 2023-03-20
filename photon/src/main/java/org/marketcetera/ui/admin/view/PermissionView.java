@@ -5,6 +5,8 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.impl.SimplePermission;
@@ -16,7 +18,6 @@ import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -43,7 +44,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 /* $License$ */
 
@@ -62,11 +62,11 @@ public class PermissionView
     /**
      * Create a new PermissionView instance.
      *
-     * @param inParentWindow a <code>Stage</code> value
+     * @param inParentWindow a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public PermissionView(Stage inParentWindow,
+    public PermissionView(Node inParentWindow,
                           NewWindowEvent inEvent,
                           Properties inViewProperties)
     {
@@ -77,11 +77,11 @@ public class PermissionView
     /**
      * Validate and start the object.
      */
-    @Autowired
+    @PostConstruct
     public void start()
     {
         adminClientService = serviceManager.getService(AdminClientService.class);
-        VBox layout = new VBox(5);
+        mainLayout = new VBox(5);
         initializeTable();
         buttonLayout = new HBox(5);
         addPermissionButton = new Button("Add Permission");
@@ -90,9 +90,16 @@ public class PermissionView
         addPermissionButton.setDisable(!userHasCreatePermissionPermission);
         addPermissionButton.setOnAction(event -> doAddOrUpdatePermission(new SimplePermission(),true));
         buttonLayout.getChildren().add(addPermissionButton);
-        layout.getChildren().addAll(permissionsTable,
+        mainLayout.getChildren().addAll(permissionsTable,
                                     buttonLayout);
-        mainScene = new Scene(layout);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getNode()
+     */
+    @Override
+    public Node getNode()
+    {
+        return mainLayout;
     }
     /**
      * Update the users displayed in the table.
@@ -351,14 +358,6 @@ public class PermissionView
     {
         return NAME;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
-     */
-    @Override
-    public Scene getScene()
-    {
-        return mainScene;
-    }
     /**
      * update user context menu item
      */
@@ -396,9 +395,9 @@ public class PermissionView
      */
     private ContextMenu permissionsTableContextMenu;
     /**
-     * main scene of the view
+     * main layout
      */
-    private Scene mainScene;
+    private VBox mainLayout;
     /**
      * global name of this view
      */

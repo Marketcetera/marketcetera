@@ -6,6 +6,8 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.admin.AdminPermissions;
@@ -20,7 +22,6 @@ import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -52,7 +53,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 
 /* $License$ */
@@ -72,11 +72,11 @@ public class RoleView
     /**
      * Create a new RoleView instance.
      *
-     * @param inParentWindow a <code>Stage</code> value
+     * @param inParentWindow a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public RoleView(Stage inParentWindow,
+    public RoleView(Node inParentWindow,
                     NewWindowEvent inEvent,
                     Properties inViewProperties)
     {
@@ -92,22 +92,14 @@ public class RoleView
     {
         return NAME;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
-     */
-    @Override
-    public Scene getScene()
-    {
-        return mainScene;
-    }
     /**
      * Validate and start the object.
      */
-    @Autowired
+    @PostConstruct
     public void start()
     {
         adminClientService = serviceManager.getService(AdminClientService.class);
-        VBox layout = new VBox(5);
+        mainLayout = new VBox(5);
         initializeTable();
         buttonLayout = new HBox(5);
         addRoleButton = new Button("Add Role");
@@ -116,9 +108,16 @@ public class RoleView
         addRoleButton.setDisable(!userHasCreateRolePermission);
         addRoleButton.setOnAction(event -> doAddOrUpdateRole(new SimpleRole(),true));
         buttonLayout.getChildren().add(addRoleButton);
-        layout.getChildren().addAll(rolesTable,
+        mainLayout.getChildren().addAll(rolesTable,
                                     buttonLayout);
-        mainScene = new Scene(layout);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getNode()
+     */
+    @Override
+    public Node getNode()
+    {
+        return mainLayout;
     }
     /**
      * Update the users displayed in the table.
@@ -506,9 +505,9 @@ public class RoleView
      */
     private ContextMenu rolesTableContextMenu;
     /**
-     * main scene of the view
+     * main layout of the view
      */
-    private Scene mainScene;
+    private VBox mainLayout;
     /**
      * global name of this view
      */

@@ -43,7 +43,7 @@ import com.google.common.collect.Maps;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -62,8 +62,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -81,18 +79,18 @@ public class MarketDataDetailView
         implements ContentView
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getScene()
+     * @see org.marketcetera.ui.view.ContentView#getNode()
      */
     @Override
-    public Scene getScene()
+    public Node getNode()
     {
-        return scene;
+        return rootLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose(javafx.stage.WindowEvent)
+     * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
-    public void onClose(WindowEvent inEvent)
+    public void onClose()
     {
         SLF4JLoggerProxy.trace(this,
                                "{} {} stop",
@@ -173,7 +171,6 @@ public class MarketDataDetailView
                event.consume(); 
             }
         });
-        scene = new Scene(rootLayout);
         if(marketDataInstrument != null) {
             doMarketDataRequest();
         }
@@ -181,11 +178,11 @@ public class MarketDataDetailView
     /**
      * Create a new MarketDataDetailView instance.
      *
-     * @param inParent a <code>Window</code> value
+     * @param inParent a <code>Node</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public MarketDataDetailView(Stage inParent,
+    public MarketDataDetailView(Node inParent,
                                 NewWindowEvent inEvent,
                                 Properties inProperties)
     {
@@ -429,7 +426,6 @@ public class MarketDataDetailView
     private TableView<MarketDataQuoteItem> askMarketDataTable;
     private MarketDataClientService marketDataClient;
     private TradeClientService tradeClient;
-    private Scene scene;
     private VBox rootLayout;
     private final String symbolsKey = "SYMBOLS";
     private HBox addSymbolLayout;

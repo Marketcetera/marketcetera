@@ -7,6 +7,23 @@
     -fx-font-size: 12px;
 }
 
+.view {
+    -fx-background-color: derive(-fx-base,45%);
+    background-color: derive(-fx-base,45%);
+    -fx-padding: 5 5 5 5;
+    padding: 5 5 5 5;
+    -fx-border-style: solid;
+    border-style: solid;
+    -fx-border-width: 1px;
+    border-width: 1px;
+     -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    border-radius: 5px;
+     -fx-border-color: black;
+    border-color: black;
+/*  this is cool but seems to prevent resizing    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0); */
+}
+
 .label{
     -fx-text-fill: lightgray;
 }
@@ -87,3 +104,13 @@
     -fx-text-fill: #000;
     -fx-alignment: top-left;
 }
+
+.title-bar { 
+  -fx-padding: 10px;
+  -fx-background-color: #676666;
+ }
+
+.title-bar Label {
+  -fx-text-fill: white;
+}
+
