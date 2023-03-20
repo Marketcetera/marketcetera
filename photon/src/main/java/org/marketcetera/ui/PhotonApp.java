@@ -4,14 +4,15 @@ import java.awt.Taskbar;
 import java.awt.Taskbar.Feature;
 import java.awt.Toolkit;
 import java.io.IOException;
+import java.util.Properties;
 
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.events.LogoutEvent;
+import org.marketcetera.ui.service.DisplayLayoutService;
 import org.marketcetera.ui.service.PhotonNotificationService;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
 import org.marketcetera.ui.service.WebMessageService;
-import org.marketcetera.ui.service.WindowManagerService;
 import org.marketcetera.ui.view.ApplicationMenu;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
@@ -60,8 +61,8 @@ public class PhotonApp
         super.init();
         applicationContext = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
         webMessageService = applicationContext.getBean(WebMessageService.class);
-        windowManagerService = applicationContext.getBean(WindowManagerService.class);
         styleService = applicationContext.getBean(StyleService.class);
+        displayLayoutService = applicationContext.getBean(DisplayLayoutService.class);
         webMessageService.register(this);
     }
     /* (non-Javadoc)
@@ -74,7 +75,6 @@ public class PhotonApp
         SLF4JLoggerProxy.info(this,
                               "Starting main stage");
         primaryStage = inPrimaryStage;
-        windowManagerService.initializeMainStage(primaryStage);
         root = new VBox();
         menuLayout = new VBox();
         workspace = new Pane();
@@ -260,6 +260,23 @@ public class PhotonApp
     {
         launch();
     }
+    private Properties displayProperties;
+    /**
+     * base key for {@see UserAttributeType} display layout properties
+     */
+    private static final String propId = PhotonApp.class.getSimpleName();
+    /**
+     * workspace width key name
+     */
+    private static final String workspaceWidthProp = propId + "_workspaceWidth";
+    /**
+     * workspace height key name
+     */
+    private static final String workspaceHeightProp = propId + "_workspaceHeight";
+    /**
+     * workspace layout key name
+     */
+    private static final String mainWorkspaceLayoutKey = propId + "_workspaceDisplayLayout";
     /**
      * footer holder for the server connection status image
      */
@@ -285,7 +302,6 @@ public class PhotonApp
      * web message service value
      */
     private WebMessageService webMessageService;
-    private WindowManagerService windowManagerService;
     private VBox menuLayout;
     private ApplicationContext applicationContext;
     private VBox root;
@@ -296,4 +312,8 @@ public class PhotonApp
     private ToolBar statusToolBar;
     private ToolBar footerToolBar;
     private PhotonNotificationService notificationService;
+    /**
+     * provides access to display layout services
+     */
+    private DisplayLayoutService displayLayoutService;
 }
