@@ -231,6 +231,7 @@ public class TradeServiceImpl
                 PlatformServices.handleException(this,
                                                  "Error broadcasting trade message",
                                                  e);
+                removeTradeMessageListener(tradeMessageListener);
             }
         }
     }

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -91,6 +90,7 @@ public class MarketDataServiceImpl
                 PlatformServices.handleException(this,
                                                  "Reporting market data status",
                                                  e);
+                removeMarketDataStatusListener(listener);
             }
         }
     }
@@ -110,7 +110,7 @@ public class MarketDataServiceImpl
                           MarketDataListener inMarketDataListener)
     {
         String provider = inRequest.getProvider();
-        String requestId = UUID.randomUUID().toString();
+        String requestId = inRequest.getRequestId();
         MarketDataRequestEvent requestEvent = new SimpleMarketDataRequestEvent(inRequest,
                                                                                requestId,
                                                                                provider,

@@ -32,14 +32,13 @@
   </developers>
   <properties>
     <mvn.javase.version>11</mvn.javase.version>
-    <mvn.spring.boot.version>2.6.5</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.7.9</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
-    <vaadin.version>22.0.2</vaadin.version>
     <esper.version>8.8.0</esper.version>
-    <mvn.flyway.version>8.5.0</mvn.flyway.version>
+    <mvn.flyway.version>9.15.2</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -160,6 +159,36 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>admin-rpc-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-rpc-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-rpc-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategy-rpc-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -364,43 +393,6 @@
         <artifactId>metrics-persist</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- compile: web ui -->
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-package</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-admin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-fix</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-marketdata</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-cluster</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>webui-trade</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- Compile: Vaadin -->
       <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>org.quickfixj</groupId>
@@ -435,6 +427,12 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+      <!-- used to generate Docker-like variable names -->
+      <dependency>
+	<groupId>info.schnatterer.moby-names-generator</groupId>
+	<artifactId>moby-names-generator</artifactId>
+	<version>20.10.0-r0</version>
+      </dependency>
       <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
@@ -794,13 +792,6 @@
         <version>2.6.1</version>
         <scope>runtime</scope>
       </dependency>
-      <!-- Runtime: Vaadin -->
-      <!--dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-push</artifactId>
-        <scope>runtime</scope>
-        <version>${vaadin.version}</version>
-      </dependency-->
       <!-- Testing: local modules. -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -1055,20 +1046,6 @@
             </execution>
           </executions>
         </plugin>
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>5.1.4</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.10</version>
-          <configuration>
-            <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
-            <downloadSources>true</downloadSources>
-            <downloadJavadocs>true</downloadJavadocs>
-          </configuration>
-        </plugin>
         <!-- mvn exec:* -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1152,6 +1129,8 @@
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
         <version>1.7.0</version>
+	<!-- see this for building on Eclipse: https://stackoverflow.com/questions/47477194/os-detected-classifier-not-set-os-maven-plugin-and-eclipse-oxygen -->
+	<!-- copy the plugin to the Eclipse plugins directory as instructed -->
       </extension>
     </extensions>
     <resources>
@@ -1236,11 +1215,11 @@
     <module>metrics</module>
     <module>modules</module>
     <module>packages</module>
+    <module>photon</module>
     <module>rpc-core</module>
+    <module>strategy</module>
     <module>trade</module>
     <module>tools</module>
-    <!--module>ui</module-->
-    <!--module>ui-new</module-->
     <module>util</module>
     <module>util-test</module>
   </modules>
@@ -1263,17 +1242,8 @@
       <url>https://repository.springsource.com/maven/bundles/external</url>
     </repository>
     <repository>
-      <id>vaadin-prereleases</id>
-      <url>
-        https://maven.vaadin.com/vaadin-prereleases/
-      </url>
-    </repository>
-    <repository>
-      <id>Vaadin Directory</id>
-      <url>https://maven.vaadin.com/vaadin-addons</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
   </repositories>
   <pluginRepositories>

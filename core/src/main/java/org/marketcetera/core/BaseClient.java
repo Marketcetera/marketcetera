@@ -35,6 +35,18 @@ public interface BaseClient
      * @return a <code>boolean</code> value
      */
     boolean isRunning();
+    /**
+     * Add the given client status listener.
+     *
+     * @param inListener a <code>ClientStatusListener</code> value
+     */
+    void addClientStatusListener(ClientStatusListener inListener);
+    /**
+     * Remove the given client status listener.
+     *
+     * @param inListener a <code>ClientStatusListener</code> value
+     */
+    void removeClientStatusListener(ClientStatusListener inListener);
     /* (non-Javadoc)
      * @see java.io.Closeable#close()
      */

@@ -1,0 +1,97 @@
+* New Features *
+================
+- fix sessions target/sender seq num not updating
+- positions view
+- suggestions view
+- order suggestions in order ticket
+- rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
+- need add help menu
+- need about menu with attributions and copyright
+- experiment with style of windows to make them more compact?
+-- change windows to use popups instead of new stages?
+-- main workspace probably needs to be a flow pane instead of vbox
+-- investigate Draggable
+-- investigate https://stackoverflow.com/questions/16925612/how-to-resize-component-with-mouse-drag-in-javafx
+- add cluster view
+- add view metrics module (with rpc, etc)
+- reports needs add report action
+- configurable way to set number of decimals to display for all types
+- remove style service as a bad idea
+- convert fix session panes to use inner classes
+- traderAdmin should have view fix sessions permission
+- expand FIX wizard to allow specification of multiple host/port combinations for failover?
+-- either that or need to do something that allows freeform settings to be added instead of just the normal ones
+- enforce patterns on fix session attributes in fix session wizard
+- add new permission for activate/deactivate users and use them in UserView context menu
+- create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
+- add ActivateUser to AdminClient and use in UserView context menu
+- work on blockchains MDA for market data views
+- if md client goes offline, mark all views as disabled
+- md client comes back online, resubmit md requests
+- window onClose not fired on app shutdown so nothing gets saved - can't rely on onClose to save important view info
+- probably need to handle DELETE events in market data list view
+- add chart to market data detail view
+
+* Bugs *
+========
+- market data client returns no available capabilities
+- broker algos in order ticket
+- custom fields in order ticket
+- transfer text to order in order ticket
+- peg to midpoint in order ticket
+- resize main window not stored in window properties?, should be reset on login
+- cascade and tile not working yet
+- weird always-on-top issue with window system
+- order ticket not formatted with last know values
+- replace order ticket values not filled out
+- menus are not fully recursive: only go to top level
+- incorporate session id validator in fix session wizard session identity page
+- failed fix session actions return "UNKNOWN" instead of a useful error message
+- defining a FIX session w/o a heartbeatint causes all kinds of havoc on client and server
+- update fix session adds new session instead of updating old one
+- add fix session shows empty session name in the update message
+- check permissions for add FIX session
+- can't delete user with supervisor permissions
+- can't delete user with roles
+- need to sort out password hashing/sending/authenticating between client and server
+- adminClient requires old password when changing password, but that requires keeping it around, which is a security issue. remove the old password parameter from the call.
+- PhotonServices.successStyle needs to match initial style, instead adds a light boundary
+- deactive user causes stale row error
+- add check to add/update user to see if the username is already in use
+- need to add permissions to roles add or update
+- changing permissions doesn't work in adding/updating permissions
+- add admin views
+-- supervisor permissions
+
+*****************
+* strategy view *
+*****************
+- reverify strategy before starting
+- how to identify the strategy instance for events emitted through the strategy client? maybe create a special kind of client that knows the strategy instance? otherwise, we run the risk of a strategy impersonating another strategy.
+- cancel big uploads
+- run on different cluster members? report strategy status on all cluster members
+- compare meta data on activate or discard?
+- run multiple versions of an uploaded stratergy w/o having to upload it again (duplicate from strategy context menu?)
+- nonce should not be in the strategy instance - pass it as a parameter to the new strategy instance and it can be stored adjacently
+- combine upload progress bar and status, perhaps using a VBox as the cell type
+- hash should not be returned to the client as this is a security risk. someone could calculate a hash-collision for a jar and push that one up instead?
+- remove hash from FileUploadMetaData
+- add type to FileUploadMetaData and remove hardcoded type in StrategyRpcServer
+- move verification from StrategyRPCServer to StrategyServiceImpl
+- add attribute to strategy instance:
+-- auto start
+
+- merge 1102 to 4.1.x
+- update build instructions
+- make 4.1.x the main branch
+
+x strategy events should be in db to allow pagination - could be lots and lots
+x strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
+x special category of events?
+x don't need runtime update - can calculate locally until the status changes
+x add strategy view
+x strategy running update events
+x implement stop strategy
+xx stop strategy is fundamentally simple: just stop the context that was started
+xx simplify strategy start by directly creating the context, don't use provisioning agent
+xx cache the context when a strategy is started. to stop it, just call .stop() on the context

@@ -73,19 +73,8 @@
   </properties>
 
   <build>
-      <sourceDirectory>src/java</sourceDirectory>
-      <testSourceDirectory>src/test</testSourceDirectory>
-      <plugins>
-          <plugin>
-              <groupId>org.apache.felix</groupId>
-              <artifactId>maven-bundle-plugin</artifactId>
-              <configuration>
-                  <instructions>
-                      <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                  </instructions>
-              </configuration>
-          </plugin>
-      </plugins>
+    <sourceDirectory>src/java</sourceDirectory>
+    <testSourceDirectory>src/test</testSourceDirectory>
   </build>
 
   <reporting>

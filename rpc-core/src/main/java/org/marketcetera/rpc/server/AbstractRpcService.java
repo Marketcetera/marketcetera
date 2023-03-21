@@ -266,6 +266,8 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     protected <Clazz> void handleError(Throwable inException,
                                        StreamObserver<Clazz> inResponseObserver)
     {
+        SLF4JLoggerProxy.warn(this,
+                              inException);
         StatusRuntimeException sre;
         if(inException instanceof StatusRuntimeException) {
             sre = (StatusRuntimeException)inException;

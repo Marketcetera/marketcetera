@@ -9,6 +9,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.stereotype.Component;
 
@@ -138,4 +140,11 @@ public class TimeFactoryImpl
      */
     public static final DateTimeFormatter WALLCLOCK_MINUTES = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).toFormatter().withZone(ZONE);
     private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,WALLCLOCK_MILLISECONDS,US_DATE,INTL_DATE,FULL_MILLISECONDS_CONDENSED };
+    public static final PeriodFormatter periodFormatter = new PeriodFormatterBuilder().minimumPrintedDigits(2)
+            .appendYears().appendSeparator(":")
+            .appendMonths().appendSeparator(":")
+            .appendDays().appendSeparator(":").printZeroAlways()
+            .appendHours().appendSeparator(":")
+            .appendMinutes().appendSeparator(":")
+            .appendSeconds().toFormatter();
 }

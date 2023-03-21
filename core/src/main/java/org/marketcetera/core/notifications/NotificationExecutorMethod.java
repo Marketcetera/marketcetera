@@ -3,7 +3,7 @@ package org.marketcetera.core.notifications;
 /* $License$ */
 
 /**
- *
+ * Provides a method for issuing notifications.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
