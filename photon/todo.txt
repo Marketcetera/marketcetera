@@ -1,17 +1,12 @@
 * New Features *
 ================
-- fix sessions target/sender seq num not updating
 - positions view
 - suggestions view
+- work on blockchains MDA for market data views
+- fix sessions target/sender seq num not updating
 - order suggestions in order ticket
-- rename main class from App to Photon (or something) so that it shows up in the process list (jps) as such
 - need add help menu
 - need about menu with attributions and copyright
-- experiment with style of windows to make them more compact?
--- change windows to use popups instead of new stages?
--- main workspace probably needs to be a flow pane instead of vbox
--- investigate Draggable
--- investigate https://stackoverflow.com/questions/16925612/how-to-resize-component-with-mouse-drag-in-javafx
 - add cluster view
 - add view metrics module (with rpc, etc)
 - reports needs add report action
@@ -25,7 +20,6 @@
 - add new permission for activate/deactivate users and use them in UserView context menu
 - create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
 - add ActivateUser to AdminClient and use in UserView context menu
-- work on blockchains MDA for market data views
 - if md client goes offline, mark all views as disabled
 - md client comes back online, resubmit md requests
 - window onClose not fired on app shutdown so nothing gets saved - can't rely on onClose to save important view info
@@ -40,8 +34,6 @@
 - transfer text to order in order ticket
 - peg to midpoint in order ticket
 - resize main window not stored in window properties?, should be reset on login
-- cascade and tile not working yet
-- weird always-on-top issue with window system
 - order ticket not formatted with last know values
 - replace order ticket values not filled out
 - menus are not fully recursive: only go to top level
@@ -81,17 +73,7 @@
 - add attribute to strategy instance:
 -- auto start
 
-- merge 1102 to 4.1.x
+x merge 1102 to 4.1.x
 - update build instructions
-- make 4.1.x the main branch
+x make 4.1.x the main branch
 
-x strategy events should be in db to allow pagination - could be lots and lots
-x strategy persistence? that is, can we reload strategies at start? we had something like this before with executing run files at SE start
-x special category of events?
-x don't need runtime update - can calculate locally until the status changes
-x add strategy view
-x strategy running update events
-x implement stop strategy
-xx stop strategy is fundamentally simple: just stop the context that was started
-xx simplify strategy start by directly creating the context, don't use provisioning agent
-xx cache the context when a strategy is started. to stop it, just call .stop() on the context
