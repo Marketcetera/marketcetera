@@ -48,6 +48,7 @@ import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -413,8 +414,13 @@ public class WindowManagerService
             titleLayout = new HBox();
             closeButtonLayout = new HBox();
             contentLayout = new VBox();
+            mainScrollPane = new ScrollPane();
+            mainScrollPane.setContent(contentLayout);
+            mainScrollPane.setPannable(true);
+            scrollHorizontalProperty.bind(mainScrollPane.hvalueProperty());
+            scrollVerticalProperty.bind(mainScrollPane.vvalueProperty());
             windowLayout.getChildren().addAll(windowTitleLayout,
-                                              contentLayout);
+                                              mainScrollPane);
             windowTitleLayout.getChildren().addAll(titleLayout,
                                                    closeButtonLayout);
             windowTitle = new Label();
@@ -502,6 +508,14 @@ public class WindowManagerService
             } else {
                 setTitle(rawProperty);
             }
+            rawProperty = StringUtils.trimToNull(properties.getProperty(windowHorizontalScrollProp));
+            if(rawProperty != null) {
+                setHorizontalScroll(Double.parseDouble(rawProperty));
+            }
+            rawProperty = StringUtils.trimToNull(properties.getProperty(windowVerticalScrollProp));
+            if(rawProperty != null) {
+                setVerticalScroll(Double.parseDouble(rawProperty));
+            }
         }
         /**
          * Set up the window listeners for the new window.
@@ -553,13 +567,15 @@ public class WindowManagerService
                 properties.setProperty(windowResizableProp,
                                        String.valueOf(newValue));
             });
-            scrollLeftProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowScrollLeftProp,
+            scrollVerticalProperty.addListener((observableValue,oldValue,newValue) -> {
+                properties.setProperty(windowVerticalScrollProp,
                                        String.valueOf(newValue));
+                getCurrentUserRegistry().updateDisplayLayout();
             });
-            scrollTopProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowScrollTopProp,
+            scrollHorizontalProperty.addListener((observableValue,oldValue,newValue) -> {
+                properties.setProperty(windowHorizontalScrollProp,
                                        String.valueOf(newValue));
+                getCurrentUserRegistry().updateDisplayLayout();
             });
             viewOrderProperty.addListener((observableValue,oldValue,newValue) -> {
                 properties.setProperty(windowViewOrderProp,
@@ -759,7 +775,7 @@ public class WindowManagerService
          */
         private double getScrollLeft()
         {
-            return scrollLeftProperty.get();
+            return scrollVerticalProperty.get();
         }
         /**
          * Set the window modality value.
@@ -780,22 +796,22 @@ public class WindowManagerService
             maximizedProperty.set(inMaximized);
         }
         /**
-         * Set the window scroll left value.
+         * Set the window vertical scroll value.
          *
-         * @param inScrollLeft a <code>double</code> value
+         * @param inVerticalScrollValue a <code>double</code> value
          */
-        private void setScrollLeft(double inScrollLeft)
+        private void setVerticalScroll(double inVerticalScrollValue)
         {
-            scrollLeftProperty.set(inScrollLeft);
+            Platform.runLater(() -> mainScrollPane.vvalueProperty().set(inVerticalScrollValue));
         }
         /**
-         * Set the window scroll top value.
+         * Set the window horizontal scroll value.
          *
-         * @param inScrollTop a <code>double</code> value
+         * @param inHorizontalScrollValue a <code>double</code> value
          */
-        private void setScrollTop(double inScrollTop)
+        private void setHorizontalScroll(double inHorizontalScrollValue)
         {
-            scrollTopProperty.set(inScrollTop);
+            Platform.runLater(() -> mainScrollPane.hvalueProperty().set(inHorizontalScrollValue));
         }
         /**
          * Set the window X position value.
@@ -926,11 +942,11 @@ public class WindowManagerService
         /**
          * holds the window scroll left property
          */
-        private final DoubleProperty scrollLeftProperty = new SimpleDoubleProperty();
+        private final DoubleProperty scrollVerticalProperty = new SimpleDoubleProperty();
         /**
          * holds the window scroll top property
          */
-        private final DoubleProperty scrollTopProperty = new SimpleDoubleProperty();
+        private final DoubleProperty scrollHorizontalProperty = new SimpleDoubleProperty();
         /**
          * holds the window modality property
          */
@@ -946,31 +962,35 @@ public class WindowManagerService
         /**
          * holds the overall main window layout
          */
-        private VBox windowLayout;
+        private final VBox windowLayout;
         /**
          * holds the layout for the entire title bar
          */
-        private HBox windowTitleLayout;
+        private final HBox windowTitleLayout;
         /**
          * holds the layout for the window title
          */
-        private HBox titleLayout;
+        private final HBox titleLayout;
         /**
          * holds the layout for the close button
          */
-        private HBox closeButtonLayout;
+        private final HBox closeButtonLayout;
         /**
          * holds the layout for the window content
          */
-        private VBox contentLayout;
+        private final VBox contentLayout;
         /**
          * holds the window title node
          */
-        private Label windowTitle;
+        private final Label windowTitle;
         /**
          * holds the window close widget
          */
-        private Label closeLabel;
+        private final Label closeLabel;
+        /**
+         * provides default scrollbars for windows
+         */
+        private final ScrollPane mainScrollPane;
     }
     /**
      * Provides a registry of all windows.
@@ -1369,13 +1389,13 @@ public class WindowManagerService
      */
     private static final String windowResizableProp = propId + "_resizable";
     /**
-     * window scroll left key name
+     * window vertical scroll key name
      */
-    private static final String windowScrollLeftProp = propId + "_scrollLeft";
+    private static final String windowVerticalScrollProp = propId + "_scrollV";
     /**
-     * window scroll top key name
+     * window horizontal scroll key name
      */
-    private static final String windowScrollTopProp = propId + "_scrollTop";
+    private static final String windowHorizontalScrollProp = propId + "_scrollH";
     /**
      * web message service value
      */
