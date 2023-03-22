@@ -83,6 +83,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -102,10 +103,10 @@ public class FixSessionView
         implements ContentView,BrokerStatusListener
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getNode()
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
     @Override
-    public Node getNode()
+    public Region getMainLayout()
     {
         return rootLayout;
     }
@@ -119,7 +120,28 @@ public class FixSessionView
                                "{} receiveBrokerStatus: {}",
                                PlatformServices.getServiceName(getClass()),
                                inActiveFixSession);
-        updateSessions();
+        String fixSessionName = inActiveFixSession.getFixSession().getName();
+        DisplayFixSession fixSessionToUpdate = null;
+        for(DisplayFixSession fixSession : fixSessionsTable.getItems()) {
+            if(fixSession.nameProperty().get().equals(fixSessionName)) {
+                fixSessionToUpdate = fixSession;
+                break;
+            }
+        }
+        if(fixSessionToUpdate != null) {
+            final DisplayFixSession displayFixSession = fixSessionToUpdate;
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run()
+                {
+                    displayFixSession.statusProperty().set(inActiveFixSession.getStatus());
+                    displayFixSession.senderSeqNumProperty().set((inActiveFixSession.getSenderSequenceNumber()));
+                    displayFixSession.targetSeqNumProperty().set(inActiveFixSession.getTargetSequenceNumber());
+                }}
+            );
+        } else {
+            updateSessions();
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose()
@@ -167,6 +189,8 @@ public class FixSessionView
         });
         buttonLayout.getChildren().add(addFixSessionButton);
         initializeTable();
+        fixSessionsTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         rootLayout.getChildren().addAll(fixSessionsTable,
                                         buttonLayout);
         updateSessions();
@@ -174,11 +198,11 @@ public class FixSessionView
     /**
      * Create a new FixSessionView instance.
      *
-     * @param inParent a <code>Node</code> value
+     * @param inParent a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public FixSessionView(Node inParent,
+    public FixSessionView(Region inParent,
                           NewWindowEvent inEvent,
                           Properties inProperties)
     {
@@ -206,7 +230,7 @@ public class FixSessionView
                     for(MenuItem contextMenuItem : fixSessionsTable.getContextMenu().getItems()) {
                         contextMenuItem.setDisable(true);
                     }
-                    switch(inNewValue.getStatus()) {
+                    switch(inNewValue.statusProperty().get()) {
                         case AFFINITY_MISMATCH:
                         case BACKUP:
                         case DELETED:
@@ -234,6 +258,7 @@ public class FixSessionView
                 }}
             );
         });
+        fixSessionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
     /**
      * Update the sessions displayed in the table.
@@ -309,7 +334,7 @@ public class FixSessionView
                                           SessionUser.getCurrent(),
                                           inTitle,
                                           inSelectedItem);
-                    inAction.accept(inSelectedItem.getName());
+                    inAction.accept(inSelectedItem.nameProperty().get());
                     SLF4JLoggerProxy.info(FixSessionView.this,
                                           "{} on {} succeeded",
                                           inTitle,
@@ -350,7 +375,7 @@ public class FixSessionView
             }
             performSessionAction(selectedItem,
                                  "Enable Session",
-                                 "Enable " + selectedItem.getName(),
+                                 "Enable " + selectedItem.nameProperty().get(),
                                  fixAdminClient::enableSession);
         });
         disableSessionContextMenuItem = new MenuItem("Disable");
@@ -361,7 +386,7 @@ public class FixSessionView
             }
             performSessionAction(selectedItem,
                                  "Disable Session",
-                                 "Disable " + selectedItem.getName(),
+                                 "Disable " + selectedItem.nameProperty().get(),
                                  fixAdminClient::disableSession);
         });
         startSessionContextMenuItem = new MenuItem("Start");
@@ -372,7 +397,7 @@ public class FixSessionView
             }
             performSessionAction(selectedItem,
                                  "Start Session",
-                                 "Start " + selectedItem.getName(),
+                                 "Start " + selectedItem.nameProperty().get(),
                                  fixAdminClient::startSession);
         });
         stopSessionContextMenuItem = new MenuItem("Stop");
@@ -383,7 +408,7 @@ public class FixSessionView
             }
             performSessionAction(selectedItem,
                                  "Stop Session",
-                                 "Stop " + selectedItem.getName(),
+                                 "Stop " + selectedItem.nameProperty().get(),
                                  fixAdminClient::stopSession);
         });
         editSessionContextMenuItem = new MenuItem("Edit");
@@ -403,7 +428,7 @@ public class FixSessionView
             }
             performSessionAction(selectedItem,
                                  "Delete Session",
-                                 "Delete " + selectedItem.getName(),
+                                 "Delete " + selectedItem.nameProperty().get(),
                                  fixAdminClient::deleteSession);
         });
         sequenceSessionContextMenuItem = new MenuItem("Update Sequence Numbers");
@@ -450,7 +475,7 @@ public class FixSessionView
     {
         final String acceptorString = "Acceptor";
         final String initiatorString = "Initiator";
-        final String incomingFixSessionName = inFixSession.getSource().getFixSession().getName();
+        final String incomingFixSessionName = inFixSession.nameProperty().get();
         Wizard wizard = new Wizard(PhotonApp.getPrimaryStage());
         wizard.setTitle((inIsNew ? "Add" : "Edit") + " Session");
         final ComboBox<String> connectionTypeComboBox = new ComboBox<>();
@@ -488,8 +513,8 @@ public class FixSessionView
             public void onEnteringPage(Wizard inWizard)
             {
                 super.onEnteringPage(inWizard);
-                connectionTypeComboBox.setValue(inIsNew ? "Initiator" : inFixSession.getSource().getFixSession().isAcceptor() ? acceptorString:initiatorString);
-                affinityTextField.setText(inIsNew ? "1" : String.valueOf(inFixSession.getSource().getFixSession().getAffinity()));
+                connectionTypeComboBox.setValue(inIsNew ? "Initiator" : inFixSession.sourceProperty().get().getFixSession().isAcceptor() ? acceptorString:initiatorString);
+                affinityTextField.setText(inIsNew ? "1" : String.valueOf(inFixSession.sourceProperty().get().getFixSession().getAffinity()));
                 inWizard.invalidProperty().bind(sessionTypeValid);
             }
             /* (non-Javadoc)
@@ -498,8 +523,8 @@ public class FixSessionView
             @Override
             public void onExitingPage(Wizard inWizard)
             {
-                inFixSession.getSource().getFixSession().getMutableView().setIsAcceptor(connectionTypeComboBox.getValue().equals(acceptorString));
-                inFixSession.getSource().getFixSession().getMutableView().setAffinity(Integer.parseInt(affinityTextField.getText()));
+                inFixSession.sourceProperty().get().getFixSession().getMutableView().setIsAcceptor(connectionTypeComboBox.getValue().equals(acceptorString));
+                inFixSession.sourceProperty().get().getFixSession().getMutableView().setAffinity(Integer.parseInt(affinityTextField.getText()));
                 super.onExitingPage(inWizard);
             }
         };
@@ -533,7 +558,7 @@ public class FixSessionView
         Button testConnectionButton = new Button("Test Connection");
         Label testConnectionLabel = new Label();
         networkInvalid.addListener((observable,oldValue,newValue) -> {
-            if(inFixSession.getSource().getFixSession().isAcceptor()) {
+            if(inFixSession.sourceProperty().get().getFixSession().isAcceptor()) {
                 testConnectionButton.setDisable(true);
                 testConnectionButton.setVisible(false);
                 testConnectionLabel.setDisable(true);
@@ -575,9 +600,9 @@ public class FixSessionView
             public void onEnteringPage(Wizard inWizard)
             {
                 super.onEnteringPage(inWizard);
-                hostnameTextField.setText(inFixSession.getSource().getFixSession().getHost());
-                portTextField.setText(String.valueOf(inFixSession.getSource().getFixSession().getPort()));
-                if(inFixSession.getSource().getFixSession().isAcceptor()) {
+                hostnameTextField.setText(inFixSession.sourceProperty().get().getFixSession().getHost());
+                portTextField.setText(String.valueOf(inFixSession.sourceProperty().get().getFixSession().getPort()));
+                if(inFixSession.sourceProperty().get().getFixSession().isAcceptor()) {
                     hostnameTextField.setTooltip(new Tooltip("The acceptor hostname is determined by the server and is not modifiable"));
                     hostnameTextField.setDisable(true);
                     portTextField.setTooltip(new Tooltip("The acceptor port is determined by the server cluster framework and is not modifiable"));
@@ -604,11 +629,11 @@ public class FixSessionView
             @Override
             public void onExitingPage(Wizard inWizard)
             {
-                if(inFixSession.getSource().getFixSession().isAcceptor()) {
+                if(inFixSession.sourceProperty().get().getFixSession().isAcceptor()) {
                     
                 } else {
-                    inFixSession.getSource().getFixSession().getMutableView().setHost(hostnameTextField.getText());
-                    inFixSession.getSource().getFixSession().getMutableView().setPort(Integer.parseInt(portTextField.getText()));
+                    inFixSession.sourceProperty().get().getFixSession().getMutableView().setHost(hostnameTextField.getText());
+                    inFixSession.sourceProperty().get().getFixSession().getMutableView().setPort(Integer.parseInt(portTextField.getText()));
                 }
                 super.onExitingPage(inWizard);
             }
@@ -672,9 +697,9 @@ public class FixSessionView
                                               "{} creating {}",
                                               SessionUser.getCurrent(),
                                               inFixSession);
-                        fixAdminClient.createFixSession(inFixSession.getSource().getFixSession());
+                        fixAdminClient.createFixSession(inFixSession.sourceProperty().get().getFixSession());
                         webMessageService.post(new NotificationEvent("Create FIX Session",
-                                                                     "Create FIX Session '" + inFixSession.getName() + "' succeeded",
+                                                                     "Create FIX Session '" + inFixSession.nameProperty().get() + "' succeeded",
                                                                      AlertType.INFORMATION));
                     } else {
                         SLF4JLoggerProxy.info(this,
@@ -683,9 +708,9 @@ public class FixSessionView
                                               incomingFixSessionName,
                                               inFixSession);
                         fixAdminClient.updateFixSession(incomingFixSessionName,
-                                                        inFixSession.getSource().getFixSession());
+                                                        inFixSession.sourceProperty().get().getFixSession());
                         webMessageService.post(new NotificationEvent("Update FIX Session",
-                                                                     "Update FIX Session '" + inFixSession.getName() + "' succeeded",
+                                                                     "Update FIX Session '" + inFixSession.nameProperty().get() + "' succeeded",
                                                                      AlertType.INFORMATION));
                     }
                 } catch (Exception e) {
@@ -696,7 +721,7 @@ public class FixSessionView
                                           inFixSession,
                                           message);
                     webMessageService.post(new NotificationEvent("Create or Update FIX Session",
-                                                                 "Create or update FIX sesssion '" + inFixSession.getName() + " 'failed: " + message,
+                                                                 "Create or update FIX sesssion '" + inFixSession.nameProperty().get() + " 'failed: " + message,
                                                                  AlertType.ERROR));
                 }
             }
@@ -945,13 +970,13 @@ public class FixSessionView
             public void onEnteringPage(Wizard inWizard)
             {
                 super.onEnteringPage(inWizard);
-                sessionNameTextField.setText(inFixSession.getSource().getFixSession().getName());
-                sessionDescriptionTextField.setText(inFixSession.getSource().getFixSession().getDescription());
-                sessionBrokerIdTextField.setText(inFixSession.getSource().getFixSession().getBrokerId());
-                if(inFixSession.getSource().getFixSession().getSessionId() != null) {
-                    quickfix.SessionID sessionId = new quickfix.SessionID(inFixSession.getSource().getFixSession().getSessionId());
+                sessionNameTextField.setText(inFixSession.sourceProperty().get().getFixSession().getName());
+                sessionDescriptionTextField.setText(inFixSession.sourceProperty().get().getFixSession().getDescription());
+                sessionBrokerIdTextField.setText(inFixSession.sourceProperty().get().getFixSession().getBrokerId());
+                if(inFixSession.sourceProperty().get().getFixSession().getSessionId() != null) {
+                    quickfix.SessionID sessionId = new quickfix.SessionID(inFixSession.sourceProperty().get().getFixSession().getSessionId());
                     if(sessionId.isFIXT()) {
-                        String defaultApplVerId = inFixSession.getSource().getFixSession().getSessionSettings().get(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID);
+                        String defaultApplVerId = inFixSession.sourceProperty().get().getFixSession().getSessionSettings().get(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID);
                         if(defaultApplVerId != null) {
                             fixVersionComboBox.setValue(FIXVersion.getFIXVersion(new quickfix.field.ApplVerID(defaultApplVerId)));
                         }
@@ -971,15 +996,15 @@ public class FixSessionView
             @Override
             public void onExitingPage(Wizard inWizard)
             {
-                inFixSession.getSource().getFixSession().getMutableView().setName(sessionNameTextField.getText());
-                inFixSession.getSource().getFixSession().getMutableView().setDescription(sessionDescriptionTextField.getText());
-                inFixSession.getSource().getFixSession().getMutableView().setBrokerId(sessionBrokerIdTextField.getText());
+                inFixSession.sourceProperty().get().getFixSession().getMutableView().setName(sessionNameTextField.getText());
+                inFixSession.sourceProperty().get().getFixSession().getMutableView().setDescription(sessionDescriptionTextField.getText());
+                inFixSession.sourceProperty().get().getFixSession().getMutableView().setBrokerId(sessionBrokerIdTextField.getText());
                 String fixVersionValue = fixVersionComboBox.getValue() == null ? null : String.valueOf(fixVersionComboBox.getValue());
                 if(fixVersionValue != null) {
                     FIXVersion fixVersion = FIXVersion.getFIXVersion(fixVersionValue);
                     if(fixVersion.isFixT()) {
                         fixVersionValue = fixVersion.getApplicationVersion();
-                        inFixSession.getSource().getFixSession().getSessionSettings().put(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID,
+                        inFixSession.sourceProperty().get().getFixSession().getSessionSettings().put(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID,
                                                                                           fixVersionValue);
                         DecoratedDescriptor defaultApplVerId = sortedDescriptors.get(quickfix.Session.SETTING_DEFAULT_APPL_VER_ID);
                         defaultApplVerId.setValue(fixVersionValue);
@@ -988,7 +1013,7 @@ public class FixSessionView
                     quickfix.SessionID sessionId = new quickfix.SessionID(fixVersionValue,
                                                                           senderCompIdTextField.getText(),
                                                                           targetCompIdTextField.getText());
-                    inFixSession.getSource().getFixSession().getMutableView().setSessionId(sessionId.toString());
+                    inFixSession.sourceProperty().get().getFixSession().getMutableView().setSessionId(sessionId.toString());
                 }
             }
         };
@@ -1022,7 +1047,7 @@ public class FixSessionView
     {
         Dialog<Pair<Integer,Integer>> dialog = new Dialog<>();
         dialog.setTitle("Update Sequence Numbers");
-        dialog.setHeaderText("Update Session Sequence Numbers for " + inSession.getName());
+        dialog.setHeaderText("Update Session Sequence Numbers for " + inSession.nameProperty().get());
         ButtonType updateButtonType = new ButtonType("Update",
                                                      ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(updateButtonType,
@@ -1032,9 +1057,9 @@ public class FixSessionView
         grid.setVgap(10);
         grid.setPadding(new Insets(20,150,10,10));
         ValidatingTextField senderSequenceNumberTextField = new ValidatingTextField(input -> input.matches("^\\d+$"));
-        senderSequenceNumberTextField.textProperty().set(String.valueOf(inSession.getSenderSeqNum()));
+        senderSequenceNumberTextField.textProperty().set(String.valueOf(inSession.senderSeqNumProperty().get()));
         ValidatingTextField targetSequenceNumberTextField = new ValidatingTextField(input -> input.matches("^\\d+$"));
-        targetSequenceNumberTextField.textProperty().set(String.valueOf(inSession.getTargetSeqNum()));
+        targetSequenceNumberTextField.textProperty().set(String.valueOf(inSession.targetSeqNumProperty().get()));
         grid.add(new Label("Sender Sequence Number:"),0,0);
         grid.add(senderSequenceNumberTextField,1,0);
         grid.add(new Label("Target Sequence Number:"),0,1);
@@ -1092,12 +1117,12 @@ public class FixSessionView
                                       inSession,
                                       newSenderSequenceNumber,
                                       newTargetSequenceNumber);
-                fixAdminClient.updateSequenceNumbers(inSession.getName(),
+                fixAdminClient.updateSequenceNumbers(inSession.nameProperty().get(),
                                                      newSenderSequenceNumber,
                                                      newTargetSequenceNumber);
                 updateSessions();
                 webMessageService.post(new NotificationEvent("Update Sequence Numbers",
-                                                             "Update sequence numbers on " + inSession.getName() + " succeeded",
+                                                             "Update sequence numbers on " + inSession.nameProperty().get() + " succeeded",
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
                 String message = PlatformServices.getMessage(e);
@@ -1107,7 +1132,7 @@ public class FixSessionView
                                       inSession,
                                       message);
                 webMessageService.post(new NotificationEvent("Update Sequence Numbers",
-                                                             "Update sequence numbers on " + inSession.getName() + " failed: " + message,
+                                                             "Update sequence numbers on " + inSession.nameProperty().get() + " failed: " + message,
                                                              AlertType.ERROR));
             }
         });
@@ -1280,7 +1305,7 @@ public class FixSessionView
         @Override
         protected void doOnEnteringPage(Wizard inWizard)
         {
-            Map<String,String> settings = fixSession.getSource().getFixSession().getSessionSettings();
+            Map<String,String> settings = fixSession.sourceProperty().get().getFixSession().getSessionSettings();
             startTimeField.setText(settings.containsKey(quickfix.Session.SETTING_START_TIME)?settings.get(quickfix.Session.SETTING_START_TIME):"00:00:00");
             endTimeField.setText(settings.containsKey(quickfix.Session.SETTING_END_TIME)?settings.get(quickfix.Session.SETTING_END_TIME):"00:00:00");
             startDayComboBox.setValue(settings.containsKey(quickfix.Session.SETTING_START_DAY)?FixSessionDay.valueOf(settings.get(quickfix.Session.SETTING_START_DAY)):FixSessionDay.Monday);
@@ -1312,7 +1337,7 @@ public class FixSessionView
         @Override
         protected void doOnExitingPage(Wizard inWizard)
         {
-            Map<String,String> settings = fixSession.getSource().getFixSession().getSessionSettings();
+            Map<String,String> settings = fixSession.sourceProperty().get().getFixSession().getSessionSettings();
             String value = String.valueOf(sessionTypeComboBox.getValue());
             switch(value) {
                 case CONTINUOUS:
@@ -1578,7 +1603,7 @@ public class FixSessionView
         protected void doOnEnteringPage(Wizard inWizard)
         {
             descriptorGrid.getItems().clear();
-            Map<String,String> sessionSettings = fixSession.getSource().getFixSession().getSessionSettings();
+            Map<String,String> sessionSettings = fixSession.sourceProperty().get().getFixSession().getSessionSettings();
             Collection<FixSessionAttributeDescriptor> attributeDescriptors = fixAdminClient.getFixSessionAttributeDescriptors();
             for(FixSessionAttributeDescriptor descriptor : attributeDescriptors) {
                 DecoratedDescriptor newItem = new DecoratedDescriptor(descriptor);
@@ -1593,7 +1618,7 @@ public class FixSessionView
         @Override
         protected void doOnExitingPage(Wizard inWizard)
         {
-            Map<String,String> settings = fixSession.getSource().getFixSession().getSessionSettings();
+            Map<String,String> settings = fixSession.sourceProperty().get().getFixSession().getSessionSettings();
             for(DecoratedDescriptor decoratedDescriptor : descriptorGrid.getItems()) {
                 String name = decoratedDescriptor.getName();
                 String value = StringUtils.trimToNull(decoratedDescriptor.valueProperty().get());

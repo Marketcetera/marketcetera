@@ -11,7 +11,7 @@ import org.marketcetera.ui.service.WebMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import javafx.scene.Node;
+import javafx.scene.layout.Region;
 
 /* $License$ */
 
@@ -37,9 +37,9 @@ public abstract class AbstractContentView
     /**
      * Get the parentWindow value.
      *
-     * @return a <code>Node</code> value
+     * @return a <code>Region</code> value
      */
-    protected Node getParentWindow()
+    protected Region getParentWindow()
     {
         return parentWindow;
     }
@@ -55,11 +55,11 @@ public abstract class AbstractContentView
     /**
      * Create a new AbstractContentView instance.
      *
-     * @param inParentWindow a <code>Node</code> value
+     * @param inParentWindow a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractContentView(Node inParentWindow,
+    protected AbstractContentView(Region inParentWindow,
                                   NewWindowEvent inEvent,
                                   Properties inViewProperties)
     {
@@ -104,7 +104,7 @@ public abstract class AbstractContentView
     /**
      * parent window that owns the view
      */
-    private final Node parentWindow;
+    private final Region parentWindow;
     /**
      * properties used to seed the view
      */

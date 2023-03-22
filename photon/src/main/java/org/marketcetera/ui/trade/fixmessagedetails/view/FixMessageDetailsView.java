@@ -18,12 +18,12 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import quickfix.InvalidMessage;
 
@@ -123,21 +123,21 @@ public class FixMessageDetailsView
         return NAME;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getNode()
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
     @Override
-    public Node getNode()
+    public Region getMainLayout()
     {
         return mainLayout;
     }
     /**
      * Create a new FixMessageDetailsView instance.
      *
-     * @param inParentWindow a <code>Node</code> value
+     * @param inParentWindow a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public FixMessageDetailsView(Node inParent,
+    public FixMessageDetailsView(Region inParent,
                                  NewWindowEvent inEvent,
                                  Properties inViewProperties)
     {

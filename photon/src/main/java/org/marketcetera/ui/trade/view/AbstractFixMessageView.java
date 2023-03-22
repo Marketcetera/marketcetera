@@ -55,6 +55,7 @@ import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 /* $License$ */
@@ -110,10 +111,10 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         updateReports();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getNode()
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
     @Override
-    public Node getNode()
+    public Region getMainLayout()
     {
         return mainLayout;
     }
@@ -485,11 +486,11 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
     /**
      * Create a new AbstractFixMessageView instance.
      *
-     * @param inParentWindow a <code>Node</code> value
+     * @param inParentWindow a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractFixMessageView(Node inParentWindow,
+    protected AbstractFixMessageView(Region inParentWindow,
                                      NewWindowEvent inEvent,
                                      Properties inViewProperties)
     {

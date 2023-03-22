@@ -5,6 +5,14 @@ import java.util.Objects;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSessionStatus;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 /* $License$ */
 
 /**
@@ -23,177 +31,96 @@ public class DisplayFixSession
      */
     public DisplayFixSession(ActiveFixSession inFixSession)
     {
-        name = inFixSession.getFixSession().getName();
-        description = inFixSession.getFixSession().getDescription();
-        sessionId = inFixSession.getFixSession().getSessionId();
-        brokerId = inFixSession.getFixSession().getBrokerId();
-        hostId = inFixSession.getClusterData().toString();
-        status = inFixSession.getStatus();
-        targetSeqNum = inFixSession.getTargetSequenceNumber();
-        senderSeqNum = inFixSession.getSenderSequenceNumber();
-        source = inFixSession;
+        nameProperty.set(inFixSession.getFixSession().getName());
+        descriptionProperty.set(inFixSession.getFixSession().getDescription());
+        sessionIdProperty.set(inFixSession.getFixSession().getSessionId());
+        brokerIdProperty.set(inFixSession.getFixSession().getBrokerId());
+        hostIdProperty.set(inFixSession.getClusterData().toString());
+        statusProperty.set(inFixSession.getStatus());
+        targetSeqNumProperty.set(inFixSession.getTargetSequenceNumber());
+        senderSeqNumProperty.set(inFixSession.getSenderSequenceNumber());
+        sourceProperty.set(inFixSession);
     }
     /**
      * Get the source value.
      *
-     * @return an <code>ActiveFixSession</code> value
+     * @return a <code>ReadOnlyObjectProperty&lt;ActiveFixSession&gt;</code> value
      */
-    public ActiveFixSession getSource()
+    public ReadOnlyObjectProperty<ActiveFixSession> sourceProperty()
     {
-        return source;
-    }
-    /**
-     * Sets the source value.
-     *
-     * @param inSource an <code>ActiveFixSession</code> value
-     */
-    public void setSource(ActiveFixSession inSource)
-    {
-        source = inSource;
+        return sourceProperty;
     }
     /**
      * Get the name value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>StringProperty</code> value
      */
-    public String getName()
+    public StringProperty nameProperty()
     {
-        return name;
-    }
-    /**
-     * Sets the name value.
-     *
-     * @param inName a <code>String</code> value
-     */
-    public void setName(String inName)
-    {
-        name = inName;
+        return nameProperty;
     }
     /**
      * Get the description value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>StringProperty</code> value
      */
-    public String getDescription()
+    public StringProperty descriptionProperty()
     {
-        return description;
-    }
-    /**
-     * Sets the description value.
-     *
-     * @param inDescription a <code>String</code> value
-     */
-    public void setDescription(String inDescription)
-    {
-        description = inDescription;
+        return descriptionProperty;
     }
     /**
      * Get the sessionId value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>StringProperty</code> value
      */
-    public String getSessionId()
+    public StringProperty sessionIdProperty()
     {
-        return sessionId;
-    }
-    /**
-     * Sets the sessionId value.
-     *
-     * @param inSessionId a <code>String</code> value
-     */
-    public void setSessionId(String inSessionId)
-    {
-        sessionId = inSessionId;
+        return sessionIdProperty;
     }
     /**
      * Get the brokerId value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>StringProperty</code> value
      */
-    public String getBrokerId()
+    public StringProperty brokerIdProperty()
     {
-        return brokerId;
-    }
-    /**
-     * Sets the brokerId value.
-     *
-     * @param inBrokerId a <code>String</code> value
-     */
-    public void setBrokerId(String inBrokerId)
-    {
-        brokerId = inBrokerId;
+        return brokerIdProperty;
     }
     /**
      * Get the hostId value.
      *
-     * @return a <code>String</code> value
+     * @return a <code>StringProperty</code> value
      */
-    public String getHostId()
+    public StringProperty hostIdProperty()
     {
-        return hostId;
-    }
-    /**
-     * Sets the hostId value.
-     *
-     * @param inHostId a <code>String</code> value
-     */
-    public void setHostId(String inHostId)
-    {
-        hostId = inHostId;
+        return hostIdProperty;
     }
     /**
      * Get the status value.
      *
-     * @return a <code>FixSessionStatus</code> value
+     * @return an <code>ObjectProperty&lt;FixSessionStatus&gt;</code> value
      */
-    public FixSessionStatus getStatus()
+    public ObjectProperty<FixSessionStatus> statusProperty()
     {
-        return status;
-    }
-    /**
-     * Sets the status value.
-     *
-     * @param inStatus a <code>FixSessionStatus</code> value
-     */
-    public void setStatus(FixSessionStatus inStatus)
-    {
-        status = inStatus;
+        return statusProperty;
     }
     /**
      * Get the targetSeqNum value.
      *
-     * @return an <code>int</code> value
+     * @return an <code>IntegerProperty</code> value
      */
-    public int getTargetSeqNum()
+    public IntegerProperty targetSeqNumProperty()
     {
-        return targetSeqNum;
-    }
-    /**
-     * Sets the targetSeqNum value.
-     *
-     * @param inTargetSeqNum an <code>int</code> value
-     */
-    public void setTargetSeqNum(int inTargetSeqNum)
-    {
-        targetSeqNum = inTargetSeqNum;
+        return targetSeqNumProperty;
     }
     /**
      * Get the senderSeqNum value.
      *
-     * @return an <code>int</code> value
+     * @return an <code>IntegerProperty</code> value
      */
-    public int getSenderSeqNum()
+    public IntegerProperty senderSeqNumProperty()
     {
-        return senderSeqNum;
-    }
-    /**
-     * Sets the senderSeqNum value.
-     *
-     * @param inSenderSeqNum an <code>int</code> value
-     */
-    public void setSenderSeqNum(int inSenderSeqNum)
-    {
-        senderSeqNum = inSenderSeqNum;
+        return senderSeqNumProperty;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -201,14 +128,14 @@ public class DisplayFixSession
     @Override
     public int hashCode()
     {
-        return Objects.hash(brokerId,
-                            description,
-                            hostId,
-                            name,
-                            senderSeqNum,
-                            sessionId,
-                            status,
-                            targetSeqNum);
+        return Objects.hash(brokerIdProperty.get(),
+                            descriptionProperty.get(),
+                            hostIdProperty.get(),
+                            nameProperty.get(),
+                            senderSeqNumProperty.get(),
+                            sessionIdProperty.get(),
+                            statusProperty.get(),
+                            targetSeqNumProperty.get());
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -226,17 +153,17 @@ public class DisplayFixSession
             return false;
         }
         DisplayFixSession other = (DisplayFixSession) obj;
-        return Objects.equals(brokerId,
-                              other.brokerId)
-                && Objects.equals(description,
-                                  other.description)
-                && Objects.equals(hostId,
-                                  other.hostId)
-                && Objects.equals(name,
-                                  other.name)
-                && senderSeqNum == other.senderSeqNum && Objects.equals(sessionId,
-                                                                        other.sessionId)
-                && status == other.status && targetSeqNum == other.targetSeqNum;
+        return Objects.equals(brokerIdProperty.get(),
+                              other.brokerIdProperty.get())
+                && Objects.equals(descriptionProperty.get(),
+                                  other.descriptionProperty.get())
+                && Objects.equals(hostIdProperty.get(),
+                                  other.hostIdProperty.get())
+                && Objects.equals(nameProperty.get(),
+                                  other.nameProperty.get())
+                && senderSeqNumProperty.get() == other.senderSeqNumProperty.get() && Objects.equals(sessionIdProperty.get(),
+                                                                        other.sessionIdProperty.get())
+                && statusProperty.get() == other.statusProperty.get() && targetSeqNumProperty.get() == other.targetSeqNumProperty.get();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -245,19 +172,46 @@ public class DisplayFixSession
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("DisplayFixSession [name=").append(name).append(", description=").append(description)
-                .append(", sessionId=").append(sessionId).append(", brokerId=").append(brokerId).append(", hostId=")
-                .append(hostId).append(", status=").append(status).append(", targetSeqNum=").append(targetSeqNum)
-                .append(", senderSeqNum=").append(senderSeqNum).append("]");
+        builder.append("DisplayFixSession [name=").append(nameProperty.get()).append(", description=").append(descriptionProperty.get())
+                .append(", sessionId=").append(sessionIdProperty.get()).append(", brokerId=").append(brokerIdProperty.get()).append(", hostId=")
+                .append(hostIdProperty.get()).append(", status=").append(statusProperty.get()).append(", targetSeqNum=").append(targetSeqNumProperty.get())
+                .append(", senderSeqNum=").append(senderSeqNumProperty.get()).append("]");
         return builder.toString();
     }
-    private String name;
-    private String description;
-    private String sessionId;
-    private String brokerId;
-    private String hostId;
-    private FixSessionStatus status;
-    private int targetSeqNum;
-    private int senderSeqNum;
-    private ActiveFixSession source;
+    /**
+     * holds the name of the FIX session
+     */
+    private final StringProperty nameProperty = new SimpleStringProperty();
+    /**
+     * holds the optional description of the FIX session
+     */
+    private final StringProperty descriptionProperty = new SimpleStringProperty();
+    /**
+     * holds the session id of the FIX session
+     */
+    private final StringProperty sessionIdProperty = new SimpleStringProperty();
+    /**
+     * holds the broker id of the FIX session
+     */
+    private final StringProperty brokerIdProperty = new SimpleStringProperty();
+    /**
+     * holds the host id of the FIX session
+     */
+    private final StringProperty hostIdProperty = new SimpleStringProperty();
+    /**
+     * holds the current session status
+     */
+    private final ObjectProperty<FixSessionStatus> statusProperty = new SimpleObjectProperty<>();
+    /**
+     * holds the current target sequence number
+     */
+    private final IntegerProperty targetSeqNumProperty = new SimpleIntegerProperty();
+    /**
+     * holds the current sender sequence number
+     */
+    private final IntegerProperty senderSeqNumProperty = new SimpleIntegerProperty();
+    /**
+     * holds the FIX session source object
+     */
+    private final ObjectProperty<ActiveFixSession> sourceProperty = new SimpleObjectProperty<>();
 }
