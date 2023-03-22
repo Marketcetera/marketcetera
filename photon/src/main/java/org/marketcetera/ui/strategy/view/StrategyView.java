@@ -61,7 +61,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -84,6 +83,7 @@ import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -233,10 +233,10 @@ public class StrategyView
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getNode()
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
     @Override
-    public Node getNode()
+    public Region getMainLayout()
     {
         return mainLayout;
     }
@@ -251,11 +251,11 @@ public class StrategyView
     /**
      * Create a new StrategyView instance.
      *
-     * @param inParent a <code>Node</code> value
+     * @param inParent a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public StrategyView(Node inParent,
+    public StrategyView(Region inParent,
                         NewWindowEvent inEvent,
                         Properties inProperties)
     {
@@ -387,7 +387,7 @@ public class StrategyView
                                                                                 owner.getName());
             strategyTable.getItems().add(newItem);
             try {
-                getNode().setCursor(Cursor.WAIT);
+                getMainLayout().setCursor(Cursor.WAIT);
                 // TODO transfer file - this will block? need to use a callback instead?
                 SimpleFileUploadRequest uploadRequest = new SimpleFileUploadRequest(name,
                                                                                     nonce,
@@ -453,7 +453,7 @@ public class StrategyView
                                                              "File '" + result.getAbsolutePath() + "' could not be read",
                                                              AlertType.WARNING));
             } finally {
-                getNode().setCursor(Cursor.DEFAULT);
+                getMainLayout().setCursor(Cursor.DEFAULT);
             }
         }
     }

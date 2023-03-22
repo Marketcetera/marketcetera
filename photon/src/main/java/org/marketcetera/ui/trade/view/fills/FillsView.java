@@ -11,7 +11,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javafx.scene.Node;
+import javafx.scene.layout.Region;
 
 /* $License$ */
 
@@ -30,11 +30,11 @@ public class FillsView
     /**
      * Create a new FillsView instance.
      *
-     * @param inParentWindow a <code>Node</code> value
+     * @param inParentWindow a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    public FillsView(Node inParentWindow,
+    public FillsView(Region inParentWindow,
                      NewWindowEvent inEvent,
                      Properties inViewProperties)
     {

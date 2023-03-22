@@ -141,7 +141,7 @@ public class WindowManagerService
         }
         windowRegistry.addWindow(newWindow);
         // set the content of the new window
-        newWindow.setRoot(contentView.getNode());
+        newWindow.setRoot(contentView.getMainLayout());
         windowRegistry.updateDisplayLayout();
         newWindow.show();
         windowRegistry.verifyWindowLocation(newWindow);
@@ -1142,7 +1142,7 @@ public class WindowManagerService
                                                                      restartWindowEvent,
                                                                      windowProperties);
                         newWindow.contentViewProperty.set(contentView);
-                        newWindow.setRoot(contentView.getNode());
+                        newWindow.setRoot(contentView.getMainLayout());
                         addWindow(newWindow);
                         newWindow.show();
                     } catch (ClassNotFoundException e) {

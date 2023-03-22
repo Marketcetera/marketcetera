@@ -1,6 +1,6 @@
 package org.marketcetera.ui.view;
 
-import javafx.scene.Node;
+import javafx.scene.layout.Region;
 
 /* $License$ */
 
@@ -16,9 +16,9 @@ public interface ContentView
     /**
      * Contains the root content of the view.
      *
-     * @return a <code>Node</code> value
+     * @return a <code>Region</code> value
      */
-    Node getNode();
+    Region getMainLayout();
     /**
      * Get the Vaadin name of the view.
      *

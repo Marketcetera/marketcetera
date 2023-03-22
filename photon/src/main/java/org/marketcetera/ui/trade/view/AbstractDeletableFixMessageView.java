@@ -8,7 +8,6 @@ import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar;
@@ -18,6 +17,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.Region;
 
 /* $License$ */
 
@@ -34,11 +34,11 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
     /**
      * Create a new AbstractDeletableFixMessageView instance.
      *
-     * @param inParentWindow a <code>Node</code> value
+     * @param inParentWindow a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
-    protected AbstractDeletableFixMessageView(Node inParentWindow,
+    protected AbstractDeletableFixMessageView(Region inParentWindow,
                                               NewWindowEvent inEvent,
                                               Properties inViewProperties)
     {

@@ -42,7 +42,6 @@ import com.google.common.collect.Maps;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -58,8 +57,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.WindowEvent;
 
 /* $License$ */
 
@@ -77,10 +76,10 @@ public class MarketDataListView
         implements ContentView
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getNode()
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
     @Override
-    public Node getNode()
+    public Region getMainLayout()
     {
         return rootLayout;
     }
@@ -146,11 +145,11 @@ public class MarketDataListView
     /**
      * Create a new MarketDataListView instance.
      *
-     * @param inParent a <code>Node</code> value
+     * @param inParent a <code>Region</code> value
      * @param inNewWindowEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
-    public MarketDataListView(Node inParent,
+    public MarketDataListView(Region inParent,
                               NewWindowEvent inEvent,
                               Properties inProperties)
     {
