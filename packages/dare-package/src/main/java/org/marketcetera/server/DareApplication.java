@@ -26,9 +26,7 @@ import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.client.rpc.server.TradeRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
-import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.rpc.ClusterRpcService;
-import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.XmlService;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.eventbus.server.EsperEngine;
@@ -257,16 +255,6 @@ public class DareApplication
     public quickfix.MessageFactory getMessageFactory()
     {
         return new quickfix.DefaultMessageFactory();
-    }
-    /**
-     * Get the cluster service bean.
-     *
-     * @return a <code>ClusterService</code> value
-     */
-    @Bean
-    public ClusterService getClusterService()
-    {
-        return new SimpleClusterService();
     }
     /**
      * Get the cluster data factory bean.
