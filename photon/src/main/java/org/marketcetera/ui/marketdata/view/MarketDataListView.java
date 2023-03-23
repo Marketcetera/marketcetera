@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -187,7 +188,8 @@ public class MarketDataListView
             MarketDataItem newItem = new MarketDataItem(instrument,
                                                         marketDataRequestId);
             marketDataTable.getItems().add(newItem);
-            MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols(symbol).withContent(Content.LATEST_TICK,Content.TOP_OF_BOOK,Content.MARKET_STAT).withRequestId(marketDataRequestId).create();
+            MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols(symbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
+                    .withContent(Content.LATEST_TICK,Content.TOP_OF_BOOK,Content.MARKET_STAT).withRequestId(marketDataRequestId).create();
             MarketDataRowListener rowListener = new MarketDataRowListener(newItem);
             symbolsByRequestId.put(marketDataRequestId,
                                    symbol);
