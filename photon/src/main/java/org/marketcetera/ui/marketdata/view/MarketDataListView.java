@@ -140,6 +140,7 @@ public class MarketDataListView
                event.consume(); 
             }
         });
+        restoreSymbols();
     }
     /**
      * Create a new MarketDataListView instance.
@@ -157,6 +158,21 @@ public class MarketDataListView
               inProperties);
     }
     /**
+     * Restore the symbol layout.
+     */
+    private void restoreSymbols()
+    {
+        Properties windowProperties = getViewProperties();
+        String symbolList = windowProperties.getProperty(symbolsKey);
+        if(symbolList != null) {
+            symbolList = symbolList.replaceAll("\\[|\\]","");
+            String[] symbols = symbolList.split(",");
+            for(String symbol : symbols) {
+                doMarketDataRequest(symbol);
+            }
+        }
+    }
+    /**
      * Update the view properties for this view.
      */
     private void updateViewProperties()
@@ -165,6 +181,37 @@ public class MarketDataListView
             getViewProperties().setProperty(symbolsKey,
                                             String.valueOf(symbolsByRequestId.values()));
         }
+    }
+    /**
+     * Perform the market data request for the given symbol.
+     *
+     * @param inSymbol a <code>String</code> value
+     */
+    private void doMarketDataRequest(String inSymbol)
+    {
+        if(inSymbol == null) {
+            return;
+        }
+        inSymbol = inSymbol.toUpperCase();
+        if(symbolsByRequestId.values().contains(inSymbol)) {
+            return;
+        }
+        Instrument instrument = tradeClient.resolveSymbol(inSymbol);
+        String marketDataRequestId = UUID.randomUUID().toString();
+        MarketDataItem newItem = new MarketDataItem(instrument,
+                                                    marketDataRequestId);
+        marketDataTable.getItems().add(newItem);
+        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols(inSymbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
+                .withContent(Content.LATEST_TICK,Content.TOP_OF_BOOK,Content.MARKET_STAT).withRequestId(marketDataRequestId).create();
+        MarketDataRowListener rowListener = new MarketDataRowListener(newItem);
+        symbolsByRequestId.put(marketDataRequestId,
+                               inSymbol);
+        SLF4JLoggerProxy.debug(this,
+                               "Submitting {}",
+                               request);
+        marketdataClient.request(request,
+                                 rowListener);
+        updateViewProperties();
     }
     /**
      * Initialize the Add Symbol controls.
@@ -184,29 +231,7 @@ public class MarketDataListView
         addSymbolButton.setOnAction(event -> {
             String symbol = StringUtils.trimToNull(addSymbolTextField.getText());
             addSymbolTextField.setText(null);
-            if(symbol == null) {
-                return;
-            }
-            symbol = symbol.toUpperCase();
-            if(symbolsByRequestId.values().contains(symbol)) {
-                return;
-            }
-            Instrument instrument = tradeClient.resolveSymbol(symbol);
-            String marketDataRequestId = UUID.randomUUID().toString();
-            MarketDataItem newItem = new MarketDataItem(instrument,
-                                                        marketDataRequestId);
-            marketDataTable.getItems().add(newItem);
-            MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols(symbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
-                    .withContent(Content.LATEST_TICK,Content.TOP_OF_BOOK,Content.MARKET_STAT).withRequestId(marketDataRequestId).create();
-            MarketDataRowListener rowListener = new MarketDataRowListener(newItem);
-            symbolsByRequestId.put(marketDataRequestId,
-                                   symbol);
-            SLF4JLoggerProxy.debug(this,
-                                   "Submitting {}",
-                                   request);
-            marketdataClient.request(request,
-                                     rowListener);
-            updateViewProperties();
+            doMarketDataRequest(symbol);
         });
         addSymbolLayout.setAlignment(Pos.CENTER_RIGHT);
         addSymbolLayout.getChildren().addAll(addSymbolTextField,
