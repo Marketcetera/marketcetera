@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
@@ -129,6 +128,8 @@ public class MarketDataListView
         rootLayout = new VBox(5);
         initializeAddSymbol();
         initializeTable();
+        marketDataTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         rootLayout.getChildren().addAll(addSymbolLayout,
                                         marketDataTable);
         rootLayout.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -137,10 +138,6 @@ public class MarketDataListView
                event.consume(); 
             }
         });
-    }
-    @PreDestroy
-    public void stop()
-    {
     }
     /**
      * Create a new MarketDataListView instance.
@@ -157,6 +154,9 @@ public class MarketDataListView
               inEvent,
               inProperties);
     }
+    /**
+     * Update the view properties for this view.
+     */
     private void updateViewProperties()
     {
         synchronized(symbolsByRequestId) {
@@ -164,6 +164,9 @@ public class MarketDataListView
                                             String.valueOf(symbolsByRequestId.values()));
         }
     }
+    /**
+     * Initialize the Add Symbol controls.
+     */
     private void initializeAddSymbol()
     {
         addSymbolLayout = new HBox(5);
@@ -202,13 +205,20 @@ public class MarketDataListView
         addSymbolLayout.getChildren().addAll(addSymbolTextField,
                                              addSymbolButton);
     }
+    /**
+     * Initialize the market data table.
+     */
     private void initializeTable()
     {
         marketDataTable = new TableView<>();
         marketDataTable.setPlaceholder(new Label("no market data selected"));
         initializeColumns();
         initializeContextMenu();
+        marketDataTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
+    /**
+     * Initialize the market data table columns.
+     */
     private void initializeColumns()
     {
         symbolColumn = new TableColumn<>("Symbol");
@@ -263,6 +273,9 @@ public class MarketDataListView
         marketDataTable.getColumns().add(closePriceColumn);
         marketDataTable.getColumns().add(volumeColumn);
     }
+    /**
+     * Initialize the market data item context menu.
+     */
     private void initializeContextMenu()
     {
         removeMarketDataMenuItem = new MenuItem("Remove");
@@ -420,12 +433,13 @@ public class MarketDataListView
                       PlatformServices.cellStyleRightAlign);
         return table.render();
     }
-    private ContextMenu marketDataContextMenu;
-    private MenuItem removeMarketDataMenuItem;
-    private MenuItem copyMarketDataMenuItem;
-    private MenuItem buyMarketDataMenuItem;
-    private MenuItem sellMarketDataMenuItem;
-    private MenuItem viewDetailMarketDataMenuItem;
+    /**
+     * Create a market data row listener to update a market data item.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private class MarketDataRowListener
             implements MarketDataListener
     {
@@ -440,35 +454,128 @@ public class MarketDataListView
         /**
          * Create a new MarketDataRowListener instance.
          *
-         * @param inMarketDataItem
+         * @param inMarketDataItem a <code>MarketDataItem</code> value
          */
         private MarketDataRowListener(MarketDataItem inMarketDataItem)
         {
             marketDataItem = inMarketDataItem;
         }
+        /**
+         * market data item to update for this listener
+         */
         private final MarketDataItem marketDataItem;
     }
+    /**
+     * market data item context menu
+     */
+    private ContextMenu marketDataContextMenu;
+    /**
+     * remove market data context menu item
+     */
+    private MenuItem removeMarketDataMenuItem;
+    /**
+     * copy market data context menu item
+     */
+    private MenuItem copyMarketDataMenuItem;
+    /**
+     * buy market data context menu item
+     */
+    private MenuItem buyMarketDataMenuItem;
+    /**
+     * sell market data context menu item
+     */
+    private MenuItem sellMarketDataMenuItem;
+    /**
+     * view detail market data menu item
+     */
+    private MenuItem viewDetailMarketDataMenuItem;
+    /**
+     * holds the requested symbols by the request id
+     */
     private final Map<String,String> symbolsByRequestId = Maps.newHashMap();
+    /**
+     * market data item table
+     */
     private TableView<MarketDataItem> marketDataTable;
+    /**
+     * provides access to market data services
+     */
     private MarketDataClientService marketdataClient;
+    /**
+     * provides access to trade services
+     */
     private TradeClientService tradeClient;
+    /**
+     * main layout of the view
+     */
     private VBox rootLayout;
+    /**
+     * key in the view properties for the symbols list
+     */
     private final String symbolsKey = "SYMBOLS";
+    /**
+     * layout of the add symbol controls
+     */
     private HBox addSymbolLayout;
+    /**
+     * add symbol text field
+     */
     private TextField addSymbolTextField;
+    /**
+     * add symbol button
+     */
     private Button addSymbolButton;
+    /**
+     * symbol table column
+     */
     private TableColumn<MarketDataItem,String> symbolColumn;
+    /**
+     * exec price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> execPriceColumn;
+    /**
+     * last qty table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> lastQtyColumn;
+    /**
+     * bid qty table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> bidQtyColumn;
+    /**
+     * bid price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> bidPriceColumn;
+    /**
+     * ask qty table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> askQtyColumn;
+    /**
+     * ask price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> askPriceColumn;
+    /**
+     * prev close table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> prevCloseColumn;
+    /**
+     * open price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> openPriceColumn;
+    /**
+     * high price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> highPriceColumn;
+    /**
+     * low price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> lowPriceColumn;
+    /**
+     * close price table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> closePriceColumn;
+    /**
+     * volume table column
+     */
     private TableColumn<MarketDataItem,BigDecimal> volumeColumn;
     /**
      * global name of this view
