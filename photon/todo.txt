@@ -20,11 +20,12 @@
 - add new permission for activate/deactivate users and use them in UserView context menu
 - create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
 - add ActivateUser to AdminClient and use in UserView context menu
-- if md client goes offline, mark all views as disabled
-- md client comes back online, resubmit md requests
 - window onClose not fired on app shutdown so nothing gets saved - can't rely on onClose to save important view info
 - probably need to handle DELETE events in market data list view
 - add chart to market data detail view
+
+- if md client goes offline, mark all views as disabled
+- md client comes back online, resubmit md requests
 
 * Bugs *
 ========
