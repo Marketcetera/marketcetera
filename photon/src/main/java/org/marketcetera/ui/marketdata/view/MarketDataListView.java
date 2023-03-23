@@ -186,6 +186,9 @@ public class MarketDataListView
                 return;
             }
             symbol = symbol.toUpperCase();
+            if(symbolsByRequestId.values().contains(symbol)) {
+                return;
+            }
             Instrument instrument = tradeClient.resolveSymbol(symbol);
             String marketDataRequestId = UUID.randomUUID().toString();
             MarketDataItem newItem = new MarketDataItem(instrument,
