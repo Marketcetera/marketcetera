@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Maps;
 
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -171,6 +172,7 @@ public class MarketDataListView
     private void initializeAddSymbol()
     {
         addSymbolLayout = new HBox(5);
+        addSymbolLayout.setPadding(new Insets(10,30,10,10));
         addSymbolTextField = new TextField();
         addSymbolButton = new Button();
         addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
@@ -291,12 +293,12 @@ public class MarketDataListView
             }
             try {
                 marketdataClient.cancel(marketDataItem.marketDataRequestIdProperty().get());
-                synchronized(symbolsByRequestId) {
-                    symbolsByRequestId.remove(marketDataItem.marketDataRequestIdProperty().get());
-                }
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       e);
+            }
+            synchronized(symbolsByRequestId) {
+                symbolsByRequestId.remove(marketDataItem.marketDataRequestIdProperty().get());
             }
             marketDataTable.getItems().remove(marketDataItem);
             updateViewProperties();

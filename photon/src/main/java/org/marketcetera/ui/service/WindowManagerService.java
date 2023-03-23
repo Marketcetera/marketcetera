@@ -101,8 +101,14 @@ public class WindowManagerService
                                "Received {}, retrieved display layout: {}",
                                inEvent,
                                displayLayout);
-        WindowRegistry windowRegistry = getCurrentUserRegistry();
+        final WindowRegistry windowRegistry = getCurrentUserRegistry();
         windowRegistry.restoreLayout(displayLayout);
+        PhotonApp.getPrimaryStage().widthProperty().addListener((observableValue,oldValue,newValue) -> {
+            windowRegistry.updateDisplayLayout();
+        });
+        PhotonApp.getPrimaryStage().heightProperty().addListener((observableValue,oldValue,newValue) -> {
+            windowRegistry.updateDisplayLayout();
+        });
     }
     /**
      * Receive new window events.
@@ -313,6 +319,15 @@ public class WindowManagerService
     private double getWorkspaceBottom()
     {
         return getWorkspaceTop() + getWorkspaceHeight();
+    }
+    private Properties getWorkspaceProperties()
+    {
+        Properties workspaceProperties = new Properties();
+        workspaceProperties.setProperty(workspaceHeightProp,
+                                        Double.toString(PhotonApp.getPrimaryStage().getHeight()));
+        workspaceProperties.setProperty(workspaceWidthProp,
+                                        Double.toString(PhotonApp.getPrimaryStage().getWidth()));
+        return workspaceProperties;
     }
     /**
      * Event used to open a new window on restart.
@@ -850,11 +865,11 @@ public class WindowManagerService
          */
         private void show()
         {
-            getMainLayout().translateXProperty().set(getX());
-            getMainLayout().translateYProperty().set(getY());
-            setViewOrder(-1);
             Platform.runLater(() -> {
                 windowLayout.autosize();
+                getMainLayout().translateXProperty().set(getX());
+                getMainLayout().translateYProperty().set(getY());
+                setViewOrder(-1);
                 PhotonApp.getWorkspace().getChildren().add(getMainLayout());
                 requestFocus();
             });
@@ -1123,9 +1138,32 @@ public class WindowManagerService
          */
         private void restoreLayout(Properties inDisplayLayout)
         {
+            String rawWorkspaceProperties = inDisplayLayout.getProperty(workspaceLayout);
+            if(rawWorkspaceProperties != null) {
+                Properties workspaceProperties = Util.propertiesFromString(rawWorkspaceProperties);
+                Double desiredHeight = PhotonApp.getPrimaryStage().getHeight();
+                Double desiredWidth = PhotonApp.getPrimaryStage().getWidth();
+                String rawValue = workspaceProperties.getProperty(workspaceHeightProp);
+                if(rawValue != null) {
+                    desiredHeight = Double.parseDouble(rawValue);
+                }
+                rawValue = workspaceProperties.getProperty(workspaceWidthProp);
+                if(rawValue != null) {
+                    desiredWidth = Double.parseDouble(rawValue);
+                }
+                final Double mainStageWidth = desiredWidth;
+                final Double mainStageHeight = desiredHeight;
+                Platform.runLater(() -> {
+                    PhotonApp.getPrimaryStage().setWidth(mainStageWidth);
+                    PhotonApp.getPrimaryStage().setHeight(mainStageHeight);
+                });
+            }
             synchronized(activeWindows) {
                 for(Map.Entry<Object,Object> entry : inDisplayLayout.entrySet()) {
                     String windowUid = String.valueOf(entry.getKey());
+                    if(windowUid.equals(workspaceLayout)) {
+                        continue;
+                    }
                     Properties windowProperties = Util.propertiesFromString(String.valueOf(entry.getValue()));
                     SLF4JLoggerProxy.debug(this,
                                            "Restoring {} {}",
@@ -1324,6 +1362,9 @@ public class WindowManagerService
                     displayLayout.setProperty(windowKey,
                                               windowValue);
                 }
+                Properties workspaceLayoutProperties = getWorkspaceProperties();
+                displayLayout.setProperty(workspaceLayout,
+                                          Util.propertiesToString(workspaceLayoutProperties));
                 return displayLayout;
             }
         }
@@ -1396,6 +1437,18 @@ public class WindowManagerService
      * window horizontal scroll key name
      */
     private static final String windowHorizontalScrollProp = propId + "_scrollH";
+    /**
+     * main workspace layout key name
+     */
+    private static final String workspaceLayout = propId + "_wsLayout";
+    /**
+     * main workspace height key name
+     */
+    private static final String workspaceHeightProp = propId + "_wsHeight";
+    /**
+     * main workspace width key name
+     */
+    private static final String workspaceWidthProp = propId + "_wsWidth";
     /**
      * web message service value
      */
