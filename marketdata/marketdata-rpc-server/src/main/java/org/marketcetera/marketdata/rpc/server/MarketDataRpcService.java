@@ -451,6 +451,31 @@ public class MarketDataRpcService<SessionClazz>
                 marketDataService.cancel(getId());
             }
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.String)
+         */
+        @Override
+        public void onError(String inMessage)
+        {
+            MarketDataTypesRpc.LogEvent.Builder logEventBuilder = MarketDataTypesRpc.LogEvent.newBuilder();
+            logEventBuilder.setMessage(inMessage);
+            logEventBuilder.setLogEventLevel(MarketDataTypesRpc.LogEventLevel.ERROR_LOG_EVENT_LEVEL);
+            BaseRpcUtil.getRpcObject(new RuntimeException(inMessage)).ifPresent(rpcObject -> logEventBuilder.setException(rpcObject));
+            MarketDataTypesRpc.LogEvent rpcLogEvent = logEventBuilder.build();
+            MarketDataTypesRpc.EventHolder.Builder eventHolderBuilder = MarketDataTypesRpc.EventHolder.newBuilder();
+            eventHolderBuilder.setLogEvent(rpcLogEvent);
+            MarketDataTypesRpc.EventHolder rpcEventHolder = eventHolderBuilder.build();
+            responseBuilder.setEvent(rpcEventHolder);
+            responseBuilder.setRequestId(clientRequestId);
+            MarketDataRpc.EventsResponse response = responseBuilder.build();
+            SLF4JLoggerProxy.trace(MarketDataRpcService.class,
+                                   "{} received error {}, sending {}",
+                                   getId(),
+                                   inMessage,
+                                   response);
+            getObserver().onNext(response);
+            responseBuilder.clear();
+        }
         /**
          * Create a new MarketDataListenerProxy instance.
          *

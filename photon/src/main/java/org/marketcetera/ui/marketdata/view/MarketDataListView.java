@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
@@ -24,6 +25,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
+import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataDetailEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataSuggestionEvent;
 import org.marketcetera.ui.marketdata.service.MarketDataClientService;
@@ -43,6 +45,7 @@ import com.google.common.collect.Maps;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
@@ -488,7 +491,29 @@ public class MarketDataListView
         @Override
         public void receiveMarketData(Event inEvent)
         {
-            Platform.runLater(() -> marketDataItem.update(inEvent));
+            if(inEvent instanceof LogEvent) {
+                LogEvent logEvent = (LogEvent)inEvent;
+                AlertType alertType;
+                switch(logEvent.getLevel()) {
+                    case INFO:
+                    case DEBUG:
+                        alertType = AlertType.INFORMATION;
+                        break;
+                    case ERROR:
+                        alertType = AlertType.ERROR;
+                        break;
+                    case WARN:
+                        alertType = AlertType.WARNING;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unexpected log level: " + logEvent.getLevel());
+                }
+                webMessageService.post(new NotificationEvent("Market Data Request Failed",
+                                                             logEvent.getMessage(),
+                                                             alertType));
+            } else {
+                Platform.runLater(() -> marketDataItem.update(inEvent));
+            }
         }
         /**
          * Create a new MarketDataRowListener instance.
