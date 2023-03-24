@@ -255,6 +255,8 @@ public class MarketDataListView
     {
         symbolColumn = new TableColumn<>("Symbol");
         symbolColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+        tradeExchangeColumn = new TableColumn<>("LastMkt");
+        tradeExchangeColumn.setCellValueFactory(new PropertyValueFactory<>("tradeExchange"));
         execPriceColumn = new TableColumn<>("ExecPrice");
         execPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
         execPriceColumn.setCellFactory(tableColumn -> PhotonServices.renderCurrencyCell(tableColumn));
@@ -292,6 +294,7 @@ public class MarketDataListView
         volumeColumn.setCellValueFactory(new PropertyValueFactory<>("tradeVolume"));
         volumeColumn.setCellFactory(tableColumn -> PhotonServices.renderNumberCell(tableColumn));
         marketDataTable.getColumns().add(symbolColumn);
+        marketDataTable.getColumns().add(tradeExchangeColumn);
         marketDataTable.getColumns().add(execPriceColumn);
         marketDataTable.getColumns().add(lastQtyColumn);
         marketDataTable.getColumns().add(bidQtyColumn);
@@ -407,11 +410,13 @@ public class MarketDataListView
      */
     private String renderMarketDataItem(MarketDataItem inMarketDataItem)
     {
-        Table table = new Table(13,
+        Table table = new Table(14,
                                 BorderStyle.CLASSIC_COMPATIBLE_WIDE,
                                 ShownBorders.ALL,
                                 false);
         table.addCell("Symbol",
+                      PlatformServices.cellStyleCenterAlign);
+        table.addCell("LastMk",
                       PlatformServices.cellStyleCenterAlign);
         table.addCell("LastPrice",
                       PlatformServices.cellStyleCenterAlign);
@@ -438,6 +443,8 @@ public class MarketDataListView
         table.addCell("Volume",
                       PlatformServices.cellStyleCenterAlign);
         table.addCell(inMarketDataItem.symbolProperty().get(),
+                      PlatformServices.cellStyleLeftAlign);
+        table.addCell(inMarketDataItem.tradeExchangeProperty().get(),
                       PlatformServices.cellStyleLeftAlign);
         table.addCell(BigDecimalUtil.renderCurrency(inMarketDataItem.lastPriceProperty().get()),
                       PlatformServices.cellStyleRightAlign);
@@ -561,6 +568,10 @@ public class MarketDataListView
      * symbol table column
      */
     private TableColumn<MarketDataItem,String> symbolColumn;
+    /**
+     * trade exchange table column
+     */
+    private TableColumn<MarketDataItem,String> tradeExchangeColumn;
     /**
      * exec price table column
      */

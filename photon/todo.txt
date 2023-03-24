@@ -34,7 +34,6 @@
 - custom fields in order ticket
 - transfer text to order in order ticket
 - peg to midpoint in order ticket
-- resize main window not stored in window properties?, should be reset on login
 - order ticket not formatted with last know values
 - replace order ticket values not filled out
 - menus are not fully recursive: only go to top level
