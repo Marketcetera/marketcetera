@@ -21,6 +21,7 @@ import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.event.CancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.GeneratedMarketDataEvent;
 import org.marketcetera.marketdata.event.MarketDataRequestEvent;
+import org.marketcetera.marketdata.event.MarketDataRequestRejectedEvent;
 import org.marketcetera.marketdata.event.SimpleCancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.SimpleMarketDataRequestEvent;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -123,6 +124,24 @@ public class MarketDataServiceImpl
                                requestEvent);
         eventBusService.post(requestEvent);
         return requestId;
+    }
+    /**
+     * Receive a market data request rejected event.
+     *
+     * @param inEvent a <code>MarketDataRequestRejectedEvent</code> value
+     */
+    @Subscribe
+    public void onMarketDataRequestRejectedEvent(MarketDataRequestRejectedEvent inEvent)
+    {
+        SLF4JLoggerProxy.warn(this,
+                              "Received {}",
+                              inEvent);
+        String requestId = inEvent.getMarketDataRequest().getRequestId();
+        RequestMetaData requestMetaData = requestsByRequestId.getIfPresent(requestId);
+        if(requestMetaData != null) {
+            MarketDataListener listener = requestMetaData.getMarketDataListener();
+            listener.onError(inEvent.getReason());
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#cancel(java.lang.String)
@@ -299,6 +318,13 @@ public class MarketDataServiceImpl
             if(isActive()) {
                 marketDataListener.receiveMarketData((Event)inData);
             }
+        }
+        /**
+         * Get the market data listener for this request.
+         */
+        private  MarketDataListener getMarketDataListener()
+        {
+            return marketDataListener;
         }
         /**
          * Get the isActive value.

@@ -474,7 +474,7 @@ public class FIXMessageFactory {
                                                            NoRelatedSym.FIELD);
                     instrumentFunction.set(instrument,
                                            fixDictionary,
-                                           quickfix.field.MsgType.MARKET_DATA_REQUEST,
+                                           quickfix.field.MsgType.ORDER_SINGLE,
                                            symbolGroup);
                     // some weirdness for currencies
                     symbolGroup.removeField(quickfix.field.Currency.FIELD);

@@ -22,9 +22,10 @@ public class SimpleMarketDataRequestRejectedEvent
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleMarketDataRequestAcceptedEvent [marketDataRequestId=")
+        builder.append("SimpleMarketDataRequestRejectedEvent [marketDataRequestId=")
                 .append(getMarketDataRequestId()).append(", marketDataRequest=").append(getMarketDataRequest())
-                .append(", marketDataRequestProvider=").append(getMarketDataRequestProvider()).append("]");
+                .append(", marketDataRequestProvider=").append(getMarketDataRequestProvider())
+                .append(", reason=").append(getReason()).append("]");
         return builder.toString();
     }
     /**
