@@ -47,6 +47,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -237,7 +238,9 @@ public class MarketDataListView
             doMarketDataRequest(symbol);
         });
         addSymbolLayout.setAlignment(Pos.CENTER_RIGHT);
-        addSymbolLayout.getChildren().addAll(addSymbolTextField,
+        providerComboBox = new ComboBox<>();
+        addSymbolLayout.getChildren().addAll(providerComboBox,
+                                             addSymbolTextField,
                                              addSymbolButton);
     }
     /**
@@ -581,6 +584,10 @@ public class MarketDataListView
      * layout of the add symbol controls
      */
     private HBox addSymbolLayout;
+    /**
+     * allows selection of a specific market data provider
+     */
+    private ComboBox<String> providerComboBox;
     /**
      * add symbol text field
      */
