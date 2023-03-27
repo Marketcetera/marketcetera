@@ -250,6 +250,15 @@ public class MarketDataItem
         return tradeVolumeProperty;
     }
     /**
+     * Get the provider property value.
+     *
+     * @return a <code>ReadOnlyStringProperty,/code> value
+     */
+    public ReadOnlyStringProperty providerProperty()
+    {
+        return providerProperty;
+    }
+    /**
      * Update the item with the given event.
      *
      * @param inEvent an <code>Event</code> value
@@ -259,6 +268,7 @@ public class MarketDataItem
         SLF4JLoggerProxy.trace(this,
                                "Received {}",
                                inEvent);
+        providerProperty.set(inEvent.getProvider());
         if(inEvent instanceof TradeEvent) {
             TradeEvent tradeEvent = (TradeEvent)inEvent;
             lastPriceProperty.set(tradeEvent.getPrice());
@@ -374,4 +384,8 @@ public class MarketDataItem
      * market data request id property value
      */
     private final StringProperty marketDataRequestIdProperty;
+    /**
+     * holds the provider of the market data
+     */
+    private final StringProperty providerProperty = new SimpleStringProperty();
 }

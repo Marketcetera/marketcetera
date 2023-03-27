@@ -47,6 +47,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -237,7 +238,9 @@ public class MarketDataListView
             doMarketDataRequest(symbol);
         });
         addSymbolLayout.setAlignment(Pos.CENTER_RIGHT);
-        addSymbolLayout.getChildren().addAll(addSymbolTextField,
+        providerComboBox = new ComboBox<>();
+        addSymbolLayout.getChildren().addAll(providerComboBox,
+                                             addSymbolTextField,
                                              addSymbolButton);
     }
     /**
@@ -258,6 +261,8 @@ public class MarketDataListView
     {
         symbolColumn = new TableColumn<>("Symbol");
         symbolColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+        providerColumn = new TableColumn<>("Provider");
+        providerColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
         tradeExchangeColumn = new TableColumn<>("LastMkt");
         tradeExchangeColumn.setCellValueFactory(new PropertyValueFactory<>("tradeExchange"));
         execPriceColumn = new TableColumn<>("ExecPrice");
@@ -297,6 +302,7 @@ public class MarketDataListView
         volumeColumn.setCellValueFactory(new PropertyValueFactory<>("tradeVolume"));
         volumeColumn.setCellFactory(tableColumn -> PhotonServices.renderNumberCell(tableColumn));
         marketDataTable.getColumns().add(symbolColumn);
+        marketDataTable.getColumns().add(providerColumn);
         marketDataTable.getColumns().add(tradeExchangeColumn);
         marketDataTable.getColumns().add(execPriceColumn);
         marketDataTable.getColumns().add(lastQtyColumn);
@@ -413,11 +419,13 @@ public class MarketDataListView
      */
     private String renderMarketDataItem(MarketDataItem inMarketDataItem)
     {
-        Table table = new Table(14,
+        Table table = new Table(15,
                                 BorderStyle.CLASSIC_COMPATIBLE_WIDE,
                                 ShownBorders.ALL,
                                 false);
         table.addCell("Symbol",
+                      PlatformServices.cellStyleCenterAlign);
+        table.addCell("Provider",
                       PlatformServices.cellStyleCenterAlign);
         table.addCell("LastMk",
                       PlatformServices.cellStyleCenterAlign);
@@ -446,6 +454,8 @@ public class MarketDataListView
         table.addCell("Volume",
                       PlatformServices.cellStyleCenterAlign);
         table.addCell(inMarketDataItem.symbolProperty().get(),
+                      PlatformServices.cellStyleLeftAlign);
+        table.addCell(inMarketDataItem.providerProperty().get(),
                       PlatformServices.cellStyleLeftAlign);
         table.addCell(inMarketDataItem.tradeExchangeProperty().get(),
                       PlatformServices.cellStyleLeftAlign);
@@ -582,6 +592,10 @@ public class MarketDataListView
      */
     private HBox addSymbolLayout;
     /**
+     * allows selection of a specific market data provider
+     */
+    private ComboBox<String> providerComboBox;
+    /**
      * add symbol text field
      */
     private TextField addSymbolTextField;
@@ -593,6 +607,10 @@ public class MarketDataListView
      * symbol table column
      */
     private TableColumn<MarketDataItem,String> symbolColumn;
+    /**
+     * market data provider table column
+     */
+    private TableColumn<MarketDataItem,String> providerColumn;
     /**
      * trade exchange table column
      */
