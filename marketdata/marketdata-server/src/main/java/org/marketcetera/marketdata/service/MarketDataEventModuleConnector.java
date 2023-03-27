@@ -209,10 +209,9 @@ public class MarketDataEventModuleConnector
         ModuleManager.startModulesIfNecessary(ModuleManager.getInstance(),
                                               MarketDataCacheModuleFactory.INSTANCE_URN,
                                               inSourceUrn);
-//        DataRequest cacheRequest = new DataRequest(MarketDataCacheModuleFactory.INSTANCE_URN);
+        DataRequest cacheRequest = new DataRequest(MarketDataCacheModuleFactory.INSTANCE_URN);
         DataRequest targetRequest = new DataRequest(MarketDataEventModuleConnectorFactory.INSTANCE_URN);
-//        DataFlowID dataFlowId = ModuleManager.getInstance().createDataFlow(new DataRequest[] { sourceRequest,cacheRequest,targetRequest });
-        DataFlowID dataFlowId = ModuleManager.getInstance().createDataFlow(new DataRequest[] { sourceRequest,targetRequest });
+        DataFlowID dataFlowId = ModuleManager.getInstance().createDataFlow(new DataRequest[] { sourceRequest,cacheRequest,targetRequest });
         requestsByDataFlowId.put(dataFlowId,
                                  inRequestId);
         Set<DataFlowID> dataFlows = dataFlowsByRequestId.getUnchecked(inRequestId);
