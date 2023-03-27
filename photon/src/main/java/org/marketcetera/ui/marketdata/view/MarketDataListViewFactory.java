@@ -52,7 +52,7 @@ public class MarketDataListViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Market_Data.svg");
+        return getClass().getClassLoader().getResource("images/server.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.MenuContent#getCategory()

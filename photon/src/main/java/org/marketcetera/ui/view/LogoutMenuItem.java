@@ -52,7 +52,7 @@ public class LogoutMenuItem
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Logout.svg");
+        return getClass().getClassLoader().getResource("images/power-off.svg");
     }
     /* (non-Javadoc)
      * @see com.marketcetera.web.view.MenuContent#getCommand()

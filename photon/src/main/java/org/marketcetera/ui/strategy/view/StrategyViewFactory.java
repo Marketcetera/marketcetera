@@ -60,7 +60,7 @@ public class StrategyViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Workspace.svg");
+        return getClass().getClassLoader().getResource("images/puzzle-piece.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.MenuContent#getCommand()

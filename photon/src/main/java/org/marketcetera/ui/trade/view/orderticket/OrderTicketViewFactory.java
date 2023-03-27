@@ -49,7 +49,7 @@ public class OrderTicketViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Order_Ticket.svg");
+        return getClass().getClassLoader().getResource("images/tags.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()

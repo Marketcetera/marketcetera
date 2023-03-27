@@ -52,7 +52,7 @@ public class FixSessionViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/FIX_Sessions.svg");
+        return getClass().getClassLoader().getResource("images/bank.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.MenuContent#getCategory()

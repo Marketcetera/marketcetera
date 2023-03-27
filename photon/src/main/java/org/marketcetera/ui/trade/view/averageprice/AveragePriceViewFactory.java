@@ -47,7 +47,7 @@ public class AveragePriceViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Average_Price.svg");
+        return getClass().getClassLoader().getResource("images/balance-scale.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()

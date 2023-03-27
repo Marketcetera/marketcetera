@@ -47,7 +47,7 @@ public class FillsViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Fills.svg");
+        return getClass().getClassLoader().getResource("images/shopping-basket.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()

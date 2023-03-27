@@ -144,9 +144,22 @@ public abstract class PhotonServices
      */
     public static Node getSvgResource(URL inUrl)
     {
+        return getSvgResource(inUrl,
+                              0.5);
+    }
+    /**
+     * Load an SVG image into a node.
+     *
+     * @param inUrl a <code>URL</code> value
+     * @param inScale a <code>double</code> vlaue
+     * @return a <code>Node</code> value
+     */
+    public static Node getSvgResource(URL inUrl,
+                                      double inScale)
+    {
         Group svgImage = SVGLoader.load(inUrl);
-        svgImage.setScaleX(0.5);
-        svgImage.setScaleY(0.5);
+        svgImage.setScaleX(inScale);
+        svgImage.setScaleY(inScale);
         return svgImage;
     }
     public static class NDEntityCellFactory<Clazz extends SummaryNDEntityBase>

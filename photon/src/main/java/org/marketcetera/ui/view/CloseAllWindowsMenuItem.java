@@ -49,7 +49,7 @@ public class CloseAllWindowsMenuItem
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Close_All_Windows.svg");
+        return getClass().getClassLoader().getResource("images/close.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()

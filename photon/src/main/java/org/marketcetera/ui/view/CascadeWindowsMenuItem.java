@@ -49,7 +49,7 @@ public class CascadeWindowsMenuItem
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Cascade_Windows.svg");
+        return getClass().getClassLoader().getResource("images/clone.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()
