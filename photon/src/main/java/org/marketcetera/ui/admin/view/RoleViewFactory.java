@@ -47,7 +47,7 @@ public class RoleViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Roles.svg");
+        return getClass().getClassLoader().getResource("images/group.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()

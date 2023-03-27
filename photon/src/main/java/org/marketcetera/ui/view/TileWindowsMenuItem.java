@@ -49,7 +49,7 @@ public class TileWindowsMenuItem
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Tile_Windows.svg");
+        return getClass().getClassLoader().getResource("images/th-large.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getCommand()

@@ -18,6 +18,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.ui.DragResizeMod;
 import org.marketcetera.ui.DragResizeMod.OnDragResizeEventListener;
 import org.marketcetera.ui.PhotonApp;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.CascadeWindowsEvent;
 import org.marketcetera.ui.events.CloseWindowsEvent;
 import org.marketcetera.ui.events.LoginEvent;
@@ -320,6 +321,11 @@ public class WindowManagerService
     {
         return getWorkspaceTop() + getWorkspaceHeight();
     }
+    /**
+     * Get the workspace properties object.
+     *
+     * @return a <code>Properties</code> value
+     */
     private Properties getWorkspaceProperties()
     {
         Properties workspaceProperties = new Properties();
@@ -440,9 +446,10 @@ public class WindowManagerService
                                                    closeButtonLayout);
             windowTitle = new Label();
             windowTitle.textProperty().bind(windowTitleProperty);
-            closeLabel = new Label("X");
+            closeImage = PhotonServices.getSvgResource(getClass().getClassLoader().getResource("images/circle-with-cross.svg"),
+                                                       1.0);
             titleLayout.getChildren().addAll(windowTitle);
-            closeButtonLayout.getChildren().addAll(closeLabel);
+            closeButtonLayout.getChildren().addAll(closeImage);
             windowTitleLayout.getStyleClass().add("title-bar");
             HBox.setHgrow(windowTitleLayout,
                           Priority.ALWAYS);
@@ -537,7 +544,7 @@ public class WindowManagerService
          */
         private void setupWindowListeners()
         {
-            closeLabel.setOnMouseClicked(event -> {
+            closeImage.setOnMouseClicked(event -> {
                 contentViewProperty.get().onClose();
                 close();
             });
@@ -1001,7 +1008,7 @@ public class WindowManagerService
         /**
          * holds the window close widget
          */
-        private final Label closeLabel;
+        private final Node closeImage;
         /**
          * provides default scrollbars for windows
          */

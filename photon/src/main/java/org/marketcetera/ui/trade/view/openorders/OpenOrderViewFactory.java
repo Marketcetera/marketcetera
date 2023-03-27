@@ -47,7 +47,7 @@ public class OpenOrderViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Open_Orders.svg");
+        return getClass().getClassLoader().getResource("images/barcode.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()
