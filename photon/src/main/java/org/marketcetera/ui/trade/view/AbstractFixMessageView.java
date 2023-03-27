@@ -104,6 +104,9 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 updateReports();
             }}
         );
+        reportsTableView.prefWidthProperty().bind(getParentWindow().widthProperty());
+        reportsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         mainLayout.getChildren().addAll(reportsTableView,
                                         pagination);
         currentPage = 0;
@@ -289,6 +292,35 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         };
         return tableCell;
     }
+    /**
+     * Render an order price cell.
+     *
+     * @param inTableColumn a <code>TableColumn&lt;FixClazz,BigDecimal&gt;</code> value
+     * @return a <code>TableCell&lt;FixClazz,BigDecimal&gt;</code> value
+     */
+    protected TableCell<FixClazz,BigDecimal> renderOrderPriceCell(TableColumn<FixClazz,BigDecimal> inTableColumn)
+    {
+        TableCell<FixClazz,BigDecimal> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(BigDecimal inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty) {
+                    if(inItem == null) {
+                        this.setText("MKT");
+                    } else {
+                        // TODO need to set up decimal preferences
+                        this.setText(inItem.toPlainString());
+                    }
+                }
+            }
+        };
+        return tableCell;
+    }
     protected TableCell<FixClazz,BigDecimal> renderNumberCell(TableColumn<FixClazz,BigDecimal> inTableColumn)
     {
         TableCell<FixClazz,BigDecimal> tableCell = new TableCell<>() {
@@ -428,7 +460,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         }
         if(includeOrderPriceColumn()) {
             orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPrice"));
-            orderPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+            orderPriceColumn.setCellFactory(tableColumn -> renderOrderPriceCell(tableColumn));
             reportsTableView.getColumns().add(orderPriceColumn);
         }
         reportsTableView.getColumns().add(averagePriceColumn);
