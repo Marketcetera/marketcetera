@@ -43,11 +43,10 @@ public interface StrategyService
                                                                           Severity inSeverity,
                                                                           PageRequest inPageRequest);
     /**
-     * 
+     * Persist the given strategy message.
      *
-     *
-     * @param inStrategyMessage
-     * @return
+     * @param inStrategyMessage a <code>StrategyMessage</code> value
+     * @return a <code>StrategyMessage</code> value
      */
     StrategyMessage createStrategyMessage(StrategyMessage inStrategyMessage);
     /**
