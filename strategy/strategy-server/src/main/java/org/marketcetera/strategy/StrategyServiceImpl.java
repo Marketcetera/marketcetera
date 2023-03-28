@@ -13,9 +13,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -32,6 +34,7 @@ import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.service.ClusterService;
+import org.marketcetera.core.BatchQueueProcessor;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.core.file.DirectoryWatcherImpl;
@@ -65,12 +68,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -105,6 +114,8 @@ public class StrategyServiceImpl
         SLF4JLoggerProxy.info(this,
                               "{} starting",
                               serviceName);
+        strategyMessageQueueProcessor = new StrategyMessageQueueProcessor();
+        strategyMessageQueueProcessor.start();
         clusterData = clusterService.getInstanceData();
         strategyIncomingDirectoryName = strategyIncomingDirectoryName + clusterData.getInstanceNumber();
         incomingStrategyDirectoryPath = Paths.get(strategyIncomingDirectoryName);
@@ -144,6 +155,7 @@ public class StrategyServiceImpl
     @PreDestroy
     public void stop()
     {
+        strategyMessageQueueProcessor.stop();
         eventBusService.unregister(this);
         if(strategyWatcher != null) {
             try {
@@ -489,21 +501,10 @@ public class StrategyServiceImpl
      * @see org.marketcetera.strategy.StrategyService#createStrategyMessage(org.marketcetera.strategy.StrategyMessage)
      */
     @Override
-    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public PersistentStrategyMessage createStrategyMessage(StrategyMessage inStrategyMessage)
+    public StrategyMessage createStrategyMessage(StrategyMessage inStrategyMessage)
     {
-        PersistentStrategyMessage strategyMessage;
-        if(inStrategyMessage instanceof PersistentStrategyMessage) {
-            strategyMessage = (PersistentStrategyMessage)inStrategyMessage;
-        } else {
-            throw new UnsupportedOperationException("Need to create persistent instance");
-        }
-        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(strategyMessage.getStrategyInstance().getName());
-        Validate.isTrue(strategyInstanceOption.isPresent());
-        strategyMessage.setStrategyInstance(strategyInstanceOption.get());
-        strategyMessage = strategyMessageDao.save(strategyMessage);
-        eventBusService.post(new SimpleStrategyMessageEvent(strategyMessage));
-        return strategyMessage;
+        strategyMessageQueueProcessor.add(inStrategyMessage);
+        return inStrategyMessage;
     }
     /**
      * Receive incoming strategy events.
@@ -703,6 +704,90 @@ public class StrategyServiceImpl
         private AnnotationConfigApplicationContext newContext;
     }
     /**
+     * Processes <code>StrategyMessage</code> objects and stores them in bulk.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class StrategyMessageQueueProcessor
+            extends BatchQueueProcessor<StrategyMessage>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.BatchQueueProcessor#add(java.lang.Object)
+         */
+        @Override
+        protected void add(StrategyMessage inData)
+        {
+            super.add(inData);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.BatchQueueProcessor#processData(java.util.Deque)
+         */
+        @Override
+        protected void processData(Deque<StrategyMessage> inData)
+                throws Exception
+        {
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setName("strategyEventTransaction");
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+            def.setReadOnly(false);
+            TransactionStatus status = txManager.getTransaction(def);
+            try {
+                persistentStrategyMessages.clear();
+                for(StrategyMessage inStrategyMessage : inData) {
+                    PersistentStrategyMessage strategyMessage;
+                    if(inStrategyMessage instanceof PersistentStrategyMessage) {
+                        strategyMessage = (PersistentStrategyMessage)inStrategyMessage;
+                    } else {
+                        throw new UnsupportedOperationException("Need to create persistent instance");
+                    }
+                    PersistentStrategyInstance strategyInstance = strategyInstancesByName.getUnchecked(strategyMessage.getStrategyInstance().getName());
+                    if(strategyInstance == null) {
+                        SLF4JLoggerProxy.warn(StrategyServiceImpl.this,
+                                              "No strategy instance for name '{}', cannot save message '{}'",
+                                              strategyMessage.getStrategyInstance().getName(),
+                                              strategyMessage);
+                    } else {
+                        strategyMessage.setStrategyInstance(strategyInstance);
+                        persistentStrategyMessages.add(strategyMessage);
+                    }
+                }
+                strategyMessageDao.saveAll(persistentStrategyMessages);
+                txManager.commit(status);
+                for(StrategyMessage strategyMessage : persistentStrategyMessages) {
+                    eventBusService.post(new SimpleStrategyMessageEvent(strategyMessage));
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(StrategyServiceImpl.this,
+                                      e,
+                                      "Unable to persistent strategy messages: {}",
+                                      inData);
+                txManager.rollback(status);
+            }
+        }
+        /**
+         * stores strategy instances by name
+         */
+        private final LoadingCache<String,PersistentStrategyInstance> strategyInstancesByName = CacheBuilder.newBuilder().expireAfterAccess(60,TimeUnit.SECONDS).build(new CacheLoader<String,PersistentStrategyInstance>() {
+            @Override
+            public PersistentStrategyInstance load(String inKey)
+                    throws Exception
+            {
+                Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inKey);
+                return strategyInstanceOption.orElse(null);
+            }}
+        );
+        /**
+         * temporarily holds strategy messages to persist
+         */
+        private final Collection<PersistentStrategyMessage> persistentStrategyMessages = Lists.newArrayList();
+    }
+    /**
+     * processes batches of strategy messages
+     */
+    private StrategyMessageQueueProcessor strategyMessageQueueProcessor;
+    /**
      * provides access to the {@link StrategyMessage} data store
      */
     @Autowired
@@ -756,6 +841,11 @@ public class StrategyServiceImpl
      * watches the incoming strategy directory
      */
     private DirectoryWatcherImpl strategyWatcher;
+    /**
+     * transaction manager value
+     */
+    @Autowired
+    private JpaTransactionManager txManager;
     /**
      * provides access to cluster services
      */

@@ -18,6 +18,7 @@ import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
+import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -43,6 +44,7 @@ import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
+import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -103,7 +105,7 @@ import javafx.stage.Modality;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyView
         extends AbstractContentView
-        implements StrategyEventListener
+        implements ClientStatusListener
 {
     /**
      * Validate and start the object.
@@ -153,6 +155,11 @@ public class StrategyView
         loadStrategyButton.setOnAction(event -> loadStrategy());
         buttonLayout = new HBox(10);
         buttonLayout.getChildren().add(loadStrategyButton);
+        strategyTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        eventTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        strategyTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        eventTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         mainLayout.getChildren().addAll(strategyTable,
                                         new Separator(Orientation.HORIZONTAL),
                                         filterLayout,
@@ -162,7 +169,7 @@ public class StrategyView
                                         buttonLayout);
         updateStrategies();
         updateEvents();
-        strategyClient.addStrategyEventListener(this);
+        initializeStrategyEventListener();
         strategyRuntimeUpdateTimer = new Timer();
         strategyRuntimeUpdateTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -175,6 +182,7 @@ public class StrategyView
                                           e);
                 }
             }},new Date(System.currentTimeMillis() + strategyRuntimeUpdateInterval),strategyRuntimeUpdateInterval);
+        serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose()
@@ -185,52 +193,13 @@ public class StrategyView
         try {
             strategyRuntimeUpdateTimer.cancel();
         } catch (Exception ignored) {}
-        strategyClient.removeStrategyEventListener(this);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyEventListener#receiveStrategyEvent(org.marketcetera.strategy.events.StrategyEvent)
-     */
-    @Override
-    public void receiveStrategyEvent(StrategyEvent inEvent)
-    {
-        SLF4JLoggerProxy.trace(this,
-                               "Received {}",
-                               inEvent);
-        String instanceName = inEvent.getStrategyInstance().getName();
-        DisplayStrategyInstance strategyToUpdate = null;
-        for(DisplayStrategyInstance strategy : strategyTable.getItems()) {
-            if(strategy.strategyNameProperty().get().equals(instanceName)) {
-                strategyToUpdate = strategy;
-                break;
-            }
+        if(strategyEventListener != null) {
+            try {
+                strategyClient.removeStrategyEventListener(strategyEventListener);
+                strategyEventListener = null;
+            } catch (Exception ignored) {}
         }
-        if(strategyToUpdate != null) {
-            final DisplayStrategyInstance displayStrategyInstance = strategyToUpdate;
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run()
-                {
-                    if(inEvent instanceof StrategyStoppedEvent) {
-                        displayStrategyInstance.startedProperty().set(null);
-                    } else if(inEvent instanceof StrategyStartedEvent) {
-                        displayStrategyInstance.startedProperty().set(inEvent.getStrategyInstance().getStarted());
-                    } else if(inEvent instanceof StrategyUploadFailedEvent) {
-                    } else if(inEvent instanceof StrategyUploadSucceededEvent) {
-                    } else if(inEvent instanceof StrategyStartFailedEvent) {
-                    } else if(inEvent instanceof StrategyStatusChangedEvent) {
-                        StrategyStatusChangedEvent event = (StrategyStatusChangedEvent)inEvent;
-                        displayStrategyInstance.strategyStatusProperty().set(event.getNewValue());
-                    } else if(inEvent instanceof StrategyUnloadedEvent) {
-                        strategyTable.getItems().remove(displayStrategyInstance);
-                    } else if(inEvent instanceof StrategyMessageEvent) {
-                        updateEvents();
-                    }
-                }}
-            );
-        } else {
-            updateStrategies();
-            updateEvents();
-        }
+        serviceManager.getService(AdminClientService.class).removeClientStatusListener(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getMainLayout()
@@ -248,6 +217,27 @@ public class StrategyView
     {
         return NAME;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ClientStatusListener#receiveClientStatus(boolean)
+     */
+    @Override
+    public void receiveClientStatus(boolean inIsAvailable)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Received client status available: {}",
+                               inIsAvailable);
+        if(inIsAvailable) {
+            updateStrategies();
+            updateEvents();
+            initializeStrategyEventListener();
+            // TODO need to use a timer
+        } else {
+            Platform.runLater(() -> {
+                strategyTable.getItems().clear();
+                eventTable.getItems().clear();
+            });
+        }
+    }
     /**
      * Create a new StrategyView instance.
      *
@@ -262,6 +252,66 @@ public class StrategyView
         super(inParent,
               inEvent,
               inProperties);
+    }
+    /**
+     * Set up the strategy event listener.
+     */
+    private void initializeStrategyEventListener()
+    {
+        if(strategyEventListener != null) {
+            try {
+                strategyClient.removeStrategyEventListener(strategyEventListener);
+                strategyEventListener = null;
+            } catch (Exception ignored) {}
+        }
+        strategyEventListener = new StrategyEventListener() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.strategy.StrategyEventListener#receiveStrategyEvent(org.marketcetera.strategy.events.StrategyEvent)
+             */
+            @Override
+            public void receiveStrategyEvent(StrategyEvent inEvent)
+            {
+                SLF4JLoggerProxy.trace(StrategyView.this,
+                                       "Received {}",
+                                       inEvent);
+                String instanceName = inEvent.getStrategyInstance().getName();
+                DisplayStrategyInstance strategyToUpdate = null;
+                for(DisplayStrategyInstance strategy : strategyTable.getItems()) {
+                    if(strategy.strategyNameProperty().get().equals(instanceName)) {
+                        strategyToUpdate = strategy;
+                        break;
+                    }
+                }
+                if(strategyToUpdate != null) {
+                    final DisplayStrategyInstance displayStrategyInstance = strategyToUpdate;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            if(inEvent instanceof StrategyStoppedEvent) {
+                                displayStrategyInstance.startedProperty().set(null);
+                            } else if(inEvent instanceof StrategyStartedEvent) {
+                                displayStrategyInstance.startedProperty().set(inEvent.getStrategyInstance().getStarted());
+                            } else if(inEvent instanceof StrategyUploadFailedEvent) {
+                            } else if(inEvent instanceof StrategyUploadSucceededEvent) {
+                            } else if(inEvent instanceof StrategyStartFailedEvent) {
+                            } else if(inEvent instanceof StrategyStatusChangedEvent) {
+                                StrategyStatusChangedEvent event = (StrategyStatusChangedEvent)inEvent;
+                                displayStrategyInstance.strategyStatusProperty().set(event.getNewValue());
+                            } else if(inEvent instanceof StrategyUnloadedEvent) {
+                                strategyTable.getItems().remove(displayStrategyInstance);
+                            } else if(inEvent instanceof StrategyMessageEvent) {
+                                updateEvents();
+                            }
+                        }}
+                    );
+                } else {
+                    updateStrategies();
+                    updateEvents();
+                }
+            }
+        };
+        strategyClient.addStrategyEventListener(strategyEventListener);
     }
     private void updateStrategyRuntime()
     {
@@ -735,6 +785,10 @@ public class StrategyView
 //        }
 //        private final static StringComparator instance = new StringComparator();
 //    }
+    /**
+     * listens for strategy events
+     */
+    private StrategyEventListener strategyEventListener;
     /**
      * interval at which runtime update events will be sent out
      */
