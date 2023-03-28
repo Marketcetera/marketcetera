@@ -5,11 +5,8 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -92,10 +89,7 @@ public class MarketDataDetailView
     @Override
     public void onClose()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} stop",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
+        super.onClose();
         try {
             if(depthMarketDataRequestId != null) {
                 marketDataClient.cancel(depthMarketDataRequestId);
@@ -114,16 +108,12 @@ public class MarketDataDetailView
     {
       return NAME;
     }
-    /**
-     * Initialize and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
         marketDataClient = serviceManager.getService(MarketDataClientService.class);
         SLF4JLoggerProxy.debug(this,
                                "Available market data capabilities are: {}",
@@ -142,7 +132,7 @@ public class MarketDataDetailView
         initializeChart();
         int rowCount = 0;
         marketDataLayout.add(addSymbolLayout,0,rowCount,2,1);
-//        marketDataGrid.add(chart,0,++rowCount,2,1);;
+//        marketDataGrid.add(chart,0,++rowCount,2,1);
         marketDataLayout.add(bidMarketDataTable,0,++rowCount);
         marketDataLayout.add(askMarketDataTable,1,rowCount);
         marketDataLayout.setMaxWidth(Double.MAX_VALUE);
@@ -320,7 +310,7 @@ public class MarketDataDetailView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        webMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + marketDataInstrument.getSymbol(),
+        uiMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + marketDataInstrument.getSymbol(),
                                                              suggestion));
     }
     /**
@@ -351,6 +341,25 @@ public class MarketDataDetailView
             {
                 updateDepthMarketData(inEvent);
             }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
+     */
+    @Override
+    protected void onClientConnect()
+    {
+        doMarketDataRequest();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            bidMarketDataTable.getItems().clear();
+            askMarketDataTable.getItems().clear();
         });
     }
     /**

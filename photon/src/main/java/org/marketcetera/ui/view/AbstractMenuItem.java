@@ -1,6 +1,6 @@
 package org.marketcetera.ui.view;
 
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javafx.scene.image.Image;
@@ -29,5 +29,5 @@ public abstract class AbstractMenuItem
      * web message service value
      */
     @Autowired
-    protected WebMessageService webMessageService;
+    protected UiMessageService webMessageService;
 }

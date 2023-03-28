@@ -75,7 +75,7 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
                     try {
                         tradeClientService.deleteReport(report.getReportID());
                         updateReports();
-                        webMessageService.post(new NotificationEvent("Delete Report",
+                        uiMessageService.post(new NotificationEvent("Delete Report",
                                                                      "Report " + report.getReportID() + " deleted",
                                                                      AlertType.INFORMATION));
                     } catch (Exception e) {
@@ -83,7 +83,7 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
                                               e,
                                               "Unable to delete {}",
                                               report);
-                        webMessageService.post(new NotificationEvent("Delete Report",
+                        uiMessageService.post(new NotificationEvent("Delete Report",
                                                                      "Report " + report.getReportID() + " not deleted: " + PlatformServices.getMessage(e),
                                                                      AlertType.ERROR));
                     }

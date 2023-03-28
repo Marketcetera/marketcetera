@@ -3,21 +3,23 @@ package org.marketcetera.ui.trade.fixmessagedetails.view;
 import java.util.Iterator;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
-import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -42,78 +44,6 @@ public class FixMessageDetailsView
         extends AbstractContentView
         implements ContentView
 {
-    /**
-     * Validate and start the object.
-     */
-    @PostConstruct
-    public void start()
-    {
-        mainLayout = new VBox();
-        initializeTable();
-        mainLayout.getChildren().add(fixMessageGrid);
-        updateRows(fixMessage);
-    }
-    private void updateRows(quickfix.Message fixMessage)
-    {
-        fixMessageGrid.getItems().clear();
-        try {
-            FIXVersion fixVersion = FIXVersion.getFIXVersion(fixMessage);
-            quickfix.DataDictionary dataDictionary = FIXMessageUtil.getDataDictionary(fixVersion);
-            Iterator<quickfix.Field<?>> fieldIterator = fixMessage.getHeader().iterator();
-            while(fieldIterator.hasNext()) {
-                quickfix.Field<?> field = fieldIterator.next();
-                fixMessageGrid.getItems().add(new DisplayFixMessageValue(field.getTag(),
-                                                                         dataDictionary.getFieldName(field.getTag()),
-                                                                         dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
-                                                                         String.valueOf(field.getObject())));
-            }
-            fieldIterator = fixMessage.iterator();
-            while(fieldIterator.hasNext()) {
-                quickfix.Field<?> field = fieldIterator.next();
-                fixMessageGrid.getItems().add(new DisplayFixMessageValue(field.getTag(),
-                                                                         dataDictionary.getFieldName(field.getTag()),
-                                                                         dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
-                                                                         String.valueOf(field.getObject())));
-            }
-            fieldIterator = fixMessage.getTrailer().iterator();
-            while(fieldIterator.hasNext()) {
-                quickfix.Field<?> field = fieldIterator.next();
-                fixMessageGrid.getItems().add(new DisplayFixMessageValue(field.getTag(),
-                                                                         dataDictionary.getFieldName(field.getTag()),
-                                                                         dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
-                                                                         String.valueOf(field.getObject())));
-            }
-        } catch (Exception e) {
-            webMessageService.post(new NotificationEvent("Display FIX Message Details",
-                                                         "Unable to display FIX message details: " + PlatformServices.getMessage(e),
-                                                         AlertType.WARNING));
-        }
-    }
-    private void initializeTable()
-    {
-        fixMessageGrid = new TableView<>();
-        initializeColumns(fixMessageGrid);
-        fixMessageGrid.setPlaceholder(new Label("no fields to display"));
-    }
-    private void initializeColumns(TableView<DisplayFixMessageValue> inTableView)
-    {
-        TableColumn<DisplayFixMessageValue,Integer> tagColumn = new TableColumn<>("Tag"); 
-        tagColumn.setCellValueFactory(new PropertyValueFactory<>("tag"));
-        tagColumn.setSortable(false);
-        TableColumn<DisplayFixMessageValue,String> nameColumn = new TableColumn<>("Name"); 
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameColumn.setSortable(false);
-        TableColumn<DisplayFixMessageValue,String> typeColumn = new TableColumn<>("Type"); 
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        typeColumn.setSortable(false);
-        TableColumn<DisplayFixMessageValue,String> valueColumn = new TableColumn<>("Value"); 
-        valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
-        valueColumn.setSortable(false);
-        inTableView.getColumns().add(tagColumn);
-        inTableView.getColumns().add(nameColumn);
-        inTableView.getColumns().add(typeColumn);
-        inTableView.getColumns().add(valueColumn);
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
      */
@@ -151,7 +81,98 @@ public class FixMessageDetailsView
             throw new RuntimeException(e);
         }
     }
-    public static class DisplayFixMessageValue
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
+        mainLayout = new VBox();
+        initializeTable();
+        mainLayout.getChildren().add(fixMessageTable);
+        updateRows(fixMessage);
+    }
+    /**
+     * Update the display rows with the given message.
+     *
+     * @param inFixMessage
+     */
+    private void updateRows(quickfix.Message inFixMessage)
+    {
+        fixMessageTable.getItems().clear();
+        try {
+            FIXVersion fixVersion = FIXVersion.getFIXVersion(inFixMessage);
+            quickfix.DataDictionary dataDictionary = FIXMessageUtil.getDataDictionary(fixVersion);
+            Iterator<quickfix.Field<?>> fieldIterator = inFixMessage.getHeader().iterator();
+            while(fieldIterator.hasNext()) {
+                quickfix.Field<?> field = fieldIterator.next();
+                fixMessageTable.getItems().add(new DisplayFixMessageValue(field.getTag(),
+                                                                         dataDictionary.getFieldName(field.getTag()),
+                                                                         dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
+                                                                         String.valueOf(field.getObject())));
+            }
+            fieldIterator = inFixMessage.iterator();
+            while(fieldIterator.hasNext()) {
+                quickfix.Field<?> field = fieldIterator.next();
+                fixMessageTable.getItems().add(new DisplayFixMessageValue(field.getTag(),
+                                                                         dataDictionary.getFieldName(field.getTag()),
+                                                                         dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
+                                                                         String.valueOf(field.getObject())));
+            }
+            fieldIterator = inFixMessage.getTrailer().iterator();
+            while(fieldIterator.hasNext()) {
+                quickfix.Field<?> field = fieldIterator.next();
+                fixMessageTable.getItems().add(new DisplayFixMessageValue(field.getTag(),
+                                                                         dataDictionary.getFieldName(field.getTag()),
+                                                                         dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
+                                                                         String.valueOf(field.getObject())));
+            }
+        } catch (Exception e) {
+            uiMessageService.post(new NotificationEvent("Display FIX Message Details",
+                                                        "Unable to display FIX message details: " + PlatformServices.getMessage(e),
+                                                        AlertType.WARNING));
+        }
+    }
+    /**
+     * Initialize the FIX message view table.
+     */
+    private void initializeTable()
+    {
+        fixMessageTable = new TableView<>();
+        initializeColumns();
+        fixMessageTable.setPlaceholder(new Label("no fields to display"));
+    }
+    /**
+     * Initialize the table columns
+     */
+    private void initializeColumns()
+    {
+        TableColumn<DisplayFixMessageValue,Integer> tagColumn = new TableColumn<>("Tag"); 
+        tagColumn.setCellValueFactory(new PropertyValueFactory<>("tag"));
+        tagColumn.setSortable(false);
+        TableColumn<DisplayFixMessageValue,String> nameColumn = new TableColumn<>("Name"); 
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.setSortable(false);
+        TableColumn<DisplayFixMessageValue,String> typeColumn = new TableColumn<>("Type"); 
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        typeColumn.setSortable(false);
+        TableColumn<DisplayFixMessageValue,String> valueColumn = new TableColumn<>("Value"); 
+        valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+        valueColumn.setSortable(false);
+        fixMessageTable.getColumns().add(tagColumn);
+        fixMessageTable.getColumns().add(nameColumn);
+        fixMessageTable.getColumns().add(typeColumn);
+        fixMessageTable.getColumns().add(valueColumn);
+    }
+    /**
+     * Provides a display version of a FIX message.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @SuppressWarnings("unused")
+    private static class DisplayFixMessageValue
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -160,76 +181,89 @@ public class FixMessageDetailsView
         public String toString()
         {
             StringBuilder builder = new StringBuilder();
-            builder.append("DisplayFixMessageValue [tag=").append(tag).append(", name=").append(name).append(", type=")
-                    .append(type).append(", value=").append(value).append("]");
+            builder.append("DisplayFixMessageValue [tag=").append(tagProperty.get()).append(", name=").append(nameProperty.get()).append(", type=")
+                    .append(typeProperty.get()).append(", value=").append(valueProperty.get()).append("]");
             return builder.toString();
         }
         /**
          * Create a new DisplayFixMessageValue instance.
          *
-         * @param inTag
-         * @param inName
-         * @param inType
-         * @param inValue
+         * @param inTag an <code>int</code> value
+         * @param inName a <cod>String</code> value
+         * @param inType a <code>String</code> value
+         * @param inValue a <code>String</code> value
          */
         private DisplayFixMessageValue(int inTag,
                                        String inName,
                                        String inType,
                                        String inValue)
         {
-            tag = inTag;
-            name = inName;
-            type = inType;
-            value = inValue;
+            tagProperty.set(inTag);
+            nameProperty.set(inName);
+            typeProperty.set(inType);
+            valueProperty.set(inValue);
         }
         /**
-         * Get the tag value.
+         * Get the tag property.
          *
-         * @return an <code>int</code> value
+         * @return a <code>ReadOnlyIntegerProperty</code> value
          */
-        public int getTag()
+        private ReadOnlyIntegerProperty tagProperty()
         {
-            return tag;
+            return tagProperty;
         }
         /**
-         * Get the name value.
+         * Get the name property.
          *
-         * @return a <code>String</code> value
+         * @return a <code>ReadOnlyStringProperty</code> value
          */
-        public String getName()
+        private ReadOnlyStringProperty nameProperty()
         {
-            return name;
+            return nameProperty;
         }
         /**
-         * Get the type value.
+         * Get the type property.
          *
-         * @return a <code>String</code> value
+         * @return a <code>ReadOnlyStringProperty</code> value
          */
-        public String getType()
+        private ReadOnlyStringProperty typeProperty()
         {
-            return type;
+            return typeProperty;
         }
         /**
-         * Get the value value.
+         * Get the value property.
          *
-         * @return a <code>String</code> value
+         * @return a <code>ReadOnlyStringProperty</code> value
          */
-        public String getValue()
+        private ReadOnlyStringProperty valueProperty()
         {
-            return value;
+            return valueProperty;
         }
-        private final int tag;
-        private final String name;
-        private final String type;
-        private final String value;
+        /**
+         * tag property
+         */
+        private final IntegerProperty tagProperty = new SimpleIntegerProperty();
+        /**
+         * name property
+         */
+        private final StringProperty nameProperty = new SimpleStringProperty();
+        /**
+         * type property
+         */
+        private final StringProperty typeProperty = new SimpleStringProperty();
+        /**
+         * value property
+         */
+        private final StringProperty valueProperty = new SimpleStringProperty();
     }
-    private VBox mainLayout;
-    private TableView<DisplayFixMessageValue> fixMessageGrid;
     /**
-     * web message service value
+     * main view layout
      */
-    @Autowired
-    private WebMessageService webMessageService;
+    private VBox mainLayout;
+    /**
+     * FIX message fields table
+     */
+    private TableView<DisplayFixMessageValue> fixMessageTable;
     /**
      * FIX message to display
      */
@@ -238,104 +272,4 @@ public class FixMessageDetailsView
      * global name of this view
      */
     private static final String NAME = "FIX Message Details View";
-
- 
- // private static final long serialVersionUID = 8926640586123984644L;
-//    /* (non-Javadoc)
-//     * @see com.vaadin.ui.AbstractComponent#attach()
-//     */
-//    @Override
-//    public void attach()
-//    {
-//        setSizeFull();
-//        fixMessageGrid = new Grid();
-//        fixMessageGrid.addColumn("Tag",
-//                                 String.class).setSortable(false);
-//        fixMessageGrid.addColumn("Name",
-//                                 String.class).setSortable(false);;
-//        fixMessageGrid.addColumn("Type",
-//                                 String.class).setSortable(false);;
-//        fixMessageGrid.addColumn("Value",
-//                                 String.class).setSortable(false);;
-//        try {
-//            FIXVersion fixVersion = FIXVersion.getFIXVersion(fixMessage);
-//            quickfix.DataDictionary dataDictionary = FIXMessageUtil.getDataDictionary(fixVersion);
-//            Iterator<quickfix.Field<?>> fieldIterator = fixMessage.getHeader().iterator();
-//            while(fieldIterator.hasNext()) {
-//                quickfix.Field<?> field = fieldIterator.next();
-//                fixMessageGrid.addRow(String.valueOf(field.getTag()),
-//                                      dataDictionary.getFieldName(field.getTag()),
-//                                      dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
-//                                      String.valueOf(field.getObject()));
-//            }
-//            fieldIterator = fixMessage.iterator();
-//            while(fieldIterator.hasNext()) {
-//                quickfix.Field<?> field = fieldIterator.next();
-//                fixMessageGrid.addRow(String.valueOf(field.getTag()),
-//                                          dataDictionary.getFieldName(field.getTag()),
-//                                          dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
-//                                          String.valueOf(field.getObject()));
-//            }
-//            fieldIterator = fixMessage.getTrailer().iterator();
-//            while(fieldIterator.hasNext()) {
-//                quickfix.Field<?> field = fieldIterator.next();
-//                fixMessageGrid.addRow(String.valueOf(field.getTag()),
-//                                      dataDictionary.getFieldName(field.getTag()),
-//                                      dataDictionary.getFieldType(field.getTag()).getJavaType().getSimpleName(),
-//                                      String.valueOf(field.getObject()));
-//            }
-//        } catch (FieldNotFound e) {
-//            throw new RuntimeException(e);
-//        }
-//        fixMessageGrid.setSizeFull();
-//        fixMessageGrid.setId(getClass().getCanonicalName() + ".fixMessageGrid");
-//        styleService.addStyle(fixMessageGrid);
-//        addComponent(fixMessageGrid);
-//        setId(getClass().getCanonicalName() + ".contentLayout");
-//        styleService.addStyle(this);
-//    }
-//    /* (non-Javadoc)
-//     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-//     */
-//    @Override
-//    public void enter(ViewChangeEvent inEvent)
-//    {
-//    }
-//    /* (non-Javadoc)
-//     * @see org.marketcetera.web.view.ContentView#getViewName()
-//     */
-//    @Override
-//    public String getViewName()
-//    {
-//        return NAME;
-//    }
-//    /**
-//     * Create a new FixMessageDetailsView instance.
-//     *
-//     * @param inParentWindow a <code>Window</code> value
-//     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
-//     * @param inViewProperties a <code>Properties</code> value
-//     */
-//    public FixMessageDetailsView(Window inParent,
-//                                 NewWindowEvent inEvent,
-//                                 Properties inViewProperties)
-//    {
-//        super(inParent,
-//              inEvent,
-//              inViewProperties);
-//        String rawFixMessage = inViewProperties.getProperty(quickfix.Message.class.getCanonicalName());
-//        try {
-//            fixMessage = new quickfix.Message(rawFixMessage);
-//        } catch (InvalidMessage e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//    /**
-//     * grid component to display the FIX message fields
-//     */
-//    private Grid fixMessageGrid;
-//    /**
-//     * FIX message to display
-//     */
-//    private final quickfix.Message fixMessage;
 }

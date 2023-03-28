@@ -4,7 +4,7 @@ import java.net.URL;
 
 import org.marketcetera.ui.events.LogoutEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -75,5 +75,5 @@ public class LogoutMenuItem
      * provides access to web message services
      */
     @Autowired
-    private WebMessageService webMessageService;
+    private UiMessageService webMessageService;
 }

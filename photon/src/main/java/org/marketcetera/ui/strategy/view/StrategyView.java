@@ -11,14 +11,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
-import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -44,7 +41,6 @@ import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -105,13 +101,12 @@ import javafx.stage.Modality;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyView
         extends AbstractContentView
-        implements ClientStatusListener
 {
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
         strategyClient = serviceManager.getService(StrategyClientService.class);
         mainLayout = new VBox(10);
@@ -182,7 +177,6 @@ public class StrategyView
                                           e);
                 }
             }},new Date(System.currentTimeMillis() + strategyRuntimeUpdateInterval),strategyRuntimeUpdateInterval);
-        serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose()
@@ -199,7 +193,7 @@ public class StrategyView
                 strategyEventListener = null;
             } catch (Exception ignored) {}
         }
-        serviceManager.getService(AdminClientService.class).removeClientStatusListener(this);
+        super.onClose();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getMainLayout()
@@ -218,25 +212,25 @@ public class StrategyView
         return NAME;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.ClientStatusListener#receiveClientStatus(boolean)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
      */
     @Override
-    public void receiveClientStatus(boolean inIsAvailable)
+    protected void onClientConnect()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "Received client status available: {}",
-                               inIsAvailable);
-        if(inIsAvailable) {
-            updateStrategies();
-            updateEvents();
-            initializeStrategyEventListener();
-            // TODO need to use a timer
-        } else {
-            Platform.runLater(() -> {
-                strategyTable.getItems().clear();
-                eventTable.getItems().clear();
-            });
-        }
+        updateStrategies();
+        updateEvents();
+        initializeStrategyEventListener();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            strategyTable.getItems().clear();
+            eventTable.getItems().clear();
+        });
     }
     /**
      * Create a new StrategyView instance.
@@ -348,7 +342,7 @@ public class StrategyView
         if(ownerOption.isEmpty()) {
             SLF4JLoggerProxy.warn(this,
                                   "Cannot load a strategy because the current user cannot be determined");
-            webMessageService.post(new NotificationEvent("Load Strategy",
+            uiMessageService.post(new NotificationEvent("Load Strategy",
                                                          "Cannot load a new strategy because the current user cannot be determined",
                                                          AlertType.ERROR));
             return;
@@ -361,7 +355,7 @@ public class StrategyView
         File result = strategyFileChooser.showOpenDialog(PhotonApp.getPrimaryStage());
         if(result != null) {
             if(!(result.exists() && result.canRead())) {
-                webMessageService.post(new NotificationEvent("Load Strategy",
+                uiMessageService.post(new NotificationEvent("Load Strategy",
                                                              "File '" + result.getAbsolutePath() + "' could not be read",
                                                              AlertType.WARNING));
                 return;
@@ -426,7 +420,7 @@ public class StrategyView
             });
             Optional<String> nameOption = nameConfirmationDialog.showAndWait();
             if(nameOption.isEmpty()) {
-                webMessageService.post(new NotificationEvent("Load Strategy",
+                uiMessageService.post(new NotificationEvent("Load Strategy",
                                                              "Strategy load canceled",
                                                              AlertType.INFORMATION));
                 return;
@@ -491,7 +485,7 @@ public class StrategyView
                 };
                 strategyClient.uploadFile(uploadRequest);
                 updateStrategies();
-                webMessageService.post(new NotificationEvent("Load Strategy",
+                uiMessageService.post(new NotificationEvent("Load Strategy",
                                                              "Strategy '" + name + "' loaded",
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
@@ -499,7 +493,7 @@ public class StrategyView
                                       e,
                                       "Unable to create '{}'",
                                       name);
-                webMessageService.post(new NotificationEvent("Load Strategy",
+                uiMessageService.post(new NotificationEvent("Load Strategy",
                                                              "File '" + result.getAbsolutePath() + "' could not be read",
                                                              AlertType.WARNING));
             } finally {
@@ -734,13 +728,13 @@ public class StrategyView
                               inSelectedStrategy.strategyNameProperty().get());
         try {
             strategyClient.stopStrategyInstance(inSelectedStrategy.strategyNameProperty().get());
-            webMessageService.post(new NotificationEvent("Stop Strategy",
+            uiMessageService.post(new NotificationEvent("Stop Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " stopped",
                                                          AlertType.INFORMATION));
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
-            webMessageService.post(new NotificationEvent("Stop Strategy",
+            uiMessageService.post(new NotificationEvent("Stop Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " stop failed: " + PlatformServices.getMessage(e),
                                                          AlertType.ERROR));
         }
@@ -759,13 +753,13 @@ public class StrategyView
                               inSelectedStrategy.strategyNameProperty().get());
         try {
             strategyClient.startStrategyInstance(inSelectedStrategy.strategyNameProperty().get());
-            webMessageService.post(new NotificationEvent("Start Strategy",
+            uiMessageService.post(new NotificationEvent("Start Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " started",
                                                          AlertType.INFORMATION));
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
-            webMessageService.post(new NotificationEvent("Start Strategy",
+            uiMessageService.post(new NotificationEvent("Start Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " start failed: " + PlatformServices.getMessage(e),
                                                          AlertType.ERROR));
         }

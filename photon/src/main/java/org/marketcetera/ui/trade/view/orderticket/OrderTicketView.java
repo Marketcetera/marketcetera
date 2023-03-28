@@ -6,16 +6,13 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.SortedMap;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.GuardedBy;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
-import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.client.Validations;
-import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.XmlService;
 import org.marketcetera.fix.ActiveFixSession;
@@ -41,7 +38,6 @@ import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
-import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.service.trade.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
@@ -103,7 +99,7 @@ import javafx.scene.layout.VBox;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OrderTicketView
         extends AbstractContentView
-        implements ContentView,ClientStatusListener
+        implements ContentView
 {
     
     /* (non-Javadoc)
@@ -115,19 +111,6 @@ public class OrderTicketView
         return rootLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose()
-     */
-    @Override
-    public void onClose()
-    {
-        try {
-            if(brokerStatusListener != null) {
-                serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(brokerStatusListener);
-                brokerStatusListener = null;
-            }
-        } catch (Exception ignored) {}
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
      */
     @Override
@@ -135,16 +118,12 @@ public class OrderTicketView
     {
       return NAME;
     }
-    /**
-     * Initialize and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
         rootLayout = new VBox();
         orderTicketLayout = new GridPane();
         // create controls and layouts
@@ -208,9 +187,9 @@ public class OrderTicketView
             try {
                 replaceExecutionReport = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                messageService.post(new NotificationEvent("Replace Order",
-                                                             "Unable to replace order: " + PlatformServices.getMessage(e),
-                                                             AlertType.ERROR));
+                uiMessageService.post(new NotificationEvent("Replace Order",
+                                                            "Unable to replace order: " + PlatformServices.getMessage(e),
+                                                            AlertType.ERROR));
             }
         }
         replaceExecutionReportOption = Optional.ofNullable(replaceExecutionReport);
@@ -220,9 +199,9 @@ public class OrderTicketView
             try {
                 averageFillPrice = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                messageService.post(new NotificationEvent("Trade Order",
-                                                             "Unable to trade order: " + PlatformServices.getMessage(e),
-                                                             AlertType.ERROR));
+                uiMessageService.post(new NotificationEvent("Trade Order",
+                                                            "Unable to trade order: " + PlatformServices.getMessage(e),
+                                                            AlertType.ERROR));
             }
         }
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
@@ -729,57 +708,61 @@ public class OrderTicketView
         }
         
     }
-    /**
-     * Create the broker status listener value.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
      */
-    protected void initializeBrokerStatusListener()
+    @Override
+    protected void onClientDisconnect()
     {
-        brokerStatusListener = new BrokerStatusListener() {
-            @Override
-            public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
-            {
-                SLF4JLoggerProxy.trace(OrderTicketView.this,
-                                       "{} receiveBrokerStatus: {}",
-                                       PlatformServices.getServiceName(getClass()),
-                                       inActiveFixSession);
-                boolean brokersStatusChanged = false;
-                BrokerID activeFixSessionKey = new BrokerID(inActiveFixSession.getFixSession().getName());
-                synchronized(availableBrokers) {
-                    if(inActiveFixSession.getStatus().isLoggedOn() && !inActiveFixSession.getFixSession().isAcceptor()) {
-                        brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
-                                                                     inActiveFixSession) == null);
-                    } else {
-                        brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
-                    }
-                    if(brokersStatusChanged) {
-                        availableBrokers.notifyAll();
-                    }
-                }
-                if(brokersStatusChanged) {
-                    Platform.runLater(new Runnable () {
-                        @Override
-                        public void run()
-                        {
-                            BrokerID currentSelectedBroker = brokerComboBox.getValue();
-                            brokerComboBox.getItems().clear();
-                            brokerComboBox.valueProperty().set(null);
-                            brokerComboBox.getItems().add(AUTO_SELECT_BROKER);
-                            brokerComboBox.getItems().addAll(availableBrokers.keySet());
-                            if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
-                                brokerComboBox.setValue(AUTO_SELECT_BROKER);
-                            } else {
-                                if(availableBrokers.containsKey(currentSelectedBroker)) {
-                                    brokerComboBox.setValue(currentSelectedBroker);
-                                } else {
-                                    brokerComboBox.setValue(AUTO_SELECT_BROKER);
-                                }
-                            }
-                        }}
-                    );
-                }
+        synchronized(availableBrokers) {
+            availableBrokers.clear();
+        }
+        Platform.runLater(() -> {
+            brokerComboBox.getItems().clear();
+            brokerComboBox.valueProperty().set(null);
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onBrokerStatusChange(org.marketcetera.fix.ActiveFixSession)
+     */
+    @Override
+    protected void onBrokerStatusChange(ActiveFixSession inActiveFixSession)
+    {
+        boolean brokersStatusChanged = false;
+        BrokerID activeFixSessionKey = new BrokerID(inActiveFixSession.getFixSession().getName());
+        synchronized(availableBrokers) {
+            if(inActiveFixSession.getStatus().isLoggedOn() && !inActiveFixSession.getFixSession().isAcceptor()) {
+                brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
+                                                             inActiveFixSession) == null);
+            } else {
+                brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
             }
-        };
-        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(brokerStatusListener);
+            if(brokersStatusChanged) {
+                availableBrokers.notifyAll();
+            }
+        }
+        if(brokersStatusChanged) {
+            Platform.runLater(new Runnable () {
+                @Override
+                public void run()
+                {
+                    BrokerID currentSelectedBroker = brokerComboBox.getValue();
+                    brokerComboBox.getItems().clear();
+                    brokerComboBox.valueProperty().set(null);
+                    brokerComboBox.getItems().add(AUTO_SELECT_BROKER);
+                    brokerComboBox.getItems().addAll(availableBrokers.keySet());
+                    if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
+                        brokerComboBox.setValue(AUTO_SELECT_BROKER);
+                    } else {
+                        if(availableBrokers.containsKey(currentSelectedBroker)) {
+                            brokerComboBox.setValue(currentSelectedBroker);
+                        } else {
+                            brokerComboBox.setValue(AUTO_SELECT_BROKER);
+                        }
+                    }
+                }}
+            );
+        }
     }
     /**
      * Adjust the send button based on the other fields.
@@ -1121,10 +1104,6 @@ public class OrderTicketView
      */
     private Separator adviceSeparator;
     /**
-     * listens for broker status changes
-     */
-    private BrokerStatusListener brokerStatusListener;
-    /**
      * contains currently available brokers
      */
     @GuardedBy("availableBrokers")
@@ -1168,9 +1147,4 @@ public class OrderTicketView
      */
     @Autowired
     private XmlService xmlService;
-    /**
-     * web message service value
-     */
-    @Autowired
-    private WebMessageService messageService;
 }

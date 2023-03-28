@@ -1,7 +1,7 @@
 package org.marketcetera.ui.admin.view;
 
 import org.marketcetera.ui.events.NewWindowEvent;
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
 import org.marketcetera.ui.view.ContentViewFactory;
 import org.marketcetera.ui.view.MenuContent;
@@ -85,5 +85,5 @@ public abstract class AbstractAdminViewFactory
      * provides access to web message services
      */
     @Autowired
-    protected WebMessageService webMessageService;
+    protected UiMessageService webMessageService;
 }
