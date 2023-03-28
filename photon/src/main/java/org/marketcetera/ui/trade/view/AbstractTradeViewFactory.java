@@ -4,7 +4,7 @@ import java.net.URL;
 
 import org.marketcetera.core.Pair;
 import org.marketcetera.ui.events.NewWindowEvent;
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
 import org.marketcetera.ui.view.MenuContent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,5 +143,5 @@ public abstract class AbstractTradeViewFactory
      * provides access to web message services
      */
     @Autowired
-    protected WebMessageService webMessageService;
+    protected UiMessageService webMessageService;
 }

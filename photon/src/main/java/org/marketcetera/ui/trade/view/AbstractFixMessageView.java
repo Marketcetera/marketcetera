@@ -3,14 +3,9 @@ package org.marketcetera.ui.trade.view;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
-import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -32,7 +27,6 @@ import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.service.trade.TradeClientService;
 import org.marketcetera.ui.trade.event.FixMessageDetailsViewEvent;
 import org.marketcetera.ui.trade.event.ReplaceOrderEvent;
@@ -73,19 +67,17 @@ import javafx.scene.layout.VBox;
  */
 public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayType,ClientClazz>
         extends AbstractContentView
-        implements ClientStatusListener
 {
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
         // TODO need to preserve column order
         // TODO add page size widget
         // TODO implement sorting
         // TODO need to set initial view size to something reasonable
-        reconnectTimer = new Timer();
         tradeClientService = serviceManager.getService(TradeClientService.class);
         initializeTradeMessageListener();
         mainLayout = new VBox();
@@ -117,7 +109,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         currentPage = 0;
         pageSize = 10;
         updateReports();
-        serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getMainLayout()
@@ -136,43 +127,26 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         if(tradeMessageListener != null) {
             tradeClientService.removeTradeMessageListener(tradeMessageListener);
         }
-        tradeClientService.removeClientStatusListener(this);
+        super.onClose();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.ClientStatusListener#receiveClientStatus(boolean)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
      */
     @Override
-    public void receiveClientStatus(boolean inIsAvailable)
+    protected void onClientConnect()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "Received client status available: {}",
-                               inIsAvailable);
-        if(inIsAvailable) {
-            reconnectTimer.schedule(new TimerTask() {
-                @Override
-                public void run()
-                {
-                    boolean succeeded = false;
-                    do {
-                        try {
-                            initializeTradeMessageListener();
-                            updateReports();
-                            succeeded = true;
-                        } catch (Exception e) {
-                            SLF4JLoggerProxy.warn(this,
-                                                  e);
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException ignored) {
-                            }
-                        }
-                    } while(!succeeded);
-                }},500);
-        } else {
-            Platform.runLater(() -> {
-                reportsTableView.getItems().clear();
-            });
-        }
+        updateReports();
+        initializeTradeMessageListener();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            reportsTableView.getItems().clear();
+        });
     }
     /**
      * Create the trade message listener value.
@@ -183,6 +157,10 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             @Override
             public void receiveTradeMessage(TradeMessage inTradeMessage)
             {
+                SLF4JLoggerProxy.trace(getClass(),
+                                       "{} received {}",
+                                       viewName,
+                                       inTradeMessage);
                 updateReports();
             }
         };
@@ -201,7 +179,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             FixClazz report = inTableView.getSelectionModel().getSelectedItem();
             ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
             if(executionReport == null) {
-                webMessageService.post(new NotificationEvent("Cancel Order",
+                uiMessageService.post(new NotificationEvent("Cancel Order",
                                                              "Unable to cancel " + report.getOrderId() + ": no execution report",
                                                              AlertType.ERROR));
                 return;
@@ -213,12 +191,12 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                   orderCancel);
             SendOrderResponse response = tradeClientService.send(orderCancel);
             if(response.getFailed()) {
-                webMessageService.post(new NotificationEvent("Cancel Order",
+                uiMessageService.post(new NotificationEvent("Cancel Order",
                                                              "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
                                                              AlertType.ERROR));
                 return;
             } else {
-                webMessageService.post(new NotificationEvent("Cancel Order",
+                uiMessageService.post(new NotificationEvent("Cancel Order",
                                                              "Cancel order " + response.getOrderId() + " submitted",
                                                              AlertType.INFORMATION));
             }
@@ -228,7 +206,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             FixClazz report = inTableView.getSelectionModel().getSelectedItem();
             ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
             if(executionReport == null) {
-                webMessageService.post(new NotificationEvent("Replace Order",
+                uiMessageService.post(new NotificationEvent("Replace Order",
                                                              "Unable to replace " + report.getOrderId() + ": no execution report",
                                                              AlertType.ERROR));
                 return;
@@ -237,7 +215,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 try {
                     executionReportXml = xmlService.marshall(executionReport);
                 } catch (Exception e) {
-                    webMessageService.post(new NotificationEvent("Replace Order",
+                    uiMessageService.post(new NotificationEvent("Replace Order",
                                                                  "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
                                                                  AlertType.ERROR));
                     return;
@@ -248,7 +226,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
                                                                                  executionReport,
                                                                                  replaceProperties);
-                webMessageService.post(replaceOrderEvent);
+                uiMessageService.post(replaceOrderEvent);
                 return;
         });
         SeparatorMenuItem contextMenuSeparator1 = new SeparatorMenuItem();
@@ -281,7 +259,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
                                                                                                report,
                                                                                                replaceProperties);
-            webMessageService.post(viewFixMessageDetailsEvent);
+            uiMessageService.post(viewFixMessageDetailsEvent);
         });
         // TODO need Add Report Action
         if(authzHelperService.hasPermission(TradePermissions.SendOrderAction)) { 
@@ -823,10 +801,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      * copy FIX message context menu item
      */
     protected MenuItem copyOrderMenuItem;
-    /**
-     * used to reconnect to the server after disconnection
-     */
-    private Timer reconnectTimer;
     /**
      * listens for trade messages
      */

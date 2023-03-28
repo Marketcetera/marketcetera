@@ -1460,7 +1460,7 @@ public class WindowManagerService
      * web message service value
      */
     @Autowired
-    private WebMessageService webMessageService;
+    private UiMessageService webMessageService;
     /**
      * provides access to display layout services
      */

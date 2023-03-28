@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
@@ -94,10 +92,6 @@ public class MarketDataListView
     @Override
     public void onClose()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} stop",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
         try {
             synchronized(symbolsByRequestId) {
                 updateViewProperties();
@@ -110,6 +104,7 @@ public class MarketDataListView
             SLF4JLoggerProxy.warn(this,
                                   e);
         }
+        super.onClose();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
@@ -119,16 +114,12 @@ public class MarketDataListView
     {
       return NAME;
     }
-    /**
-     * Initialize and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
         marketdataClient = serviceManager.getService(MarketDataClientService.class);
         tradeClient = serviceManager.getService(TradeClientService.class);
         rootLayout = new VBox(5);
@@ -145,6 +136,27 @@ public class MarketDataListView
             }
         });
         restoreSymbols();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
+     */
+    @Override
+    protected void onClientConnect()
+    {
+        synchronized(symbolsByRequestId) {
+            symbolsByRequestId.clear();
+        }
+        restoreSymbols();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            marketDataTable.getItems().clear();
+        });
     }
     /**
      * Create a new MarketDataListView instance.
@@ -375,7 +387,7 @@ public class MarketDataListView
             MarketDataDetailEvent viewFixMessageDetailsEvent = applicationContext.getBean(MarketDataDetailEvent.class,
                                                                                           selectedItem.getInstrument().getFullSymbol(),
                                                                                           selectedItem.getInstrument());
-            webMessageService.post(viewFixMessageDetailsEvent);
+            uiMessageService.post(viewFixMessageDetailsEvent);
         });
         marketDataContextMenu = new ContextMenu();
         marketDataContextMenu.getItems().addAll(removeMarketDataMenuItem,
@@ -408,7 +420,7 @@ public class MarketDataListView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        webMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + inSelectedItem.symbolProperty().get(),
+        uiMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + inSelectedItem.symbolProperty().get(),
                                                              suggestion));
     }
     /**
@@ -518,7 +530,7 @@ public class MarketDataListView
                     default:
                         throw new UnsupportedOperationException("Unexpected log level: " + logEvent.getLevel());
                 }
-                webMessageService.post(new NotificationEvent("Market Data Request Failed",
+                uiMessageService.post(new NotificationEvent("Market Data Request Failed",
                                                              logEvent.getMessage(),
                                                              alertType));
             } else {

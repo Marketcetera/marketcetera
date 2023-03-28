@@ -6,8 +6,6 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.admin.AdminPermissions;
@@ -19,7 +17,6 @@ import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -92,13 +89,20 @@ public class RoleView
     {
         return NAME;
     }
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    public Region getMainLayout()
     {
-        adminClientService = serviceManager.getService(AdminClientService.class);
+        return mainLayout;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
         mainLayout = new VBox(5);
         initializeTable();
         buttonLayout = new HBox(5);
@@ -110,14 +114,6 @@ public class RoleView
         buttonLayout.getChildren().add(addRoleButton);
         mainLayout.getChildren().addAll(rolesTable,
                                     buttonLayout);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
-     */
-    @Override
-    public Region getMainLayout()
-    {
-        return mainLayout;
     }
     /**
      * Update the users displayed in the table.
@@ -211,7 +207,7 @@ public class RoleView
                                           inTitle,
                                           inSelectedItem);
                     updateRoles();
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " succeeded",
                                                                  AlertType.INFORMATION));
                 } catch (Exception e) {
@@ -222,7 +218,7 @@ public class RoleView
                                           inTitle,
                                           inSelectedItem,
                                           message);
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " failed: " + message,
                                                                  AlertType.ERROR));
                 }
@@ -413,7 +409,7 @@ public class RoleView
                     adminClientService.updateRole(inSelectedRole.getName(),
                                                   role);
                 }
-                webMessageService.post(new NotificationEvent(inIsAdd ? "Create Role" : "Update Role",
+                uiMessageService.post(new NotificationEvent(inIsAdd ? "Create Role" : "Update Role",
                                                              "Role '" + inSelectedRole.getName() + "' " + (inIsAdd ? "created" : "updated"),
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
@@ -423,7 +419,7 @@ public class RoleView
                                       "Unable to create or update role {}: {}",
                                       inSelectedRole,
                                       message);
-                webMessageService.post(new NotificationEvent(inIsAdd ? "Create Role" : "Update Role",
+                uiMessageService.post(new NotificationEvent(inIsAdd ? "Create Role" : "Update Role",
                                                              (inIsAdd?"Create":"Update") + " role failed: " + message,
                                                              AlertType.ERROR));
             }
@@ -492,10 +488,6 @@ public class RoleView
      * performs an add role action
      */
     private Button addRoleButton;
-    /**
-     * provides access to admin client services
-     */
-    private AdminClientService adminClientService;
     /**
      * view table
      */
