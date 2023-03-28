@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
@@ -220,6 +221,24 @@ public class TradeClientService
         tradeClient = tradeClientFactory.create(params);
         tradeClient.start();
         return tradeClient.isRunning();
+    }
+    /**
+     * Add the given client status listener.
+     *
+     * @param inListener a <code>ClientStatusListener</code> value
+     */
+    public void addClientStatusListener(ClientStatusListener inListener)
+    {
+        tradeClient.addClientStatusListener(inListener);
+    }
+    /**
+     * Remove the given client status listener.
+     *
+     * @param inListener a <code>ClientStatusListener</code> value
+     */
+    public void removeClientStatusListener(ClientStatusListener inListener)
+    {
+        tradeClient.removeClientStatusListener(inListener);
     }
     /**
      * Sets the TradeClientFactory value.

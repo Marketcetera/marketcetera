@@ -7,7 +7,6 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportType;
-import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
@@ -44,7 +43,7 @@ import javafx.scene.layout.Region;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ReportsView
         extends AbstractFixMessageView<DisplayReport,Report>
-        implements ContentView,TradeMessageListener
+        implements ContentView
 {
     /**
      * Create a new ReportsView instance.
