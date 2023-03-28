@@ -33,6 +33,7 @@ import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.trade.client.SendOrderResponse;
+import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
@@ -87,7 +88,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
 /* $License$ */
 
@@ -200,7 +200,6 @@ public class OrderTicketView
         textTextField = new TextField();
         accountLabel = new Label("Account");
         accountTextField = new TextField();
-        orderTicketLabel = new Label("New Order Ticket");
         brokerLayout = new VBox(5);
         sideLayout = new VBox(5);
         sideLabel = new Label("Side");
@@ -268,16 +267,12 @@ public class OrderTicketView
                                                              AlertType.ERROR));
             }
         }
-        String orderTicketLabelHeader = replaceExecutionReportOption.isPresent() ? "Replace " : "New ";
-        orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
         Suggestion suggestion = null;
         if(getNewWindowEvent() instanceof HasSuggestion) {
             suggestion = ((HasSuggestion)getNewWindowEvent()).getSuggestion();
         }
         suggestionOption = Optional.ofNullable(suggestion);
-        orderTicketLabel.setFont(new Font(32));
-        styleService.addStyle(orderTicketLabel);
         // prepare the first row
         // broker combo
         brokerComboBox.setPromptText("Broker");
@@ -361,12 +356,10 @@ public class OrderTicketView
             try {
                 String symbol = StringUtils.trimToNull(String.valueOf(inNewValue));
                 if(symbol == null) {
-                    orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
                     return;
                 }
                 resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
                 if(resolvedInstrument == null) {
-                    orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
                     symbolTextField.setStyle(PhotonServices.errorStyle);
                     adviceLabel.textProperty().set("Cannot resolve symbol");
                     return;
@@ -374,7 +367,6 @@ public class OrderTicketView
                 symbolTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
                 symbolTextField.setTooltip(new Tooltip(resolvedInstrument.toString()));
-                orderTicketLabel.textProperty().set(orderTicketLabelHeader + resolvedInstrument.getSecurityType().name() + " Order Ticket");
                 // TODO if peg-to-midpoint is checked, we need to change the market data subscription
             } finally {
                 adjustSendButton();
@@ -612,7 +604,7 @@ public class OrderTicketView
         KeyCombination sendKeyCombination = new KeyCodeCombination(KeyCode.ENTER);
         Mnemonic sendMnemonic = new Mnemonic(sendButton,
                                              sendKeyCombination);
-        // TODO add mnemonic?
+        PhotonApp.getPrimaryStage().getScene().addMnemonic(sendMnemonic);
         sendClearLayout.getChildren().addAll(sendButton,
                                              clearButton);
         sendButton.setOnMouseClicked(inEvent -> {
@@ -714,23 +706,28 @@ public class OrderTicketView
         });
         orderTicketLayout.setVgap(5);
         orderTicketLayout.setHgap(5);
-        orderTicketLayout.add(orderTicketLabel,0,0,7,1);
-        orderTicketLayout.add(brokerLayout,0,1);
-        orderTicketLayout.add(sideLayout,1,1);
-        orderTicketLayout.add(quantityLayout,2,1);
-        orderTicketLayout.add(symbolLayout,3,1);
-        orderTicketLayout.add(orderTypeLayout,4,1);
-        orderTicketLayout.add(priceLayout,5,1);
-        orderTicketLayout.add(timeInForceLayout,6,1);
-        orderTicketLayout.add(otherAccordion,0,2);
-        orderTicketLayout.add(brokerAlgoAccordion,1,2);
-        orderTicketLayout.add(customFieldsAccordion,2,2);
-        orderTicketLayout.add(sendClearLayout,0,3);
+        int rowCount = 0;
+        int colCount = 0;
+        orderTicketLayout.add(brokerLayout,colCount,rowCount);
+        orderTicketLayout.add(sideLayout,++colCount,rowCount);
+        orderTicketLayout.add(quantityLayout,++colCount,rowCount);
+        orderTicketLayout.add(symbolLayout,++colCount,rowCount);
+        orderTicketLayout.add(orderTypeLayout,++colCount,rowCount);
+        orderTicketLayout.add(priceLayout,++colCount,rowCount);
+        orderTicketLayout.add(timeInForceLayout,++colCount,rowCount); colCount = 0;
+        orderTicketLayout.add(otherAccordion,colCount,++rowCount);
+        orderTicketLayout.add(brokerAlgoAccordion,++colCount,rowCount);
+        orderTicketLayout.add(customFieldsAccordion,++colCount,rowCount); colCount = 0;
+        orderTicketLayout.add(sendClearLayout,colCount,++rowCount);
         adviceSeparator.setId(getClass().getCanonicalName() + ".adviceSeparator");
         adviceLabel.setId(getClass().getCanonicalName() + ".adviceLabel");
         styleService.addStyleToAll(adviceSeparator,
                                    adviceLabel,
                                    rootLayout);
+//        orderTicketLayout.prefWidthProperty().bind(rootLayout.widthProperty());
+        orderTicketLayout.prefHeightProperty().bind(rootLayout.widthProperty());
+        rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
+        rootLayout.prefWidthProperty().bind(getParentWindow().widthProperty());
         rootLayout.getChildren().addAll(orderTicketLayout,
                                         adviceSeparator,
                                         adviceLabel);
@@ -849,7 +846,6 @@ public class OrderTicketView
         
     }
     private VBox rootLayout;
-    private Label orderTicketLabel;
     private VBox brokerLayout;
     private Label brokerLabel;
     private ComboBox<BrokerID> brokerComboBox;
