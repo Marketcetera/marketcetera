@@ -1,6 +1,7 @@
 package org.marketcetera.ui.strategy.view;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -12,7 +13,6 @@ import java.util.TimerTask;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
@@ -50,6 +50,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -59,6 +61,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -70,6 +73,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
@@ -591,14 +595,50 @@ public class StrategyView
         strategyProgressColumn.setCellValueFactory(new PropertyValueFactory<>("uploadProgress"));
         strategyProgressColumn.setCellFactory(tableColumn -> new TableCell<DisplayStrategyInstance,Double>() {});
         strategyProgressColumn.setCellFactory(ProgressBarTableCell.<DisplayStrategyInstance> forTableColumn());
+        strategyStatusProgressColumn = new TableColumn<>("Status");
+        strategyStatusProgressColumn.setCellFactory(tableColumn -> renderProgressStatusCell(tableColumn));
         strategyTable.getColumns().add(strategyNameColumn);
         strategyTable.getColumns().add(strategyStatusColumn);
         strategyTable.getColumns().add(strategyUptimeColumn);
         strategyTable.getColumns().add(strategyOwnerColumn);
         strategyTable.getColumns().add(strategyProgressColumn);
+        strategyTable.getColumns().add(strategyStatusProgressColumn);
         strategyTable.getSelectionModel().selectedItemProperty().addListener((ChangeListener<DisplayStrategyInstance>) (inObservable,inOldValue,inNewValue) -> {
             enableStrategyContextMenuItems(inNewValue);
         });
+    }
+    protected TableCell<DisplayStrategyInstance,Object> renderProgressStatusCell(TableColumn<DisplayStrategyInstance,Object> inTableColumn)
+    {
+        TableCell<DisplayStrategyInstance,Object> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(Object inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                DisplayStrategyInstance displayStrategyInstance = this.getTableRow().getItem();
+                System.out.println("COCO: displayStrategyInstance is " + displayStrategyInstance);
+                if(!isEmpty && inItem != null && displayStrategyInstance != null) {
+                    StrategyStatus strategyStatus = displayStrategyInstance.strategyStatusProperty().get();
+                    switch(strategyStatus) {
+                        case LOADING:
+                            this.setGraphic(new ProgressBar(displayStrategyInstance.uploadProgressProperty().get()));
+                            break;
+                        case ERROR:
+                        case PREPARING:
+                        case RUNNING:
+                        case STOPPED:
+                            this.setGraphic(new Label(strategyStatus.name()));
+                            break;
+                        default:
+                            throw new UnsupportedOperationException("Unexpected strategy status: " + strategyStatus);
+                    }
+                }
+            }
+        };
+        return tableCell;
     }
     private void initializeEventContextMenu()
     {
@@ -812,6 +852,7 @@ public class StrategyView
     private TableColumn<DisplayStrategyInstance,Period> strategyUptimeColumn;
     private TableColumn<DisplayStrategyInstance,String> strategyOwnerColumn;
     private TableColumn<DisplayStrategyInstance,Double> strategyProgressColumn;
+    private TableColumn<DisplayStrategyInstance,Object> strategyStatusProgressColumn;
     private TableColumn<DisplayStrategyMessage,String> eventStrategyNameColumn;
     private TableColumn<DisplayStrategyMessage,DateTime> eventTimestampColumn;
     private TableColumn<DisplayStrategyMessage,Severity> eventSeverityColumn;
