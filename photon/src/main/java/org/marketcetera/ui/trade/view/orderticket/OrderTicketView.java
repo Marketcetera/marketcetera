@@ -15,6 +15,7 @@ import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.client.Validations;
+import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.XmlService;
 import org.marketcetera.fix.ActiveFixSession;
@@ -102,7 +103,7 @@ import javafx.scene.layout.VBox;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OrderTicketView
         extends AbstractContentView
-        implements ContentView,BrokerStatusListener
+        implements ContentView,ClientStatusListener
 {
     
     /* (non-Javadoc)
@@ -114,59 +115,16 @@ public class OrderTicketView
         return rootLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
-     */
-    @Override
-    public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
-    {
-        SLF4JLoggerProxy.trace(this,
-                               "{} receiveBrokerStatus: {}",
-                               PlatformServices.getServiceName(getClass()),
-                               inActiveFixSession);
-        boolean brokersStatusChanged = false;
-        BrokerID activeFixSessionKey = new BrokerID(inActiveFixSession.getFixSession().getName());
-        synchronized(availableBrokers) {
-            if(inActiveFixSession.getStatus().isLoggedOn() && !inActiveFixSession.getFixSession().isAcceptor()) {
-                brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
-                                                             inActiveFixSession) == null);
-            } else {
-                brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
-            }
-            if(brokersStatusChanged) {
-                availableBrokers.notifyAll();
-            }
-        }
-        if(brokersStatusChanged) {
-            Platform.runLater(new Runnable () {
-                @Override
-                public void run()
-                {
-                    BrokerID currentSelectedBroker = brokerComboBox.getValue();
-                    brokerComboBox.getItems().clear();
-                    brokerComboBox.valueProperty().set(null);
-                    brokerComboBox.getItems().add(AUTO_SELECT_BROKER);
-                    brokerComboBox.getItems().addAll(availableBrokers.keySet());
-                    if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
-                        brokerComboBox.setValue(AUTO_SELECT_BROKER);
-                    } else {
-                        if(availableBrokers.containsKey(currentSelectedBroker)) {
-                            brokerComboBox.setValue(currentSelectedBroker);
-                        } else {
-                            brokerComboBox.setValue(AUTO_SELECT_BROKER);
-                        }
-                    }
-                }}
-            );
-        }
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
     public void onClose()
     {
         try {
-            serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
+            if(brokerStatusListener != null) {
+                serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(brokerStatusListener);
+                brokerStatusListener = null;
+            }
         } catch (Exception ignored) {}
     }
     /* (non-Javadoc)
@@ -240,7 +198,7 @@ public class OrderTicketView
                                           customFieldsTable);
         sendButton = new Button("Send");
         clearButton = new Button("Clear");
-        sendClearLayout = new HBox(5);
+        buttonLayout = new HBox(5);
         adviceLabel = new Label("");
         adviceSeparator = new Separator(Orientation.HORIZONTAL);
         // find saved data, if any
@@ -250,7 +208,7 @@ public class OrderTicketView
             try {
                 replaceExecutionReport = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                webMessageService.post(new NotificationEvent("Replace Order",
+                messageService.post(new NotificationEvent("Replace Order",
                                                              "Unable to replace order: " + PlatformServices.getMessage(e),
                                                              AlertType.ERROR));
             }
@@ -262,7 +220,7 @@ public class OrderTicketView
             try {
                 averageFillPrice = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                webMessageService.post(new NotificationEvent("Trade Order",
+                messageService.post(new NotificationEvent("Trade Order",
                                                              "Unable to trade order: " + PlatformServices.getMessage(e),
                                                              AlertType.ERROR));
             }
@@ -311,7 +269,7 @@ public class OrderTicketView
         styleService.addStyleToAll(brokerLabel,
                                    brokerComboBox,
                                    brokerLayout);
-        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(this);
+        initializeBrokerStatusListener();
         // side combo
         sideComboBox.setPromptText("Side");
         sideComboBox.setId(getClass().getCanonicalName() + ".sideComboBox");
@@ -568,19 +526,19 @@ public class OrderTicketView
         customFieldsPane.setId(getClass().getCanonicalName() + ".customFieldsPane");
         customFieldsAccordion.getPanes().add(customFieldsPane);
         customFieldsTable.setId(getClass().getCanonicalName() + ".customFieldsTable");
-        TableColumn<CustomFieldHolder,Boolean> customFieldsEnabledColumn = new TableColumn<>("Enabled");
+        TableColumn<DisplayCustomField,Boolean> customFieldsEnabledColumn = new TableColumn<>("Enabled");
         customFieldsEnabledColumn.setCellValueFactory( cellData -> new ReadOnlyBooleanWrapper(cellData.getValue().isEnabledProperty().get()));
-        customFieldsEnabledColumn.setCellFactory(CheckBoxTableCell.<CustomFieldHolder>forTableColumn(customFieldsEnabledColumn));
+        customFieldsEnabledColumn.setCellFactory(CheckBoxTableCell.<DisplayCustomField>forTableColumn(customFieldsEnabledColumn));
         customFieldsEnabledColumn.setId(getClass().getCanonicalName() + ".customFieldsEnabledColumn");
         customFieldsEnabledColumn.setEditable(true);
-        TableColumn<CustomFieldHolder,String> customFieldsKeyColumn = new TableColumn<>("Key");
+        TableColumn<DisplayCustomField,String> customFieldsKeyColumn = new TableColumn<>("Key");
         customFieldsKeyColumn.setCellValueFactory(cellData -> cellData.getValue().keyProperty());
-        customFieldsKeyColumn.setCellFactory(TextFieldTableCell.<CustomFieldHolder>forTableColumn());
+        customFieldsKeyColumn.setCellFactory(TextFieldTableCell.<DisplayCustomField>forTableColumn());
         customFieldsKeyColumn.setId(getClass().getCanonicalName() + ".customFieldsKeyColumn");
         customFieldsKeyColumn.setEditable(true);
-        TableColumn<CustomFieldHolder,String> customFieldsValueColumn = new TableColumn<>("Value");
+        TableColumn<DisplayCustomField,String> customFieldsValueColumn = new TableColumn<>("Value");
         customFieldsValueColumn.setCellValueFactory(cellData -> cellData.getValue().valueProperty());
-        customFieldsValueColumn.setCellFactory(TextFieldTableCell.<CustomFieldHolder>forTableColumn());
+        customFieldsValueColumn.setCellFactory(TextFieldTableCell.<DisplayCustomField>forTableColumn());
         customFieldsValueColumn.setId(getClass().getCanonicalName() + ".customFieldsValueColumn");
         customFieldsValueColumn.setEditable(true);
         customFieldsTable.getColumns().add(customFieldsEnabledColumn);
@@ -593,7 +551,7 @@ public class OrderTicketView
             public void handle(MouseEvent inEvent)
             {
                 if(inEvent.getClickCount() == 2) {
-                    customFieldsTable.getItems().add(new CustomFieldHolder());
+                    customFieldsTable.getItems().add(new DisplayCustomField());
                 }
             }}
         );
@@ -604,8 +562,9 @@ public class OrderTicketView
         KeyCombination sendKeyCombination = new KeyCodeCombination(KeyCode.ENTER);
         Mnemonic sendMnemonic = new Mnemonic(sendButton,
                                              sendKeyCombination);
+        sendButton.setMnemonicParsing(true);
         PhotonApp.getPrimaryStage().getScene().addMnemonic(sendMnemonic);
-        sendClearLayout.getChildren().addAll(sendButton,
+        buttonLayout.getChildren().addAll(sendButton,
                                              clearButton);
         sendButton.setOnMouseClicked(inEvent -> {
             NewOrReplaceOrder newOrder;
@@ -718,7 +677,7 @@ public class OrderTicketView
         orderTicketLayout.add(otherAccordion,colCount,++rowCount);
         orderTicketLayout.add(brokerAlgoAccordion,++colCount,rowCount);
         orderTicketLayout.add(customFieldsAccordion,++colCount,rowCount); colCount = 0;
-        orderTicketLayout.add(sendClearLayout,colCount,++rowCount);
+        orderTicketLayout.add(buttonLayout,colCount,++rowCount);
         adviceSeparator.setId(getClass().getCanonicalName() + ".adviceSeparator");
         adviceLabel.setId(getClass().getCanonicalName() + ".adviceLabel");
         styleService.addStyleToAll(adviceSeparator,
@@ -731,6 +690,7 @@ public class OrderTicketView
         rootLayout.getChildren().addAll(orderTicketLayout,
                                         adviceSeparator,
                                         adviceLabel);
+        serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
     }
     /**
      * Create a new OrderTicketView instance.
@@ -746,6 +706,80 @@ public class OrderTicketView
         super(inParent,
               inEvent,
               inProperties);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ClientStatusListener#receiveClientStatus(boolean)
+     */
+    @Override
+    public void receiveClientStatus(boolean inIsAvailable)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Received client status available: {}",
+                               inIsAvailable);
+        if(inIsAvailable) {
+            initializeBrokerStatusListener();
+        } else {
+            synchronized(availableBrokers) {
+                availableBrokers.clear();
+            }
+            Platform.runLater(() -> {
+                brokerComboBox.getItems().clear();
+                brokerComboBox.valueProperty().set(null);
+            });
+        }
+        
+    }
+    /**
+     * Create the broker status listener value.
+     */
+    protected void initializeBrokerStatusListener()
+    {
+        brokerStatusListener = new BrokerStatusListener() {
+            @Override
+            public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
+            {
+                SLF4JLoggerProxy.trace(OrderTicketView.this,
+                                       "{} receiveBrokerStatus: {}",
+                                       PlatformServices.getServiceName(getClass()),
+                                       inActiveFixSession);
+                boolean brokersStatusChanged = false;
+                BrokerID activeFixSessionKey = new BrokerID(inActiveFixSession.getFixSession().getName());
+                synchronized(availableBrokers) {
+                    if(inActiveFixSession.getStatus().isLoggedOn() && !inActiveFixSession.getFixSession().isAcceptor()) {
+                        brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
+                                                                     inActiveFixSession) == null);
+                    } else {
+                        brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
+                    }
+                    if(brokersStatusChanged) {
+                        availableBrokers.notifyAll();
+                    }
+                }
+                if(brokersStatusChanged) {
+                    Platform.runLater(new Runnable () {
+                        @Override
+                        public void run()
+                        {
+                            BrokerID currentSelectedBroker = brokerComboBox.getValue();
+                            brokerComboBox.getItems().clear();
+                            brokerComboBox.valueProperty().set(null);
+                            brokerComboBox.getItems().add(AUTO_SELECT_BROKER);
+                            brokerComboBox.getItems().addAll(availableBrokers.keySet());
+                            if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
+                                brokerComboBox.setValue(AUTO_SELECT_BROKER);
+                            } else {
+                                if(availableBrokers.containsKey(currentSelectedBroker)) {
+                                    brokerComboBox.setValue(currentSelectedBroker);
+                                } else {
+                                    brokerComboBox.setValue(AUTO_SELECT_BROKER);
+                                }
+                            }
+                        }}
+                    );
+                }
+            }
+        };
+        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(brokerStatusListener);
     }
     /**
      * Adjust the send button based on the other fields.
@@ -820,83 +854,276 @@ public class OrderTicketView
             quantityTextField.requestFocus();
         }
     }
-    public static class CustomFieldHolder
+    /**
+     * Holds custom fields to display.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class DisplayCustomField
     {
-        private CustomFieldHolder()
+        /**
+         * Create a new DisplayCustomField instance.
+         */
+        private DisplayCustomField()
         {
             isEnabled = new SimpleBooleanProperty();
             key = new SimpleStringProperty();
             value = new SimpleStringProperty();
         }
-        public BooleanProperty isEnabledProperty()
+        /**
+         * Indicates if the field is enabled.
+         *
+         * @return a <code>BooleanProperty</code> value
+         */
+        private BooleanProperty isEnabledProperty()
         {
             return isEnabled;
         }
-        public StringProperty keyProperty()
+        /**
+         * Get the key property value.
+         *
+         * @return a <code>StringProperty</code> value
+         */
+        private StringProperty keyProperty()
         {
             return key;
         }
-        public StringProperty valueProperty()
+        /**
+         * Get the value property value.
+         *
+         * @return a <code>StringProperty</code> value
+         */
+        private StringProperty valueProperty()
         {
             return value;
         }
+        /**
+         * indicates if the custom field is enabled
+         */
         private final BooleanProperty isEnabled;
+        /**
+         * key property
+         */
         private final StringProperty key;
+        /**
+         * value property
+         */
         private final StringProperty value;
-        
     }
+    /**
+     * root layout of the view
+     */
     private VBox rootLayout;
+    /**
+     * broker selection layout
+     */
     private VBox brokerLayout;
+    /**
+     * broker label widget
+     */
     private Label brokerLabel;
+    /**
+     * broker selection widget
+     */
     private ComboBox<BrokerID> brokerComboBox;
+    /**
+     * side layout
+     */
     private VBox sideLayout;
+    /**
+     * side label widget
+     */
     private Label sideLabel;
+    /**
+     * side selection widget
+     */
     private ComboBox<Side> sideComboBox;
+    /**
+     * quantity layout
+     */
     private VBox quantityLayout;
+    /**
+     * quantity label widget
+     */
     private Label quantityLabel;
+    /**
+     * quantity entry widget
+     */
     private ValidatingTextField quantityTextField;
+    /**
+     * symbol layout
+     */
     private VBox symbolLayout;
+    /**
+     * symbol layout
+     */
     private Label symbolLabel;
+    /**
+     * symbol entry widget
+     */
     private TextField symbolTextField;
+    /**
+     * order type layout
+     */
     private VBox orderTypeLayout;
+    /**
+     * order type label widget
+     */
     private Label orderTypeLabel;
+    /**
+     * order type selection widget
+     */
     private ComboBox<OrderType> orderTypeComboBox;
+    /**
+     * price layout
+     */
     private VBox priceLayout;
+    /**
+     * price label widget
+     */
     private Label priceLabel;
+    /**
+     * price entry widget
+     */
     private ValidatingTextField priceTextField;
+    /**
+     * time in force layout
+     */
     private VBox timeInForceLayout;
+    /**
+     * time in force label widget
+     */
     private Label timeInForceLabel;
+    /**
+     * time in force selection widget
+     */
     private ComboBox<TimeInForce> timeInForceComboBox;
+    /**
+     * other values accordion widget
+     */
     private Accordion otherAccordion;
+    /**
+     * other values layout
+     */
     private TitledPane otherPane;
+    /**
+     * other layout
+     */
     private GridPane otherLayout;
+    /**
+     * text value label widget
+     */
     private Label textLabel;
+    /**
+     * text entry widget
+     */
     private TextField textTextField;
+    /**
+     * account label widget
+     */
     private Label accountLabel;
+    /**
+     * account entry widget
+     */
     private TextField accountTextField;
+    /**
+     * external destination label widget
+     */
     private Label exDestinationLabel;
+    /**
+     * external destination entry widget
+     */
     private TextField exDestinationTextField;
+    /**
+     * max floor label widget
+     */
     private Label maxFloorLabel;
+    /**
+     * max floor entry widget
+     */
     private ValidatingTextField maxFloorTextField;
+    /**
+     * peg to midpoint label widget
+     */
     private Label pegToMidpointLabel;
+    /**
+     * peg to midpoint selection widget
+     */
     private CheckBox pegToMidpointCheckBox;
+    /**
+     * peg to midpoint locked label widget
+     */
     private Label pegToMidpointLockedLabel;
+    /**
+     * peg to midpoint locked selection widget
+     */
     private CheckBox pegToMidpointLockedCheckBox;
+    /**
+     * broker algo accordion widget
+     */
     private Accordion brokerAlgoAccordion;
+    /**
+     * broker algo layout pane
+     */
     private TitledPane brokerAlgoPane;
+    /**
+     * broker algo layout grid
+     */
     private GridPane brokerAlgoLayout;
+    /**
+     * broker algo label widget
+     */
     private Label brokerAlgoLabel;
+    /**
+     * broker algo selection widget
+     */
     private ComboBox<BrokerAlgoSpec> brokerAlgoComboBox;
+    /**
+     * broker algo tag entry widget
+     */
     private TableView<BrokerAlgoTag> brokerAlgoTagTable;
+    /**
+     * custom fields accordion widget
+     */
     private Accordion customFieldsAccordion;
+    /**
+     * custom fields layout pane
+     */
     private TitledPane customFieldsPane;
-    private TableView<CustomFieldHolder> customFieldsTable;
+    /**
+     * custom fields entry widget
+     */
+    private TableView<DisplayCustomField> customFieldsTable;
+    /**
+     * send button widget
+     */
     private Button sendButton;
+    /**
+     * clear button widget
+     */
     private Button clearButton;
-    private HBox sendClearLayout;
+    /**
+     * button layout
+     */
+    private HBox buttonLayout;
+    /**
+     * instrument resolved from symbol property
+     */
     private Instrument resolvedInstrument;
+    /**
+     * advice label widget
+     */
     private Label adviceLabel;
+    /**
+     * advice separator widget
+     */
     private Separator adviceSeparator;
+    /**
+     * listens for broker status changes
+     */
+    private BrokerStatusListener brokerStatusListener;
     /**
      * contains currently available brokers
      */
@@ -945,5 +1172,5 @@ public class OrderTicketView
      * web message service value
      */
     @Autowired
-    private WebMessageService webMessageService;
+    private WebMessageService messageService;
 }
