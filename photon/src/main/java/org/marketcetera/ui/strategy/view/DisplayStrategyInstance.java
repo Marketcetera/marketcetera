@@ -28,10 +28,6 @@ public class DisplayStrategyInstance
 {
     /**
      * Create a new DisplayStrategy instance.
-     */
-    public DisplayStrategyInstance() {}
-    /**
-     * Create a new DisplayStrategy instance.
      *
      * @param inName a <code>String</code> value
      * @param inOwnerName a <code>String</code> value
@@ -39,40 +35,37 @@ public class DisplayStrategyInstance
     public DisplayStrategyInstance(String inName,
                                    String inOwnerName)
     {
-        strategyName.setValue(inName);
-        owner.setValue(inOwnerName);
-        strategyStatus.setValue(StrategyStatus.PREPARING);
+        strategyNameProperty.setValue(inName);
+        ownerProperty.setValue(inOwnerName);
+        strategyStatusProperty.setValue(StrategyStatus.PREPARING);
         uploadProgress.setValue(0.0);
-        started.setValue(null);
-        uptime.setValue(new Period(0));
+        startedProperty.setValue(null);
+        uptimeProperty.setValue(new Period(0));
         setupRuntimeListener();
     }
     /**
      * Create a new DisplayStrategy instance.
      *
-     * @param inStrategyInstance
+     * @param inStrategyInstance a <code>StrategyInstance</code> value
      */
     public DisplayStrategyInstance(StrategyInstance inStrategyInstance)
     {
-        strategyName.setValue(inStrategyInstance.getName());
-        owner.setValue(inStrategyInstance.getUser().getName());
-        strategyStatus.setValue(inStrategyInstance.getStatus());
-        started.setValue(inStrategyInstance.getStarted());
+        strategyNameProperty.setValue(inStrategyInstance.getName());
+        ownerProperty.setValue(inStrategyInstance.getUser().getName());
+        strategyStatusProperty.setValue(inStrategyInstance.getStatus());
+        startedProperty.setValue(inStrategyInstance.getStarted());
         setupRuntimeListener();
         updateRunningProperty();
     }
     /**
-     * 
-     *
-     *
-     * @param inRunningValue
+     * Update the running property. 
      */
     public void updateRunningProperty()
     {
-        if(started.get() == null || started.get().getTime() == 0) {
-            uptime.setValue(new Period(0));
+        if(startedProperty.get() == null || startedProperty.get().getTime() == 0) {
+            uptimeProperty.setValue(new Period(0));
         } else {
-            uptime.setValue(new Period(DateTime.now().minus(started.get().getTime()).getMillis()));
+            uptimeProperty.setValue(new Period(DateTime.now().minus(startedProperty.get().getTime()).getMillis()));
         }
     }
     /**
@@ -82,7 +75,7 @@ public class DisplayStrategyInstance
      */
     public ReadOnlyStringProperty strategyNameProperty()
     {
-        return strategyName;
+        return strategyNameProperty;
     }
     /**
      * Get the uptime value.
@@ -91,7 +84,7 @@ public class DisplayStrategyInstance
      */
     public ObjectProperty<Period> uptimeProperty()
     {
-        return uptime;
+        return uptimeProperty;
     }
     /**
      * Get the owner value.
@@ -100,7 +93,7 @@ public class DisplayStrategyInstance
      */
     public ReadOnlyStringProperty ownerProperty()
     {
-        return owner;
+        return ownerProperty;
     }
     /**
      * Get the started property.
@@ -109,7 +102,7 @@ public class DisplayStrategyInstance
      */
     public ObjectProperty<Date> startedProperty()
     {
-        return started;
+        return startedProperty;
     }
     /**
      * Get the strategyStatus value.
@@ -118,20 +111,46 @@ public class DisplayStrategyInstance
      */
     public ObjectProperty<StrategyStatus> strategyStatusProperty()
     {
-        return strategyStatus;
+        return strategyStatusProperty;
     }
+    /**
+     * Get the upload progress property.
+     *
+     * @return a <code>DoubleProperty</code> value
+     */
     public DoubleProperty uploadProgressProperty()
     {
         return uploadProgress;
     }
+    /**
+     * Initialize the runtime listener for updating strategy status.
+     */
     private void setupRuntimeListener()
     {
-        strategyStatus.addListener((observableValue,oldValue,newValue) -> updateRunningProperty());
+        strategyStatusProperty.addListener((observableValue,oldValue,newValue) -> updateRunningProperty());
     }
-    private final ObjectProperty<Date> started = new SimpleObjectProperty<>();
-    private final StringProperty strategyName = new SimpleStringProperty();
-    private final ObjectProperty<Period> uptime = new SimpleObjectProperty<>();
-    private final StringProperty owner = new SimpleStringProperty();
-    private final ObjectProperty<StrategyStatus> strategyStatus = new SimpleObjectProperty<>();
+    /**
+     * started date property
+     */
+    private final ObjectProperty<Date> startedProperty = new SimpleObjectProperty<>();
+    /**
+     * strategy name property
+     */
+    private final StringProperty strategyNameProperty = new SimpleStringProperty();
+    /**
+     * uptime property
+     */
+    private final ObjectProperty<Period> uptimeProperty = new SimpleObjectProperty<>();
+    /**
+     * owner property
+     */
+    private final StringProperty ownerProperty = new SimpleStringProperty();
+    /**
+     * strategy status property
+     */
+    private final ObjectProperty<StrategyStatus> strategyStatusProperty = new SimpleObjectProperty<>();
+    /**
+     * upload property
+     */
     private final DoubleProperty uploadProgress = new SimpleDoubleProperty();
 }
