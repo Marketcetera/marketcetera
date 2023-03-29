@@ -26,14 +26,17 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.CapabilityCollection;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.FeedStatusRequest;
+import org.marketcetera.marketdata.MarketDataModuleMXBean;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.OrderBook;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
@@ -62,6 +65,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.time.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -170,6 +174,10 @@ public class ExsimFeedModule
                 doMarketDataRequest((MarketDataRequest)payload,
                                     inRequest,
                                     inSupport);
+            } else if(payload instanceof FeedStatusRequest) {
+                doFeedStatusRequest((FeedStatusRequest)payload,
+                                    inRequest,
+                                    inSupport);
             } else {
                 throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_DATA_REQUEST_PAYLOAD,
                                                                       payload.getClass().getSimpleName()));
@@ -198,7 +206,7 @@ public class ExsimFeedModule
     public void cancel(DataFlowID inFlowId,
                        RequestID inRequestID)
     {
-        RequestData requestData = requestsByDataFlowId.remove(inFlowId);
+        MarketDataRequestData requestData = requestsByDataFlowId.remove(inFlowId);
         if(requestData == null) {
             Messages.DATA_FLOW_ALREADY_CANCELED.warn(this,
                                                      inFlowId);
@@ -221,6 +229,7 @@ public class ExsimFeedModule
                 }
             }
         }
+        feedStatusRequestDataByDataFlowId.invalidate(inFlowId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
@@ -274,11 +283,11 @@ public class ExsimFeedModule
     protected void preStop()
             throws ModuleException
     {
-        List<RequestData> requestsToCancel = Lists.newArrayList(requestsByDataFlowId.values());
-        for(RequestData request : requestsToCancel) {
+        List<MarketDataRequestData> requestsToCancel = Lists.newArrayList(requestsByDataFlowId.values());
+        for(MarketDataRequestData request : requestsToCancel) {
             try {
-                cancel(request.dataEmitterSupport.getFlowID(),
-                       request.dataEmitterSupport.getRequestID());
+                cancel(request.getDataEmitterSupport().getFlowID(),
+                       request.getDataEmitterSupport().getRequestID());
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       e);
@@ -321,6 +330,21 @@ public class ExsimFeedModule
         });
     }
     /**
+     * Execute a feed status request with the given attributes.
+     *
+     * @param inPayload a <code>FeedStatusRequest</code> value
+     * @param inRequest a <code>DataRequest</code> value
+     * @param inSupport a <code>DataEmitterSupport</code> value
+     */
+    private void doFeedStatusRequest(FeedStatusRequest inPayload,
+                                     DataRequest inRequest,
+                                     DataEmitterSupport inSupport)
+    {
+        FeedStatusRequestData metaData = new FeedStatusRequestData(inSupport);
+        feedStatusRequestDataByDataFlowId.put(inSupport.getFlowID(),
+                                              metaData);
+    }
+    /**
      * Perform the market data request
      *
      * @param inPayload a <code>MarketDataRequest</code> value
@@ -356,11 +380,11 @@ public class ExsimFeedModule
                                marketDataRequest,
                                inRequest,
                                inPayload);
-        RequestData requestData = new RequestData(marketDataRequest,
-                                                  inSupport,
-                                                  id,
-                                                  inPayload,
-                                                  requestedInstruments);
+        MarketDataRequestData requestData = new MarketDataRequestData(marketDataRequest,
+                                                                      inSupport,
+                                                                      id,
+                                                                      inPayload,
+                                                                      requestedInstruments);
         requestsByRequestId.put(id,
                                 requestData);
         requestsByDataFlowId.put(inSupport.getFlowID(),
@@ -380,7 +404,7 @@ public class ExsimFeedModule
      * @throws quickfix.FieldNotFound if the market data request cancel cannot be constructed
      * @throws quickfix.SessionNotFound if the cancel message cannot be sent
      */
-    private void cancelMarketDataRequest(RequestData inMarketDataRequestData)
+    private void cancelMarketDataRequest(MarketDataRequestData inMarketDataRequestData)
             throws quickfix.FieldNotFound,quickfix.SessionNotFound
     {
         quickfix.Message marketDataCancel = messageFactory.newMarketDataRequest(inMarketDataRequestData.requestId,
@@ -410,6 +434,27 @@ public class ExsimFeedModule
                                feedStatus,
                                inNewStatus);
         feedStatus = inNewStatus;
+        MarketDataStatus marketDataStatus = new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return feedStatus;
+            }
+            @Override
+            public String getProvider()
+            {
+                return ExsimFeedModuleFactory.IDENTIFIER;
+            }
+        };
+        marketDataService.reportMarketDataStatus(marketDataStatus);
+        for(FeedStatusRequestData feedStatusRequestData : feedStatusRequestDataByDataFlowId.asMap().values()) {
+            try {
+                feedStatusRequestData.getDataEmitterSupport().send(marketDataStatus);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
         Messages.FEED_STATUS_UPDATE.info(this,
                                          ExsimFeedModuleFactory.IDENTIFIER.toUpperCase(),
                                          feedStatus);
@@ -678,6 +723,7 @@ public class ExsimFeedModule
                 if(marketstatBuilder == null) {
                     marketstatBuilder = MarketstatEventBuilder.marketstat(instrument);
                 }
+                marketstatBuilder.withProvider(ExsimFeedModuleFactory.IDENTIFIER);
                 marketstatBuilder.withExchangeCode(exchange);
                 if(openPrice != null) {
                     marketstatBuilder.withOpenPrice(openPrice);
@@ -748,7 +794,7 @@ public class ExsimFeedModule
     private void publishEvents(Deque<Event> inEvents,
                                String inRequestId)
     {
-        RequestData requestData = requestsByRequestId.get(inRequestId);
+        MarketDataRequestData requestData = requestsByRequestId.get(inRequestId);
         if(requestData == null) {
             SLF4JLoggerProxy.debug(this,
                                    "Not publishing {} to {} because it seems to have just been canceled", //$NON-NLS-1$
@@ -836,7 +882,7 @@ public class ExsimFeedModule
                             break;
                         case quickfix.field.MsgType.MARKET_DATA_REQUEST_REJECT:
                             // cancel corresponding request, unless resubmitting due to feed status change
-                            RequestData requestData = requestsByRequestId.get(messageWrapper.getRequestId());
+                            MarketDataRequestData requestData = requestsByRequestId.get(messageWrapper.getRequestId());
                             if(requestData == null) {
                             } else {
                                 if(!requestData.resubmitting) {
@@ -1082,13 +1128,66 @@ public class ExsimFeedModule
         }
     }
     /**
+     * Provides common behavior for data flow requests.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static abstract class AbstractRequestData
+    {
+        /**
+         * Get the dataEmitterSupport value.
+         *
+         * @return a <code>DataEmitterSupport</code> value
+         */
+        protected DataEmitterSupport getDataEmitterSupport()
+        {
+            return dataEmitterSupport;
+        }
+        /**
+         * Create a new AbstractRequestData instance.
+         *
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        protected AbstractRequestData(DataEmitterSupport inDataEmitterSupport)
+        {
+            dataEmitterSupport = inDataEmitterSupport;
+        }
+        /**
+         * data emitter support value
+         */
+        private final DataEmitterSupport dataEmitterSupport;
+    }
+    /**
+     * Holds data relevant to a feed status request as part of a module data flow.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class FeedStatusRequestData
+            extends AbstractRequestData
+    {
+        /**
+         * Create a new FeedStatusRequestData instance.
+         *
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        private FeedStatusRequestData(DataEmitterSupport inDataEmitterSupport)
+        {
+            super(inDataEmitterSupport);
+        }
+    }
+    /**
      * Holds data relevant to a market data request as part of a module data flow.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private static class RequestData
+    private static class MarketDataRequestData
+            extends AbstractRequestData
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -1109,16 +1208,7 @@ public class ExsimFeedModule
             return requestMessage;
         }
         /**
-         * Get the dataEmitterSupport value.
-         *
-         * @return a <code>DataEmitterSupport</code> value
-         */
-        private DataEmitterSupport getDataEmitterSupport()
-        {
-            return dataEmitterSupport;
-        }
-        /**
-         * Create a new RequestData instance.
+         * Create a new MarketDataRequestData instance.
          *
          * @param inRequestMessage a <code>quickfix.Message</code> value
          * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
@@ -1126,15 +1216,15 @@ public class ExsimFeedModule
          * @param inMarketDataRequest a <code>MarketDataRequest</code> value
          * @param inRequestedInstruments a <code>List&lt;Instrument&gt;</code> value
          */
-        private RequestData(quickfix.Message inRequestMessage,
-                            DataEmitterSupport inDataEmitterSupport,
-                            String inRequestId,
-                            MarketDataRequest inMarketDataRequest,
-                            List<Instrument> inRequestedInstruments)
+        private MarketDataRequestData(quickfix.Message inRequestMessage,
+                                      DataEmitterSupport inDataEmitterSupport,
+                                      String inRequestId,
+                                      MarketDataRequest inMarketDataRequest,
+                                      List<Instrument> inRequestedInstruments)
         {
+            super(inDataEmitterSupport);
             requestMessage = inRequestMessage;
-            dataEmitterSupport = inDataEmitterSupport;
-            description = RequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+            description = MarketDataRequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
             requestId = inRequestId;
             requestedInstruments = inRequestedInstruments;
             marketDataRequest = inMarketDataRequest;
@@ -1151,10 +1241,6 @@ public class ExsimFeedModule
          * original request message sent to the exchange
          */
         private final quickfix.Message requestMessage;
-        /**
-         * information about the data flow requester
-         */
-        private final DataEmitterSupport dataEmitterSupport;
         /**
          * request id of the request
          */
@@ -1262,6 +1348,11 @@ public class ExsimFeedModule
     @Autowired
     private SymbolResolverService symbolResolverService;
     /**
+     * provides access to market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
+    /**
      * number of milliseconds to wait for the feed to become available if a request is made while it is offline
      */
     private long feedAvailableTimeout = 10000;
@@ -1269,6 +1360,10 @@ public class ExsimFeedModule
      * current status of the feed
      */
     private volatile FeedStatus feedStatus;
+    /**
+     * holds feed status requests by data flow id
+     */
+    private final Cache<DataFlowID,FeedStatusRequestData> feedStatusRequestDataByDataFlowId = CacheBuilder.newBuilder().build();
     /**
      * event order books keyed by instrument
      */
@@ -1280,11 +1375,11 @@ public class ExsimFeedModule
     /**
      * holds data request info keyed by request id
      */
-    private final Map<String,RequestData> requestsByRequestId = Maps.newHashMap();
+    private final Map<String,MarketDataRequestData> requestsByRequestId = Maps.newHashMap();
     /**
      * holds market data request info by data flow id
      */
-    private final Map<DataFlowID,RequestData> requestsByDataFlowId = Maps.newHashMap();
+    private final Map<DataFlowID,MarketDataRequestData> requestsByDataFlowId = Maps.newHashMap();
     /**
      * supported asset classes for this provider
      */

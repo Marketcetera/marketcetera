@@ -87,4 +87,13 @@ public interface MarketDataClient
      * @return a <code>Set&lt;Capability&gt;</code> value
      */
     Set<Capability> getAvailableCapability();
+    /**
+     * Gets the active providers.
+     * 
+     * <p>Providers may or may not be connected at this time, these are the providers known
+     * to the system.</p>
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    Set<String> getProviders();
 }

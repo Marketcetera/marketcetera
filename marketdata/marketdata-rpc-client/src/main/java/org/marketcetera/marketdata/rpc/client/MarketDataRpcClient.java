@@ -267,7 +267,7 @@ public class MarketDataRpcClient
     @Override
     public Set<Capability> getAvailableCapability()
     {
-        return executeCall(new Callable<Set<Capability>>(){
+        return executeCall(new Callable<Set<Capability>>() {
             @Override
             public Set<Capability> call()
                     throws Exception
@@ -296,6 +296,41 @@ public class MarketDataRpcClient
                                        getSessionId(),
                                        capabilities);
                 return capabilities;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataClient#getProviders()
+     */
+    @Override
+    public Set<String> getProviders()
+    {
+        return executeCall(new Callable<Set<String>>() {
+            @Override
+            public Set<String> call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} getting available providers",
+                                       getSessionId());
+                MarketDataRpc.GetMarketDataProvidersRequest.Builder requestBuilder = MarketDataRpc.GetMarketDataProvidersRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                MarketDataRpc.GetMarketDataProvidersRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       request);
+                MarketDataRpc.GetMarketDataProvidersResponse response = getBlockingStub().getMarketDataProviders(request);
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                Set<String> providers = Sets.newHashSet(response.getProviderList());
+                SLF4JLoggerProxy.trace(MarketDataRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       providers);
+                return providers;
             }
         });
     }

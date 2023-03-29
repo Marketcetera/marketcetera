@@ -217,11 +217,16 @@ public class MarketDataListView
         MarketDataItem newItem = new MarketDataItem(instrument,
                                                     marketDataRequestId);
         marketDataTable.getItems().add(newItem);
-        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols(inSymbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
+        MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
+        if(providerComboBox.valueProperty().get() != null && providerComboBox.valueProperty().get() != ALL_PROVIDERS) {
+            requestBuilder.withProvider(providerComboBox.valueProperty().get());
+        }
+        requestBuilder.withSymbols(inSymbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
                 .withContent(Content.LATEST_TICK,Content.TOP_OF_BOOK,Content.MARKET_STAT).withRequestId(marketDataRequestId).create();
         MarketDataRowListener rowListener = new MarketDataRowListener(newItem);
         symbolsByRequestId.put(marketDataRequestId,
                                inSymbol);
+        MarketDataRequest request = requestBuilder.create();
         SLF4JLoggerProxy.debug(this,
                                "Submitting {}",
                                request);
@@ -251,6 +256,8 @@ public class MarketDataListView
         });
         addSymbolLayout.setAlignment(Pos.CENTER_RIGHT);
         providerComboBox = new ComboBox<>();
+        providerComboBox.getItems().add(ALL_PROVIDERS);
+        providerComboBox.getItems().addAll(marketdataClient.getProviders());
         addSymbolLayout.getChildren().addAll(providerComboBox,
                                              addSymbolTextField,
                                              addSymbolButton);
@@ -551,6 +558,7 @@ public class MarketDataListView
          */
         private final MarketDataItem marketDataItem;
     }
+    private static final String ALL_PROVIDERS = "<all providers>";
     /**
      * market data item context menu
      */
