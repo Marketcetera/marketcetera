@@ -8,7 +8,6 @@ import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.module.AutowiredModule;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,9 +46,6 @@ public final class BogusFeedModule
             @Override
             public void feedComponentChanged(IFeedComponent inComponent)
             {
-                SLF4JLoggerProxy.warn(BogusFeedModule.this,
-                                      "COCO: received feed commponent: {}",
-                                      inComponent.getFeedStatus());
                 marketDataService.reportMarketDataStatus(new MarketDataStatus() {
                     @Override
                     public FeedStatus getFeedStatus()
