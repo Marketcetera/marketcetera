@@ -87,6 +87,9 @@ public class MarketDataServiceImpl
     @Override
     public void reportMarketDataStatus(MarketDataStatus inMarketDataStatus)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Reporting {}",
+                               inMarketDataStatus);
         cachedMarketDataStatus.put(inMarketDataStatus.getProvider(),
                                    inMarketDataStatus);
         logProviderData();
@@ -94,9 +97,8 @@ public class MarketDataServiceImpl
             try {
                 listener.receiveMarketDataStatus(inMarketDataStatus);
             } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Reporting market data status",
-                                                 e);
+                SLF4JLoggerProxy.warn(this,
+                                      e);
                 removeMarketDataStatusListener(listener);
             }
         }

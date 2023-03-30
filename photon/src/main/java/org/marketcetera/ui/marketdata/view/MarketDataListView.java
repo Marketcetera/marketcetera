@@ -558,6 +558,9 @@ public class MarketDataListView
          */
         private final MarketDataItem marketDataItem;
     }
+    /**
+     * wrench value to indicate all providers are selected
+     */
     private static final String ALL_PROVIDERS = "<all providers>";
     /**
      * market data item context menu

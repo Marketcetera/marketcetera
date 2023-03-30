@@ -41,6 +41,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -212,7 +213,11 @@ public class MarketDataDetailView
             addSymbolTextField.setText(null);
         });
         addSymbolLayout.setAlignment(Pos.CENTER_LEFT);
-        addSymbolLayout.getChildren().addAll(addSymbolTextField,
+        providerComboBox = new ComboBox<>();
+        providerComboBox.getItems().add(ALL_PROVIDERS);
+        providerComboBox.getItems().addAll(marketDataClient.getProviders());
+        addSymbolLayout.getChildren().addAll(providerComboBox,
+                                             addSymbolTextField,
                                              addSymbolButton);
     }
     /**
@@ -329,8 +334,13 @@ public class MarketDataDetailView
         asks.clear();
         // TODO reset chart/top-level view
         depthMarketDataRequestId = UUID.randomUUID().toString();
+        MarketDataRequestBuilder depthRequestBuilder = MarketDataRequestBuilder.newRequest().withRequestId(depthMarketDataRequestId).withSymbols(marketDataInstrument.getSymbol());
         // TODO choose between aggregated and unaggregated?
-        MarketDataRequest depthRequest = MarketDataRequestBuilder.newRequest().withRequestId(depthMarketDataRequestId).withSymbols(marketDataInstrument.getSymbol()).withContent(Content.AGGREGATED_DEPTH).create();
+        depthRequestBuilder = depthRequestBuilder.withContent(Content.AGGREGATED_DEPTH);
+        if(providerComboBox.valueProperty().get() != null && providerComboBox.valueProperty().get() != ALL_PROVIDERS) {
+            depthRequestBuilder.withProvider(providerComboBox.valueProperty().get());
+        }
+        MarketDataRequest depthRequest = depthRequestBuilder.create();
         marketDataClient.request(depthRequest,
                                  new MarketDataListener() {
             /* (non-Javadoc)
@@ -480,6 +490,10 @@ public class MarketDataDetailView
 //        chart.getRenderers().add(candleStickRenderer);
     }
     /**
+     * wrench value to indicate all providers are selected
+     */
+    private static final String ALL_PROVIDERS = "<all providers>";
+    /**
      * market data request id
      */
     private String depthMarketDataRequestId;
@@ -551,6 +565,10 @@ public class MarketDataDetailView
      * add symbol control button
      */
     private Button addSymbolButton;
+    /**
+     * allows selection of a specific market data provider
+     */
+    private ComboBox<String> providerComboBox;
     /**
      * bid timestamp column
      */
