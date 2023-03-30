@@ -15,6 +15,8 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.GetMarketDataProvidersRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.GetMarketDataProvidersResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
 import org.marketcetera.marketdata.core.rpc.MarketDataTypesRpc;
@@ -272,6 +274,33 @@ public class MarketDataRpcService<SessionClazz>
                     responseBuilder.addCapability(MarketDataTypesRpc.ContentAndCapability.valueOf(capability.name()));
                 }
                 MarketDataRpc.AvailableCapabilityResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Sending response: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getMarketDataProviders(org.marketcetera.marketdata.core.rpc.MarketDataRpc.GetMarketDataProvidersRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getMarketDataProviders(GetMarketDataProvidersRequest inRequest,
+                                           StreamObserver<GetMarketDataProvidersResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received market data providers request {}",
+                                       inRequest);
+                MarketDataRpc.GetMarketDataProvidersResponse.Builder responseBuilder = MarketDataRpc.GetMarketDataProvidersResponse.newBuilder();
+                Set<String> providers = marketDataService.getProviders();
+                providers.forEach(provider -> responseBuilder.addProvider(provider));
+                MarketDataRpc.GetMarketDataProvidersResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(MarketDataRpcService.this,
                                        "Sending response: {}",
                                        response);

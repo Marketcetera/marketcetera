@@ -1,9 +1,16 @@
 package org.marketcetera.marketdata.exsim;
 
+import javax.annotation.PostConstruct;
+
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -25,6 +32,7 @@ import org.marketcetera.module.ModuleURN;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class ExsimFeedModuleFactory
         extends ModuleFactory
 {
@@ -47,6 +55,30 @@ public class ExsimFeedModuleFactory
     {
         return new ExsimFeedModule(INSTANCE_URN);
     }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        marketDataService.reportMarketDataStatus(new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return FeedStatus.OFFLINE;
+            }
+            @Override
+            public String getProvider()
+            {
+                return IDENTIFIER;
+            }}
+        );
+    }
+    /**
+     * providers market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * market data provider identifier
      */

@@ -118,6 +118,14 @@ public class MockMarketDataServiceAdapter
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.service.MarketDataService#getProviders()
+     */
+    @Override
+    public Set<String> getProviders()
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * Get the requests value.
      *
@@ -218,9 +226,7 @@ public class MockMarketDataServiceAdapter
         return capabilitiesToReturn;
     }
     /**
-     * 
-     *
-     *
+     * Reset the object. 
      */
     public void reset()
     {

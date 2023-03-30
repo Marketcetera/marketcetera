@@ -5,7 +5,10 @@ import java.util.Set;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.event.Event;
 import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.FeedStatusRequest;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.cache.MarketDataCacheModuleFactory;
 import org.marketcetera.marketdata.core.manager.MarketDataManagerModuleFactory;
@@ -134,6 +137,24 @@ public class MarketDataEventModuleConnector
             Event event = (Event)inData;
             eventBusService.post(new SimpleGeneratedMarketDataEvent(marketDataRequestId,
                                                                     event));
+        } else if(inData instanceof MarketDataStatus) {
+            MarketDataStatus marketDataStatus = (MarketDataStatus)inData;
+            marketDataService.reportMarketDataStatus(marketDataStatus);
+        } else if(inData instanceof FeedStatus) {
+            final FeedStatus feedStatus = (FeedStatus)inData;
+            final String provider = requestsByDataFlowId.getIfPresent(inFlowId);
+            marketDataService.reportMarketDataStatus(new MarketDataStatus() {
+                @Override
+                public FeedStatus getFeedStatus()
+                {
+                    return feedStatus;
+                }
+                @Override
+                public String getProvider()
+                {
+                    return provider;
+                }}
+            );
         } else {
             SLF4JLoggerProxy.warn(this,
                                   "Received unexpected data: {}",
@@ -204,6 +225,8 @@ public class MarketDataEventModuleConnector
                                ModuleURN inSourceUrn,
                                String inRequestId)
     {
+        doStatusRequest(inSourceUrn,
+                        inRequestId);
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
                                                     inMarketDataRequest);
         ModuleManager.startModulesIfNecessary(ModuleManager.getInstance(),
@@ -223,6 +246,30 @@ public class MarketDataEventModuleConnector
                                dataFlowId);
     }
     /**
+     * Execute a market data status request.
+     *
+     * @param inSourceUrn a <code>ModuleURN</code> value
+     * @param inRequestId a <code>String</code> value
+     */
+    private void doStatusRequest(ModuleURN inSourceUrn,
+                                 String inRequestId)
+    {
+        DataRequest sourceRequest = new DataRequest(inSourceUrn,
+                                                    new FeedStatusRequest());
+        ModuleManager.startModulesIfNecessary(ModuleManager.getInstance(),
+                                              inSourceUrn);
+        DataRequest targetRequest = new DataRequest(MarketDataEventModuleConnectorFactory.INSTANCE_URN);
+        DataFlowID dataFlowId = ModuleManager.getInstance().createDataFlow(new DataRequest[] { sourceRequest,targetRequest });
+        requestsByDataFlowId.put(dataFlowId,
+                                 inSourceUrn.instanceName());
+        Set<DataFlowID> dataFlows = dataFlowsByRequestId.getUnchecked(inRequestId);
+        dataFlows.add(dataFlowId);
+        SLF4JLoggerProxy.debug(this,
+                               "Submitting feed status request to {}: {}",
+                               inSourceUrn,
+                               dataFlowId);
+    }
+    /**
      * stores data flows tied to a given request id
      */
     private final LoadingCache<String,Set<DataFlowID>> dataFlowsByRequestId = CacheBuilder.newBuilder().build(new CacheLoader<String,Set<DataFlowID>>() {
@@ -233,6 +280,11 @@ public class MarketDataEventModuleConnector
             return Sets.newHashSet();
         }}
     );
+    /**
+     * provides market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * provides access to event bus services
      */
