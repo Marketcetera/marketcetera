@@ -125,10 +125,6 @@ public class MarketDataEventModuleConnector
                             Object inData)
             throws ReceiveDataException
     {
-        SLF4JLoggerProxy.warn(this,
-                              "Received {} for data flow id: {}",
-                              inData,
-                              inFlowId);
         if(inData instanceof Event) {
             String marketDataRequestId = requestsByDataFlowId.getIfPresent(inFlowId);
             if(marketDataRequestId == null) {
