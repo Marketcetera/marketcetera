@@ -74,5 +74,5 @@ public enum StrategyStatus
     /**
      * strategy statuses that indicate a strategy can be run
      */
-    private static final Set<StrategyStatus> runnable = EnumSet.of(STOPPED);
+    private static final Set<StrategyStatus> runnable = EnumSet.of(STOPPED,ERROR);
 }

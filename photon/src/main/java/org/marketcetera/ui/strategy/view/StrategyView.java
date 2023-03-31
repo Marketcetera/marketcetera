@@ -78,6 +78,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -288,6 +290,13 @@ public class StrategyView
                             } else if(inEvent instanceof StrategyUploadFailedEvent) {
                             } else if(inEvent instanceof StrategyUploadSucceededEvent) {
                             } else if(inEvent instanceof StrategyStartFailedEvent) {
+                                StrategyStartFailedEvent event = (StrategyStartFailedEvent)inEvent;
+                                SLF4JLoggerProxy.warn(this,
+                                                      "Received strategy start failed event: {}",
+                                                      inEvent);
+                                uiMessageService.post(new NotificationEvent("Start Strategy",
+                                                                            "Strategy strategy failed: " + event.getErrorMessage(),
+                                                                            AlertType.INFORMATION));
                             } else if(inEvent instanceof StrategyStatusChangedEvent) {
                                 StrategyStatusChangedEvent event = (StrategyStatusChangedEvent)inEvent;
                                 displayStrategyInstance.strategyStatusProperty().set(event.getNewValue());
@@ -635,6 +644,17 @@ public class StrategyView
     {
         eventTableContextMenu = new ContextMenu();
         copyStrategyEventMenuItem = new MenuItem("Copy");
+        copyStrategyEventMenuItem.setOnAction(event -> {
+            DisplayStrategyMessage message = eventTable.getSelectionModel().getSelectedItem();
+            if(message == null) {
+                return;
+            }
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent clipboardContent = new ClipboardContent();
+            String output = message.messageProperty().get();
+            clipboardContent.putString(output);
+            clipboard.setContent(clipboardContent);
+        });
         deleteStrategyEventMenuItem = new MenuItem("Delete");
         eventTableContextMenu.getItems().addAll(copyStrategyEventMenuItem,
                                                 new SeparatorMenuItem(),

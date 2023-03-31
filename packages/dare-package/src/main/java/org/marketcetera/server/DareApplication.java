@@ -41,6 +41,7 @@ import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.fix.rpc.FixAdminRpcService;
 import org.marketcetera.fix.store.HibernateMessageStoreConfiguration;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
+import org.marketcetera.marketdata.service.DirectMarketDataClient;
 import org.marketcetera.metrics.MetricServiceDbReporter;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
@@ -185,6 +186,16 @@ public class DareApplication
     {
         DirectStrategyClientFactory strategyClientFactory = new DirectStrategyClientFactory();
         return strategyClientFactory;
+    }
+    /**
+     * Get the market data client value.
+     *
+     * @return a <code>DirectMarketDataClient</code> value
+     */
+    @Bean
+    public DirectMarketDataClient getMarketDataClient()
+    {
+        return new DirectMarketDataClient();
     }
     /**
      * Get the strategy message factory value.

@@ -1,9 +1,16 @@
 package org.marketcetera.strategy.sample;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.notifications.INotification.Severity;
+import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataClient;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.strategy.StrategyClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +52,48 @@ public class TestStrategy
                                    "Warn message");
         strategyClient.emitMessage(Severity.ERROR,
                                    "Error message");
+        MarketDataRequestBuilder marketDataRequestBuilder = MarketDataRequestBuilder.newRequest();
+        marketDataRequestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK)
+            .withSymbols("AAPL,METC");
+        MarketDataRequest request = marketDataRequestBuilder.create();
+        marketDataRequestId = marketDataClient.request(request,
+                                 new MarketDataListener() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+             */
+            @Override
+            public void receiveMarketData(Event inEvent)
+            {
+                strategyClient.emitMessage(Severity.INFO,
+                                           String.valueOf(inEvent));
+            }
+        });
     }
+    /**
+     * Stop the object.
+     */
+    @PreDestroy
+    public void stop()
+    {
+        if(marketDataRequestId != null) {
+            try {
+                marketDataClient.cancel(marketDataRequestId);
+                marketDataRequestId = null;
+            } catch (Exception ignored) {}
+        }
+    }
+    /**
+     * holds the market data request id
+     */
+    private String marketDataRequestId;
     /**
      * provides access to strategy services
      */
     @Autowired
     private StrategyClient strategyClient;
+    /**
+     * provides access to market data services
+     */
+    @Autowired
+    private MarketDataClient marketDataClient;
 }
