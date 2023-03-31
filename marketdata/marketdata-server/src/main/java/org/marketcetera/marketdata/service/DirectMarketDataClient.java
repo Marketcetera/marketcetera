@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /* $License$ */
 
 /**
- *
+ * Provides an in-process {@link MarketDataClient} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
