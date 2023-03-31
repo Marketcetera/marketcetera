@@ -151,7 +151,8 @@ public class ApplicationMenu
                     MenuItem newChildItem = new MenuItem();
                     newChildItem.setText(childItem.getMenuCaption());
                     if(childItem.getMenuIcon() != null) {
-                        newChildItem.setGraphic(PhotonServices.getSvgResource(childItem.getMenuIcon()));
+                        newChildItem.setGraphic(PhotonServices.getSvgResource(childItem.getMenuIcon(),
+                                                                              0.75));
                     }
                     newChildItem.setOnAction(e -> childItem.getCommand().run());
                     parent.getItems().add(newChildItem);
