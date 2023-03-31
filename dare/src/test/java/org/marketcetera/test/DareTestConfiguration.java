@@ -13,8 +13,6 @@ import org.marketcetera.admin.user.PersistentUserFactory;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
-import org.marketcetera.cluster.SimpleClusterService;
-import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.eventbus.server.EsperEngine;
 import org.marketcetera.eventbus.server.EventBusEsperConnector;
 import org.marketcetera.fix.MutableActiveFixSessionFactory;
@@ -199,16 +197,6 @@ public class DareTestConfiguration
     public MutableFixSessionFactory getFixSessionFactory()
     {
         return new PersistentFixSessionFactory();
-    }
-    /**
-     * Get the cluster service.
-     *
-     * @return a <code>ClusterService</code> value
-     */
-    @Bean
-    public ClusterService getClusterService()
-    {
-        return new SimpleClusterService();
     }
     /**
      * Get the user service bean.

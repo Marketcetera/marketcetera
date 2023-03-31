@@ -391,6 +391,9 @@ public class StrategyServiceImpl
         Path strategyTarget = Paths.get(strategyStorageDirectoryName,
                                         strategyInstance.getFilename());
         FileUtils.deleteQuietly(strategyTarget.toFile());
+        BooleanBuilder where = new BooleanBuilder();
+        where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(strategyInstance));
+        strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
         strategyInstanceDao.delete(strategyInstance);
         eventBusService.post(new SimpleStrategyUnloadedEvent(strategyInstance));
     }
