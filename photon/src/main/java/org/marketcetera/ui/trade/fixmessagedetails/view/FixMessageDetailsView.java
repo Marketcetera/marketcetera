@@ -141,6 +141,9 @@ public class FixMessageDetailsView
         fixMessageTable = new TableView<>();
         initializeColumns();
         fixMessageTable.setPlaceholder(new Label("no fields to display"));
+        fixMessageTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        fixMessageTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
     }
     /**
      * Initialize the table columns
@@ -171,8 +174,7 @@ public class FixMessageDetailsView
      * @version $Id$
      * @since $Release$
      */
-    @SuppressWarnings("unused")
-    private static class DisplayFixMessageValue
+    public static class DisplayFixMessageValue
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -208,7 +210,7 @@ public class FixMessageDetailsView
          *
          * @return a <code>ReadOnlyIntegerProperty</code> value
          */
-        private ReadOnlyIntegerProperty tagProperty()
+        public ReadOnlyIntegerProperty tagProperty()
         {
             return tagProperty;
         }
@@ -217,7 +219,7 @@ public class FixMessageDetailsView
          *
          * @return a <code>ReadOnlyStringProperty</code> value
          */
-        private ReadOnlyStringProperty nameProperty()
+        public ReadOnlyStringProperty nameProperty()
         {
             return nameProperty;
         }
@@ -226,7 +228,7 @@ public class FixMessageDetailsView
          *
          * @return a <code>ReadOnlyStringProperty</code> value
          */
-        private ReadOnlyStringProperty typeProperty()
+        public ReadOnlyStringProperty typeProperty()
         {
             return typeProperty;
         }
@@ -235,7 +237,7 @@ public class FixMessageDetailsView
          *
          * @return a <code>ReadOnlyStringProperty</code> value
          */
-        private ReadOnlyStringProperty valueProperty()
+        public ReadOnlyStringProperty valueProperty()
         {
             return valueProperty;
         }
