@@ -321,6 +321,12 @@ public class StrategyServiceImpl
             } else {
                 eventBusService.post(new SimpleStrategyStartFailedEvent(strategyInstance,
                                                                         errorMessage));
+                PersistentStrategyMessage errorMessageEvent = new PersistentStrategyMessage();
+                errorMessageEvent.setMessage(errorMessage);
+                errorMessageEvent.setMessageTimestamp(new Date());
+                errorMessageEvent.setSeverity(Severity.ERROR);
+                errorMessageEvent.setStrategyInstance(strategyInstance);
+                strategyMessageDao.save(errorMessageEvent);
             }
             if(oldStatus != newStatus) {
                 eventBusService.post(new SimpleStrategyStatusChangedEvent(strategyInstance,
