@@ -13,9 +13,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.client.Validations;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.XmlService;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
@@ -31,10 +38,10 @@ import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.client.OrderValidationException;
 import org.marketcetera.trade.client.SendOrderResponse;
-import org.marketcetera.ui.PhotonApp;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
+import org.marketcetera.ui.marketdata.service.MarketDataClientService;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
@@ -43,6 +50,7 @@ import org.marketcetera.ui.service.trade.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ValidatingTextField;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -53,8 +61,10 @@ import com.google.common.collect.Maps;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -77,9 +87,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.Mnemonic;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -119,11 +127,20 @@ public class OrderTicketView
       return NAME;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClose()
+     */
+    @Override
+    public void onClose()
+    {
+        cancelPegToMidpointMarketDataRequest();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
     @Override
     protected void onStart()
     {
+        marketDataClient = serviceManager.getService(MarketDataClientService.class);
         rootLayout = new VBox();
         orderTicketLayout = new GridPane();
         // create controls and layouts
@@ -293,18 +310,29 @@ public class OrderTicketView
             try {
                 String symbol = serviceManager.getService(TradeClientService.class).getTreatedSymbol(String.valueOf(inNewValue));
                 if(symbol == null) {
+                    pegToMidpointCheckBox.setDisable(true);
+                    pegToMidpointLockedCheckBox.setDisable(true);
+                    pegToMidpointCheckBox.selectedProperty().set(false);
+                    pegToMidpointLockedCheckBox.selectedProperty().set(false);
+                    cancelPegToMidpointMarketDataRequest();
                     return;
                 }
                 resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
                 if(resolvedInstrument == null) {
                     symbolTextField.setStyle(PhotonServices.errorStyle);
                     adviceLabel.textProperty().set("Cannot resolve symbol");
+                    pegToMidpointCheckBox.setDisable(true);
+                    pegToMidpointLockedCheckBox.setDisable(true);
+                    pegToMidpointCheckBox.selectedProperty().set(false);
+                    pegToMidpointLockedCheckBox.selectedProperty().set(false);
+                    cancelPegToMidpointMarketDataRequest();
                     return;
                 }
+                pegToMidpointCheckBox.setDisable(false);
                 symbolTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
                 symbolTextField.setTooltip(new Tooltip(resolvedInstrument.toString()));
-                // TODO if peg-to-midpoint is checked, we need to change the market data subscription
+                doPegToMidpointMarketDataRequest();
             } finally {
                 adjustSendButton();
             }
@@ -333,8 +361,10 @@ public class OrderTicketView
                     isMarket = value.isMarketOrder();
                 }
                 if(isMarket) {
+                    cancelPegToMidpointMarketDataRequest();
                     priceTextField.setText("");
                     pegToMidpointCheckBox.selectedProperty().set(false);
+                    pegToMidpointLockedCheckBox.selectedProperty().set(false);
                 }
                 priceTextField.setDisable(isMarket);
                 pegToMidpointCheckBox.setDisable(isMarket);
@@ -441,6 +471,10 @@ public class OrderTicketView
         pegToMidpointLabel.setId(getClass().getCanonicalName() + ".pegToMidpointLabel");
         pegToMidpointCheckBox.setId(getClass().getCanonicalName() + ".pegToMidpointCheckBox");
         pegToMidpointCheckBox.setTooltip(new Tooltip("Price pegged to the midpoint of the spread when the order is routed"));
+        pegToMidpointBidEventProperty.addListener((observableValue,oldValue,newValue) -> updatePegToMidpointPrice());
+        pegToMidpointAskEventProperty.addListener((observableValue,oldValue,newValue) -> updatePegToMidpointPrice());
+        pegToMidpointCheckBox.setDisable(true);
+        pegToMidpointLockedCheckBox.setDisable(true);
         pegToMidpointCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             boolean value = newValue;
             pegToMidpointLockedCheckBox.setDisable(!value);
@@ -448,8 +482,11 @@ public class OrderTicketView
             priceTextField.setDisable(value);
             if(!value) {
                 pegToMidpointLockedCheckBox.selectedProperty().set(false);
+                cancelPegToMidpointMarketDataRequest();
+                adjustSendButton();
+                return;
             }
-            // TODO need to subscribe to market data (if we have a symbol)
+            doPegToMidpointMarketDataRequest();
         });
         styleService.addStyleToAll(pegToMidpointLabel,
                                    pegToMidpointCheckBox);
@@ -537,14 +574,14 @@ public class OrderTicketView
         styleService.addStyleToAll(customFieldsAccordion,
                                    customFieldsPane,
                                    customFieldsTable);
-        // send button
-        KeyCombination sendKeyCombination = new KeyCodeCombination(KeyCode.ENTER);
-        Mnemonic sendMnemonic = new Mnemonic(sendButton,
-                                             sendKeyCombination);
-        sendButton.setMnemonicParsing(true);
-        PhotonApp.getPrimaryStage().getScene().addMnemonic(sendMnemonic);
         buttonLayout.getChildren().addAll(sendButton,
-                                             clearButton);
+                                          clearButton);
+        rootLayout.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if(event.getCode() == KeyCode.ENTER && !sendButton.disabledProperty().get()) {
+               sendButton.fire();
+               event.consume(); 
+            }
+        });
         sendButton.setOnMouseClicked(inEvent -> {
             NewOrReplaceOrder newOrder;
             if(replaceExecutionReportOption.isPresent()) {
@@ -764,6 +801,108 @@ public class OrderTicketView
             );
         }
     }
+    private void updatePegToMidpointPrice()
+    {
+        if(pegToMidpointBidEventProperty.get() == null || pegToMidpointAskEventProperty.get() == null) {
+            priceTextField.textProperty().set("");
+            return;
+        }
+        BigDecimal askPrice = pegToMidpointAskEventProperty.get().getPrice();
+        BigDecimal bidPrice = pegToMidpointBidEventProperty.get().getPrice();
+        try {
+            BigDecimal midpointPirce = askPrice.add(bidPrice).divide(new BigDecimal(2),
+                                                                     PlatformServices.divisionContext);
+            priceTextField.textProperty().set(BigDecimalUtil.renderCurrency(midpointPirce));
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Cannot set peg-to-midpoint price, will try again shortly");
+        }
+    }
+    /**
+     * Handle an error that occurred while requesting market data for peg-to-midpoint. 
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    private void handleMarketDataRequestError(String inMessage)
+    {
+        uiMessageService.post(new NotificationEvent("Peg-to-Midpoint Market Data Request",
+                                                    "Unable to request market data for peg-to-midpoint price: " + inMessage,
+                                                    AlertType.ERROR));
+        pegToMidpointCheckBox.selectedProperty().set(false);
+        priceTextField.textProperty().set("");
+        cancelPegToMidpointMarketDataRequest();
+    }
+    /**
+     * Executes the peg-to-midpoint market data request, if appropriate.
+     */
+    private void doPegToMidpointMarketDataRequest()
+    {
+        if(!pegToMidpointCheckBox.selectedProperty().get()) {
+            return;
+        }
+        cancelPegToMidpointMarketDataRequest();
+        if(symbolTextField.textProperty().get() != null) {
+            pegToMidpointMarketDataRequestId = marketDataClient.request(MarketDataRequestBuilder.newRequest().withSymbols(symbolTextField.textProperty().get()).withContent(Content.TOP_OF_BOOK).create(),
+                                                                        new MarketDataListener() {
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+                 */
+                @Override
+                public void receiveMarketData(Event inEvent)
+                {
+                    if(inEvent instanceof BidEvent) {
+                        pegToMidpointBidEventProperty.set((BidEvent)inEvent);
+                    } else if(inEvent instanceof AskEvent) {
+                        pegToMidpointAskEventProperty.set((AskEvent)inEvent);
+                    } else {
+                        handleMarketDataRequestError("Received unexpected peg-to-midpoint event: " + inEvent.getClass());
+                    }
+                }
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
+                 */
+                @Override
+                public void onError(Throwable inThrowable)
+                {
+                    handleMarketDataRequestError(PlatformServices.getMessage(inThrowable));
+                }
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#onError(org.marketcetera.util.log.I18NBoundMessage)
+                 */
+                @Override
+                public void onError(I18NBoundMessage inMessage)
+                {
+                    handleMarketDataRequestError(inMessage.getText());
+                }
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.String)
+                 */
+                @Override
+                public void onError(String inMessage)
+                {
+                    handleMarketDataRequestError(inMessage);
+                }
+            });
+        }
+    }
+    /**
+     * Cancels the extant market data request for peg-to-midpoint, if any.
+     */
+    private void cancelPegToMidpointMarketDataRequest()
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Canceling market data request: {}",
+                               pegToMidpointMarketDataRequestId);
+        if(pegToMidpointMarketDataRequestId != null) {
+            try {
+                marketDataClient.cancel(pegToMidpointMarketDataRequestId);
+            } catch (Exception ignored) {
+            } finally {
+                pegToMidpointMarketDataRequestId = null;
+            }
+        }
+    }
     /**
      * Adjust the send button based on the other fields.
      * 
@@ -895,6 +1034,18 @@ public class OrderTicketView
          */
         private final StringProperty value;
     }
+    /**
+     * stores the most recent peg-to-midpoint bid event
+     */
+    private final ObjectProperty<BidEvent> pegToMidpointBidEventProperty = new SimpleObjectProperty<>();
+    /**
+     * stores the most recent peg-to-midpoint ask event
+     */
+    private final ObjectProperty<AskEvent> pegToMidpointAskEventProperty = new SimpleObjectProperty<>();
+    /**
+     * contains the market data request id for peg-to-midpoint requests, if any
+     */
+    private String pegToMidpointMarketDataRequestId;
     /**
      * root layout of the view
      */
@@ -1132,6 +1283,10 @@ public class OrderTicketView
      * root container for the scene
      */
     private GridPane orderTicketLayout;
+    /**
+     * provides access to market data services
+     */
+    private MarketDataClientService marketDataClient;
     /**
      * provides access to style services
      */
