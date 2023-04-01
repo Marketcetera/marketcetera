@@ -77,7 +77,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         // TODO need to preserve column order
         // TODO add page size widget
         // TODO implement sorting
-        // TODO need to set initial view size to something reasonable
         tradeClientService = serviceManager.getService(TradeClientService.class);
         initializeTradeMessageListener();
         mainLayout = new VBox();
@@ -192,13 +191,13 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             SendOrderResponse response = tradeClientService.send(orderCancel);
             if(response.getFailed()) {
                 uiMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
-                                                             AlertType.ERROR));
+                                                            "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                                                            AlertType.ERROR));
                 return;
             } else {
                 uiMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Cancel order " + response.getOrderId() + " submitted",
-                                                             AlertType.INFORMATION));
+                                                            "Cancel order " + response.getOrderId() + " submitted",
+                                                            AlertType.INFORMATION));
             }
         });
         replaceOrderMenuItem = new MenuItem("Replace Order");
@@ -207,8 +206,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
             if(executionReport == null) {
                 uiMessageService.post(new NotificationEvent("Replace Order",
-                                                             "Unable to replace " + report.getOrderId() + ": no execution report",
-                                                             AlertType.ERROR));
+                                                            "Unable to replace " + report.getOrderId() + ": no execution report",
+                                                            AlertType.ERROR));
                 return;
             }
                 String executionReportXml;
@@ -216,8 +215,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                     executionReportXml = xmlService.marshall(executionReport);
                 } catch (Exception e) {
                     uiMessageService.post(new NotificationEvent("Replace Order",
-                                                                 "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
-                                                                 AlertType.ERROR));
+                                                                "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
+                                                                AlertType.ERROR));
                     return;
                 }
                 Properties replaceProperties = new Properties();
