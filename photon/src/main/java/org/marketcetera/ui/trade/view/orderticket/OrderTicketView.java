@@ -699,7 +699,6 @@ public class OrderTicketView
         styleService.addStyleToAll(adviceSeparator,
                                    adviceLabel,
                                    rootLayout);
-//        orderTicketLayout.prefWidthProperty().bind(rootLayout.widthProperty());
         orderTicketLayout.prefHeightProperty().bind(rootLayout.widthProperty());
         rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         rootLayout.prefWidthProperty().bind(getParentWindow().widthProperty());
@@ -707,6 +706,7 @@ public class OrderTicketView
                                         adviceSeparator,
                                         adviceLabel);
         serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
+        fillFromExecutionReport(replaceExecutionReportOption);
     }
     /**
      * Create a new OrderTicketView instance.
@@ -801,6 +801,52 @@ public class OrderTicketView
             );
         }
     }
+    /**
+     * Format the order ticket from the given report option, if present.
+     *
+     * @param inReportOption an <code>Optional&lt;ExecutionReport&gt;</code> value
+     */
+    private void fillFromExecutionReport(Optional<ExecutionReport> inReportOption)
+    {
+        if(inReportOption.isEmpty()) {
+            return;
+        }
+        ExecutionReport report = inReportOption.get();
+        if(report.getBrokerId() != null) {
+            brokerComboBox.valueProperty().set(report.getBrokerId());
+        }
+        if(report.getSide() != null) {
+            sideComboBox.valueProperty().set(report.getSide());
+        }
+        if(report.getLeavesQuantity() != null) {
+            quantityTextField.setText(report.getLeavesQuantity().toPlainString());
+        }
+        if(report.getInstrument() != null) {
+            symbolTextField.setText(report.getInstrument().getSymbol());
+        }
+        if(report.getOrderType() != null) {
+            orderTypeComboBox.setValue(report.getOrderType());
+        }
+        if(report.getPrice() != null) {
+            priceTextField.setText(report.getPrice().toPlainString());
+        }
+        if(report.getTimeInForce() != null) {
+            timeInForceComboBox.setValue(report.getTimeInForce());
+        }
+        if(report.getText() != null) {
+            textTextField.setText(report.getText());
+        }
+        if(report.getAccount() != null) {
+            accountTextField.setText(report.getAccount());
+        }
+        if(report.getLastMarket() != null) {
+            // TODO this might not be correct
+            exDestinationTextField.setText(report.getLastMarket());
+        }
+    }
+    /**
+     * Calculate the new order price from the most recent quote events, if possible.
+     */
     private void updatePegToMidpointPrice()
     {
         if(pegToMidpointBidEventProperty.get() == null || pegToMidpointAskEventProperty.get() == null) {

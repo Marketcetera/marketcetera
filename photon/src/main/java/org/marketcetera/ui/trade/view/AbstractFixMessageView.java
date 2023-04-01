@@ -53,6 +53,7 @@ import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -77,10 +78,10 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         // TODO need to preserve column order
         // TODO add page size widget
         // TODO implement sorting
-        // TODO need to set initial view size to something reasonable
         tradeClientService = serviceManager.getService(TradeClientService.class);
         initializeTradeMessageListener();
         mainLayout = new VBox();
+        aboveTableLayout = new FlowPane();
         reportsTableView = new TableView<>();
         reportsTableView.setPlaceholder(getPlaceholder());
         TableViewSelectionModel<FixClazz> selectionModel = reportsTableView.getSelectionModel();
@@ -104,7 +105,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         reportsTableView.prefWidthProperty().bind(getParentWindow().widthProperty());
         reportsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
-        mainLayout.getChildren().addAll(reportsTableView,
+        mainLayout.getChildren().addAll(aboveTableLayout,
+                                        reportsTableView,
                                         pagination);
         currentPage = 0;
         pageSize = 10;
@@ -167,6 +169,37 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         tradeClientService.addTradeMessageListener(tradeMessageListener);
     }
     /**
+     * Cancel the order from the given report.
+     *
+     * @param inReport a <code>FixClazz</code> value
+     */
+    protected void cancelOrder(FixClazz inReport)
+    {
+        ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(inReport.getOrderId());
+        if(executionReport == null) {
+            uiMessageService.post(new NotificationEvent("Cancel Order",
+                                                         "Unable to cancel " + inReport.getOrderId() + ": no execution report",
+                                                         AlertType.ERROR));
+            return;
+        }
+        OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
+        SLF4JLoggerProxy.info(this,
+                              "{} sending {}",
+                              SessionUser.getCurrent().getUsername(),
+                              orderCancel);
+        SendOrderResponse response = tradeClientService.send(orderCancel);
+        if(response.getFailed()) {
+            uiMessageService.post(new NotificationEvent("Cancel Order",
+                                                        "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                                                        AlertType.ERROR));
+            return;
+        } else {
+            uiMessageService.post(new NotificationEvent("Cancel Order",
+                                                        "Cancel order " + response.getOrderId() + " submitted",
+                                                        AlertType.INFORMATION));
+        }
+    }
+    /**
      * Initialize the context menu for the FIX table.
      *
      * @param inTableView a <code>TableView&lt;FixClazz&gt;</code> value
@@ -177,29 +210,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         cancelOrderMenuItem = new MenuItem("Cancel Order");
         cancelOrderMenuItem.setOnAction(event -> {
             FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
-            if(executionReport == null) {
-                uiMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Unable to cancel " + report.getOrderId() + ": no execution report",
-                                                             AlertType.ERROR));
-                return;
-            }
-            OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
-            SLF4JLoggerProxy.info(this,
-                                  "{} sending {}",
-                                  SessionUser.getCurrent().getUsername(),
-                                  orderCancel);
-            SendOrderResponse response = tradeClientService.send(orderCancel);
-            if(response.getFailed()) {
-                uiMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
-                                                             AlertType.ERROR));
-                return;
-            } else {
-                uiMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Cancel order " + response.getOrderId() + " submitted",
-                                                             AlertType.INFORMATION));
-            }
+            cancelOrder(report);
         });
         replaceOrderMenuItem = new MenuItem("Replace Order");
         replaceOrderMenuItem.setOnAction(event -> {
@@ -207,8 +218,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
             if(executionReport == null) {
                 uiMessageService.post(new NotificationEvent("Replace Order",
-                                                             "Unable to replace " + report.getOrderId() + ": no execution report",
-                                                             AlertType.ERROR));
+                                                            "Unable to replace " + report.getOrderId() + ": no execution report",
+                                                            AlertType.ERROR));
                 return;
             }
                 String executionReportXml;
@@ -216,8 +227,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                     executionReportXml = xmlService.marshall(executionReport);
                 } catch (Exception e) {
                     uiMessageService.post(new NotificationEvent("Replace Order",
-                                                                 "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
-                                                                 AlertType.ERROR));
+                                                                "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
+                                                                AlertType.ERROR));
                     return;
                 }
                 Properties replaceProperties = new Properties();
@@ -293,6 +304,17 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         OrderStatus orderStatus = inNewValue.getOrderStatus();
         cancelOrderMenuItem.setDisable(!orderStatus.isCancellable());
         replaceOrderMenuItem.setDisable(!orderStatus.isCancellable());
+    }
+    /**
+     * Get the layout for above-the-table controls.
+     * 
+     * <p>Subclasses can add controls to this layout as desired.</p>
+     *
+     * @return a <code>FlowPane</code> value
+     */
+    protected FlowPane getAboveTableLayout()
+    {
+        return aboveTableLayout;
     }
     /**
      * Render the given column as a Date cell.
@@ -805,4 +827,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      * listens for trade messages
      */
     private TradeMessageListener tradeMessageListener;
+    /**
+     * optional layout used for above-the-table
+     */
+    private FlowPane aboveTableLayout;
 }
