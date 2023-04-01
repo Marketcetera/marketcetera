@@ -95,7 +95,7 @@ public class MarketDataListView
             synchronized(symbolsByRequestId) {
                 updateViewProperties();
                 for(String requestId : symbolsByRequestId.keySet()) {
-                    marketdataClient.cancel(requestId);
+                    marketDataClient.cancel(requestId);
                 }
                 symbolsByRequestId.clear();
             }
@@ -119,7 +119,7 @@ public class MarketDataListView
     @Override
     protected void onStart()
     {
-        marketdataClient = serviceManager.getService(MarketDataClientService.class);
+        marketDataClient = serviceManager.getService(MarketDataClientService.class);
         tradeClient = serviceManager.getService(TradeClientService.class);
         rootLayout = new VBox(5);
         initializeAddSymbol();
@@ -228,7 +228,7 @@ public class MarketDataListView
         SLF4JLoggerProxy.debug(this,
                                "Submitting {}",
                                request);
-        marketdataClient.request(request,
+        marketDataClient.request(request,
                                  rowListener);
         updateViewProperties();
     }
@@ -255,7 +255,7 @@ public class MarketDataListView
         addSymbolLayout.setAlignment(Pos.CENTER_RIGHT);
         providerComboBox = new ComboBox<>();
         providerComboBox.getItems().add(ALL_PROVIDERS);
-        providerComboBox.getItems().addAll(marketdataClient.getProviders());
+        providerComboBox.getItems().addAll(marketDataClient.getProviders());
         addSymbolLayout.getChildren().addAll(providerComboBox,
                                              addSymbolTextField,
                                              addSymbolButton);
@@ -346,7 +346,7 @@ public class MarketDataListView
                 return;
             }
             try {
-                marketdataClient.cancel(marketDataItem.marketDataRequestIdProperty().get());
+                marketDataClient.cancel(marketDataItem.marketDataRequestIdProperty().get());
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       e);
@@ -595,7 +595,7 @@ public class MarketDataListView
     /**
      * provides access to market data services
      */
-    private MarketDataClientService marketdataClient;
+    private MarketDataClientService marketDataClient;
     /**
      * provides access to trade services
      */
