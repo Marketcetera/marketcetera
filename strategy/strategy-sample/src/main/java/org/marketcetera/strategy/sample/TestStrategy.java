@@ -3,7 +3,6 @@ package org.marketcetera.strategy.sample;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Content;
@@ -12,7 +11,6 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.strategy.StrategyClient;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -41,17 +39,8 @@ public class TestStrategy
     @PostConstruct
     public void start()
     {
-        SLF4JLoggerProxy.info(this,
-                              "Starting {}",
-                              PlatformServices.getServiceName(getClass()));
-        strategyClient.emitMessage(Severity.DEBUG,
-                                   "Debug message");
         strategyClient.emitMessage(Severity.INFO,
-                                   "Info message");
-        strategyClient.emitMessage(Severity.WARN,
-                                   "Warn message");
-        strategyClient.emitMessage(Severity.ERROR,
-                                   "Error message");
+                                   "Starting test strategy");
         MarketDataRequestBuilder marketDataRequestBuilder = MarketDataRequestBuilder.newRequest();
         marketDataRequestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK)
             .withSymbols("AAPL,METC");
@@ -75,6 +64,8 @@ public class TestStrategy
     @PreDestroy
     public void stop()
     {
+        strategyClient.emitMessage(Severity.INFO,
+                                   "Stopping test strategy");
         if(marketDataRequestId != null) {
             try {
                 marketDataClient.cancel(marketDataRequestId);

@@ -291,7 +291,7 @@ public class OrderTicketView
         // symbol
         symbolTextField.textProperty().addListener((ChangeListener<String>) (inObservable,inOldValue,inNewValue) -> {
             try {
-                String symbol = StringUtils.trimToNull(String.valueOf(inNewValue));
+                String symbol = serviceManager.getService(TradeClientService.class).getTreatedSymbol(String.valueOf(inNewValue));
                 if(symbol == null) {
                     return;
                 }
