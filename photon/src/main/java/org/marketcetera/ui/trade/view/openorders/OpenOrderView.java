@@ -6,6 +6,7 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.trade.view.AbstractFixMessageView;
 import org.marketcetera.ui.view.ContentView;
@@ -13,11 +14,16 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 
@@ -60,6 +66,22 @@ public class OpenOrderView
               inViewProperties);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        cancelOpenOrdersButton = new Button();
+        cancelOpenOrdersButton.setTooltip(new Tooltip("Cancel all open orders"));
+        cancelOpenOrdersButton.setGraphic(new ImageView(PhotonServices.getIcon("images/erase.png")));
+        cancelOpenOrdersButton.setPadding(new Insets(0,20,0,20));
+        cancelOpenOrdersButton.setOnAction(event -> cancelOpenOrders());
+        getAboveTableLayout().setAlignment(Pos.BASELINE_RIGHT);
+        getAboveTableLayout().getChildren().add(cancelOpenOrdersButton);
+        getAboveTableLayout().prefWidthProperty().bind(getMainLayout().widthProperty());
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#getClientReports(org.marketcetera.persist.PageRequest)
      */
     @Override
@@ -95,6 +117,19 @@ public class OpenOrderView
         inTableView.getColumns().add(2,
                                      rootOrderIdColumn);
     }
+    /**
+     * Cancel all open orders displayed in the FIX table.
+     */
+    private void cancelOpenOrders()
+    {
+        for(DisplayOrderSummary orderSummary : reportsTableView.getItems()) {
+            cancelOrder(orderSummary);
+        }
+    }
+    /**
+     * cancel open orders button
+     */
+    private Button cancelOpenOrdersButton;
     /**
      * root order id table column
      */
