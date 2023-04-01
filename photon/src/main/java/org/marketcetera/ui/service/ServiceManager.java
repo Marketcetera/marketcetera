@@ -10,6 +10,7 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
@@ -89,12 +90,7 @@ public class ServiceManager
         SessionUser sessionUser = SessionUser.getCurrent();
         // we don't expect this, but we should handle it, just in case
         if(sessionUser == null) {
-            // TODO
-////            menuLayout.setVisible(false);
-//            UI.getCurrent().getNavigator().navigateTo(LoginView.NAME);
-//            
-//            // do I need to return something here? or throw something?
-            throw new UnsupportedOperationException();
+            throw new IllegalStateException("No current user");
         }
         Cache<String,ConnectableService> serviceCache = servicesByUser.getUnchecked(sessionUser);
         ConnectableService service = serviceCache.getIfPresent(inServiceClass.getSimpleName());
@@ -111,6 +107,8 @@ public class ServiceManager
                                    sessionUser);
             // create a service for this user
             service = serviceFactory.create();
+            PlatformServices.autowire(service,
+                                      applicationContext);
         }
         // service is guaranteed to be non-null, but might or might not be running at this point
         if(!service.isRunning()) {
@@ -182,6 +180,11 @@ public class ServiceManager
             return CacheBuilder.newBuilder().build();
         }}
     );
+    /**
+     * provides access to the application context
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * hostname to connect to
      */

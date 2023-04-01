@@ -3,6 +3,7 @@ package org.marketcetera.ui.service.trade;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.fix.ActiveFixSession;
@@ -25,6 +26,8 @@ import org.marketcetera.trading.rpc.TradeRpcClientParametersImpl;
 import org.marketcetera.ui.service.ConnectableService;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 /* $License$ */
 
@@ -35,6 +38,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @version $Id$
  * @since $Release$
  */
+@Configuration
 public class TradeClientService
         implements ConnectableService
 {
@@ -153,6 +157,32 @@ public class TradeClientService
         return tradeClient.resolveSymbol(inSymbol);
     }
     /**
+     * Get the symbol modified for use in the server as necessary.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    public String getTreatedSymbol(String inSymbol)
+    {
+        inSymbol = StringUtils.trimToNull(inSymbol);
+        if(inSymbol == null) {
+            return null;
+        }
+        if(isForceCapitalSymbols()) {
+            inSymbol = inSymbol.toUpperCase();
+        }
+        return inSymbol;
+    }
+    /**
+     * Indicates if symbols should be forced to capital letters.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isForceCapitalSymbols()
+    {
+        return forceCapitalSymbols;
+    }
+    /**
      * Send the given order.
      *
      * @param inOrder an <code>Order</code> value
@@ -249,6 +279,11 @@ public class TradeClientService
     {
         tradeClientFactory = inTradeClientFactory;
     }
+    /**
+     * strategy temporary directory base
+     */
+    @Value("${metc.photon.capital.symbols}")
+    private boolean forceCapitalSymbols;
     /**
      * creates an Trade client to connect to the Trade server
      */

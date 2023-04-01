@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
@@ -196,15 +195,14 @@ public class MarketDataDetailView
         addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
         addSymbolButton.setDisable(true);
         addSymbolTextField.textProperty().addListener((observableValue,oldValue,newValue) -> {
-            newValue = StringUtils.trimToNull(newValue);
+            newValue = tradeClient.getTreatedSymbol(newValue);
             addSymbolButton.setDisable(newValue == null);
         });
         addSymbolButton.setOnAction(event -> {
-            String symbol = StringUtils.trimToNull(addSymbolTextField.getText());
+            String symbol = tradeClient.getTreatedSymbol(addSymbolTextField.getText());
             if(symbol == null) {
                 return;
             }
-            symbol = symbol.toUpperCase();
             addSymbolTextField.textProperty().set(symbol);
             marketDataInstrument = tradeClient.resolveSymbol(symbol);
             updateViewProperties();

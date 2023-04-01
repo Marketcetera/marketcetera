@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
@@ -208,7 +207,6 @@ public class MarketDataListView
         if(inSymbol == null) {
             return;
         }
-        inSymbol = inSymbol.toUpperCase();
         if(symbolsByRequestId.values().contains(inSymbol)) {
             return;
         }
@@ -246,11 +244,11 @@ public class MarketDataListView
         addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
         addSymbolButton.setDisable(true);
         addSymbolTextField.textProperty().addListener((observableValue,oldValue,newValue) -> {
-            newValue = StringUtils.trimToNull(newValue);
+            newValue = tradeClient.getTreatedSymbol(newValue);
             addSymbolButton.setDisable(newValue == null);
         });
         addSymbolButton.setOnAction(event -> {
-            String symbol = StringUtils.trimToNull(addSymbolTextField.getText());
+            String symbol = tradeClient.getTreatedSymbol(addSymbolTextField.getText());
             addSymbolTextField.setText(null);
             doMarketDataRequest(symbol);
         });
