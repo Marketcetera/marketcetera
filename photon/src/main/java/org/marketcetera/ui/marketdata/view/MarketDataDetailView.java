@@ -391,7 +391,6 @@ public class MarketDataDetailView
             getViewProperties().setProperty(symbolKey,
                                             marketDataInstrument.getFullSymbol());
         }
-        System.out.println("COCO: view properties are now " + getViewProperties());
     }
     /**
      * Update the display table.
