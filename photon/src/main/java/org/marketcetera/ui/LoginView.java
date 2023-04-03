@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import io.grpc.StatusRuntimeException;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -171,8 +170,7 @@ public class LoginView
      */
     private void onCloseRequest(WindowEvent inEvent)
     {
-        // shutdown the whole app
-        Platform.exit();
+        PhotonApp.getApp().doAppShutdown();
     }
     /**
      * main scene of the dialog
