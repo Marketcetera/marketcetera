@@ -3,6 +3,23 @@
 //
 package org.marketcetera.strategy.dao;
 
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.core.notifications.INotification;
+import org.marketcetera.strategy.HasStrategyInstance;
+import org.marketcetera.strategy.StrategyInstance;
+import org.marketcetera.strategy.StrategyMessage;
+
 /* $License$ */
 
 /**
@@ -12,11 +29,12 @@ package org.marketcetera.strategy.dao;
  * @version $Id$
  * @since $Release$
  */
-@javax.persistence.Entity(name="StrategyMessage")
-@javax.persistence.Table(name="metc_strategy_messages")
+@Preserve
+@Entity(name="StrategyMessage")
+@Table(name="metc_strategy_messages")
 public class PersistentStrategyMessage
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.strategy.StrategyMessage,org.marketcetera.strategy.HasStrategyInstance
+        implements StrategyMessage,HasStrategyInstance
 {
     /**
      * Create a new PersistentStrategyMessage instance.
@@ -27,7 +45,7 @@ public class PersistentStrategyMessage
      *
      * @param inStrategyMessage a <code>StrategyMessage</code> value
      */
-    public PersistentStrategyMessage(org.marketcetera.strategy.StrategyMessage inStrategyMessage)
+    public PersistentStrategyMessage(StrategyMessage inStrategyMessage)
     {
         setStrategyInstance(inStrategyMessage.getStrategyInstance());
         setMessageTimestamp(inStrategyMessage.getMessageTimestamp());
@@ -37,60 +55,60 @@ public class PersistentStrategyMessage
     /**
      * Get the strategyInstance value.
      *
-     * @return an <code>org.marketcetera.strategy.StrategyInstance</code> value
+     * @return an <code>StrategyInstance</code> value
      */
     @Override
-    public org.marketcetera.strategy.StrategyInstance getStrategyInstance()
+    public StrategyInstance getStrategyInstance()
     {
         return strategyInstance;
     }
     /**
      * Set the strategyInstance value.
      *
-     * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyInstance</code> value
+     * @param inStrategyInstance an <code>StrategyInstance</code> value
      */
     @Override
-    public void setStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance)
+    public void setStrategyInstance(StrategyInstance inStrategyInstance)
     {
-        strategyInstance = (org.marketcetera.strategy.dao.PersistentStrategyInstance)inStrategyInstance;
+        strategyInstance = (PersistentStrategyInstance)inStrategyInstance;
     }
     /**
      * Get the messageTimestamp value.
      *
-     * @return a <code>java.util.Date</code> value
+     * @return a <code>Date</code> value
      */
     @Override
-    public java.util.Date getMessageTimestamp()
+    public Date getMessageTimestamp()
     {
         return messageTimestamp;
     }
     /**
      * Set the messageTimestamp value.
      *
-     * @param inMessageTimestamp a <code>java.util.Date</code> value
+     * @param inMessageTimestamp a <code>Date</code> value
      */
     @Override
-    public void setMessageTimestamp(java.util.Date inMessageTimestamp)
+    public void setMessageTimestamp(Date inMessageTimestamp)
     {
         messageTimestamp = inMessageTimestamp;
     }
     /**
      * Get the severity value.
      *
-     * @return an <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @return an <code>INotification.Severity</code> value
      */
     @Override
-    public org.marketcetera.core.notifications.INotification.Severity getSeverity()
+    public INotification.Severity getSeverity()
     {
         return severity;
     }
     /**
      * Set the severity value.
      *
-     * @param inSeverity an <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @param inSeverity an <code>INotification.Severity</code> value
      */
     @Override
-    public void setSeverity(org.marketcetera.core.notifications.INotification.Severity inSeverity)
+    public void setSeverity(INotification.Severity inSeverity)
     {
         severity = inSeverity;
     }
@@ -112,7 +130,15 @@ public class PersistentStrategyMessage
     @Override
     public void setMessage(String inMessage)
     {
-        message = org.apache.commons.lang.StringUtils.trimToNull(inMessage);
+        message = StringUtils.trimToNull(inMessage);
+    }
+    /* (non-Javadoc)
+     * @see StrategyMessage#getStrategyMessageId()
+     */
+    @Override
+    public long getStrategyMessageId()
+    {
+        return getId();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -122,7 +148,8 @@ public class PersistentStrategyMessage
     {
         StringBuilder builder = new StringBuilder();
         builder.append("StrategyMessage [")
-            .append("strategyInstance=").append(strategyInstance)
+            .append("strategyMessageId=").append(getId())
+            .append(", strategyInstance=").append(strategyInstance)
             .append(", messageTimestamp=").append(messageTimestamp)
             .append(", severity=").append(severity)
             .append(", message=").append(message).append("]");
@@ -131,23 +158,24 @@ public class PersistentStrategyMessage
     /**
      * strategy which created this message
      */
-    @javax.persistence.ManyToOne
-    @javax.persistence.JoinColumn(name="strategy_instance_id",nullable=true)
-    private org.marketcetera.strategy.dao.PersistentStrategyInstance strategyInstance;
+    @ManyToOne
+    @JoinColumn(name="strategy_instance_id",nullable=true)
+    private PersistentStrategyInstance strategyInstance;
     /**
      * date message was created
      */
-    @javax.persistence.Column(name="message_timestamp",nullable=true,unique=false)
-    private java.util.Date messageTimestamp;
+    @Column(name="message_timestamp",nullable=true,unique=false)
+    private Date messageTimestamp;
     /**
      * strategy message severity
      */
-    @javax.persistence.Column(name="severity",nullable=true,unique=false)
-    private org.marketcetera.core.notifications.INotification.Severity severity;
+    @Enumerated(EnumType.STRING)
+    @Column(name="severity",nullable=true,unique=false)
+    private INotification.Severity severity;
     /**
      * message from the strategy
      */
-    @javax.persistence.Column(name="message",nullable=true,unique=false)
+    @Column(name="message",nullable=true,unique=false)
     private String message;
     private static final long serialVersionUID = 1444495066L;
 }

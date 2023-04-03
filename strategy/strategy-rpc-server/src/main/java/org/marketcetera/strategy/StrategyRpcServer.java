@@ -27,6 +27,10 @@ import org.marketcetera.rpc.base.BaseRpc;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.rpc.paging.PagingRpcUtil;
 import org.marketcetera.rpc.server.AbstractRpcService;
+import org.marketcetera.strategy.StrategyRpc.DeleteAllStrategyMessagesRequest;
+import org.marketcetera.strategy.StrategyRpc.DeleteAllStrategyMessagesResponse;
+import org.marketcetera.strategy.StrategyRpc.DeleteStrategyMessageRequest;
+import org.marketcetera.strategy.StrategyRpc.DeleteStrategyMessageResponse;
 import org.marketcetera.strategy.StrategyRpc.FileUploadResponse;
 import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -54,22 +58,6 @@ import io.grpc.stub.StreamObserver;
 public class StrategyRpcServer<SessionClazz>
         extends AbstractRpcService<SessionClazz,StrategyRpcServiceGrpc.StrategyRpcServiceImplBase>
 {
-    /* (non-Javadoc)
-    * @see AbstractRpcService#getServiceDescription()
-    */
-    @Override
-    protected String getServiceDescription()
-    {
-        return description;
-    }
-    /* (non-Javadoc)
-    * @see AbstractRpcService#getService()
-    */
-    @Override
-    protected StrategyRpcServiceGrpc.StrategyRpcServiceImplBase getService()
-    {
-        return service;
-    }
     /**
      * Validate and start the object.
      */
@@ -79,6 +67,22 @@ public class StrategyRpcServer<SessionClazz>
     {
         service = new Service();
         super.start();
+    }
+    /* (non-Javadoc)
+     * @see AbstractRpcService#getServiceDescription()
+     */
+    @Override
+    protected String getServiceDescription()
+    {
+        return description;
+    }
+    /* (non-Javadoc)
+     * @see AbstractRpcService#getService()
+     */
+    @Override
+    protected StrategyRpcServiceGrpc.StrategyRpcServiceImplBase getService()
+    {
+        return service;
     }
     /**
      * Write to the appropriate output file with the given upload metadata or file chunk.
@@ -119,6 +123,15 @@ public class StrategyRpcServer<SessionClazz>
     {
         inWriter.close();
     }
+    /**
+     * Verify an uploaded strategy file matches the given expected attributes.
+     *
+     * @param inStrategyFile a <code>Path</code> vlaue
+     * @param inNonce a <code>String</code> value
+     * @param inName a <code>String</code> value
+     * @throws NoSuchAlgorithmException if the file cannot be hashed
+     * @throws IOException if the file cannot be read
+     */
     private void verifyAndMoveFile(Path inStrategyFile,
                                    String inNonce,
                                    String inName)
@@ -288,6 +301,58 @@ public class StrategyRpcServer<SessionClazz>
                 serviceData.ifPresent(strategyInstance -> StrategyRpcUtil.getRpcStrategyInstance(strategyInstance).ifPresent(rpcStrategyInstance -> responseBuilder.setStrategyInstance(rpcStrategyInstance)));
                 StrategyRpc.FindStrategyInstanceByNameResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(StrategyRpcServer.this,"Responding {}",response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#deleteStrategyMessage(org.marketcetera.strategy.StrategyRpc.DeleteStrategyMessageRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void deleteStrategyMessage(DeleteStrategyMessageRequest inRequest,
+                                          StreamObserver<DeleteStrategyMessageResponse> inResponseObserver)
+        {
+            try {
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Received {}",
+                                       inRequest);
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.DeleteStrategyMessagesAction.name());
+                StrategyRpc.DeleteStrategyMessageResponse.Builder responseBuilder = StrategyRpc.DeleteStrategyMessageResponse.newBuilder();
+                long strategyMessageId = inRequest.getStrategyMessageId();
+                strategyService.deleteStrategyMessage(strategyMessageId);
+                StrategyRpc.DeleteStrategyMessageResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Responding {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.StrategyRpcServiceGrpc.StrategyRpcServiceImplBase#deleteAllStrategyMessages(org.marketcetera.strategy.StrategyRpc.DeleteAllStrategyMessagesRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void deleteAllStrategyMessages(DeleteAllStrategyMessagesRequest inRequest,
+                                              StreamObserver<DeleteAllStrategyMessagesResponse> inResponseObserver)
+        {
+            try {
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Received {}",
+                                       inRequest);
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                authzService.authorize(sessionHolder.getUser(),StrategyPermissions.DeleteStrategyMessagesAction.name());
+                StrategyRpc.DeleteAllStrategyMessagesResponse.Builder responseBuilder = StrategyRpc.DeleteAllStrategyMessagesResponse.newBuilder();
+                String strategyInstanceName = inRequest.getStrategyInstanceName();
+                strategyService.deleteAllStrategyMessages(strategyInstanceName);
+                StrategyRpc.DeleteAllStrategyMessagesResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(StrategyRpcServer.this,
+                                       "Responding {}",
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {

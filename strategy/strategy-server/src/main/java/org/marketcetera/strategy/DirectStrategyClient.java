@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 /* $License$ */
 
 /**
- *
+ * Provides an in-process {@link StrategyClient} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -200,11 +200,26 @@ public class DirectStrategyClient
         username = StringUtils.trimToNull(inUsername);
         Validate.notNull(username);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#deleteStrategyMessage(long)
+     */
+    @Override
+    public void deleteStrategyMessage(long inStrategyMessageId)
+    {
+        strategyService.deleteStrategyMessage(inStrategyMessageId);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyClient#deleteAllStrategyMessages(java.lang.String)
+     */
+    @Override
+    public void deleteAllStrategyMessages(String inStrategyInstanceName)
+    {
+        strategyService.deleteAllStrategyMessages(inStrategyInstanceName);
+    }
     /**
-     * 
+     * Get the strategy instance context for this running strategy.
      *
-     *
-     * @return
+     * @return a <code>StrategyInstanceHolder</code> value
      */
     private StrategyInstanceHolder getStrategyInstanceHolder()
     {
@@ -214,10 +229,9 @@ public class DirectStrategyClient
         return strategyInstanceHolder;
     }
     /**
-     * 
+     * Get the strategy message factory for this running strategy.
      *
-     *
-     * @return
+     * @return a <code>StrategyMessageFactory</code> value
      */
     private StrategyMessageFactory getStrategyMessageFactory()
     {
@@ -227,10 +241,9 @@ public class DirectStrategyClient
         return strategyMessageFactory;
     }
     /**
-     * 
+     * Get the strategy service value for this running strategy.
      *
-     *
-     * @return
+     * @return a <code>StrategyService</code> value
      */
     private StrategyService getStrategyService()
     {
