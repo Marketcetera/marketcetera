@@ -19,6 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -75,11 +76,19 @@ public class OpenOrderView
         cancelOpenOrdersButton = new Button();
         cancelOpenOrdersButton.setTooltip(new Tooltip("Cancel all open orders"));
         cancelOpenOrdersButton.setGraphic(new ImageView(PhotonServices.getIcon("images/erase.png")));
-        cancelOpenOrdersButton.setPadding(new Insets(0,20,0,20));
+        cancelOpenOrdersButton.setPadding(new Insets(0,30,0,00));
         cancelOpenOrdersButton.setOnAction(event -> cancelOpenOrders());
         getAboveTableLayout().setAlignment(Pos.BASELINE_RIGHT);
         getAboveTableLayout().getChildren().add(cancelOpenOrdersButton);
         getAboveTableLayout().prefWidthProperty().bind(getMainLayout().widthProperty());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#getTableSelectionMode()
+     */
+    @Override
+    protected SelectionMode getTableSelectionMode()
+    {
+        return SelectionMode.MULTIPLE;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#getClientReports(org.marketcetera.persist.PageRequest)
