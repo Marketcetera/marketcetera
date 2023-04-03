@@ -47,7 +47,7 @@ public class PermissionViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Permissions.svg");
+        return getClass().getClassLoader().getResource("images/check.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()

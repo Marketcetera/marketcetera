@@ -21,7 +21,7 @@ import javafx.beans.property.StringProperty;
 /* $License$ */
 
 /**
- *
+ * Represents a single row in the market data view list table.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -29,6 +29,12 @@ import javafx.beans.property.StringProperty;
  */
 public class MarketDataItem
 {
+    /**
+     * Create a new MarketDataItem instance.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inMarketDataRequestId a <code>String</code> value
+     */
     public MarketDataItem(Instrument inInstrument,
                           String inMarketDataRequestId)
     {
@@ -54,15 +60,19 @@ public class MarketDataItem
         askExchangeProperty = new SimpleStringProperty();
         askTimestampProperty = new SimpleObjectProperty<>();
     }
+    /**
+     * Get the market data request id property.
+     *
+     * @return a <code>ReadOnlyStringProperty</code> value
+     */
     public ReadOnlyStringProperty marketDataRequestIdProperty()
     {
         return marketDataRequestIdProperty;
     }
-    private StringProperty marketDataRequestIdProperty;
     /**
      * Get the instrument value.
      *
-     * @return a <code>Instrument</code> value
+     * @return an <code>Instrument</code> value
      */
     public Instrument getInstrument()
     {
@@ -71,7 +81,7 @@ public class MarketDataItem
     /**
      * Get the symbolProperty value.
      *
-     * @return a <code>StringProperty</code> value
+     * @return a <code>ReadOnlyStringProperty</code> value
      */
     public ReadOnlyStringProperty symbolProperty()
     {
@@ -80,7 +90,7 @@ public class MarketDataItem
     /**
      * Get the tradeExchangeProperty value.
      *
-     * @return a <code>StringProperty</code> value
+     * @return a <code>ReadOnlyStringProperty</code> value
      */
     public ReadOnlyStringProperty tradeExchangeProperty()
     {
@@ -89,7 +99,7 @@ public class MarketDataItem
     /**
      * Get the lastPriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> lastPriceProperty()
     {
@@ -98,7 +108,7 @@ public class MarketDataItem
     /**
      * Get the lastQuantityProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> lastQuantityProperty()
     {
@@ -107,7 +117,7 @@ public class MarketDataItem
     /**
      * Get the tradeTimestampProperty value.
      *
-     * @return an <code>ObjectProperty<DateTime></code> value
+     * @return a <code>ReadOnlyObjectProperty<DateTime></code> value
      */
     public ReadOnlyObjectProperty<DateTime> tradeTimestampProperty()
     {
@@ -116,7 +126,7 @@ public class MarketDataItem
     /**
      * Get the bidTimestampProperty value.
      *
-     * @return an <code>ObjectProperty<DateTime></code> value
+     * @return a <code>ReadOnlyObjectProperty<DateTime></code> value
      */
     public ReadOnlyObjectProperty<DateTime> bidTimestampProperty()
     {
@@ -125,7 +135,7 @@ public class MarketDataItem
     /**
      * Get the askTimestampProperty value.
      *
-     * @return an <code>ObjectProperty<DateTime></code> value
+     * @return a <code>ReadOnlyObjectProperty<DateTime></code> value
      */
     public ReadOnlyObjectProperty<DateTime> askTimestampProperty()
     {
@@ -134,7 +144,7 @@ public class MarketDataItem
     /**
      * Get the bidExchangeProperty value.
      *
-     * @return a <code>StringProperty</code> value
+     * @return a <code>ReadOnlyStringProperty</code> value
      */
     public ReadOnlyStringProperty bidExchangeProperty()
     {
@@ -143,7 +153,7 @@ public class MarketDataItem
     /**
      * Get the askExchangeProperty value.
      *
-     * @return a <code>StringProperty</code> value
+     * @return a <code>ReadOnlyStringProperty</code> value
      */
     public ReadOnlyStringProperty askExchangeProperty()
     {
@@ -152,7 +162,7 @@ public class MarketDataItem
     /**
      * Get the bidQuantityProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> bidQuantityProperty()
     {
@@ -161,7 +171,7 @@ public class MarketDataItem
     /**
      * Get the bidPriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> bidPriceProperty()
     {
@@ -170,7 +180,7 @@ public class MarketDataItem
     /**
      * Get the askPriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> askPriceProperty()
     {
@@ -179,7 +189,7 @@ public class MarketDataItem
     /**
      * Get the askQuantityProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> askQuantityProperty()
     {
@@ -188,7 +198,7 @@ public class MarketDataItem
     /**
      * Get the previousClosePriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> previousClosePriceProperty()
     {
@@ -197,7 +207,7 @@ public class MarketDataItem
     /**
      * Get the openPriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> openPriceProperty()
     {
@@ -206,7 +216,7 @@ public class MarketDataItem
     /**
      * Get the highPriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> highPriceProperty()
     {
@@ -215,7 +225,7 @@ public class MarketDataItem
     /**
      * Get the lowPriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> lowPriceProperty()
     {
@@ -224,7 +234,7 @@ public class MarketDataItem
     /**
      * Get the closePriceProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> closePriceProperty()
     {
@@ -233,17 +243,32 @@ public class MarketDataItem
     /**
      * Get the tradeVolumeProperty value.
      *
-     * @return an <code>ObjectProperty<BigDecimal></code> value
+     * @return a <code>ReadOnlyObjectProperty<BigDecimal></code> value
      */
     public ReadOnlyObjectProperty<BigDecimal> tradeVolumeProperty()
     {
         return tradeVolumeProperty;
     }
+    /**
+     * Get the provider property value.
+     *
+     * @return a <code>ReadOnlyStringProperty,/code> value
+     */
+    public ReadOnlyStringProperty providerProperty()
+    {
+        return providerProperty;
+    }
+    /**
+     * Update the item with the given event.
+     *
+     * @param inEvent an <code>Event</code> value
+     */
     public void update(Event inEvent)
     {
         SLF4JLoggerProxy.trace(this,
                                "Received {}",
                                inEvent);
+        providerProperty.set(inEvent.getProvider());
         if(inEvent instanceof TradeEvent) {
             TradeEvent tradeEvent = (TradeEvent)inEvent;
             lastPriceProperty.set(tradeEvent.getPrice());
@@ -275,24 +300,92 @@ public class MarketDataItem
             tradeVolumeProperty.set(marketstatEvent.getVolume());
         }
     }
+    /**
+     * underlying instrument value
+     */
     private final Instrument instrument;
+    /**
+     * symbol property value
+     */
     private final StringProperty symbolProperty;
+    /**
+     * trade exchange property value
+     */
     private final StringProperty tradeExchangeProperty;
+    /**
+     * last trade price property value
+     */
     private final ObjectProperty<BigDecimal> lastPriceProperty;
+    /**
+     * last quantity property value
+     */
     private final ObjectProperty<BigDecimal> lastQuantityProperty;
+    /**
+     * trade timestamp property value
+     */
     private final ObjectProperty<DateTime> tradeTimestampProperty;
+    /**
+     * bid timestamp property value
+     */
     private final ObjectProperty<DateTime> bidTimestampProperty;
+    /**
+     * ask timestamp property value
+     */
     private final ObjectProperty<DateTime> askTimestampProperty;
+    /**
+     * bid exchange property value
+     */
     private final StringProperty bidExchangeProperty;
+    /**
+     * ask exchange property value
+     */
     private final StringProperty askExchangeProperty;
+    /**
+     * bid quantity property value
+     */
     private final ObjectProperty<BigDecimal> bidQuantityProperty;
+    /**
+     * bid price property value
+     */
     private final ObjectProperty<BigDecimal> bidPriceProperty;
+    /**
+     * ask price property value
+     */
     private final ObjectProperty<BigDecimal> askPriceProperty;
+    /**
+     * ask quantity property value
+     */
     private final ObjectProperty<BigDecimal> askQuantityProperty;
+    /**
+     * previous close price property value
+     */
     private final ObjectProperty<BigDecimal> previousClosePriceProperty;
+    /**
+     * open price property value
+     */
     private final ObjectProperty<BigDecimal> openPriceProperty;
+    /**
+     * high price property value
+     */
     private final ObjectProperty<BigDecimal> highPriceProperty;
+    /**
+     * low price property value
+     */
     private final ObjectProperty<BigDecimal> lowPriceProperty;
+    /**
+     * close price property value
+     */
     private final ObjectProperty<BigDecimal> closePriceProperty;
+    /**
+     * trade volume property value
+     */
     private final ObjectProperty<BigDecimal> tradeVolumeProperty;
+    /**
+     * market data request id property value
+     */
+    private final StringProperty marketDataRequestIdProperty;
+    /**
+     * holds the provider of the market data
+     */
+    private final StringProperty providerProperty = new SimpleStringProperty();
 }

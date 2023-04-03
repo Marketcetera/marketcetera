@@ -48,7 +48,7 @@ public class ReportsViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/FIX_Messages.svg");
+        return getClass().getClassLoader().getResource("images/stack-overflow.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getAllPermissions()

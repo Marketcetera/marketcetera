@@ -32,4 +32,10 @@ public interface MarketDataListener
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
     default void onError(I18NBoundMessage inMessage) {}
+    /**
+     * Receive the given error message that occurred.
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    default void onError(String inMessage) {}
 }

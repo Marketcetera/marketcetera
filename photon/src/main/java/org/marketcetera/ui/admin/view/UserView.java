@@ -5,8 +5,6 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.impl.SimpleUser;
@@ -15,7 +13,6 @@ import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -85,13 +82,12 @@ public class UserView
     {
         return mainLayout;
     }
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
-        adminClientService = serviceManager.getService(AdminClientService.class);
         mainLayout = new VBox(5);
         initializeTable();
         buttonLayout = new HBox(5);
@@ -102,7 +98,7 @@ public class UserView
         addUserButton.setOnAction(event -> doAddOrUpdateUser(new SimpleUser(),true));
         buttonLayout.getChildren().add(addUserButton);
         mainLayout.getChildren().addAll(usersTable,
-                                    buttonLayout);
+                                        buttonLayout);
     }
     /**
      * Update the users displayed in the table.
@@ -194,7 +190,7 @@ public class UserView
                                           inTitle,
                                           inSelectedItem);
                     updateUsers();
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " succeeded",
                                                                  AlertType.INFORMATION));
                 } catch (Exception e) {
@@ -205,7 +201,7 @@ public class UserView
                                           inTitle,
                                           inSelectedItem,
                                           message);
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " failed: " + message,
                                                                  AlertType.ERROR));
                 }
@@ -230,7 +226,7 @@ public class UserView
                 SLF4JLoggerProxy.warn(UserView.this,
                                       "Cannot delete current user {}",
                                       selectedUser);
-                webMessageService.post(new NotificationEvent("Delete User",
+                uiMessageService.post(new NotificationEvent("Delete User",
                                                              "Cannot delete current user",
                                                              AlertType.ERROR));
                 return;
@@ -250,7 +246,7 @@ public class UserView
                 SLF4JLoggerProxy.warn(UserView.this,
                                       "Cannot deactivate current user {}",
                                       selectedUser);
-                webMessageService.post(new NotificationEvent("Deactivate User",
+                uiMessageService.post(new NotificationEvent("Deactivate User",
                                                              "Cannot deactivate current user",
                                                              AlertType.ERROR));
                 return;
@@ -386,7 +382,7 @@ public class UserView
                 adminClientService.changeUserPassword(inSelectedUser.getName(),
                                                       newPasswordOption.get(),
                                                       newPasswordOption.get());
-                webMessageService.post(new NotificationEvent("Change Password",
+                uiMessageService.post(new NotificationEvent("Change Password",
                                                              "Password for '" + inSelectedUser.getName() + "' changed",
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
@@ -396,7 +392,7 @@ public class UserView
                                       "Unable to change password for {}: {}",
                                       inSelectedUser,
                                       message);
-                webMessageService.post(new NotificationEvent("Change Password",
+                uiMessageService.post(new NotificationEvent("Change Password",
                                                              "Change Password for '" + inSelectedUser.getName() + "' failed: " + message,
                                                              AlertType.ERROR));
             }
@@ -541,7 +537,7 @@ public class UserView
                     adminClientService.updateUser(inSelectedUser.getName(),
                                                   user);
                 }
-                webMessageService.post(new NotificationEvent(inIsAdd ? "Create User" : "Update User",
+                uiMessageService.post(new NotificationEvent(inIsAdd ? "Create User" : "Update User",
                                                              "User '" + inSelectedUser.getName() + "' " + (inIsAdd ? "created" : "updated"),
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
@@ -551,7 +547,7 @@ public class UserView
                                       "Unable to change password for {}: {}",
                                       inSelectedUser,
                                       message);
-                webMessageService.post(new NotificationEvent(inIsAdd ? "Create User" : "Update User",
+                uiMessageService.post(new NotificationEvent(inIsAdd ? "Create User" : "Update User",
                                                              (inIsAdd?"Create":"Update") + " user failed: " + message,
                                                              AlertType.ERROR));
             }
@@ -621,10 +617,6 @@ public class UserView
      * performs an add user action
      */
     private Button addUserButton;
-    /**
-     * provides access to admin client services
-     */
-    private AdminClientService adminClientService;
     /**
      * view table
      */

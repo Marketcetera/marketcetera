@@ -6,18 +6,23 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.SortedMap;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.concurrent.GuardedBy;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.algo.BrokerAlgoTag;
-import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.client.Validations;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.XmlService;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
 import org.marketcetera.fix.ActiveFixSession;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
@@ -36,15 +41,16 @@ import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
+import org.marketcetera.ui.marketdata.service.MarketDataClientService;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
-import org.marketcetera.ui.service.WebMessageService;
 import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.service.trade.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ValidatingTextField;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -55,8 +61,10 @@ import com.google.common.collect.Maps;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -79,15 +87,12 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.Mnemonic;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
 /* $License$ */
 
@@ -102,7 +107,7 @@ import javafx.scene.text.Font;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OrderTicketView
         extends AbstractContentView
-        implements ContentView,BrokerStatusListener
+        implements ContentView
 {
     
     /* (non-Javadoc)
@@ -114,62 +119,6 @@ public class OrderTicketView
         return rootLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
-     */
-    @Override
-    public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
-    {
-        SLF4JLoggerProxy.trace(this,
-                               "{} receiveBrokerStatus: {}",
-                               PlatformServices.getServiceName(getClass()),
-                               inActiveFixSession);
-        boolean brokersStatusChanged = false;
-        BrokerID activeFixSessionKey = new BrokerID(inActiveFixSession.getFixSession().getName());
-        synchronized(availableBrokers) {
-            if(inActiveFixSession.getStatus().isLoggedOn() && !inActiveFixSession.getFixSession().isAcceptor()) {
-                brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
-                                                             inActiveFixSession) == null);
-            } else {
-                brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
-            }
-            if(brokersStatusChanged) {
-                availableBrokers.notifyAll();
-            }
-        }
-        if(brokersStatusChanged) {
-            Platform.runLater(new Runnable () {
-                @Override
-                public void run()
-                {
-                    BrokerID currentSelectedBroker = brokerComboBox.getValue();
-                    brokerComboBox.getItems().clear();
-                    brokerComboBox.valueProperty().set(null);
-                    brokerComboBox.getItems().add(AUTO_SELECT_BROKER);
-                    brokerComboBox.getItems().addAll(availableBrokers.keySet());
-                    if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
-                        brokerComboBox.setValue(AUTO_SELECT_BROKER);
-                    } else {
-                        if(availableBrokers.containsKey(currentSelectedBroker)) {
-                            brokerComboBox.setValue(currentSelectedBroker);
-                        } else {
-                            brokerComboBox.setValue(AUTO_SELECT_BROKER);
-                        }
-                    }
-                }}
-            );
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose()
-     */
-    @Override
-    public void onClose()
-    {
-        try {
-            serviceManager.getService(AdminClientService.class).removeBrokerStatusListener(this);
-        } catch (Exception ignored) {}
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
      */
     @Override
@@ -177,16 +126,21 @@ public class OrderTicketView
     {
       return NAME;
     }
-    /**
-     * Initialize and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClose()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    public void onClose()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
+        cancelPegToMidpointMarketDataRequest();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
+        marketDataClient = serviceManager.getService(MarketDataClientService.class);
         rootLayout = new VBox();
         orderTicketLayout = new GridPane();
         // create controls and layouts
@@ -200,7 +154,6 @@ public class OrderTicketView
         textTextField = new TextField();
         accountLabel = new Label("Account");
         accountTextField = new TextField();
-        orderTicketLabel = new Label("New Order Ticket");
         brokerLayout = new VBox(5);
         sideLayout = new VBox(5);
         sideLabel = new Label("Side");
@@ -241,7 +194,7 @@ public class OrderTicketView
                                           customFieldsTable);
         sendButton = new Button("Send");
         clearButton = new Button("Clear");
-        sendClearLayout = new HBox(5);
+        buttonLayout = new HBox(5);
         adviceLabel = new Label("");
         adviceSeparator = new Separator(Orientation.HORIZONTAL);
         // find saved data, if any
@@ -251,9 +204,9 @@ public class OrderTicketView
             try {
                 replaceExecutionReport = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                webMessageService.post(new NotificationEvent("Replace Order",
-                                                             "Unable to replace order: " + PlatformServices.getMessage(e),
-                                                             AlertType.ERROR));
+                uiMessageService.post(new NotificationEvent("Replace Order",
+                                                            "Unable to replace order: " + PlatformServices.getMessage(e),
+                                                            AlertType.ERROR));
             }
         }
         replaceExecutionReportOption = Optional.ofNullable(replaceExecutionReport);
@@ -263,21 +216,17 @@ public class OrderTicketView
             try {
                 averageFillPrice = xmlService.unmarshall(xmlData);
             } catch (JAXBException e) {
-                webMessageService.post(new NotificationEvent("Trade Order",
-                                                             "Unable to trade order: " + PlatformServices.getMessage(e),
-                                                             AlertType.ERROR));
+                uiMessageService.post(new NotificationEvent("Trade Order",
+                                                            "Unable to trade order: " + PlatformServices.getMessage(e),
+                                                            AlertType.ERROR));
             }
         }
-        String orderTicketLabelHeader = replaceExecutionReportOption.isPresent() ? "Replace " : "New ";
-        orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
         averageFillPriceOption = Optional.ofNullable(averageFillPrice);
         Suggestion suggestion = null;
         if(getNewWindowEvent() instanceof HasSuggestion) {
             suggestion = ((HasSuggestion)getNewWindowEvent()).getSuggestion();
         }
         suggestionOption = Optional.ofNullable(suggestion);
-        orderTicketLabel.setFont(new Font(32));
-        styleService.addStyle(orderTicketLabel);
         // prepare the first row
         // broker combo
         brokerComboBox.setPromptText("Broker");
@@ -316,7 +265,7 @@ public class OrderTicketView
         styleService.addStyleToAll(brokerLabel,
                                    brokerComboBox,
                                    brokerLayout);
-        serviceManager.getService(AdminClientService.class).addBrokerStatusListener(this);
+        initializeBrokerStatusListener();
         // side combo
         sideComboBox.setPromptText("Side");
         sideComboBox.setId(getClass().getCanonicalName() + ".sideComboBox");
@@ -359,23 +308,31 @@ public class OrderTicketView
         // symbol
         symbolTextField.textProperty().addListener((ChangeListener<String>) (inObservable,inOldValue,inNewValue) -> {
             try {
-                String symbol = StringUtils.trimToNull(String.valueOf(inNewValue));
+                String symbol = serviceManager.getService(TradeClientService.class).getTreatedSymbol(String.valueOf(inNewValue));
                 if(symbol == null) {
-                    orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
+                    pegToMidpointCheckBox.setDisable(true);
+                    pegToMidpointLockedCheckBox.setDisable(true);
+                    pegToMidpointCheckBox.selectedProperty().set(false);
+                    pegToMidpointLockedCheckBox.selectedProperty().set(false);
+                    cancelPegToMidpointMarketDataRequest();
                     return;
                 }
                 resolvedInstrument = serviceManager.getService(TradeClientService.class).resolveSymbol(symbol);
                 if(resolvedInstrument == null) {
-                    orderTicketLabel.textProperty().set(orderTicketLabelHeader + "Order Ticket");
                     symbolTextField.setStyle(PhotonServices.errorStyle);
                     adviceLabel.textProperty().set("Cannot resolve symbol");
+                    pegToMidpointCheckBox.setDisable(true);
+                    pegToMidpointLockedCheckBox.setDisable(true);
+                    pegToMidpointCheckBox.selectedProperty().set(false);
+                    pegToMidpointLockedCheckBox.selectedProperty().set(false);
+                    cancelPegToMidpointMarketDataRequest();
                     return;
                 }
+                pegToMidpointCheckBox.setDisable(false);
                 symbolTextField.setStyle(PhotonServices.successStyle);
                 adviceLabel.textProperty().set("");
                 symbolTextField.setTooltip(new Tooltip(resolvedInstrument.toString()));
-                orderTicketLabel.textProperty().set(orderTicketLabelHeader + resolvedInstrument.getSecurityType().name() + " Order Ticket");
-                // TODO if peg-to-midpoint is checked, we need to change the market data subscription
+                doPegToMidpointMarketDataRequest();
             } finally {
                 adjustSendButton();
             }
@@ -404,8 +361,10 @@ public class OrderTicketView
                     isMarket = value.isMarketOrder();
                 }
                 if(isMarket) {
+                    cancelPegToMidpointMarketDataRequest();
                     priceTextField.setText("");
                     pegToMidpointCheckBox.selectedProperty().set(false);
+                    pegToMidpointLockedCheckBox.selectedProperty().set(false);
                 }
                 priceTextField.setDisable(isMarket);
                 pegToMidpointCheckBox.setDisable(isMarket);
@@ -512,6 +471,10 @@ public class OrderTicketView
         pegToMidpointLabel.setId(getClass().getCanonicalName() + ".pegToMidpointLabel");
         pegToMidpointCheckBox.setId(getClass().getCanonicalName() + ".pegToMidpointCheckBox");
         pegToMidpointCheckBox.setTooltip(new Tooltip("Price pegged to the midpoint of the spread when the order is routed"));
+        pegToMidpointBidEventProperty.addListener((observableValue,oldValue,newValue) -> updatePegToMidpointPrice());
+        pegToMidpointAskEventProperty.addListener((observableValue,oldValue,newValue) -> updatePegToMidpointPrice());
+        pegToMidpointCheckBox.setDisable(true);
+        pegToMidpointLockedCheckBox.setDisable(true);
         pegToMidpointCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             boolean value = newValue;
             pegToMidpointLockedCheckBox.setDisable(!value);
@@ -519,8 +482,11 @@ public class OrderTicketView
             priceTextField.setDisable(value);
             if(!value) {
                 pegToMidpointLockedCheckBox.selectedProperty().set(false);
+                cancelPegToMidpointMarketDataRequest();
+                adjustSendButton();
+                return;
             }
-            // TODO need to subscribe to market data (if we have a symbol)
+            doPegToMidpointMarketDataRequest();
         });
         styleService.addStyleToAll(pegToMidpointLabel,
                                    pegToMidpointCheckBox);
@@ -576,19 +542,19 @@ public class OrderTicketView
         customFieldsPane.setId(getClass().getCanonicalName() + ".customFieldsPane");
         customFieldsAccordion.getPanes().add(customFieldsPane);
         customFieldsTable.setId(getClass().getCanonicalName() + ".customFieldsTable");
-        TableColumn<CustomFieldHolder,Boolean> customFieldsEnabledColumn = new TableColumn<>("Enabled");
+        TableColumn<DisplayCustomField,Boolean> customFieldsEnabledColumn = new TableColumn<>("Enabled");
         customFieldsEnabledColumn.setCellValueFactory( cellData -> new ReadOnlyBooleanWrapper(cellData.getValue().isEnabledProperty().get()));
-        customFieldsEnabledColumn.setCellFactory(CheckBoxTableCell.<CustomFieldHolder>forTableColumn(customFieldsEnabledColumn));
+        customFieldsEnabledColumn.setCellFactory(CheckBoxTableCell.<DisplayCustomField>forTableColumn(customFieldsEnabledColumn));
         customFieldsEnabledColumn.setId(getClass().getCanonicalName() + ".customFieldsEnabledColumn");
         customFieldsEnabledColumn.setEditable(true);
-        TableColumn<CustomFieldHolder,String> customFieldsKeyColumn = new TableColumn<>("Key");
+        TableColumn<DisplayCustomField,String> customFieldsKeyColumn = new TableColumn<>("Key");
         customFieldsKeyColumn.setCellValueFactory(cellData -> cellData.getValue().keyProperty());
-        customFieldsKeyColumn.setCellFactory(TextFieldTableCell.<CustomFieldHolder>forTableColumn());
+        customFieldsKeyColumn.setCellFactory(TextFieldTableCell.<DisplayCustomField>forTableColumn());
         customFieldsKeyColumn.setId(getClass().getCanonicalName() + ".customFieldsKeyColumn");
         customFieldsKeyColumn.setEditable(true);
-        TableColumn<CustomFieldHolder,String> customFieldsValueColumn = new TableColumn<>("Value");
+        TableColumn<DisplayCustomField,String> customFieldsValueColumn = new TableColumn<>("Value");
         customFieldsValueColumn.setCellValueFactory(cellData -> cellData.getValue().valueProperty());
-        customFieldsValueColumn.setCellFactory(TextFieldTableCell.<CustomFieldHolder>forTableColumn());
+        customFieldsValueColumn.setCellFactory(TextFieldTableCell.<DisplayCustomField>forTableColumn());
         customFieldsValueColumn.setId(getClass().getCanonicalName() + ".customFieldsValueColumn");
         customFieldsValueColumn.setEditable(true);
         customFieldsTable.getColumns().add(customFieldsEnabledColumn);
@@ -601,20 +567,21 @@ public class OrderTicketView
             public void handle(MouseEvent inEvent)
             {
                 if(inEvent.getClickCount() == 2) {
-                    customFieldsTable.getItems().add(new CustomFieldHolder());
+                    customFieldsTable.getItems().add(new DisplayCustomField());
                 }
             }}
         );
         styleService.addStyleToAll(customFieldsAccordion,
                                    customFieldsPane,
                                    customFieldsTable);
-        // send button
-        KeyCombination sendKeyCombination = new KeyCodeCombination(KeyCode.ENTER);
-        Mnemonic sendMnemonic = new Mnemonic(sendButton,
-                                             sendKeyCombination);
-        // TODO add mnemonic?
-        sendClearLayout.getChildren().addAll(sendButton,
-                                             clearButton);
+        buttonLayout.getChildren().addAll(sendButton,
+                                          clearButton);
+        rootLayout.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if(event.getCode() == KeyCode.ENTER && !sendButton.disabledProperty().get()) {
+               sendButton.fire();
+               event.consume(); 
+            }
+        });
         sendButton.setOnMouseClicked(inEvent -> {
             NewOrReplaceOrder newOrder;
             if(replaceExecutionReportOption.isPresent()) {
@@ -714,26 +681,32 @@ public class OrderTicketView
         });
         orderTicketLayout.setVgap(5);
         orderTicketLayout.setHgap(5);
-        orderTicketLayout.add(orderTicketLabel,0,0,7,1);
-        orderTicketLayout.add(brokerLayout,0,1);
-        orderTicketLayout.add(sideLayout,1,1);
-        orderTicketLayout.add(quantityLayout,2,1);
-        orderTicketLayout.add(symbolLayout,3,1);
-        orderTicketLayout.add(orderTypeLayout,4,1);
-        orderTicketLayout.add(priceLayout,5,1);
-        orderTicketLayout.add(timeInForceLayout,6,1);
-        orderTicketLayout.add(otherAccordion,0,2);
-        orderTicketLayout.add(brokerAlgoAccordion,1,2);
-        orderTicketLayout.add(customFieldsAccordion,2,2);
-        orderTicketLayout.add(sendClearLayout,0,3);
+        int rowCount = 0;
+        int colCount = 0;
+        orderTicketLayout.add(brokerLayout,colCount,rowCount);
+        orderTicketLayout.add(sideLayout,++colCount,rowCount);
+        orderTicketLayout.add(quantityLayout,++colCount,rowCount);
+        orderTicketLayout.add(symbolLayout,++colCount,rowCount);
+        orderTicketLayout.add(orderTypeLayout,++colCount,rowCount);
+        orderTicketLayout.add(priceLayout,++colCount,rowCount);
+        orderTicketLayout.add(timeInForceLayout,++colCount,rowCount); colCount = 0;
+        orderTicketLayout.add(otherAccordion,colCount,++rowCount);
+        orderTicketLayout.add(brokerAlgoAccordion,++colCount,rowCount);
+        orderTicketLayout.add(customFieldsAccordion,++colCount,rowCount); colCount = 0;
+        orderTicketLayout.add(buttonLayout,colCount,++rowCount);
         adviceSeparator.setId(getClass().getCanonicalName() + ".adviceSeparator");
         adviceLabel.setId(getClass().getCanonicalName() + ".adviceLabel");
         styleService.addStyleToAll(adviceSeparator,
                                    adviceLabel,
                                    rootLayout);
+        orderTicketLayout.prefHeightProperty().bind(rootLayout.widthProperty());
+        rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
+        rootLayout.prefWidthProperty().bind(getParentWindow().widthProperty());
         rootLayout.getChildren().addAll(orderTicketLayout,
                                         adviceSeparator,
                                         adviceLabel);
+        serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
+        fillFromExecutionReport(replaceExecutionReportOption);
     }
     /**
      * Create a new OrderTicketView instance.
@@ -749,6 +722,232 @@ public class OrderTicketView
         super(inParent,
               inEvent,
               inProperties);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ClientStatusListener#receiveClientStatus(boolean)
+     */
+    @Override
+    public void receiveClientStatus(boolean inIsAvailable)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Received client status available: {}",
+                               inIsAvailable);
+        if(inIsAvailable) {
+            initializeBrokerStatusListener();
+        } else {
+            synchronized(availableBrokers) {
+                availableBrokers.clear();
+            }
+            Platform.runLater(() -> {
+                brokerComboBox.getItems().clear();
+                brokerComboBox.valueProperty().set(null);
+            });
+        }
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        synchronized(availableBrokers) {
+            availableBrokers.clear();
+        }
+        Platform.runLater(() -> {
+            brokerComboBox.getItems().clear();
+            brokerComboBox.valueProperty().set(null);
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onBrokerStatusChange(org.marketcetera.fix.ActiveFixSession)
+     */
+    @Override
+    protected void onBrokerStatusChange(ActiveFixSession inActiveFixSession)
+    {
+        boolean brokersStatusChanged = false;
+        BrokerID activeFixSessionKey = new BrokerID(inActiveFixSession.getFixSession().getName());
+        synchronized(availableBrokers) {
+            if(inActiveFixSession.getStatus().isLoggedOn() && !inActiveFixSession.getFixSession().isAcceptor()) {
+                brokersStatusChanged = (availableBrokers.put(activeFixSessionKey,
+                                                             inActiveFixSession) == null);
+            } else {
+                brokersStatusChanged = (availableBrokers.remove(activeFixSessionKey) != null);
+            }
+            if(brokersStatusChanged) {
+                availableBrokers.notifyAll();
+            }
+        }
+        if(brokersStatusChanged) {
+            Platform.runLater(new Runnable () {
+                @Override
+                public void run()
+                {
+                    BrokerID currentSelectedBroker = brokerComboBox.getValue();
+                    brokerComboBox.getItems().clear();
+                    brokerComboBox.valueProperty().set(null);
+                    brokerComboBox.getItems().add(AUTO_SELECT_BROKER);
+                    brokerComboBox.getItems().addAll(availableBrokers.keySet());
+                    if(AUTO_SELECT_BROKER.equals(currentSelectedBroker)) {
+                        brokerComboBox.setValue(AUTO_SELECT_BROKER);
+                    } else {
+                        if(availableBrokers.containsKey(currentSelectedBroker)) {
+                            brokerComboBox.setValue(currentSelectedBroker);
+                        } else {
+                            brokerComboBox.setValue(AUTO_SELECT_BROKER);
+                        }
+                    }
+                }}
+            );
+        }
+    }
+    /**
+     * Format the order ticket from the given report option, if present.
+     *
+     * @param inReportOption an <code>Optional&lt;ExecutionReport&gt;</code> value
+     */
+    private void fillFromExecutionReport(Optional<ExecutionReport> inReportOption)
+    {
+        if(inReportOption.isEmpty()) {
+            return;
+        }
+        ExecutionReport report = inReportOption.get();
+        if(report.getBrokerId() != null) {
+            brokerComboBox.valueProperty().set(report.getBrokerId());
+        }
+        if(report.getSide() != null) {
+            sideComboBox.valueProperty().set(report.getSide());
+        }
+        if(report.getLeavesQuantity() != null) {
+            quantityTextField.setText(report.getLeavesQuantity().toPlainString());
+        }
+        if(report.getInstrument() != null) {
+            symbolTextField.setText(report.getInstrument().getSymbol());
+        }
+        if(report.getOrderType() != null) {
+            orderTypeComboBox.setValue(report.getOrderType());
+        }
+        if(report.getPrice() != null) {
+            priceTextField.setText(report.getPrice().toPlainString());
+        }
+        if(report.getTimeInForce() != null) {
+            timeInForceComboBox.setValue(report.getTimeInForce());
+        }
+        if(report.getText() != null) {
+            textTextField.setText(report.getText());
+        }
+        if(report.getAccount() != null) {
+            accountTextField.setText(report.getAccount());
+        }
+        if(report.getLastMarket() != null) {
+            // TODO this might not be correct
+            exDestinationTextField.setText(report.getLastMarket());
+        }
+    }
+    /**
+     * Calculate the new order price from the most recent quote events, if possible.
+     */
+    private void updatePegToMidpointPrice()
+    {
+        if(pegToMidpointBidEventProperty.get() == null || pegToMidpointAskEventProperty.get() == null) {
+            priceTextField.textProperty().set("");
+            return;
+        }
+        BigDecimal askPrice = pegToMidpointAskEventProperty.get().getPrice();
+        BigDecimal bidPrice = pegToMidpointBidEventProperty.get().getPrice();
+        try {
+            BigDecimal midpointPirce = askPrice.add(bidPrice).divide(new BigDecimal(2),
+                                                                     PlatformServices.divisionContext);
+            priceTextField.textProperty().set(BigDecimalUtil.renderCurrency(midpointPirce));
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "Cannot set peg-to-midpoint price, will try again shortly");
+        }
+    }
+    /**
+     * Handle an error that occurred while requesting market data for peg-to-midpoint. 
+     *
+     * @param inMessage a <code>String</code> value
+     */
+    private void handleMarketDataRequestError(String inMessage)
+    {
+        uiMessageService.post(new NotificationEvent("Peg-to-Midpoint Market Data Request",
+                                                    "Unable to request market data for peg-to-midpoint price: " + inMessage,
+                                                    AlertType.ERROR));
+        pegToMidpointCheckBox.selectedProperty().set(false);
+        priceTextField.textProperty().set("");
+        cancelPegToMidpointMarketDataRequest();
+    }
+    /**
+     * Executes the peg-to-midpoint market data request, if appropriate.
+     */
+    private void doPegToMidpointMarketDataRequest()
+    {
+        if(!pegToMidpointCheckBox.selectedProperty().get()) {
+            return;
+        }
+        cancelPegToMidpointMarketDataRequest();
+        if(symbolTextField.textProperty().get() != null) {
+            pegToMidpointMarketDataRequestId = marketDataClient.request(MarketDataRequestBuilder.newRequest().withSymbols(symbolTextField.textProperty().get()).withContent(Content.TOP_OF_BOOK).create(),
+                                                                        new MarketDataListener() {
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
+                 */
+                @Override
+                public void receiveMarketData(Event inEvent)
+                {
+                    if(inEvent instanceof BidEvent) {
+                        pegToMidpointBidEventProperty.set((BidEvent)inEvent);
+                    } else if(inEvent instanceof AskEvent) {
+                        pegToMidpointAskEventProperty.set((AskEvent)inEvent);
+                    } else {
+                        handleMarketDataRequestError("Received unexpected peg-to-midpoint event: " + inEvent.getClass());
+                    }
+                }
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.Throwable)
+                 */
+                @Override
+                public void onError(Throwable inThrowable)
+                {
+                    handleMarketDataRequestError(PlatformServices.getMessage(inThrowable));
+                }
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#onError(org.marketcetera.util.log.I18NBoundMessage)
+                 */
+                @Override
+                public void onError(I18NBoundMessage inMessage)
+                {
+                    handleMarketDataRequestError(inMessage.getText());
+                }
+                /* (non-Javadoc)
+                 * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.String)
+                 */
+                @Override
+                public void onError(String inMessage)
+                {
+                    handleMarketDataRequestError(inMessage);
+                }
+            });
+        }
+    }
+    /**
+     * Cancels the extant market data request for peg-to-midpoint, if any.
+     */
+    private void cancelPegToMidpointMarketDataRequest()
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Canceling market data request: {}",
+                               pegToMidpointMarketDataRequestId);
+        if(pegToMidpointMarketDataRequestId != null) {
+            try {
+                marketDataClient.cancel(pegToMidpointMarketDataRequestId);
+            } catch (Exception ignored) {
+            } finally {
+                pegToMidpointMarketDataRequestId = null;
+            }
+        }
     }
     /**
      * Adjust the send button based on the other fields.
@@ -823,83 +1022,283 @@ public class OrderTicketView
             quantityTextField.requestFocus();
         }
     }
-    public static class CustomFieldHolder
+    /**
+     * Holds custom fields to display.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class DisplayCustomField
     {
-        private CustomFieldHolder()
+        /**
+         * Create a new DisplayCustomField instance.
+         */
+        private DisplayCustomField()
         {
             isEnabled = new SimpleBooleanProperty();
             key = new SimpleStringProperty();
             value = new SimpleStringProperty();
         }
-        public BooleanProperty isEnabledProperty()
+        /**
+         * Indicates if the field is enabled.
+         *
+         * @return a <code>BooleanProperty</code> value
+         */
+        private BooleanProperty isEnabledProperty()
         {
             return isEnabled;
         }
-        public StringProperty keyProperty()
+        /**
+         * Get the key property value.
+         *
+         * @return a <code>StringProperty</code> value
+         */
+        private StringProperty keyProperty()
         {
             return key;
         }
-        public StringProperty valueProperty()
+        /**
+         * Get the value property value.
+         *
+         * @return a <code>StringProperty</code> value
+         */
+        private StringProperty valueProperty()
         {
             return value;
         }
+        /**
+         * indicates if the custom field is enabled
+         */
         private final BooleanProperty isEnabled;
+        /**
+         * key property
+         */
         private final StringProperty key;
+        /**
+         * value property
+         */
         private final StringProperty value;
-        
     }
+    /**
+     * stores the most recent peg-to-midpoint bid event
+     */
+    private final ObjectProperty<BidEvent> pegToMidpointBidEventProperty = new SimpleObjectProperty<>();
+    /**
+     * stores the most recent peg-to-midpoint ask event
+     */
+    private final ObjectProperty<AskEvent> pegToMidpointAskEventProperty = new SimpleObjectProperty<>();
+    /**
+     * contains the market data request id for peg-to-midpoint requests, if any
+     */
+    private String pegToMidpointMarketDataRequestId;
+    /**
+     * root layout of the view
+     */
     private VBox rootLayout;
-    private Label orderTicketLabel;
+    /**
+     * broker selection layout
+     */
     private VBox brokerLayout;
+    /**
+     * broker label widget
+     */
     private Label brokerLabel;
+    /**
+     * broker selection widget
+     */
     private ComboBox<BrokerID> brokerComboBox;
+    /**
+     * side layout
+     */
     private VBox sideLayout;
+    /**
+     * side label widget
+     */
     private Label sideLabel;
+    /**
+     * side selection widget
+     */
     private ComboBox<Side> sideComboBox;
+    /**
+     * quantity layout
+     */
     private VBox quantityLayout;
+    /**
+     * quantity label widget
+     */
     private Label quantityLabel;
+    /**
+     * quantity entry widget
+     */
     private ValidatingTextField quantityTextField;
+    /**
+     * symbol layout
+     */
     private VBox symbolLayout;
+    /**
+     * symbol layout
+     */
     private Label symbolLabel;
+    /**
+     * symbol entry widget
+     */
     private TextField symbolTextField;
+    /**
+     * order type layout
+     */
     private VBox orderTypeLayout;
+    /**
+     * order type label widget
+     */
     private Label orderTypeLabel;
+    /**
+     * order type selection widget
+     */
     private ComboBox<OrderType> orderTypeComboBox;
+    /**
+     * price layout
+     */
     private VBox priceLayout;
+    /**
+     * price label widget
+     */
     private Label priceLabel;
+    /**
+     * price entry widget
+     */
     private ValidatingTextField priceTextField;
+    /**
+     * time in force layout
+     */
     private VBox timeInForceLayout;
+    /**
+     * time in force label widget
+     */
     private Label timeInForceLabel;
+    /**
+     * time in force selection widget
+     */
     private ComboBox<TimeInForce> timeInForceComboBox;
+    /**
+     * other values accordion widget
+     */
     private Accordion otherAccordion;
+    /**
+     * other values layout
+     */
     private TitledPane otherPane;
+    /**
+     * other layout
+     */
     private GridPane otherLayout;
+    /**
+     * text value label widget
+     */
     private Label textLabel;
+    /**
+     * text entry widget
+     */
     private TextField textTextField;
+    /**
+     * account label widget
+     */
     private Label accountLabel;
+    /**
+     * account entry widget
+     */
     private TextField accountTextField;
+    /**
+     * external destination label widget
+     */
     private Label exDestinationLabel;
+    /**
+     * external destination entry widget
+     */
     private TextField exDestinationTextField;
+    /**
+     * max floor label widget
+     */
     private Label maxFloorLabel;
+    /**
+     * max floor entry widget
+     */
     private ValidatingTextField maxFloorTextField;
+    /**
+     * peg to midpoint label widget
+     */
     private Label pegToMidpointLabel;
+    /**
+     * peg to midpoint selection widget
+     */
     private CheckBox pegToMidpointCheckBox;
+    /**
+     * peg to midpoint locked label widget
+     */
     private Label pegToMidpointLockedLabel;
+    /**
+     * peg to midpoint locked selection widget
+     */
     private CheckBox pegToMidpointLockedCheckBox;
+    /**
+     * broker algo accordion widget
+     */
     private Accordion brokerAlgoAccordion;
+    /**
+     * broker algo layout pane
+     */
     private TitledPane brokerAlgoPane;
+    /**
+     * broker algo layout grid
+     */
     private GridPane brokerAlgoLayout;
+    /**
+     * broker algo label widget
+     */
     private Label brokerAlgoLabel;
+    /**
+     * broker algo selection widget
+     */
     private ComboBox<BrokerAlgoSpec> brokerAlgoComboBox;
+    /**
+     * broker algo tag entry widget
+     */
     private TableView<BrokerAlgoTag> brokerAlgoTagTable;
+    /**
+     * custom fields accordion widget
+     */
     private Accordion customFieldsAccordion;
+    /**
+     * custom fields layout pane
+     */
     private TitledPane customFieldsPane;
-    private TableView<CustomFieldHolder> customFieldsTable;
+    /**
+     * custom fields entry widget
+     */
+    private TableView<DisplayCustomField> customFieldsTable;
+    /**
+     * send button widget
+     */
     private Button sendButton;
+    /**
+     * clear button widget
+     */
     private Button clearButton;
-    private HBox sendClearLayout;
+    /**
+     * button layout
+     */
+    private HBox buttonLayout;
+    /**
+     * instrument resolved from symbol property
+     */
     private Instrument resolvedInstrument;
+    /**
+     * advice label widget
+     */
     private Label adviceLabel;
+    /**
+     * advice separator widget
+     */
     private Separator adviceSeparator;
     /**
      * contains currently available brokers
@@ -931,6 +1330,10 @@ public class OrderTicketView
      */
     private GridPane orderTicketLayout;
     /**
+     * provides access to market data services
+     */
+    private MarketDataClientService marketDataClient;
+    /**
      * provides access to style services
      */
     @Autowired
@@ -945,9 +1348,4 @@ public class OrderTicketView
      */
     @Autowired
     private XmlService xmlService;
-    /**
-     * web message service value
-     */
-    @Autowired
-    private WebMessageService webMessageService;
 }

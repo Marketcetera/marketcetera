@@ -5,12 +5,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataListener;
@@ -24,6 +22,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
+import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataDetailEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataSuggestionEvent;
 import org.marketcetera.ui.marketdata.service.MarketDataClientService;
@@ -43,7 +42,9 @@ import com.google.common.collect.Maps;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -90,15 +91,11 @@ public class MarketDataListView
     @Override
     public void onClose()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} stop",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
         try {
             synchronized(symbolsByRequestId) {
                 updateViewProperties();
                 for(String requestId : symbolsByRequestId.keySet()) {
-                    marketdataClient.cancel(requestId);
+                    marketDataClient.cancel(requestId);
                 }
                 symbolsByRequestId.clear();
             }
@@ -106,6 +103,7 @@ public class MarketDataListView
             SLF4JLoggerProxy.warn(this,
                                   e);
         }
+        super.onClose();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
@@ -115,17 +113,13 @@ public class MarketDataListView
     {
       return NAME;
     }
-    /**
-     * Initialize and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
-        marketdataClient = serviceManager.getService(MarketDataClientService.class);
+        marketDataClient = serviceManager.getService(MarketDataClientService.class);
         tradeClient = serviceManager.getService(TradeClientService.class);
         rootLayout = new VBox(5);
         initializeAddSymbol();
@@ -141,6 +135,27 @@ public class MarketDataListView
             }
         });
         restoreSymbols();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
+     */
+    @Override
+    protected void onClientConnect()
+    {
+        synchronized(symbolsByRequestId) {
+            symbolsByRequestId.clear();
+        }
+        restoreSymbols();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            marketDataTable.getItems().clear();
+        });
     }
     /**
      * Create a new MarketDataListView instance.
@@ -192,7 +207,6 @@ public class MarketDataListView
         if(inSymbol == null) {
             return;
         }
-        inSymbol = inSymbol.toUpperCase();
         if(symbolsByRequestId.values().contains(inSymbol)) {
             return;
         }
@@ -201,15 +215,20 @@ public class MarketDataListView
         MarketDataItem newItem = new MarketDataItem(instrument,
                                                     marketDataRequestId);
         marketDataTable.getItems().add(newItem);
-        MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols(inSymbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
+        MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
+        if(providerComboBox.valueProperty().get() != null && providerComboBox.valueProperty().get() != ALL_PROVIDERS) {
+            requestBuilder.withProvider(providerComboBox.valueProperty().get());
+        }
+        requestBuilder.withSymbols(inSymbol).withAssetClass(AssetClass.getFor(instrument.getSecurityType()))
                 .withContent(Content.LATEST_TICK,Content.TOP_OF_BOOK,Content.MARKET_STAT).withRequestId(marketDataRequestId).create();
         MarketDataRowListener rowListener = new MarketDataRowListener(newItem);
         symbolsByRequestId.put(marketDataRequestId,
                                inSymbol);
+        MarketDataRequest request = requestBuilder.create();
         SLF4JLoggerProxy.debug(this,
                                "Submitting {}",
                                request);
-        marketdataClient.request(request,
+        marketDataClient.request(request,
                                  rowListener);
         updateViewProperties();
     }
@@ -225,16 +244,20 @@ public class MarketDataListView
         addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
         addSymbolButton.setDisable(true);
         addSymbolTextField.textProperty().addListener((observableValue,oldValue,newValue) -> {
-            newValue = StringUtils.trimToNull(newValue);
+            newValue = tradeClient.getTreatedSymbol(newValue);
             addSymbolButton.setDisable(newValue == null);
         });
         addSymbolButton.setOnAction(event -> {
-            String symbol = StringUtils.trimToNull(addSymbolTextField.getText());
+            String symbol = tradeClient.getTreatedSymbol(addSymbolTextField.getText());
             addSymbolTextField.setText(null);
             doMarketDataRequest(symbol);
         });
         addSymbolLayout.setAlignment(Pos.CENTER_RIGHT);
-        addSymbolLayout.getChildren().addAll(addSymbolTextField,
+        providerComboBox = new ComboBox<>();
+        providerComboBox.getItems().add(ALL_PROVIDERS);
+        providerComboBox.getItems().addAll(marketDataClient.getProviders());
+        addSymbolLayout.getChildren().addAll(providerComboBox,
+                                             addSymbolTextField,
                                              addSymbolButton);
     }
     /**
@@ -255,6 +278,10 @@ public class MarketDataListView
     {
         symbolColumn = new TableColumn<>("Symbol");
         symbolColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+        providerColumn = new TableColumn<>("Provider");
+        providerColumn.setCellValueFactory(new PropertyValueFactory<>("provider"));
+        tradeExchangeColumn = new TableColumn<>("LastMkt");
+        tradeExchangeColumn.setCellValueFactory(new PropertyValueFactory<>("tradeExchange"));
         execPriceColumn = new TableColumn<>("ExecPrice");
         execPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
         execPriceColumn.setCellFactory(tableColumn -> PhotonServices.renderCurrencyCell(tableColumn));
@@ -292,6 +319,8 @@ public class MarketDataListView
         volumeColumn.setCellValueFactory(new PropertyValueFactory<>("tradeVolume"));
         volumeColumn.setCellFactory(tableColumn -> PhotonServices.renderNumberCell(tableColumn));
         marketDataTable.getColumns().add(symbolColumn);
+        marketDataTable.getColumns().add(providerColumn);
+        marketDataTable.getColumns().add(tradeExchangeColumn);
         marketDataTable.getColumns().add(execPriceColumn);
         marketDataTable.getColumns().add(lastQtyColumn);
         marketDataTable.getColumns().add(bidQtyColumn);
@@ -317,7 +346,7 @@ public class MarketDataListView
                 return;
             }
             try {
-                marketdataClient.cancel(marketDataItem.marketDataRequestIdProperty().get());
+                marketDataClient.cancel(marketDataItem.marketDataRequestIdProperty().get());
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       e);
@@ -363,7 +392,7 @@ public class MarketDataListView
             MarketDataDetailEvent viewFixMessageDetailsEvent = applicationContext.getBean(MarketDataDetailEvent.class,
                                                                                           selectedItem.getInstrument().getFullSymbol(),
                                                                                           selectedItem.getInstrument());
-            webMessageService.post(viewFixMessageDetailsEvent);
+            uiMessageService.post(viewFixMessageDetailsEvent);
         });
         marketDataContextMenu = new ContextMenu();
         marketDataContextMenu.getItems().addAll(removeMarketDataMenuItem,
@@ -396,7 +425,7 @@ public class MarketDataListView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        webMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + inSelectedItem.symbolProperty().get(),
+        uiMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + inSelectedItem.symbolProperty().get(),
                                                              suggestion));
     }
     /**
@@ -407,11 +436,15 @@ public class MarketDataListView
      */
     private String renderMarketDataItem(MarketDataItem inMarketDataItem)
     {
-        Table table = new Table(13,
+        Table table = new Table(15,
                                 BorderStyle.CLASSIC_COMPATIBLE_WIDE,
                                 ShownBorders.ALL,
                                 false);
         table.addCell("Symbol",
+                      PlatformServices.cellStyleCenterAlign);
+        table.addCell("Provider",
+                      PlatformServices.cellStyleCenterAlign);
+        table.addCell("LastMk",
                       PlatformServices.cellStyleCenterAlign);
         table.addCell("LastPrice",
                       PlatformServices.cellStyleCenterAlign);
@@ -438,6 +471,10 @@ public class MarketDataListView
         table.addCell("Volume",
                       PlatformServices.cellStyleCenterAlign);
         table.addCell(inMarketDataItem.symbolProperty().get(),
+                      PlatformServices.cellStyleLeftAlign);
+        table.addCell(inMarketDataItem.providerProperty().get(),
+                      PlatformServices.cellStyleLeftAlign);
+        table.addCell(inMarketDataItem.tradeExchangeProperty().get(),
                       PlatformServices.cellStyleLeftAlign);
         table.addCell(BigDecimalUtil.renderCurrency(inMarketDataItem.lastPriceProperty().get()),
                       PlatformServices.cellStyleRightAlign);
@@ -481,7 +518,29 @@ public class MarketDataListView
         @Override
         public void receiveMarketData(Event inEvent)
         {
-            Platform.runLater(() -> marketDataItem.update(inEvent));
+            if(inEvent instanceof LogEvent) {
+                LogEvent logEvent = (LogEvent)inEvent;
+                AlertType alertType;
+                switch(logEvent.getLevel()) {
+                    case INFO:
+                    case DEBUG:
+                        alertType = AlertType.INFORMATION;
+                        break;
+                    case ERROR:
+                        alertType = AlertType.ERROR;
+                        break;
+                    case WARN:
+                        alertType = AlertType.WARNING;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unexpected log level: " + logEvent.getLevel());
+                }
+                uiMessageService.post(new NotificationEvent("Market Data Request Failed",
+                                                             logEvent.getMessage(),
+                                                             alertType));
+            } else {
+                Platform.runLater(() -> marketDataItem.update(inEvent));
+            }
         }
         /**
          * Create a new MarketDataRowListener instance.
@@ -497,6 +556,10 @@ public class MarketDataListView
          */
         private final MarketDataItem marketDataItem;
     }
+    /**
+     * wrench value to indicate all providers are selected
+     */
+    private static final String ALL_PROVIDERS = "<all providers>";
     /**
      * market data item context menu
      */
@@ -532,7 +595,7 @@ public class MarketDataListView
     /**
      * provides access to market data services
      */
-    private MarketDataClientService marketdataClient;
+    private MarketDataClientService marketDataClient;
     /**
      * provides access to trade services
      */
@@ -550,6 +613,10 @@ public class MarketDataListView
      */
     private HBox addSymbolLayout;
     /**
+     * allows selection of a specific market data provider
+     */
+    private ComboBox<String> providerComboBox;
+    /**
      * add symbol text field
      */
     private TextField addSymbolTextField;
@@ -561,6 +628,14 @@ public class MarketDataListView
      * symbol table column
      */
     private TableColumn<MarketDataItem,String> symbolColumn;
+    /**
+     * market data provider table column
+     */
+    private TableColumn<MarketDataItem,String> providerColumn;
+    /**
+     * trade exchange table column
+     */
+    private TableColumn<MarketDataItem,String> tradeExchangeColumn;
     /**
      * exec price table column
      */

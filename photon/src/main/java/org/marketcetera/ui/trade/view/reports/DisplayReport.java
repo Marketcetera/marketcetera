@@ -16,7 +16,7 @@ import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.Side;
-import org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType;
+import org.marketcetera.ui.trade.view.DeletableFixMessageDisplayType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;
@@ -35,7 +35,7 @@ import quickfix.InvalidMessage;
  * @since $Release$
  */
 public class DisplayReport
-        implements FixMessageDisplayType,HasReportID,HasBrokerID
+        implements DeletableFixMessageDisplayType,HasReportID,HasBrokerID
 {
     /**
      * Get the order id value.

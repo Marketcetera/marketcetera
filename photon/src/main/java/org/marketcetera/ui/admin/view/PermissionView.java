@@ -5,8 +5,6 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.AdminPermissions;
 import org.marketcetera.admin.impl.SimplePermission;
@@ -15,7 +13,6 @@ import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -74,13 +71,20 @@ public class PermissionView
               inEvent,
               inViewProperties);
     }
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    public Region getMainLayout()
     {
-        adminClientService = serviceManager.getService(AdminClientService.class);
+        return mainLayout;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
         mainLayout = new VBox(5);
         initializeTable();
         buttonLayout = new HBox(5);
@@ -92,14 +96,6 @@ public class PermissionView
         buttonLayout.getChildren().add(addPermissionButton);
         mainLayout.getChildren().addAll(permissionsTable,
                                     buttonLayout);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#getMainLayout()
-     */
-    @Override
-    public Region getMainLayout()
-    {
-        return mainLayout;
     }
     /**
      * Update the users displayed in the table.
@@ -183,7 +179,7 @@ public class PermissionView
                                           inTitle,
                                           inSelectedItem);
                     updatePermissions();
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " succeeded",
                                                                  AlertType.INFORMATION));
                 } catch (Exception e) {
@@ -194,7 +190,7 @@ public class PermissionView
                                           inTitle,
                                           inSelectedItem,
                                           message);
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " failed: " + message,
                                                                  AlertType.ERROR));
                 }
@@ -321,7 +317,7 @@ public class PermissionView
                     adminClientService.updatePermission(inSelectedPermission.getName(),
                                                         permission);
                 }
-                webMessageService.post(new NotificationEvent(inIsAdd ? "Create Permission" : "Update Permission",
+                uiMessageService.post(new NotificationEvent(inIsAdd ? "Create Permission" : "Update Permission",
                                                              "Permission '" + inSelectedPermission.getName() + "' " + (inIsAdd ? "created" : "updated"),
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
@@ -331,7 +327,7 @@ public class PermissionView
                                       "Unable to create or update role {}: {}",
                                       inSelectedPermission,
                                       message);
-                webMessageService.post(new NotificationEvent(inIsAdd ? "Create Permission" : "Update Permission",
+                uiMessageService.post(new NotificationEvent(inIsAdd ? "Create Permission" : "Update Permission",
                                                              (inIsAdd?"Create":"Update") + " role failed: " + message,
                                                              AlertType.ERROR));
             }
@@ -382,10 +378,6 @@ public class PermissionView
      * performs an add role action
      */
     private Button addPermissionButton;
-    /**
-     * provides access to admin client services
-     */
-    private AdminClientService adminClientService;
     /**
      * view table
      */

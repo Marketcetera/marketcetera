@@ -2,6 +2,7 @@ package org.marketcetera.ui.trade.event;
 
 import java.util.Properties;
 
+import org.marketcetera.core.Pair;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.HasExecutionReport;
 import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
@@ -56,6 +57,15 @@ public class ReplaceOrderEvent
     public Properties getProperties()
     {
         return windowProperties;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.events.NewWindowEvent#getWindowSize()
+     */
+    @Override
+    public Pair<Double,Double> getWindowSize()
+    {
+        return Pair.create(850.0, 
+                           200.0);
     }
     /**
      * Create a new ReplaceOrderEvent instance.

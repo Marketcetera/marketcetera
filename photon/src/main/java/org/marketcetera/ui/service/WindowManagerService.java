@@ -18,6 +18,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.ui.DragResizeMod;
 import org.marketcetera.ui.DragResizeMod.OnDragResizeEventListener;
 import org.marketcetera.ui.PhotonApp;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.CascadeWindowsEvent;
 import org.marketcetera.ui.events.CloseWindowsEvent;
 import org.marketcetera.ui.events.LoginEvent;
@@ -119,8 +120,9 @@ public class WindowManagerService
     public void onNewWindow(NewWindowEvent inEvent)
     {
         SLF4JLoggerProxy.debug(this,
-                               "onWindow: {}",
-                               inEvent.getWindowTitle());
+                               "onWindow: {} {}",
+                               inEvent.getWindowTitle(),
+                               inEvent.getProperties());
         // create the new window content - initially, the properties will be mostly or completely empty, one would expect
         // the content view factory will be used to create the new window content
         ContentViewFactory viewFactory = applicationContext.getBean(inEvent.getViewFactoryType());
@@ -320,6 +322,11 @@ public class WindowManagerService
     {
         return getWorkspaceTop() + getWorkspaceHeight();
     }
+    /**
+     * Get the workspace properties object.
+     *
+     * @return a <code>Properties</code> value
+     */
     private Properties getWorkspaceProperties()
     {
         Properties workspaceProperties = new Properties();
@@ -421,7 +428,7 @@ public class WindowManagerService
         {
             newWindowEventProperty.set(inEvent);
             viewFactoryProperty.set(inViewFactory);
-            properties = inEvent.getProperties();
+            windowProperties = inEvent.getProperties();
             uuidProperty.set(UUID.randomUUID().toString());
             setWindowStaticProperties();
             windowLayout = new VBox();
@@ -440,9 +447,10 @@ public class WindowManagerService
                                                    closeButtonLayout);
             windowTitle = new Label();
             windowTitle.textProperty().bind(windowTitleProperty);
-            closeLabel = new Label("X");
+            closeImage = PhotonServices.getSvgResource(getClass().getClassLoader().getResource("images/circle-with-cross.svg"),
+                                                       1.0);
             titleLayout.getChildren().addAll(windowTitle);
-            closeButtonLayout.getChildren().addAll(closeLabel);
+            closeButtonLayout.getChildren().addAll(closeImage);
             windowTitleLayout.getStyleClass().add("title-bar");
             HBox.setHgrow(windowTitleLayout,
                           Priority.ALWAYS);
@@ -493,41 +501,51 @@ public class WindowManagerService
 //            windowLayout.setPickOnBounds(false);
             setupWindowListeners();
             Pair<Double,Double> suggestedWindowSize = inEvent.getWindowSize();
-            String rawProperty = StringUtils.trimToNull(properties.getProperty(windowWidthProp));
+            String rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowWidthProp));
             if(rawProperty == null) {
                 setWidth(suggestedWindowSize.getFirstMember());
             } else {
                 setWidth(Double.parseDouble(rawProperty));
             }
-            rawProperty = StringUtils.trimToNull(properties.getProperty(windowHeightProp));
+            rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowHeightProp));
             if(rawProperty == null) {
                 setHeight(suggestedWindowSize.getSecondMember());
             } else {
                 setHeight(Double.parseDouble(rawProperty));
             }
-            rawProperty = StringUtils.trimToNull(properties.getProperty(windowPosXProp));
+            rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowPosXProp));
             if(rawProperty == null) {
-                setX(200);
+                double proposedX = (newWindowAnchorX += desktopCascadeWindowOffset);
+                if(proposedX + getWidth() > getWorkspaceRight()) {
+                    newWindowAnchorX = desktopCascadeWindowOffset;
+                    proposedX = newWindowAnchorX;
+                }
+                setX(proposedX);
             } else {
                 setX(Double.parseDouble(rawProperty));
             }
-            rawProperty = StringUtils.trimToNull(properties.getProperty(windowPosYProp));
+            rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowPosYProp));
             if(rawProperty == null) {
-                setY(200);
+                double proposedY = (newWindowAnchorY += desktopCascadeWindowOffset);
+                if(proposedY + getHeight() > getWorkspaceBottom()) {
+                    newWindowAnchorY = desktopCascadeWindowOffset;
+                    proposedY = newWindowAnchorY;
+                }
+                setY(proposedY);
             } else {
                 setY(Double.parseDouble(rawProperty));
             }
-            rawProperty = StringUtils.trimToNull(properties.getProperty(windowTitleProp));
+            rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowTitleProp));
             if(rawProperty == null) {
                 setTitle(inEvent.getWindowTitle());
             } else {
                 setTitle(rawProperty);
             }
-            rawProperty = StringUtils.trimToNull(properties.getProperty(windowHorizontalScrollProp));
+            rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowHorizontalScrollProp));
             if(rawProperty != null) {
                 setHorizontalScroll(Double.parseDouble(rawProperty));
             }
-            rawProperty = StringUtils.trimToNull(properties.getProperty(windowVerticalScrollProp));
+            rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowVerticalScrollProp));
             if(rawProperty != null) {
                 setVerticalScroll(Double.parseDouble(rawProperty));
             }
@@ -537,7 +555,7 @@ public class WindowManagerService
          */
         private void setupWindowListeners()
         {
-            closeLabel.setOnMouseClicked(event -> {
+            closeImage.setOnMouseClicked(event -> {
                 contentViewProperty.get().onClose();
                 close();
             });
@@ -551,49 +569,49 @@ public class WindowManagerService
                 windowLayout.viewOrderProperty().set(-1.0);
             });
             xProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowPosXProp,
+                windowProperties.setProperty(windowPosXProp,
                                        String.valueOf(newValue));
             });
             yProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowPosYProp,
+                windowProperties.setProperty(windowPosYProp,
                                        String.valueOf(newValue));
             });
             heightProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowHeightProp,
+                windowProperties.setProperty(windowHeightProp,
                                        String.valueOf(newValue));
             });
             widthProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowWidthProp,
+                windowProperties.setProperty(windowWidthProp,
                                        String.valueOf(newValue));
             });
             windowTitleProperty.addListener((observableValue,oldValue,newValue) -> {
                 if(newValue == null) {
-                    properties.remove(windowTitleProp);
+                    windowProperties.remove(windowTitleProp);
                 } else {
-                    properties.setProperty(windowTitleProp,
+                    windowProperties.setProperty(windowTitleProp,
                                            getTitle());
                 }
             });
             draggableProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowDraggableProp,
+                windowProperties.setProperty(windowDraggableProp,
                                        String.valueOf(newValue));
             });
             resizableProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowResizableProp,
+                windowProperties.setProperty(windowResizableProp,
                                        String.valueOf(newValue));
             });
             scrollVerticalProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowVerticalScrollProp,
+                windowProperties.setProperty(windowVerticalScrollProp,
                                        String.valueOf(newValue));
                 getCurrentUserRegistry().updateDisplayLayout();
             });
             scrollHorizontalProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowHorizontalScrollProp,
+                windowProperties.setProperty(windowHorizontalScrollProp,
                                        String.valueOf(newValue));
                 getCurrentUserRegistry().updateDisplayLayout();
             });
             viewOrderProperty.addListener((observableValue,oldValue,newValue) -> {
-                properties.setProperty(windowViewOrderProp,
+                windowProperties.setProperty(windowViewOrderProp,
                                        String.valueOf(newValue));
             });
             // TODO
@@ -890,16 +908,16 @@ public class WindowManagerService
          */
         private String getStorableValue()
         {
-            return Util.propertiesToString(properties);
+            return Util.propertiesToString(windowProperties);
         }
         /**
          * Set the immutable properties of this window to the underlying properties storage.
          */
         private void setWindowStaticProperties()
         {
-            properties.setProperty(windowContentViewFactoryProp,
+            windowProperties.setProperty(windowContentViewFactoryProp,
                                    viewFactoryProperty.get().getClass().getCanonicalName());
-            properties.setProperty(windowUuidProp,
+            windowProperties.setProperty(windowUuidProp,
                                    uuidProperty.get());
         }
         /**
@@ -921,7 +939,7 @@ public class WindowManagerService
         /**
          * properties used to record details about this window
          */
-        private final Properties properties;
+        private final Properties windowProperties;
         /**
          * holds the window content view factory value
          */
@@ -967,10 +985,6 @@ public class WindowManagerService
          */
         private final ObjectProperty<Modality> modalityProperty = new SimpleObjectProperty<>();
         /**
-         * holds all the window's properties
-         */
-        private final Properties windowProperties = new Properties();
-        /**
          * holds the window title property
          */
         private final StringProperty windowTitleProperty = new SimpleStringProperty();
@@ -1001,7 +1015,7 @@ public class WindowManagerService
         /**
          * holds the window close widget
          */
-        private final Label closeLabel;
+        private final Node closeImage;
         /**
          * provides default scrollbars for windows
          */
@@ -1453,7 +1467,7 @@ public class WindowManagerService
      * web message service value
      */
     @Autowired
-    private WebMessageService webMessageService;
+    private UiMessageService webMessageService;
     /**
      * provides access to display layout services
      */
@@ -1473,10 +1487,18 @@ public class WindowManagerService
      * desktop cascade window offset value
      */
     @Value("${metc.desktop.cascade.window.offset:100}")
-    private int desktopCascadeWindowOffset;
+    private double desktopCascadeWindowOffset;
     /**
      * interval in ms at which to monitor and correct window positions
      */
     @Value("${metc.desktop.window.position.monitor.interval:250}")
     private long desktopWindowPositionMonitorInterval;
+    /**
+     * tracks new window anchor point (x)
+     */
+    private double newWindowAnchorX = desktopCascadeWindowOffset;
+    /**
+     * tracks new window anchor point (y)
+     */
+    private double newWindowAnchorY = desktopCascadeWindowOffset;
 }

@@ -115,5 +115,5 @@ public class PhotonNotificationService
      * web message service value
      */
     @Autowired
-    private WebMessageService webMessageService;
+    private UiMessageService webMessageService;
 }

@@ -5,10 +5,14 @@ import java.util.Set;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.event.Event;
 import org.marketcetera.eventbus.EventBusService;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.FeedStatusRequest;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.cache.MarketDataCacheModuleFactory;
 import org.marketcetera.marketdata.core.manager.MarketDataManagerModuleFactory;
+import org.marketcetera.marketdata.event.CancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.MarketDataRequestEvent;
 import org.marketcetera.marketdata.event.SimpleGeneratedMarketDataEvent;
 import org.marketcetera.module.AutowiredModule;
@@ -25,6 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
@@ -89,6 +95,28 @@ public class MarketDataEventModuleConnector
                           requestId);
         }
     }
+    /**
+     * Cancel the given market data request.
+     *
+     * @param inEvent a <code>CanceclMarketDataRequestEvent</code> value
+     */
+    @Subscribe
+    public void onCancel(CancelMarketDataRequestEvent inEvent)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {}",
+                               inEvent);
+        String requestId = inEvent.getMarketDataRequestId();
+        Set<DataFlowID> dataFlows = dataFlowsByRequestId.getUnchecked(requestId);
+        SLF4JLoggerProxy.debug(this,
+                               "Canceling data flows {} for request id {}",
+                               dataFlows,
+                               requestId);
+        for(DataFlowID dataFlowId : dataFlows) {
+            ModuleManager.getInstance().cancel(dataFlowId);
+        }
+        dataFlowsByRequestId.invalidate(requestId);
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
      */
@@ -109,6 +137,24 @@ public class MarketDataEventModuleConnector
             Event event = (Event)inData;
             eventBusService.post(new SimpleGeneratedMarketDataEvent(marketDataRequestId,
                                                                     event));
+        } else if(inData instanceof MarketDataStatus) {
+            MarketDataStatus marketDataStatus = (MarketDataStatus)inData;
+            marketDataService.reportMarketDataStatus(marketDataStatus);
+        } else if(inData instanceof FeedStatus) {
+            final FeedStatus feedStatus = (FeedStatus)inData;
+            final String provider = requestsByDataFlowId.getIfPresent(inFlowId);
+            marketDataService.reportMarketDataStatus(new MarketDataStatus() {
+                @Override
+                public FeedStatus getFeedStatus()
+                {
+                    return feedStatus;
+                }
+                @Override
+                public String getProvider()
+                {
+                    return provider;
+                }}
+            );
         } else {
             SLF4JLoggerProxy.warn(this,
                                   "Received unexpected data: {}",
@@ -179,6 +225,8 @@ public class MarketDataEventModuleConnector
                                ModuleURN inSourceUrn,
                                String inRequestId)
     {
+        doStatusRequest(inSourceUrn,
+                        inRequestId);
         DataRequest sourceRequest = new DataRequest(inSourceUrn,
                                                     inMarketDataRequest);
         ModuleManager.startModulesIfNecessary(ModuleManager.getInstance(),
@@ -189,12 +237,54 @@ public class MarketDataEventModuleConnector
         DataFlowID dataFlowId = ModuleManager.getInstance().createDataFlow(new DataRequest[] { sourceRequest,cacheRequest,targetRequest });
         requestsByDataFlowId.put(dataFlowId,
                                  inRequestId);
+        Set<DataFlowID> dataFlows = dataFlowsByRequestId.getUnchecked(inRequestId);
+        dataFlows.add(dataFlowId);
         SLF4JLoggerProxy.debug(this,
                                "Submitting {} to {}: {}",
                                inMarketDataRequest,
                                inSourceUrn,
                                dataFlowId);
     }
+    /**
+     * Execute a market data status request.
+     *
+     * @param inSourceUrn a <code>ModuleURN</code> value
+     * @param inRequestId a <code>String</code> value
+     */
+    private void doStatusRequest(ModuleURN inSourceUrn,
+                                 String inRequestId)
+    {
+        DataRequest sourceRequest = new DataRequest(inSourceUrn,
+                                                    new FeedStatusRequest());
+        ModuleManager.startModulesIfNecessary(ModuleManager.getInstance(),
+                                              inSourceUrn);
+        DataRequest targetRequest = new DataRequest(MarketDataEventModuleConnectorFactory.INSTANCE_URN);
+        DataFlowID dataFlowId = ModuleManager.getInstance().createDataFlow(new DataRequest[] { sourceRequest,targetRequest });
+        requestsByDataFlowId.put(dataFlowId,
+                                 inSourceUrn.instanceName());
+        Set<DataFlowID> dataFlows = dataFlowsByRequestId.getUnchecked(inRequestId);
+        dataFlows.add(dataFlowId);
+        SLF4JLoggerProxy.debug(this,
+                               "Submitting feed status request to {}: {}",
+                               inSourceUrn,
+                               dataFlowId);
+    }
+    /**
+     * stores data flows tied to a given request id
+     */
+    private final LoadingCache<String,Set<DataFlowID>> dataFlowsByRequestId = CacheBuilder.newBuilder().build(new CacheLoader<String,Set<DataFlowID>>() {
+        @Override
+        public Set<DataFlowID> load(String inKey)
+                throws Exception
+        {
+            return Sets.newHashSet();
+        }}
+    );
+    /**
+     * provides market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * provides access to event bus services
      */

@@ -2,11 +2,18 @@ package org.marketcetera.marketdata.bogus;
 
 import static org.marketcetera.marketdata.bogus.Messages.PROVIDER_DESCRIPTION;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.core.CoreException;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -28,6 +35,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
+@Service
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public class BogusFeedModuleFactory
         extends ModuleFactory
@@ -55,6 +63,33 @@ public class BogusFeedModuleFactory
             throw new ModuleCreationException(e.getI18NBoundMessage());
         }
     }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        marketDataService.reportMarketDataStatus(new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return FeedStatus.OFFLINE;
+            }
+            @Override
+            public String getProvider()
+            {
+                return IDENTIFIER;
+            }}
+        );
+    }
+    /**
+     * providers market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
+    /**
+     * uniquely identifies this provider
+     */
     public static final String IDENTIFIER = "bogus";  //$NON-NLS-1$
     /**
      * unique provider URN for the bogus feed market data provider

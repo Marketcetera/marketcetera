@@ -37,6 +37,8 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
@@ -171,51 +173,57 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
             }
         } else if (requestPayload instanceof MarketDataRequest) {
             request = (MarketDataRequest)requestPayload;
+        } else if(requestPayload instanceof FeedStatusRequest) {
+            doFeedStatusRequest((FeedStatusRequest)requestPayload,
+                                inRequest,
+                                inSupport);
         } else {
             throw new UnsupportedRequestParameterType(instanceURN,
                                                       requestPayload);
         }
-        try {
-            Subscriber subscriber = new Subscriber() {
-                @Override
-                public boolean isInteresting(Object inData)
-                {
-                    return inData instanceof Event;
-                }
-                @Override
-                public void publishTo(final Object inEvent)
-                {
-                    if(inEvent instanceof Event) {
-                        requestLock.executeRead(new Runnable() {
-                            @Override
-                            public void run()
-                            {
-                                Event event = (Event)inEvent;
-                                Object token = event.getSource();
-                                RequestID requestID = requests.get(token);
-                                event.setSource(requestID);
-                            }
-                        });
+        if(request != null) {
+            try {
+                Subscriber subscriber = new Subscriber() {
+                    @Override
+                    public boolean isInteresting(Object inData)
+                    {
+                        return inData instanceof Event;
                     }
-                    ThreadedMetric.event("mdata-OUT");  //$NON-NLS-1$
-                    inSupport.send(inEvent);
-                }
-            };
-            MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request,
-                                                                                     subscriber);
-            final T token = feed.execute(spec);
-            requestLock.executeWrite(new Runnable() {
-                @Override
-                public void run()
-                {
-                    requests.put(token,
-                                 inSupport.getRequestID());
-                }
-            });
-        } catch (Exception e) {
-            throw new IllegalRequestParameterValue(instanceURN,
-                                                   requestPayload,
-                                                   e);
+                    @Override
+                    public void publishTo(final Object inEvent)
+                    {
+                        if(inEvent instanceof Event) {
+                            requestLock.executeRead(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Event event = (Event)inEvent;
+                                    Object token = event.getSource();
+                                    RequestID requestID = requests.get(token);
+                                    event.setSource(requestID);
+                                }
+                            });
+                        }
+                        ThreadedMetric.event("mdata-OUT");  //$NON-NLS-1$
+                        inSupport.send(inEvent);
+                    }
+                };
+                MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request,
+                                                                                         subscriber);
+                final T token = feed.execute(spec);
+                requestLock.executeWrite(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        requests.put(token,
+                                     inSupport.getRequestID());
+                    }
+                });
+            } catch (Exception e) {
+                throw new IllegalRequestParameterValue(instanceURN,
+                                                       requestPayload,
+                                                       e);
+            }
         }
     }
     /* (non-Javadoc)
@@ -369,6 +377,14 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         String newStatusString = inNewFeedStatus.toString();
         String oldStatusString = feedStatus.toString();
         feedStatus = inNewFeedStatus;
+        for(FeedStatusRequestData feedStatusRequestData : feedStatusRequestDataByDataFlowId.asMap().values()) {
+            try {
+                feedStatusRequestData.getDataEmitterSupport().send(feedStatus);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
         mNotificationDelegate.sendNotification(new AttributeChangeNotification(this,
                                                                                mSequence.getAndIncrement(),
                                                                                System.currentTimeMillis(),
@@ -378,6 +394,57 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                                                                                oldStatusString,
                                                                                newStatusString));
     }
+    /**
+     * Create a feed status request.
+     *
+     * @param inRequestPayload a <code>FeedStatusRequest</code> value
+     * @param inRequest a <code>DataRequest</code> value
+     * @param inSupport a <code>DataEmitterSupport</code> value
+     */
+    private void doFeedStatusRequest(FeedStatusRequest inRequestPayload,
+                                     DataRequest inRequest,
+                                     DataEmitterSupport inSupport)
+    {
+        FeedStatusRequestData metaData = new FeedStatusRequestData(inSupport);
+        feedStatusRequestDataByDataFlowId.put(inSupport.getFlowID(),
+                                              metaData);
+    }
+    /**
+     * Holds data relevant to a feed status request as part of a module data flow.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class FeedStatusRequestData
+    {
+        /**
+         * Get the dataEmitterSupport value.
+         *
+         * @return a <code>DataEmitterSupport</code> value
+         */
+        protected DataEmitterSupport getDataEmitterSupport()
+        {
+            return dataEmitterSupport;
+        }
+        /**
+         * Create a new FeedStatusRequestData instance.
+         *
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        private FeedStatusRequestData(DataEmitterSupport inDataEmitterSupport)
+        {
+            dataEmitterSupport = inDataEmitterSupport;
+        }
+        /**
+         * data emitter support value
+         */
+        private final DataEmitterSupport dataEmitterSupport;
+    }
+    /**
+     * holds feed status requests by data flow id
+     */
+    private final Cache<DataFlowID,FeedStatusRequestData> feedStatusRequestDataByDataFlowId = CacheBuilder.newBuilder().build();
     /**
      * tracks feeds by provider name as the feeds are instantiated (not started) - may not be active
      */

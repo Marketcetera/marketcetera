@@ -100,7 +100,7 @@ public abstract class BaseRpcUtil
      */
     public static <Clazz extends Serializable> Optional<Clazz> getObject(BaseRpc.Object inRpcObject)
     {
-        if(inRpcObject == null) {
+        if(inRpcObject == null || inRpcObject.getData() == null) {
             return Optional.empty();
         }
         return Optional.of(SerializationUtils.deserialize(inRpcObject.getData().toByteArray()));

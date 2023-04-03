@@ -9,11 +9,14 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.FeedStatusRequest;
 import org.marketcetera.marketdata.MarketDataCapabilityBroadcaster;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusBroadcaster;
+import org.marketcetera.marketdata.service.MarketDataService;
+import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -43,6 +46,7 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
+@AutowiredModule
 public class ManualFeedModule
         extends Module
         implements DataEmitter
@@ -68,14 +72,14 @@ public class ManualFeedModule
         if(inRequestId == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No request id specified, submitting to all data flows");
-            for(RequestData request : requestsByRequestId.asMap().values()) {
+            for(MarketDataRequestData request : requestsByRequestId.asMap().values()) {
                 for(Event event : inEvents) {
                     emit(request.getDataEmitterSupport(),
                          event);
                 }
             }
         } else {
-            RequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
+            MarketDataRequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
             if(requestData == null) {
                 SLF4JLoggerProxy.warn(this,
                                       "No request with id {}, cannot emit events",
@@ -100,12 +104,12 @@ public class ManualFeedModule
         if(inRequestId == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No request id specified, submitting to all data flows");
-            for(RequestData request : requestsByRequestId.asMap().values()) {
+            for(MarketDataRequestData request : requestsByRequestId.asMap().values()) {
                 emit(request.getDataEmitterSupport(),
                      inEvent);
             }
         } else {
-            RequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
+            MarketDataRequestData requestData = requestsByRequestId.getIfPresent(inRequestId);
             if(requestData == null) {
                 SLF4JLoggerProxy.warn(this,
                                       "No request with id {}, cannot emit events",
@@ -124,7 +128,7 @@ public class ManualFeedModule
     public BiMap<String,MarketDataRequest> getRequests()
     {
         BiMap<String,MarketDataRequest> requests = HashBiMap.create();
-        for(Map.Entry<String,RequestData> entry : requestsByRequestId.asMap().entrySet()) {
+        for(Map.Entry<String,MarketDataRequestData> entry : requestsByRequestId.asMap().entrySet()) {
             requests.put(entry.getKey(),
                          entry.getValue().getMarketDataRequest());
         }
@@ -161,6 +165,10 @@ public class ManualFeedModule
                 doMarketDataRequest((MarketDataRequest)payload,
                                     inRequest,
                                     inSupport);
+            } else if(payload instanceof FeedStatusRequest) {
+                doFeedStatusRequest((FeedStatusRequest)payload,
+                                    inRequest,
+                                    inSupport);
             } else {
                 throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_DATA_REQUEST_PAYLOAD,
                                                                       payload.getClass().getSimpleName()));
@@ -179,7 +187,7 @@ public class ManualFeedModule
     public void cancel(DataFlowID inFlowId,
                        RequestID inRequestID)
     {
-        RequestData requestData = requestsByDataFlowId.getIfPresent(inFlowId);
+        MarketDataRequestData requestData = requestsByDataFlowId.getIfPresent(inFlowId);
         requestsByDataFlowId.invalidate(inFlowId);
         if(requestData != null) {
             SLF4JLoggerProxy.debug(this,
@@ -199,21 +207,7 @@ public class ManualFeedModule
         for(MarketDataCapabilityBroadcaster broadcaster : capabilityBroadcasters) {
             broadcaster.reportCapability(EnumSet.allOf(Capability.class));
         }
-        MarketDataStatus status = new MarketDataStatus() {
-            @Override
-            public FeedStatus getFeedStatus()
-            {
-                return FeedStatus.AVAILABLE;
-            }
-            @Override
-            public String getProvider()
-            {
-                return ManualFeedModuleFactory.IDENTIFIER;
-            }
-        };
-        for(MarketDataStatusBroadcaster broadcaster : statusBroadcasters) {
-            broadcaster.reportMarketDataStatus(status);
-        }
+        updateFeedStatus(FeedStatus.AVAILABLE);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -224,21 +218,7 @@ public class ManualFeedModule
     {
         requestsByDataFlowId.invalidateAll();
         requestsByRequestId.invalidateAll();
-        MarketDataStatus status = new MarketDataStatus() {
-            @Override
-            public FeedStatus getFeedStatus()
-            {
-                return FeedStatus.OFFLINE;
-            }
-            @Override
-            public String getProvider()
-            {
-                return ManualFeedModuleFactory.IDENTIFIER;
-            }
-        };
-        for(MarketDataStatusBroadcaster broadcaster : statusBroadcasters) {
-            broadcaster.reportMarketDataStatus(status);
-        }
+        updateFeedStatus(FeedStatus.OFFLINE);
     }
     /**
      * Create a new ManualFeedModule instance.
@@ -250,6 +230,61 @@ public class ManualFeedModule
         super(inUrn,
               false);
         instance = this;
+    }
+    /**
+     * Update the feed status to the new given value.
+     *
+     * @param inNewStatus a <code>FeedStatus</code> value
+     */
+    private void updateFeedStatus(FeedStatus inNewStatus)
+    {
+        if(inNewStatus == feedStatus) {
+            return;
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Updating feed status from {} to {}",
+                               feedStatus,
+                               inNewStatus);
+        feedStatus = inNewStatus;
+        MarketDataStatus marketDataStatus = new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return feedStatus;
+            }
+            @Override
+            public String getProvider()
+            {
+                return ManualFeedModuleFactory.IDENTIFIER;
+            }
+        };
+        marketDataService.reportMarketDataStatus(marketDataStatus);
+        for(FeedStatusRequestData feedStatusRequestData : feedStatusRequestDataByDataFlowId.asMap().values()) {
+            try {
+                feedStatusRequestData.getDataEmitterSupport().send(marketDataStatus);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+            }
+        }
+        for(MarketDataStatusBroadcaster broadcaster : statusBroadcasters) {
+            broadcaster.reportMarketDataStatus(marketDataStatus);
+        }
+    }
+    /**
+     * Execute a feed status request with the given attributes.
+     *
+     * @param inPayload a <code>FeedStatusRequest</code> value
+     * @param inRequest a <code>DataRequest</code> value
+     * @param inSupport a <code>DataEmitterSupport</code> value
+     */
+    private void doFeedStatusRequest(FeedStatusRequest inPayload,
+                                     DataRequest inRequest,
+                                     DataEmitterSupport inSupport)
+    {
+        FeedStatusRequestData metaData = new FeedStatusRequestData(inSupport);
+        feedStatusRequestDataByDataFlowId.put(inSupport.getFlowID(),
+                                              metaData);
     }
     /**
      * Emit the given event to the given data flow.
@@ -278,7 +313,7 @@ public class ManualFeedModule
                                      DataEmitterSupport inSupport)
     {
         String id = inPayload.getRequestId();
-        RequestData requestData = new RequestData(inSupport,
+        MarketDataRequestData requestData = new MarketDataRequestData(inSupport,
                                                   id,
                                                   inPayload);
         requestsByRequestId.put(id,
@@ -287,13 +322,66 @@ public class ManualFeedModule
                                  requestData);
     }
     /**
+     * Provides common behavior for data flow requests.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static abstract class AbstractRequestData
+    {
+        /**
+         * Get the dataEmitterSupport value.
+         *
+         * @return a <code>DataEmitterSupport</code> value
+         */
+        protected DataEmitterSupport getDataEmitterSupport()
+        {
+            return dataEmitterSupport;
+        }
+        /**
+         * Create a new AbstractRequestData instance.
+         *
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        protected AbstractRequestData(DataEmitterSupport inDataEmitterSupport)
+        {
+            dataEmitterSupport = inDataEmitterSupport;
+        }
+        /**
+         * data emitter support value
+         */
+        private final DataEmitterSupport dataEmitterSupport;
+    }
+    /**
+     * Holds data relevant to a feed status request as part of a module data flow.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class FeedStatusRequestData
+            extends AbstractRequestData
+    {
+        /**
+         * Create a new FeedStatusRequestData instance.
+         *
+         * @param inDataEmitterSupport a <code>DataEmitterSupport</code> value
+         */
+        private FeedStatusRequestData(DataEmitterSupport inDataEmitterSupport)
+        {
+            super(inDataEmitterSupport);
+        }
+    }
+    /**
      * Holds data relevant to a market data request as part of a module data flow.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    private static class RequestData
+    private static class MarketDataRequestData
+            extends AbstractRequestData
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -302,15 +390,6 @@ public class ManualFeedModule
         public String toString()
         {
             return description;
-        }
-        /**
-         * Get the dataEmitterSupport value.
-         *
-         * @return a <code>DataEmitterSupport</code> value
-         */
-        private DataEmitterSupport getDataEmitterSupport()
-        {
-            return dataEmitterSupport;
         }
         /**
          * Get the requestId value.
@@ -338,12 +417,12 @@ public class ManualFeedModule
          * @param inRequestId a <code>String</code> value
          * @param inMarketDataRequest a <code>MarketDataRequest</code> value
          */
-        private RequestData(DataEmitterSupport inDataEmitterSupport,
-                            String inRequestId,
-                            MarketDataRequest inMarketDataRequest)
+        private MarketDataRequestData(DataEmitterSupport inDataEmitterSupport,
+                                      String inRequestId,
+                                      MarketDataRequest inMarketDataRequest)
         {
-            dataEmitterSupport = inDataEmitterSupport;
-            description = RequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+            super(inDataEmitterSupport);
+            description = MarketDataRequestData.class.getSimpleName() + " [" + inDataEmitterSupport.getFlowID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
             requestId = inRequestId;
             marketDataRequest = inMarketDataRequest;
         }
@@ -351,10 +430,6 @@ public class ManualFeedModule
          * human-readable description of the object
          */
         private final String description;
-        /**
-         * information about the data flow requester
-         */
-        private final DataEmitterSupport dataEmitterSupport;
         /**
          * request id of the request
          */
@@ -364,6 +439,14 @@ public class ManualFeedModule
          */
         private final MarketDataRequest marketDataRequest;
     }
+    /**
+     * current status of the feed
+     */
+    private volatile FeedStatus feedStatus;
+    /**
+     * holds feed status requests by data flow id
+     */
+    private final Cache<DataFlowID,FeedStatusRequestData> feedStatusRequestDataByDataFlowId = CacheBuilder.newBuilder().build();
     /**
      * receivers of capabilities of this module
      */
@@ -375,13 +458,18 @@ public class ManualFeedModule
     @Autowired(required=false)
     private Collection<MarketDataStatusBroadcaster> statusBroadcasters = Lists.newArrayList();
     /**
+     * provides access to market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
+    /**
      * holds data request info keyed by request id
      */
-    private final Cache<String,RequestData> requestsByRequestId = CacheBuilder.newBuilder().build();
+    private final Cache<String,MarketDataRequestData> requestsByRequestId = CacheBuilder.newBuilder().build();
     /**
      * holds market data request info by data flow id
      */
-    private final Cache<DataFlowID,RequestData> requestsByDataFlowId = CacheBuilder.newBuilder().build();
+    private final Cache<DataFlowID,MarketDataRequestData> requestsByDataFlowId = CacheBuilder.newBuilder().build();
     /**
      * singleton reference value
      */
