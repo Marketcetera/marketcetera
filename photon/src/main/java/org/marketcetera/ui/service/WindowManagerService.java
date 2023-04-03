@@ -515,13 +515,23 @@ public class WindowManagerService
             }
             rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowPosXProp));
             if(rawProperty == null) {
-                setX(200);
+                double proposedX = (newWindowAnchorX += desktopCascadeWindowOffset);
+                if(proposedX + getWidth() > getWorkspaceRight()) {
+                    newWindowAnchorX = desktopCascadeWindowOffset;
+                    proposedX = newWindowAnchorX;
+                }
+                setX(proposedX);
             } else {
                 setX(Double.parseDouble(rawProperty));
             }
             rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowPosYProp));
             if(rawProperty == null) {
-                setY(200);
+                double proposedY = (newWindowAnchorY += desktopCascadeWindowOffset);
+                if(proposedY + getHeight() > getWorkspaceBottom()) {
+                    newWindowAnchorY = desktopCascadeWindowOffset;
+                    proposedY = newWindowAnchorY;
+                }
+                setY(proposedY);
             } else {
                 setY(Double.parseDouble(rawProperty));
             }
@@ -1477,10 +1487,18 @@ public class WindowManagerService
      * desktop cascade window offset value
      */
     @Value("${metc.desktop.cascade.window.offset:100}")
-    private int desktopCascadeWindowOffset;
+    private double desktopCascadeWindowOffset;
     /**
      * interval in ms at which to monitor and correct window positions
      */
     @Value("${metc.desktop.window.position.monitor.interval:250}")
     private long desktopWindowPositionMonitorInterval;
+    /**
+     * tracks new window anchor point (x)
+     */
+    private double newWindowAnchorX = desktopCascadeWindowOffset;
+    /**
+     * tracks new window anchor point (y)
+     */
+    private double newWindowAnchorY = desktopCascadeWindowOffset;
 }
