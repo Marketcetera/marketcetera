@@ -1,9 +1,12 @@
 package org.marketcetera.ui.trade.view;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.marketcetera.core.PlatformServices;
@@ -34,6 +37,8 @@ import org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
+
+import com.google.common.collect.Lists;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -85,7 +90,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         reportsTableView = new TableView<>();
         reportsTableView.setPlaceholder(getPlaceholder());
         TableViewSelectionModel<FixClazz> selectionModel = reportsTableView.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.SINGLE);
+        selectionModel.setSelectionMode(getTableSelectionMode());
         initializeColumns(reportsTableView);
         initializeContextMenu(reportsTableView);
         pagination = new Pagination();
@@ -151,6 +156,15 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         });
     }
     /**
+     * Get the selection model of the main reports table.
+     *
+     * @return a <code>SelectionMode</code> value
+     */
+    protected SelectionMode getTableSelectionMode()
+    {
+        return SelectionMode.SINGLE;
+    }
+    /**
      * Create the trade message listener value.
      */
     protected void initializeTradeMessageListener()
@@ -200,6 +214,26 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         }
     }
     /**
+     * Get the items currently selected, if any.
+     *
+     * @return a <code>Collection&lt;FixClazz&gt;</code> value
+     */
+    protected Collection<FixClazz> getSelectedItems()
+    {
+        switch(reportsTableView.getSelectionModel().getSelectionMode()) {
+            case MULTIPLE:
+                return reportsTableView.getSelectionModel().getSelectedItems();
+            case SINGLE:
+                FixClazz report = reportsTableView.getSelectionModel().getSelectedItem();
+                if(report == null) {
+                    return Collections.emptyList();
+                }
+                return Lists.newArrayList(report);
+            default:
+                throw new UnsupportedOperationException("Unexpected selection mode: " + reportsTableView.getSelectionModel().getSelectionMode());
+        }
+    }
+    /**
      * Initialize the context menu for the FIX table.
      *
      * @param inTableView a <code>TableView&lt;FixClazz&gt;</code> value
@@ -209,19 +243,22 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         reportsTableContextMenu = new ContextMenu();
         cancelOrderMenuItem = new MenuItem("Cancel Order");
         cancelOrderMenuItem.setOnAction(event -> {
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            cancelOrder(report);
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            for(FixClazz report : selectedItems) {
+                cancelOrder(report);
+            }
         });
         replaceOrderMenuItem = new MenuItem("Replace Order");
         replaceOrderMenuItem.setOnAction(event -> {
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
-            if(executionReport == null) {
-                uiMessageService.post(new NotificationEvent("Replace Order",
-                                                            "Unable to replace " + report.getOrderId() + ": no execution report",
-                                                            AlertType.ERROR));
-                return;
-            }
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            for(FixClazz report : selectedItems) {
+                ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
+                if(executionReport == null) {
+                    uiMessageService.post(new NotificationEvent("Replace Order",
+                                                                "Unable to replace " + report.getOrderId() + ": no execution report",
+                                                                AlertType.ERROR));
+                    continue;
+                }
                 String executionReportXml;
                 try {
                     executionReportXml = xmlService.marshall(executionReport);
@@ -229,7 +266,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                     uiMessageService.post(new NotificationEvent("Replace Order",
                                                                 "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
                                                                 AlertType.ERROR));
-                    return;
+                    continue;
                 }
                 Properties replaceProperties = new Properties();
                 replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
@@ -238,7 +275,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                                                                  executionReport,
                                                                                  replaceProperties);
                 uiMessageService.post(replaceOrderEvent);
-                return;
+            }
         });
         SeparatorMenuItem contextMenuSeparator1 = new SeparatorMenuItem();
         viewFixMessageDetailsMenuItem = new MenuItem("View FIX Message Details");
@@ -246,31 +283,36 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         copyOrderMenuItem.setOnAction(event -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent clipboardContent = new ClipboardContent();
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            String output;
-            quickfix.Message fixMessage = report.getMessage();
-            try {
-                output = new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(fixMessage)),
-                                             fixMessage).toString();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(getClass(),
-                                      e,
-                                      "Unable to generate pretty string for {}",
-                                      fixMessage);
-                output = FIXMessageUtil.toHumanDelimitedString(fixMessage);
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            StringBuilder output = new StringBuilder();
+            for(FixClazz report : selectedItems) {
+                quickfix.Message fixMessage = report.getMessage();
+                try {
+                    output.append(new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(fixMessage)),
+                                                      fixMessage).toString());
+                    output.append(StringUtils.LF);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(getClass(),
+                                          e,
+                                          "Unable to generate pretty string for {}",
+                                          fixMessage);
+                    output.append(FIXMessageUtil.toHumanDelimitedString(fixMessage)).append(StringUtils.LF);
+                }
             }
-            clipboardContent.putString(output);
+            clipboardContent.putString(output.toString());
             clipboard.setContent(clipboardContent);
         });
         viewFixMessageDetailsMenuItem.setOnAction(event -> {
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            Properties replaceProperties = new Properties();
-            replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
-                                          report.getMessage().toString());
-            FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
-                                                                                               report,
-                                                                                               replaceProperties);
-            uiMessageService.post(viewFixMessageDetailsEvent);
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            for(FixClazz report : selectedItems) {
+                Properties replaceProperties = new Properties();
+                replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
+                                              report.getMessage().toString());
+                FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
+                                                                                                   report,
+                                                                                                   replaceProperties);
+                uiMessageService.post(viewFixMessageDetailsEvent);
+            }
         });
         // TODO need Add Report Action
         if(authzHelperService.hasPermission(TradePermissions.SendOrderAction)) { 
@@ -283,27 +325,38 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                                       copyOrderMenuItem);
         }
         inTableView.getSelectionModel().selectedItemProperty().addListener((ChangeListener<FixClazz>) (inObservable,inOldValue,inNewValue) -> {
-            enableContextMenuItems(inNewValue);
+            enableContextMenuItems(getSelectedItems());
         });
         inTableView.setContextMenu(reportsTableContextMenu);
     }
     /**
      * Enable or disable context menu items based on the given selected row item.
      *
-     * @param inNewValue a <code>FixClazz</code> value
+     * @param inSelectedItems a <code>Collection&lt;FixClazz&gt;</code> value
      */
-    protected void enableContextMenuItems(FixClazz inNewValue)
+    protected void enableContextMenuItems(Collection<FixClazz> inSelectedItems)
     {
-        if(inNewValue == null) {
+        if(inSelectedItems == null || inSelectedItems.isEmpty()) {
+            cancelOrderMenuItem.setDisable(true);
+            replaceOrderMenuItem.setDisable(true);
+            viewFixMessageDetailsMenuItem.setDisable(true);
+            copyOrderMenuItem.setDisable(true);
             return;
         }
         // any report can be viewed or copied
         viewFixMessageDetailsMenuItem.setDisable(false);
         copyOrderMenuItem.setDisable(false);
-        // a report can be canceled or replaced only if the status is cancellable
-        OrderStatus orderStatus = inNewValue.getOrderStatus();
-        cancelOrderMenuItem.setDisable(!orderStatus.isCancellable());
-        replaceOrderMenuItem.setDisable(!orderStatus.isCancellable());
+        // enable the cancel and replace options only if all the reports in the selection are cancellable
+        boolean disable = false;
+        for(FixClazz report : inSelectedItems) {
+            OrderStatus orderStatus = report.getOrderStatus();
+            if(!orderStatus.isCancellable()) {
+                disable = true;
+                break;
+            }
+        }
+        cancelOrderMenuItem.setDisable(disable);
+        replaceOrderMenuItem.setDisable(disable);
     }
     /**
      * Get the layout for above-the-table controls.
