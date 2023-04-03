@@ -555,7 +555,7 @@ public class WindowManagerService
          */
         private void setupWindowListeners()
         {
-            closeImage.setOnMouseClicked(event -> {
+            closeButtonLayout.setOnMouseClicked(event -> {
                 contentViewProperty.get().onClose();
                 close();
             });
