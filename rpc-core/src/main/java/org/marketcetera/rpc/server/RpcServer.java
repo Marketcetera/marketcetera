@@ -105,7 +105,7 @@ public class RpcServer
             throws Exception
     {
         Validate.notNull(hostname);
-        Validate.isTrue(port > 0 && port < 65536);
+//        Validate.isTrue(port > 0 && port < 65536);
         // TODO bind to host?
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
         if(useSsl()) {
