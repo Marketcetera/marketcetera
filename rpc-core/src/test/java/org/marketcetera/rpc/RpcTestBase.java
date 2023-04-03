@@ -53,7 +53,8 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
         authenticator = new MockAuthenticator();
         authenticator.getUserstore().put("test",
                                          "password");
-        int port = SocketUtils.findAvailableTcpPort();
+        int port = SocketUtils.findAvailableTcpPort(10000,
+                                                    20000);
         createService();
         startServer("127.0.0.1",
                     port,
