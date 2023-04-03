@@ -23,6 +23,7 @@ import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
@@ -387,7 +388,13 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         for(MarketDataStatusBroadcaster marketDataStatusPublisher : marketDataStatusBroadcasters) {
             marketDataStatusPublisher.reportMarketDataStatus(status);
         }
+        marketDataService.reportMarketDataStatus(status);
     }
+    /**
+     * provides access to market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * optional market data status publishers
      */

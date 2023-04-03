@@ -1,11 +1,17 @@
 package org.marketcetera.marketdata.yahoo;
 
+import javax.annotation.PostConstruct;
+
 import org.marketcetera.core.CoreException;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
@@ -44,6 +50,30 @@ public class YahooFeedModuleFactory
             throw new ModuleCreationException(e.getI18NBoundMessage());
         }
     }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        marketDataService.reportMarketDataStatus(new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return FeedStatus.OFFLINE;
+            }
+            @Override
+            public String getProvider()
+            {
+                return IDENTIFIER;
+            }}
+        );
+    }
+    /**
+     * providers market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * provider name of the module 
      */

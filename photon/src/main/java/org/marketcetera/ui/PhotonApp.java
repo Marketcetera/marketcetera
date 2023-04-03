@@ -12,7 +12,7 @@ import org.marketcetera.ui.service.DisplayLayoutService;
 import org.marketcetera.ui.service.PhotonNotificationService;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.ui.view.ApplicationMenu;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
@@ -60,7 +60,7 @@ public class PhotonApp
     {
         super.init();
         applicationContext = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
-        webMessageService = applicationContext.getBean(WebMessageService.class);
+        webMessageService = applicationContext.getBean(UiMessageService.class);
         styleService = applicationContext.getBean(StyleService.class);
         displayLayoutService = applicationContext.getBean(DisplayLayoutService.class);
         webMessageService.register(this);
@@ -301,7 +301,7 @@ public class PhotonApp
     /**
      * web message service value
      */
-    private WebMessageService webMessageService;
+    private UiMessageService webMessageService;
     private VBox menuLayout;
     private ApplicationContext applicationContext;
     private VBox root;

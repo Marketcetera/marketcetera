@@ -1,5 +1,6 @@
 package org.marketcetera.ui.trade.view;
 
+import java.util.Collection;
 import java.util.Properties;
 
 import org.marketcetera.core.PlatformServices;
@@ -75,7 +76,7 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
                     try {
                         tradeClientService.deleteReport(report.getReportID());
                         updateReports();
-                        webMessageService.post(new NotificationEvent("Delete Report",
+                        uiMessageService.post(new NotificationEvent("Delete Report",
                                                                      "Report " + report.getReportID() + " deleted",
                                                                      AlertType.INFORMATION));
                     } catch (Exception e) {
@@ -83,7 +84,7 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
                                               e,
                                               "Unable to delete {}",
                                               report);
-                        webMessageService.post(new NotificationEvent("Delete Report",
+                        uiMessageService.post(new NotificationEvent("Delete Report",
                                                                      "Report " + report.getReportID() + " not deleted: " + PlatformServices.getMessage(e),
                                                                      AlertType.ERROR));
                     }
@@ -98,13 +99,14 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#enableContextMenuItems(org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType)
+     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#enableContextMenuItems(java.util.Collection)
      */
     @Override
-    protected void enableContextMenuItems(FixClazz inNewValue)
+    protected void enableContextMenuItems(Collection<FixClazz> inSelectedItems)
     {
-        super.enableContextMenuItems(inNewValue);
-        if(inNewValue == null) {
+        super.enableContextMenuItems(inSelectedItems);
+        if(inSelectedItems == null || inSelectedItems.isEmpty()) {
+            deleteReportMenuItem.setDisable(true);
             return;
         }
         // enable/disable menu selections based on selected report

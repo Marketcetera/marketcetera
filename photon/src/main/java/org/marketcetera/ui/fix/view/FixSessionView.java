@@ -100,7 +100,7 @@ import javafx.stage.Stage;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class FixSessionView
         extends AbstractContentView
-        implements ContentView,BrokerStatusListener
+        implements ContentView
 {
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getMainLayout()
@@ -110,11 +110,12 @@ public class FixSessionView
     {
         return rootLayout;
     }
+    
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.BrokerStatusListener#receiveBrokerStatus(org.marketcetera.fix.ActiveFixSession)
+     * @see org.marketcetera.ui.view.AbstractContentView#onBrokerStatusChange(org.marketcetera.fix.ActiveFixSession)
      */
     @Override
-    public void receiveBrokerStatus(ActiveFixSession inActiveFixSession)
+    protected void onBrokerStatusChange(ActiveFixSession inActiveFixSession)
     {
         SLF4JLoggerProxy.trace(this,
                                "{} receiveBrokerStatus: {}",
@@ -144,16 +145,6 @@ public class FixSessionView
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ui.view.ContentView#onClose()
-     */
-    @Override
-    public void onClose()
-    {
-        try {
-            fixAdminClient.removeBrokerStatusListener(this);
-        } catch (Exception ignored) {}
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getViewName()
      */
     @Override
@@ -162,17 +153,27 @@ public class FixSessionView
       return NAME;
     }
     /**
-     * Initialize and start the object.
+     * Create a new FixSessionView instance.
+     *
+     * @param inParent a <code>Region</code> value
+     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inProperties a <code>Properties</code> value
      */
-    @PostConstruct
-    public void start()
+    public FixSessionView(Region inParent,
+                          NewWindowEvent inEvent,
+                          Properties inProperties)
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
+        super(inParent,
+              inEvent,
+              inProperties);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
+     */
+    @Override
+    protected void onStart()
+    {
         fixAdminClient = serviceManager.getService(AdminClientService.class);
-        fixAdminClient.addBrokerStatusListener(this);
         rootLayout = new VBox(5);
         buttonLayout = new HBox(5);
         addFixSessionButton = new Button("Add FIX Session");
@@ -194,21 +195,6 @@ public class FixSessionView
         rootLayout.getChildren().addAll(fixSessionsTable,
                                         buttonLayout);
         updateSessions();
-    }
-    /**
-     * Create a new FixSessionView instance.
-     *
-     * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
-     * @param inProperties a <code>Properties</code> value
-     */
-    public FixSessionView(Region inParent,
-                          NewWindowEvent inEvent,
-                          Properties inProperties)
-    {
-        super(inParent,
-              inEvent,
-              inProperties);
     }
     /**
      * Initialize the table widget.
@@ -340,7 +326,7 @@ public class FixSessionView
                                           inTitle,
                                           inSelectedItem);
                     updateSessions();
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " succeeded",
                                                                  AlertType.INFORMATION));
                 } catch (Exception e) {
@@ -351,7 +337,7 @@ public class FixSessionView
                                           inTitle,
                                           inSelectedItem,
                                           message);
-                    webMessageService.post(new NotificationEvent(inTitle,
+                    uiMessageService.post(new NotificationEvent(inTitle,
                                                                  inContent + " failed: " + message,
                                                                  AlertType.ERROR));
                 }
@@ -698,7 +684,7 @@ public class FixSessionView
                                               SessionUser.getCurrent(),
                                               inFixSession);
                         fixAdminClient.createFixSession(inFixSession.sourceProperty().get().getFixSession());
-                        webMessageService.post(new NotificationEvent("Create FIX Session",
+                        uiMessageService.post(new NotificationEvent("Create FIX Session",
                                                                      "Create FIX Session '" + inFixSession.nameProperty().get() + "' succeeded",
                                                                      AlertType.INFORMATION));
                     } else {
@@ -709,7 +695,7 @@ public class FixSessionView
                                               inFixSession);
                         fixAdminClient.updateFixSession(incomingFixSessionName,
                                                         inFixSession.sourceProperty().get().getFixSession());
-                        webMessageService.post(new NotificationEvent("Update FIX Session",
+                        uiMessageService.post(new NotificationEvent("Update FIX Session",
                                                                      "Update FIX Session '" + inFixSession.nameProperty().get() + "' succeeded",
                                                                      AlertType.INFORMATION));
                     }
@@ -720,7 +706,7 @@ public class FixSessionView
                                           "Unable to create or update FIX session {}: {}",
                                           inFixSession,
                                           message);
-                    webMessageService.post(new NotificationEvent("Create or Update FIX Session",
+                    uiMessageService.post(new NotificationEvent("Create or Update FIX Session",
                                                                  "Create or update FIX sesssion '" + inFixSession.nameProperty().get() + " 'failed: " + message,
                                                                  AlertType.ERROR));
                 }
@@ -1121,7 +1107,7 @@ public class FixSessionView
                                                      newSenderSequenceNumber,
                                                      newTargetSequenceNumber);
                 updateSessions();
-                webMessageService.post(new NotificationEvent("Update Sequence Numbers",
+                uiMessageService.post(new NotificationEvent("Update Sequence Numbers",
                                                              "Update sequence numbers on " + inSession.nameProperty().get() + " succeeded",
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
@@ -1131,7 +1117,7 @@ public class FixSessionView
                                       "Unable to update sequence numbers on {}: {}",
                                       inSession,
                                       message);
-                webMessageService.post(new NotificationEvent("Update Sequence Numbers",
+                uiMessageService.post(new NotificationEvent("Update Sequence Numbers",
                                                              "Update sequence numbers on " + inSession.nameProperty().get() + " failed: " + message,
                                                              AlertType.ERROR));
             }

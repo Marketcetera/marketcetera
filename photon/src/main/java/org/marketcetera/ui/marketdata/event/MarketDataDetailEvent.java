@@ -1,5 +1,6 @@
 package org.marketcetera.ui.marketdata.event;
 
+import org.marketcetera.core.Pair;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.ui.events.NewWindowEvent;
@@ -54,6 +55,14 @@ public class MarketDataDetailEvent
     public Class<? extends ContentViewFactory> getViewFactoryType()
     {
         return MarketDataDetailViewFactory.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.events.NewWindowEvent#getWindowSize()
+     */
+    @Override
+    public Pair<Double,Double> getWindowSize()
+    {
+        return Pair.create(635.0,365.0);
     }
     /**
      * Create a new MarketDataDetailEvent instance.

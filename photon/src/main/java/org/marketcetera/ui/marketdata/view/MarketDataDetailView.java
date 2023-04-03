@@ -5,11 +5,7 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -44,6 +40,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -92,18 +89,12 @@ public class MarketDataDetailView
     @Override
     public void onClose()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} stop",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
+        super.onClose();
         try {
-//            synchronized(symbolsByRequestId) {
-//                updateViewProperties();
-//                for(String requestId : symbolsByRequestId.keySet()) {
-//                    marketdataClient.cancel(requestId);
-//                }
-//                symbolsByRequestId.clear();
-//            }
+            if(depthMarketDataRequestId != null) {
+                marketDataClient.cancel(depthMarketDataRequestId);
+            }
+            clearDepthDisplay();
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
@@ -117,16 +108,12 @@ public class MarketDataDetailView
     {
       return NAME;
     }
-    /**
-     * Initialize and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
-        SLF4JLoggerProxy.trace(this,
-                               "{} {} start",
-                               PlatformServices.getServiceName(getClass()),
-                               hashCode());
         marketDataClient = serviceManager.getService(MarketDataClientService.class);
         SLF4JLoggerProxy.debug(this,
                                "Available market data capabilities are: {}",
@@ -137,24 +124,24 @@ public class MarketDataDetailView
         if(marketDataInstrument != null) {
             addSymbolTextField.setText(marketDataInstrument.getSymbol());
         }
-        marketDataGrid = new GridPane();
-        marketDataGrid.setHgap(10);
-        marketDataGrid.setVgap(10);
-        marketDataGrid.setPadding(new Insets(10,10,10,10));
+        marketDataLayout = new GridPane();
+        marketDataLayout.setHgap(10);
+        marketDataLayout.setVgap(10);
+        marketDataLayout.setPadding(new Insets(10,10,10,10));
         initializeTables();
-//        initializeChart();
+        initializeChart();
         int rowCount = 0;
-        marketDataGrid.add(addSymbolLayout,0,rowCount,2,1);
-//        marketDataGrid.add(chart,0,++rowCount,2,1);;
-        marketDataGrid.add(bidMarketDataTable,0,++rowCount);
-        marketDataGrid.add(askMarketDataTable,1,rowCount);
-        marketDataGrid.setMaxWidth(Double.MAX_VALUE);
-        marketDataGrid.setMaxHeight(Double.MAX_VALUE);
+        marketDataLayout.add(addSymbolLayout,0,rowCount,2,1);
+//        marketDataGrid.add(chart,0,++rowCount,2,1);
+        marketDataLayout.add(bidMarketDataTable,0,++rowCount);
+        marketDataLayout.add(askMarketDataTable,1,rowCount);
+        marketDataLayout.setMaxWidth(Double.MAX_VALUE);
+        marketDataLayout.setMaxHeight(Double.MAX_VALUE);
         RowConstraints addSymbolRowConstraint = new RowConstraints();
         addSymbolRowConstraint.setVgrow(Priority.NEVER);
         RowConstraints marketDataTableRowConstraint = new RowConstraints();
         marketDataTableRowConstraint.setVgrow(Priority.ALWAYS);
-        marketDataGrid.getRowConstraints().addAll(addSymbolRowConstraint,
+        marketDataLayout.getRowConstraints().addAll(addSymbolRowConstraint,
                                                   marketDataTableRowConstraint);
         ColumnConstraints bidTableColumnConstraint = new ColumnConstraints();
         bidTableColumnConstraint.setHgrow(Priority.ALWAYS);
@@ -162,9 +149,11 @@ public class MarketDataDetailView
         ColumnConstraints askTableColumnConstraint = new ColumnConstraints();
         askTableColumnConstraint.setHgrow(Priority.ALWAYS);
         askTableColumnConstraint.setPercentWidth(50);
-        marketDataGrid.getColumnConstraints().addAll(bidTableColumnConstraint,
+        marketDataLayout.prefWidthProperty().bind(getParentWindow().widthProperty());
+        marketDataLayout.getColumnConstraints().addAll(bidTableColumnConstraint,
                                                      askTableColumnConstraint);
-        rootLayout.getChildren().addAll(marketDataGrid);
+        rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
+        rootLayout.getChildren().addAll(marketDataLayout);
         rootLayout.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if(event.getCode() == KeyCode.ENTER) {
                addSymbolButton.fire();
@@ -174,6 +163,7 @@ public class MarketDataDetailView
         if(marketDataInstrument != null) {
             doMarketDataRequest();
         }
+        restoreSymbol();
     }
     /**
      * Create a new MarketDataDetailView instance.
@@ -194,6 +184,9 @@ public class MarketDataDetailView
             marketDataInstrument = marketDataDetailEvent.getInstrument();
         }
     }
+    /**
+     * Initialize the add symbol control.
+     */
     private void initializeAddSymbol()
     {
         addSymbolLayout = new HBox(5);
@@ -202,23 +195,32 @@ public class MarketDataDetailView
         addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
         addSymbolButton.setDisable(true);
         addSymbolTextField.textProperty().addListener((observableValue,oldValue,newValue) -> {
-            newValue = StringUtils.trimToNull(newValue);
+            newValue = tradeClient.getTreatedSymbol(newValue);
             addSymbolButton.setDisable(newValue == null);
         });
         addSymbolButton.setOnAction(event -> {
-            String symbol = StringUtils.trimToNull(addSymbolTextField.getText());
+            String symbol = tradeClient.getTreatedSymbol(addSymbolTextField.getText());
             if(symbol == null) {
                 return;
             }
-            symbol = symbol.toUpperCase();
             addSymbolTextField.textProperty().set(symbol);
             marketDataInstrument = tradeClient.resolveSymbol(symbol);
+            updateViewProperties();
             doMarketDataRequest();
+            // TODO change the title of the window
+            addSymbolTextField.setText(null);
         });
         addSymbolLayout.setAlignment(Pos.CENTER_LEFT);
-        addSymbolLayout.getChildren().addAll(addSymbolTextField,
+        providerComboBox = new ComboBox<>();
+        providerComboBox.getItems().add(ALL_PROVIDERS);
+        providerComboBox.getItems().addAll(marketDataClient.getProviders());
+        addSymbolLayout.getChildren().addAll(providerComboBox,
+                                             addSymbolTextField,
                                              addSymbolButton);
     }
+    /**
+     * Initialize the tables that hold the quotes.
+     */
     private void initializeTables()
     {
         bidMarketDataTable = new TableView<>();
@@ -229,7 +231,12 @@ public class MarketDataDetailView
         initializeContextMenu();
         bidMarketDataTable.getColumns().forEach(column -> { column.setReorderable(false); column.setSortable(false); });
         askMarketDataTable.getColumns().forEach(column -> { column.setReorderable(false); column.setSortable(false); });
+        bidMarketDataTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        askMarketDataTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
+    /**
+     * Initialize the table columns.
+     */
     private void initializeColumns()
     {
         // TODO need to manage count column for aggregated display
@@ -264,6 +271,9 @@ public class MarketDataDetailView
         askMarketDataTable.getColumns().add(askExchangeColumn);
         askMarketDataTable.getColumns().add(askTimestampColumn);
     }
+    /**
+     * Initialize the tables context menu.
+     */
     private void initializeContextMenu()
     {
         buyMarketDataMenuItem = new MenuItem("Buy");
@@ -303,9 +313,12 @@ public class MarketDataDetailView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        webMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + marketDataInstrument.getSymbol(),
+        uiMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + marketDataInstrument.getSymbol(),
                                                              suggestion));
     }
+    /**
+     * Execute the market data request.
+     */
     private void doMarketDataRequest()
     {
         if(depthMarketDataRequestId != null) {
@@ -319,8 +332,13 @@ public class MarketDataDetailView
         asks.clear();
         // TODO reset chart/top-level view
         depthMarketDataRequestId = UUID.randomUUID().toString();
+        MarketDataRequestBuilder depthRequestBuilder = MarketDataRequestBuilder.newRequest().withRequestId(depthMarketDataRequestId).withSymbols(marketDataInstrument.getSymbol());
         // TODO choose between aggregated and unaggregated?
-        MarketDataRequest depthRequest = MarketDataRequestBuilder.newRequest().withRequestId(depthMarketDataRequestId).withSymbols(marketDataInstrument.getSymbol()).withContent(Content.AGGREGATED_DEPTH).create();
+        depthRequestBuilder = depthRequestBuilder.withContent(Content.AGGREGATED_DEPTH);
+        if(providerComboBox.valueProperty().get() != null && providerComboBox.valueProperty().get() != ALL_PROVIDERS) {
+            depthRequestBuilder.withProvider(providerComboBox.valueProperty().get());
+        }
+        MarketDataRequest depthRequest = depthRequestBuilder.create();
         marketDataClient.request(depthRequest,
                                  new MarketDataListener() {
             /* (non-Javadoc)
@@ -333,6 +351,53 @@ public class MarketDataDetailView
             }
         });
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
+     */
+    @Override
+    protected void onClientConnect()
+    {
+        doMarketDataRequest();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            bidMarketDataTable.getItems().clear();
+            askMarketDataTable.getItems().clear();
+        });
+    }
+    /**
+     * Restore the symbol layout.
+     */
+    private void restoreSymbol()
+    {
+        Properties windowProperties = getViewProperties();
+        String symbol = windowProperties.getProperty(symbolKey);
+        if(symbol != null) {
+            marketDataInstrument = tradeClient.resolveSymbol(symbol);
+            doMarketDataRequest();
+        }
+    }
+    /**
+     * Update the view properties for this view.
+     */
+    private void updateViewProperties()
+    {
+        if(marketDataInstrument != null) {
+            getViewProperties().setProperty(symbolKey,
+                                            marketDataInstrument.getFullSymbol());
+        }
+        System.out.println("COCO: view properties are now " + getViewProperties());
+    }
+    /**
+     * Update the display table.
+     *
+     * @param inEvent an <code>Event</code> value
+     */
     private void updateDepthMarketData(Event inEvent)
     {
         SLF4JLoggerProxy.trace(this,
@@ -366,11 +431,17 @@ public class MarketDataDetailView
         // TODO bind the tables to the maps?
         refreshDepthDisplay();
     }
+    /**
+     * Clear the depth display.
+     */
     private void clearDepthDisplay()
     {
         bidMarketDataTable.getItems().clear();
         askMarketDataTable.getItems().clear();
     }
+    /**
+     * Refresh the depth display.
+     */
     private void refreshDepthDisplay()
     {
         Platform.runLater(() -> {
@@ -380,6 +451,9 @@ public class MarketDataDetailView
             askMarketDataTable.getItems().addAll(asks.values());
         });
     }
+    /**
+     * Initialize the chart display.
+     */
     private void initializeChart()
     {
 ////        ohlcvDataSet = new OhlcvDataSet("Sample Chart");
@@ -413,31 +487,117 @@ public class MarketDataDetailView
 //        chart.getRenderers().clear();
 //        chart.getRenderers().add(candleStickRenderer);
     }
+    /**
+     * wrench value to indicate all providers are selected
+     */
+    private static final String ALL_PROVIDERS = "<all providers>";
+    /**
+     * market data request id
+     */
     private String depthMarketDataRequestId;
+    /**
+     * bids by level
+     */
     private final SortedMap<Integer,MarketDataQuoteItem> bids = Maps.newTreeMap();
+    /**
+     * asks by level
+     */
     private final SortedMap<Integer,MarketDataQuoteItem> asks = Maps.newTreeMap();
+    /**
+     * instrument being displayed
+     */
     private Instrument marketDataInstrument;
-    private GridPane marketDataGrid;
+    /**
+     * layout for displaying market data
+     */
+    private GridPane marketDataLayout;
+    /**
+     * context menu for bid quotes
+     */
     private ContextMenu bidMarketDataContextMenu;
+    /**
+     * context menu for ask quotes
+     */
     private ContextMenu askMarketDataContextMenu;
+    /**
+     * buy market data menu item
+     */
     private MenuItem buyMarketDataMenuItem;
+    /**
+     * sell market data menu item
+     */
     private MenuItem sellMarketDataMenuItem;
+    /**
+     * table used to display bids
+     */
     private TableView<MarketDataQuoteItem> bidMarketDataTable;
+    /**
+     * table used to display asks
+     */
     private TableView<MarketDataQuoteItem> askMarketDataTable;
+    /**
+     * provides access to market data services
+     */
     private MarketDataClientService marketDataClient;
+    /**
+     * provides access to trade services
+     */
     private TradeClientService tradeClient;
+    /**
+     * main view layout
+     */
     private VBox rootLayout;
-    private final String symbolsKey = "SYMBOLS";
+    /**
+     * key used to store selected symbol for storing preferences
+     */
+    private final String symbolKey = "SYMBOL";
+    /**
+     * layout for the add symbol controls
+     */
     private HBox addSymbolLayout;
+    /**
+     * add symbol text box
+     */
     private TextField addSymbolTextField;
+    /**
+     * add symbol control button
+     */
     private Button addSymbolButton;
+    /**
+     * allows selection of a specific market data provider
+     */
+    private ComboBox<String> providerComboBox;
+    /**
+     * bid timestamp column
+     */
     private TableColumn<MarketDataQuoteItem,DateTime> bidTimestampColumn;
+    /**
+     * bid exchange column
+     */
     private TableColumn<MarketDataQuoteItem,String> bidExchangeColumn;
+    /**
+     * bid size column
+     */
     private TableColumn<MarketDataQuoteItem,BigDecimal> bidSizeColumn;
+    /**
+     * bid price column
+     */
     private TableColumn<MarketDataQuoteItem,BigDecimal> bidPriceColumn;
+    /**
+     * ask size column
+     */
     private TableColumn<MarketDataQuoteItem,BigDecimal> askSizeColumn;
+    /**
+     * ask price column
+     */
     private TableColumn<MarketDataQuoteItem,BigDecimal> askPriceColumn;
+    /**
+     * ask timestamp column
+     */
     private TableColumn<MarketDataQuoteItem,DateTime> askTimestampColumn;
+    /**
+     * ask exchange column
+     */
     private TableColumn<MarketDataQuoteItem,String> askExchangeColumn;
     /**
      * global name of this view

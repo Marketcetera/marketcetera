@@ -118,6 +118,18 @@ public class MarketDataClientService
         return marketDataClient.getAvailableCapability();
     }
     /**
+     * Gets the active providers.
+     * 
+     * <p>Providers may or may not be connected at this time, these are the providers known
+     * to the system.</p>
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    public Set<String> getProviders()
+    {
+        return marketDataClient.getProviders();
+    }
+    /**
      * Get the instance value.
      *
      * @return a <code>MarketDataClientService</code> value

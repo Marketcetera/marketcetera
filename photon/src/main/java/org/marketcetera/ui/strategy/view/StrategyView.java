@@ -11,10 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.marketcetera.admin.User;
@@ -52,6 +49,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 import info.schnatterer.mobynamesgenerator.MobyNamesGenerator;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -75,12 +74,12 @@ import javafx.scene.control.Pagination;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.ProgressBarTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -103,13 +102,12 @@ import javafx.stage.Modality;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class StrategyView
         extends AbstractContentView
-        implements StrategyEventListener
 {
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
         strategyClient = serviceManager.getService(StrategyClientService.class);
         mainLayout = new VBox(10);
@@ -131,9 +129,9 @@ public class StrategyView
                 updateEvents();
             }}
         );
-        strategyIdComboBox = new ComboBox<>();
-        strategyIdComboBox.getItems().add(ALL_STRATEGIES);
-        strategyIdComboBox.valueProperty().addListener((observableValue,oldValue,newValue) -> updateEvents());
+        strategyNameComboBox = new ComboBox<>();
+        strategyNameComboBox.getItems().add(ALL_STRATEGIES);
+        strategyNameComboBox.valueProperty().addListener((observableValue,oldValue,newValue) -> updateEvents());
         severityComboBox = new ComboBox<>();
         severityComboBox.getItems().addAll(Severity.values());
         severityComboBox.setValue(Severity.INFO);
@@ -145,7 +143,7 @@ public class StrategyView
         int rowCount = 0;
         int colCount = 0;
         filterLayout.add(new Label("Strategy Id"),colCount,rowCount);
-        filterLayout.add(strategyIdComboBox,++colCount,rowCount);
+        filterLayout.add(strategyNameComboBox,++colCount,rowCount);
         filterLayout.add(new Label("Severity"),++colCount,rowCount);
         filterLayout.add(severityComboBox,++colCount,rowCount);
         loadStrategyButton = new Button("Load Strategy");
@@ -153,16 +151,21 @@ public class StrategyView
         loadStrategyButton.setOnAction(event -> loadStrategy());
         buttonLayout = new HBox(10);
         buttonLayout.getChildren().add(loadStrategyButton);
+        strategyTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        eventTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        strategyTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        eventTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         mainLayout.getChildren().addAll(strategyTable,
+                                        new Separator(Orientation.HORIZONTAL),
+                                        buttonLayout,
                                         new Separator(Orientation.HORIZONTAL),
                                         filterLayout,
                                         eventTable,
-                                        eventTablePagination,
-                                        new Separator(Orientation.HORIZONTAL),
-                                        buttonLayout);
+                                        eventTablePagination);
         updateStrategies();
         updateEvents();
-        strategyClient.addStrategyEventListener(this);
+        initializeStrategyEventListener();
         strategyRuntimeUpdateTimer = new Timer();
         strategyRuntimeUpdateTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -185,52 +188,13 @@ public class StrategyView
         try {
             strategyRuntimeUpdateTimer.cancel();
         } catch (Exception ignored) {}
-        strategyClient.removeStrategyEventListener(this);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.strategy.StrategyEventListener#receiveStrategyEvent(org.marketcetera.strategy.events.StrategyEvent)
-     */
-    @Override
-    public void receiveStrategyEvent(StrategyEvent inEvent)
-    {
-        SLF4JLoggerProxy.trace(this,
-                               "Received {}",
-                               inEvent);
-        String instanceName = inEvent.getStrategyInstance().getName();
-        DisplayStrategyInstance strategyToUpdate = null;
-        for(DisplayStrategyInstance strategy : strategyTable.getItems()) {
-            if(strategy.strategyNameProperty().get().equals(instanceName)) {
-                strategyToUpdate = strategy;
-                break;
-            }
+        if(strategyEventListener != null) {
+            try {
+                strategyClient.removeStrategyEventListener(strategyEventListener);
+                strategyEventListener = null;
+            } catch (Exception ignored) {}
         }
-        if(strategyToUpdate != null) {
-            final DisplayStrategyInstance displayStrategyInstance = strategyToUpdate;
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run()
-                {
-                    if(inEvent instanceof StrategyStoppedEvent) {
-                        displayStrategyInstance.startedProperty().set(null);
-                    } else if(inEvent instanceof StrategyStartedEvent) {
-                        displayStrategyInstance.startedProperty().set(inEvent.getStrategyInstance().getStarted());
-                    } else if(inEvent instanceof StrategyUploadFailedEvent) {
-                    } else if(inEvent instanceof StrategyUploadSucceededEvent) {
-                    } else if(inEvent instanceof StrategyStartFailedEvent) {
-                    } else if(inEvent instanceof StrategyStatusChangedEvent) {
-                        StrategyStatusChangedEvent event = (StrategyStatusChangedEvent)inEvent;
-                        displayStrategyInstance.strategyStatusProperty().set(event.getNewValue());
-                    } else if(inEvent instanceof StrategyUnloadedEvent) {
-                        strategyTable.getItems().remove(displayStrategyInstance);
-                    } else if(inEvent instanceof StrategyMessageEvent) {
-                        updateEvents();
-                    }
-                }}
-            );
-        } else {
-            updateStrategies();
-            updateEvents();
-        }
+        super.onClose();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#getMainLayout()
@@ -248,6 +212,27 @@ public class StrategyView
     {
         return NAME;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
+     */
+    @Override
+    protected void onClientConnect()
+    {
+        updateStrategies();
+        updateEvents();
+        initializeStrategyEventListener();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            strategyTable.getItems().clear();
+            eventTable.getItems().clear();
+        });
+    }
     /**
      * Create a new StrategyView instance.
      *
@@ -263,6 +248,76 @@ public class StrategyView
               inEvent,
               inProperties);
     }
+    /**
+     * Set up the strategy event listener.
+     */
+    private void initializeStrategyEventListener()
+    {
+        if(strategyEventListener != null) {
+            try {
+                strategyClient.removeStrategyEventListener(strategyEventListener);
+                strategyEventListener = null;
+            } catch (Exception ignored) {}
+        }
+        strategyEventListener = new StrategyEventListener() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.strategy.StrategyEventListener#receiveStrategyEvent(org.marketcetera.strategy.events.StrategyEvent)
+             */
+            @Override
+            public void receiveStrategyEvent(StrategyEvent inEvent)
+            {
+                SLF4JLoggerProxy.trace(StrategyView.this,
+                                       "Received {}",
+                                       inEvent);
+                String instanceName = inEvent.getStrategyInstance().getName();
+                DisplayStrategyInstance strategyToUpdate = null;
+                for(DisplayStrategyInstance strategy : strategyTable.getItems()) {
+                    if(strategy.strategyNameProperty().get().equals(instanceName)) {
+                        strategyToUpdate = strategy;
+                        break;
+                    }
+                }
+                if(strategyToUpdate != null) {
+                    final DisplayStrategyInstance displayStrategyInstance = strategyToUpdate;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            if(inEvent instanceof StrategyStoppedEvent) {
+                                displayStrategyInstance.startedProperty().set(null);
+                            } else if(inEvent instanceof StrategyStartedEvent) {
+                                displayStrategyInstance.startedProperty().set(inEvent.getStrategyInstance().getStarted());
+                            } else if(inEvent instanceof StrategyUploadFailedEvent) {
+                            } else if(inEvent instanceof StrategyUploadSucceededEvent) {
+                            } else if(inEvent instanceof StrategyStartFailedEvent) {
+                                StrategyStartFailedEvent event = (StrategyStartFailedEvent)inEvent;
+                                SLF4JLoggerProxy.warn(this,
+                                                      "Received strategy start failed event: {}",
+                                                      inEvent);
+                                uiMessageService.post(new NotificationEvent("Start Strategy",
+                                                                            "Strategy strategy failed: " + event.getErrorMessage(),
+                                                                            AlertType.INFORMATION));
+                            } else if(inEvent instanceof StrategyStatusChangedEvent) {
+                                StrategyStatusChangedEvent event = (StrategyStatusChangedEvent)inEvent;
+                                displayStrategyInstance.strategyStatusProperty().set(event.getNewValue());
+                            } else if(inEvent instanceof StrategyUnloadedEvent) {
+                                strategyTable.getItems().remove(displayStrategyInstance);
+                            } else if(inEvent instanceof StrategyMessageEvent) {
+                                updateEvents();
+                            }
+                        }}
+                    );
+                } else {
+                    updateStrategies();
+                    updateEvents();
+                }
+            }
+        };
+        strategyClient.addStrategyEventListener(strategyEventListener);
+    }
+    /**
+     * Update the strategy runtime property.
+     */
     private void updateStrategyRuntime()
     {
         Platform.runLater(() -> {
@@ -271,11 +326,14 @@ public class StrategyView
             }
         });
     }
+    /**
+     * Update the strategy events table.
+     */
     private void updateEvents()
     {
         PageRequest pageRequest = new PageRequest(eventTableCurrentPage,
                                                   eventTablePageSize);
-        String selectedStrategyName = strategyIdComboBox.valueProperty().get();
+        String selectedStrategyName = strategyNameComboBox.valueProperty().get();
         CollectionPageResponse<? extends StrategyMessage> response = strategyClient.getStrategyMessages(selectedStrategyName == null || ALL_STRATEGIES.equals(selectedStrategyName) ? null : selectedStrategyName,
                                                                                                         severityComboBox.getValue(),
                                                                                                         pageRequest);
@@ -292,15 +350,18 @@ public class StrategyView
             }}
         );
     }
+    /**
+     * Load the chosen strategy.
+     */
     private void loadStrategy()
     {
         Optional<User> ownerOption = PhotonServices.getCurrentUser();
         if(ownerOption.isEmpty()) {
             SLF4JLoggerProxy.warn(this,
                                   "Cannot load a strategy because the current user cannot be determined");
-            webMessageService.post(new NotificationEvent("Load Strategy",
-                                                         "Cannot load a new strategy because the current user cannot be determined",
-                                                         AlertType.ERROR));
+            uiMessageService.post(new NotificationEvent("Load Strategy",
+                                                        "Cannot load a new strategy because the current user cannot be determined",
+                                                        AlertType.ERROR));
             return;
         }
         User owner = ownerOption.get();
@@ -311,9 +372,9 @@ public class StrategyView
         File result = strategyFileChooser.showOpenDialog(PhotonApp.getPrimaryStage());
         if(result != null) {
             if(!(result.exists() && result.canRead())) {
-                webMessageService.post(new NotificationEvent("Load Strategy",
-                                                             "File '" + result.getAbsolutePath() + "' could not be read",
-                                                             AlertType.WARNING));
+                uiMessageService.post(new NotificationEvent("Load Strategy",
+                                                            "File '" + result.getAbsolutePath() + "' could not be read",
+                                                            AlertType.WARNING));
                 return;
             }
             String name = MobyNamesGenerator.getRandomName();
@@ -376,9 +437,9 @@ public class StrategyView
             });
             Optional<String> nameOption = nameConfirmationDialog.showAndWait();
             if(nameOption.isEmpty()) {
-                webMessageService.post(new NotificationEvent("Load Strategy",
-                                                             "Strategy load canceled",
-                                                             AlertType.INFORMATION));
+                uiMessageService.post(new NotificationEvent("Load Strategy",
+                                                            "Strategy load canceled",
+                                                            AlertType.INFORMATION));
                 return;
             }
             name = nameOption.get();
@@ -441,22 +502,27 @@ public class StrategyView
                 };
                 strategyClient.uploadFile(uploadRequest);
                 updateStrategies();
-                webMessageService.post(new NotificationEvent("Load Strategy",
-                                                             "Strategy '" + name + "' loaded",
-                                                             AlertType.INFORMATION));
+                uiMessageService.post(new NotificationEvent("Load Strategy",
+                                                            "Strategy '" + name + "' loaded",
+                                                            AlertType.INFORMATION));
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
                                       e,
                                       "Unable to create '{}'",
                                       name);
-                webMessageService.post(new NotificationEvent("Load Strategy",
-                                                             "File '" + result.getAbsolutePath() + "' could not be read",
-                                                             AlertType.WARNING));
+                uiMessageService.post(new NotificationEvent("Load Strategy",
+                                                            "File '" + result.getAbsolutePath() + "' could not be read",
+                                                            AlertType.WARNING));
             } finally {
                 getMainLayout().setCursor(Cursor.DEFAULT);
             }
         }
     }
+    /**
+     * Unload the given strategy.
+     *
+     * @param inSelectedItem a <code>DisplayStrategyInstance</code> value
+     */
     private void unloadStrategy(DisplayStrategyInstance inSelectedItem)
     {
         if(inSelectedItem == null) {
@@ -469,15 +535,23 @@ public class StrategyView
         strategyClient.unloadStrategyInstance(inSelectedItem.strategyNameProperty().get());
         updateStrategies();
     }
+    /**
+     * Cancel the upload of the given strategy instance.
+     *
+     * @param inSelectedItem a <code>DisplayStrategyInstance</code> value
+     */
     private void cancelStrategyUpload(DisplayStrategyInstance inSelectedItem)
     {
         // TODO
     }
+    /**
+     * Update the strategies table.
+     */
     private void updateStrategies()
     {
         Platform.runLater(() -> {
-            String selectedStrategyName = strategyIdComboBox.valueProperty().get();
-            strategyIdComboBox.getItems().clear();
+            String selectedStrategyName = strategyNameComboBox.valueProperty().get();
+            strategyNameComboBox.getItems().clear();
             strategyTable.getItems().clear();
             Collection<? extends StrategyInstance> results = strategyClient.getStrategyInstances();
             if(results == null) {
@@ -490,16 +564,19 @@ public class StrategyView
                 strategyNames.add(result.getName());
             });
             Collections.sort(strategyNames);
-            strategyIdComboBox.getItems().add(ALL_STRATEGIES);
-            strategyIdComboBox.getItems().addAll(strategyNames);
+            strategyNameComboBox.getItems().add(ALL_STRATEGIES);
+            strategyNameComboBox.getItems().addAll(strategyNames);
             strategyTable.getItems().addAll(displayStrategies);
-            if(strategyIdComboBox.getItems().contains(selectedStrategyName)) {
-                strategyIdComboBox.valueProperty().set(selectedStrategyName);
+            if(strategyNameComboBox.getItems().contains(selectedStrategyName)) {
+                strategyNameComboBox.valueProperty().set(selectedStrategyName);
             } else {
-                strategyIdComboBox.valueProperty().set(ALL_STRATEGIES);
+                strategyNameComboBox.valueProperty().set(ALL_STRATEGIES);
             }
         });
     }
+    /**
+     * Initialize the strategy table.
+     */
     private void initializeStrategyTable()
     {
         strategyTable = new TableView<>();
@@ -508,6 +585,9 @@ public class StrategyView
         initializeStrategyContextMenu();
         strategyTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
+    /**
+     * Initialize the event table.
+     */
     private void initializeEventTable()
     {
         eventTable = new TableView<>();
@@ -516,6 +596,9 @@ public class StrategyView
         initializeEventContextMenu();
         eventTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
+    /**
+     * Initialize the event table columns.
+     */
     private void initializeEventTableColumns()
     {
         eventStrategyNameColumn = new TableColumn<>("Strategy");
@@ -532,6 +615,9 @@ public class StrategyView
         eventTable.getColumns().add(eventSeverityColumn);
         eventTable.getColumns().add(eventMessageColumn);
     }
+    /**
+     * Initialize the strategy table columns.
+     */
     private void initializeStrategyTableColumns()
     {
         strategyNameColumn = new TableColumn<>("Name");
@@ -543,29 +629,43 @@ public class StrategyView
         strategyUptimeColumn.setCellFactory(tableColumn -> PhotonServices.renderPeriodCell(tableColumn));
         strategyOwnerColumn = new TableColumn<>("Owner");
         strategyOwnerColumn.setCellValueFactory(new PropertyValueFactory<>("owner"));
-        strategyProgressColumn = new TableColumn<>("Upload Progress");
-        strategyProgressColumn.setCellValueFactory(new PropertyValueFactory<>("uploadProgress"));
-        strategyProgressColumn.setCellFactory(tableColumn -> new TableCell<DisplayStrategyInstance,Double>() {});
-        strategyProgressColumn.setCellFactory(ProgressBarTableCell.<DisplayStrategyInstance> forTableColumn());
         strategyTable.getColumns().add(strategyNameColumn);
         strategyTable.getColumns().add(strategyStatusColumn);
         strategyTable.getColumns().add(strategyUptimeColumn);
         strategyTable.getColumns().add(strategyOwnerColumn);
-        strategyTable.getColumns().add(strategyProgressColumn);
         strategyTable.getSelectionModel().selectedItemProperty().addListener((ChangeListener<DisplayStrategyInstance>) (inObservable,inOldValue,inNewValue) -> {
             enableStrategyContextMenuItems(inNewValue);
         });
     }
+    /**
+     * Initialize the event context menu.
+     */
     private void initializeEventContextMenu()
     {
         eventTableContextMenu = new ContextMenu();
         copyStrategyEventMenuItem = new MenuItem("Copy");
+        copyStrategyEventMenuItem.setOnAction(event -> {
+            DisplayStrategyMessage message = eventTable.getSelectionModel().getSelectedItem();
+            if(message == null) {
+                return;
+            }
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent clipboardContent = new ClipboardContent();
+            String output = message.messageProperty().get();
+            clipboardContent.putString(output);
+            clipboard.setContent(clipboardContent);
+        });
         deleteStrategyEventMenuItem = new MenuItem("Delete");
         eventTableContextMenu.getItems().addAll(copyStrategyEventMenuItem,
                                                 new SeparatorMenuItem(),
                                                 deleteStrategyEventMenuItem);
         eventTable.setContextMenu(eventTableContextMenu);
     }
+    /**
+     * Enable the strategy context menu items based on the selected value.
+     *
+     * @param inNewValue a <code>DisplayStrategyInstance</code> value
+     */
     private void enableStrategyContextMenuItems(DisplayStrategyInstance inNewValue)
     {
         if(inNewValue == null) {
@@ -610,6 +710,9 @@ public class StrategyView
                 throw new UnsupportedOperationException("Unexpected strategy status: " + status);
         }
     }
+    /**
+     * Initialize the strategy context menu.
+     */
     private void initializeStrategyContextMenu()
     {
         strategyTableContextMenu = new ContextMenu();
@@ -672,7 +775,7 @@ public class StrategyView
         strategyTable.setContextMenu(strategyTableContextMenu);
     }
     /**
-     * stops the given strategy.
+     * Stops the given strategy.
      *
      * @param inSelectedStrategy a <code>DisplayStrategy</code> value
      */
@@ -684,13 +787,13 @@ public class StrategyView
                               inSelectedStrategy.strategyNameProperty().get());
         try {
             strategyClient.stopStrategyInstance(inSelectedStrategy.strategyNameProperty().get());
-            webMessageService.post(new NotificationEvent("Stop Strategy",
+            uiMessageService.post(new NotificationEvent("Stop Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " stopped",
                                                          AlertType.INFORMATION));
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
-            webMessageService.post(new NotificationEvent("Stop Strategy",
+            uiMessageService.post(new NotificationEvent("Stop Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " stop failed: " + PlatformServices.getMessage(e),
                                                          AlertType.ERROR));
         }
@@ -709,68 +812,150 @@ public class StrategyView
                               inSelectedStrategy.strategyNameProperty().get());
         try {
             strategyClient.startStrategyInstance(inSelectedStrategy.strategyNameProperty().get());
-            webMessageService.post(new NotificationEvent("Start Strategy",
+            uiMessageService.post(new NotificationEvent("Start Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " started",
                                                          AlertType.INFORMATION));
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
-            webMessageService.post(new NotificationEvent("Start Strategy",
+            uiMessageService.post(new NotificationEvent("Start Strategy",
                                                          "Strategy '" + inSelectedStrategy.strategyNameProperty().get() + " start failed: " + PlatformServices.getMessage(e),
                                                          AlertType.ERROR));
         }
         updateStrategies();
     }
-//    private static class StringComparator
-//            implements Comparator<String>
-//    {
-//        /* (non-Javadoc)
-//         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-//         */
-//        @Override
-//        public int compare(String inO1,
-//                           String inO2)
-//        {
-//            return new CompareToBuilder().append(inO1,inO2).toComparison();
-//        }
-//        private final static StringComparator instance = new StringComparator();
-//    }
+    /**
+     * listens for strategy events
+     */
+    private StrategyEventListener strategyEventListener;
     /**
      * interval at which runtime update events will be sent out
      */
     @Value("${metc.strategy.runtime.update.interval:1000}")
     private long strategyRuntimeUpdateInterval;
+    /**
+     * used to trigger updates to the strategy runtime values
+     */
     private Timer strategyRuntimeUpdateTimer;
+    /**
+     * wrench value used to indicate selection of all strategies
+     */
     private final String ALL_STRATEGIES = "<all strategies>";
+    /**
+     * event table pagination page number
+     */
     private int eventTableCurrentPage;
+    /**
+     * event table pagination page size
+     */
     private int eventTablePageSize;
+    /**
+     * event table pagination widget
+     */
     private Pagination eventTablePagination;
+    /**
+     * start strategy menu item
+     */
     private MenuItem startStrategyMenuItem;
+    /**
+     * stop strategy menu item
+     */
     private MenuItem stopStrategyMenuItem;
+    /**
+     * unload strategy menu item
+     */
     private MenuItem unloadStrategyMenuItem;
+    /**
+     * clear strategy events menu item
+     */
     private MenuItem clearEventsMenuItem;
+    /**
+     * copy strategy event menu item
+     */
     private MenuItem copyStrategyEventMenuItem;
+    /**
+     * delete strategy event menu item
+     */
     private MenuItem deleteStrategyEventMenuItem;
+    /**
+     * cancel strategy upload menu item
+     */
     private MenuItem cancelStrategyUploadMenuItem;
+    /**
+     * strategy table context menu
+     */
     private ContextMenu strategyTableContextMenu;
+    /**
+     * strategy event context menu
+     */
     private ContextMenu eventTableContextMenu;
-    private ComboBox<String> strategyIdComboBox;
+    /**
+     * strategy name selection widget
+     */
+    private ComboBox<String> strategyNameComboBox;
+    /**
+     * strategy severity selection widget
+     */
     private ComboBox<Severity> severityComboBox;
+    /**
+     * strategy event filter layout
+     */
     private GridPane filterLayout;
+    /**
+     * main view layout
+     */
     private VBox mainLayout;
+    /**
+     * strategy button layout
+     */
     private HBox buttonLayout;
+    /**
+     * strategy table name column
+     */
     private TableColumn<DisplayStrategyInstance,String> strategyNameColumn;
+    /**
+     * strategy table status column
+     */
     private TableColumn<DisplayStrategyInstance,StrategyStatus> strategyStatusColumn;
+    /**
+     * strategy table uptime column
+     */
     private TableColumn<DisplayStrategyInstance,Period> strategyUptimeColumn;
+    /**
+     * strategy table owner column
+     */
     private TableColumn<DisplayStrategyInstance,String> strategyOwnerColumn;
-    private TableColumn<DisplayStrategyInstance,Double> strategyProgressColumn;
+    /**
+     * event table strategy name column
+     */
     private TableColumn<DisplayStrategyMessage,String> eventStrategyNameColumn;
+    /**
+     * event table timestamp column
+     */
     private TableColumn<DisplayStrategyMessage,DateTime> eventTimestampColumn;
+    /**
+     * event severity table column
+     */
     private TableColumn<DisplayStrategyMessage,Severity> eventSeverityColumn;
+    /**
+     * event message table column
+     */
     private TableColumn<DisplayStrategyMessage,String> eventMessageColumn;
+    /**
+     * load strategy widget
+     */
     private Button loadStrategyButton;
+    /**
+     * strategy table
+     */
     private TableView<DisplayStrategyInstance> strategyTable;
+    /**
+     * strategy event table
+     */
     private TableView<DisplayStrategyMessage> eventTable;
+    /**
+     * provides access to strategy services
+     */
     private StrategyClientService strategyClient;
     /**
      * global name of the strategy

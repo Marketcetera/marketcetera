@@ -11,7 +11,7 @@ import org.marketcetera.ui.events.LogoutEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,5 +163,5 @@ public class FixSessionWatcher
      * provides access to web message services
      */
     @Autowired
-    private WebMessageService messageService;
+    private UiMessageService messageService;
 }

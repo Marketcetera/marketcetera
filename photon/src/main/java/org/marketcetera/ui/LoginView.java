@@ -7,7 +7,7 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.service.NoServiceException;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.WebMessageService;
+import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,5 +203,5 @@ public class LoginView
      * web message service value
      */
     @Autowired
-    private WebMessageService webMessageService;
+    private UiMessageService webMessageService;
 }

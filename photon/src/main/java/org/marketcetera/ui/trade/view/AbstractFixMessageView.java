@@ -1,11 +1,12 @@
 package org.marketcetera.ui.trade.view;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.marketcetera.core.PlatformServices;
@@ -37,6 +38,8 @@ import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
 
+import com.google.common.collect.Lists;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -55,6 +58,7 @@ import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -69,31 +73,30 @@ import javafx.scene.layout.VBox;
  */
 public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayType,ClientClazz>
         extends AbstractContentView
-        implements TradeMessageListener
 {
-    /**
-     * Validate and start the object.
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onStart()
      */
-    @PostConstruct
-    public void start()
+    @Override
+    protected void onStart()
     {
         // TODO need to preserve column order
         // TODO add page size widget
         // TODO implement sorting
-        // TODO need to set initial view size to something reasonable
         tradeClientService = serviceManager.getService(TradeClientService.class);
-        tradeClientService.addTradeMessageListener(this);
+        initializeTradeMessageListener();
         mainLayout = new VBox();
+        aboveTableLayout = new FlowPane();
         reportsTableView = new TableView<>();
         reportsTableView.setPlaceholder(getPlaceholder());
         TableViewSelectionModel<FixClazz> selectionModel = reportsTableView.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.SINGLE);
+        selectionModel.setSelectionMode(getTableSelectionMode());
         initializeColumns(reportsTableView);
         initializeContextMenu(reportsTableView);
         pagination = new Pagination();
-        pagination.setPageCount(10);
+        pagination.setPageCount(0);
         pagination.setCurrentPageIndex(1);
-        pagination.setMaxPageIndicatorCount(10);
+        pagination.setMaxPageIndicatorCount(0);
         pagination.currentPageIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> inObservable,
@@ -104,7 +107,11 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 updateReports();
             }}
         );
-        mainLayout.getChildren().addAll(reportsTableView,
+        reportsTableView.prefWidthProperty().bind(getParentWindow().widthProperty());
+        reportsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
+        mainLayout.getChildren().addAll(aboveTableLayout,
+                                        reportsTableView,
                                         pagination);
         currentPage = 0;
         pageSize = 10;
@@ -119,72 +126,147 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         return mainLayout;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.trade.TradeMessageListener#receiveTradeMessage(org.marketcetera.trade.TradeMessage)
-     */
-    @Override
-    public void receiveTradeMessage(TradeMessage inTradeMessage)
-    {
-        SLF4JLoggerProxy.trace(this,
-                               "Received {}",
-                               inTradeMessage);
-        updateReports();
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose()
      */
     @Override
     public void onClose()
     {
-        tradeClientService.removeTradeMessageListener(this);
+        if(tradeMessageListener != null) {
+            tradeClientService.removeTradeMessageListener(tradeMessageListener);
+        }
+        super.onClose();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientConnect()
+     */
+    @Override
+    protected void onClientConnect()
+    {
+        updateReports();
+        initializeTradeMessageListener();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.view.AbstractContentView#onClientDisconnect()
+     */
+    @Override
+    protected void onClientDisconnect()
+    {
+        Platform.runLater(() -> {
+            reportsTableView.getItems().clear();
+        });
+    }
+    /**
+     * Get the selection model of the main reports table.
+     *
+     * @return a <code>SelectionMode</code> value
+     */
+    protected SelectionMode getTableSelectionMode()
+    {
+        return SelectionMode.SINGLE;
+    }
+    /**
+     * Create the trade message listener value.
+     */
+    protected void initializeTradeMessageListener()
+    {
+        tradeMessageListener =  new TradeMessageListener() {
+            @Override
+            public void receiveTradeMessage(TradeMessage inTradeMessage)
+            {
+                SLF4JLoggerProxy.trace(getClass(),
+                                       "{} received {}",
+                                       viewName,
+                                       inTradeMessage);
+                updateReports();
+            }
+        };
+        tradeClientService.addTradeMessageListener(tradeMessageListener);
+    }
+    /**
+     * Cancel the order from the given report.
+     *
+     * @param inReport a <code>FixClazz</code> value
+     */
+    protected void cancelOrder(FixClazz inReport)
+    {
+        ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(inReport.getOrderId());
+        if(executionReport == null) {
+            uiMessageService.post(new NotificationEvent("Cancel Order",
+                                                         "Unable to cancel " + inReport.getOrderId() + ": no execution report",
+                                                         AlertType.ERROR));
+            return;
+        }
+        OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
+        SLF4JLoggerProxy.info(this,
+                              "{} sending {}",
+                              SessionUser.getCurrent().getUsername(),
+                              orderCancel);
+        SendOrderResponse response = tradeClientService.send(orderCancel);
+        if(response.getFailed()) {
+            uiMessageService.post(new NotificationEvent("Cancel Order",
+                                                        "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
+                                                        AlertType.ERROR));
+            return;
+        } else {
+            uiMessageService.post(new NotificationEvent("Cancel Order",
+                                                        "Cancel order " + response.getOrderId() + " submitted",
+                                                        AlertType.INFORMATION));
+        }
+    }
+    /**
+     * Get the items currently selected, if any.
+     *
+     * @return a <code>Collection&lt;FixClazz&gt;</code> value
+     */
+    protected Collection<FixClazz> getSelectedItems()
+    {
+        switch(reportsTableView.getSelectionModel().getSelectionMode()) {
+            case MULTIPLE:
+                return reportsTableView.getSelectionModel().getSelectedItems();
+            case SINGLE:
+                FixClazz report = reportsTableView.getSelectionModel().getSelectedItem();
+                if(report == null) {
+                    return Collections.emptyList();
+                }
+                return Lists.newArrayList(report);
+            default:
+                throw new UnsupportedOperationException("Unexpected selection mode: " + reportsTableView.getSelectionModel().getSelectionMode());
+        }
+    }
+    /**
+     * Initialize the context menu for the FIX table.
+     *
+     * @param inTableView a <code>TableView&lt;FixClazz&gt;</code> value
+     */
     protected void initializeContextMenu(TableView<FixClazz> inTableView)
     {
         reportsTableContextMenu = new ContextMenu();
         cancelOrderMenuItem = new MenuItem("Cancel Order");
         cancelOrderMenuItem.setOnAction(event -> {
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
-            if(executionReport == null) {
-                webMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Unable to cancel " + report.getOrderId() + ": no execution report",
-                                                             AlertType.ERROR));
-                return;
-            }
-            OrderCancel orderCancel = Factory.getInstance().createOrderCancel(executionReport);
-            SLF4JLoggerProxy.info(this,
-                                  "{} sending {}",
-                                  SessionUser.getCurrent().getUsername(),
-                                  orderCancel);
-            SendOrderResponse response = tradeClientService.send(orderCancel);
-            if(response.getFailed()) {
-                webMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Unable to submit cancel: " + response.getOrderId() + " " + response.getMessage(),
-                                                             AlertType.ERROR));
-                return;
-            } else {
-                webMessageService.post(new NotificationEvent("Cancel Order",
-                                                             "Cancel order " + response.getOrderId() + " submitted",
-                                                             AlertType.INFORMATION));
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            for(FixClazz report : selectedItems) {
+                cancelOrder(report);
             }
         });
         replaceOrderMenuItem = new MenuItem("Replace Order");
         replaceOrderMenuItem.setOnAction(event -> {
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
-            if(executionReport == null) {
-                webMessageService.post(new NotificationEvent("Replace Order",
-                                                             "Unable to replace " + report.getOrderId() + ": no execution report",
-                                                             AlertType.ERROR));
-                return;
-            }
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            for(FixClazz report : selectedItems) {
+                ExecutionReport executionReport = tradeClientService.getLatestExecutionReportForOrderChain(report.getOrderId());
+                if(executionReport == null) {
+                    uiMessageService.post(new NotificationEvent("Replace Order",
+                                                                "Unable to replace " + report.getOrderId() + ": no execution report",
+                                                                AlertType.ERROR));
+                    continue;
+                }
                 String executionReportXml;
                 try {
                     executionReportXml = xmlService.marshall(executionReport);
                 } catch (Exception e) {
-                    webMessageService.post(new NotificationEvent("Replace Order",
-                                                                 "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
-                                                                 AlertType.ERROR));
-                    return;
+                    uiMessageService.post(new NotificationEvent("Replace Order",
+                                                                "Unable to replace " + report.getOrderId() + ": " + PlatformServices.getMessage(e),
+                                                                AlertType.ERROR));
+                    continue;
                 }
                 Properties replaceProperties = new Properties();
                 replaceProperties.setProperty(ExecutionReport.class.getCanonicalName(),
@@ -192,8 +274,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 ReplaceOrderEvent replaceOrderEvent = applicationContext.getBean(ReplaceOrderEvent.class,
                                                                                  executionReport,
                                                                                  replaceProperties);
-                webMessageService.post(replaceOrderEvent);
-                return;
+                uiMessageService.post(replaceOrderEvent);
+            }
         });
         SeparatorMenuItem contextMenuSeparator1 = new SeparatorMenuItem();
         viewFixMessageDetailsMenuItem = new MenuItem("View FIX Message Details");
@@ -201,31 +283,36 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         copyOrderMenuItem.setOnAction(event -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent clipboardContent = new ClipboardContent();
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            String output;
-            quickfix.Message fixMessage = report.getMessage();
-            try {
-                output = new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(fixMessage)),
-                                             fixMessage).toString();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(getClass(),
-                                      e,
-                                      "Unable to generate pretty string for {}",
-                                      fixMessage);
-                output = FIXMessageUtil.toHumanDelimitedString(fixMessage);
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            StringBuilder output = new StringBuilder();
+            for(FixClazz report : selectedItems) {
+                quickfix.Message fixMessage = report.getMessage();
+                try {
+                    output.append(new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(fixMessage)),
+                                                      fixMessage).toString());
+                    output.append(StringUtils.LF);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(getClass(),
+                                          e,
+                                          "Unable to generate pretty string for {}",
+                                          fixMessage);
+                    output.append(FIXMessageUtil.toHumanDelimitedString(fixMessage)).append(StringUtils.LF);
+                }
             }
-            clipboardContent.putString(output);
+            clipboardContent.putString(output.toString());
             clipboard.setContent(clipboardContent);
         });
         viewFixMessageDetailsMenuItem.setOnAction(event -> {
-            FixClazz report = inTableView.getSelectionModel().getSelectedItem();
-            Properties replaceProperties = new Properties();
-            replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
-                                          report.getMessage().toString());
-            FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
-                                                                                               report,
-                                                                                               replaceProperties);
-            webMessageService.post(viewFixMessageDetailsEvent);
+            Collection<FixClazz> selectedItems = getSelectedItems();
+            for(FixClazz report : selectedItems) {
+                Properties replaceProperties = new Properties();
+                replaceProperties.setProperty(quickfix.Message.class.getCanonicalName(),
+                                              report.getMessage().toString());
+                FixMessageDetailsViewEvent viewFixMessageDetailsEvent = applicationContext.getBean(FixMessageDetailsViewEvent.class,
+                                                                                                   report,
+                                                                                                   replaceProperties);
+                uiMessageService.post(viewFixMessageDetailsEvent);
+            }
         });
         // TODO need Add Report Action
         if(authzHelperService.hasPermission(TradePermissions.SendOrderAction)) { 
@@ -238,57 +325,133 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                                       copyOrderMenuItem);
         }
         inTableView.getSelectionModel().selectedItemProperty().addListener((ChangeListener<FixClazz>) (inObservable,inOldValue,inNewValue) -> {
-            enableContextMenuItems(inNewValue);
+            enableContextMenuItems(getSelectedItems());
         });
         inTableView.setContextMenu(reportsTableContextMenu);
     }
-    protected void enableContextMenuItems(FixClazz inNewValue)
+    /**
+     * Enable or disable context menu items based on the given selected row item.
+     *
+     * @param inSelectedItems a <code>Collection&lt;FixClazz&gt;</code> value
+     */
+    protected void enableContextMenuItems(Collection<FixClazz> inSelectedItems)
     {
-        if(inNewValue == null) {
+        if(inSelectedItems == null || inSelectedItems.isEmpty()) {
+            cancelOrderMenuItem.setDisable(true);
+            replaceOrderMenuItem.setDisable(true);
+            viewFixMessageDetailsMenuItem.setDisable(true);
+            copyOrderMenuItem.setDisable(true);
             return;
         }
         // any report can be viewed or copied
         viewFixMessageDetailsMenuItem.setDisable(false);
         copyOrderMenuItem.setDisable(false);
-        // a report can be canceled or replaced only if the status is cancellable
-        OrderStatus orderStatus = inNewValue.getOrderStatus();
-        cancelOrderMenuItem.setDisable(!orderStatus.isCancellable());
-        replaceOrderMenuItem.setDisable(!orderStatus.isCancellable());
+        // enable the cancel and replace options only if all the reports in the selection are cancellable
+        boolean disable = false;
+        for(FixClazz report : inSelectedItems) {
+            OrderStatus orderStatus = report.getOrderStatus();
+            if(!orderStatus.isCancellable()) {
+                disable = true;
+                break;
+            }
+        }
+        cancelOrderMenuItem.setDisable(disable);
+        replaceOrderMenuItem.setDisable(disable);
     }
-    protected TableCell<FixClazz,Date> renderDateCell(TableColumn<FixClazz,Date> tableColumn)
+    /**
+     * Get the layout for above-the-table controls.
+     * 
+     * <p>Subclasses can add controls to this layout as desired.</p>
+     *
+     * @return a <code>FlowPane</code> value
+     */
+    protected FlowPane getAboveTableLayout()
+    {
+        return aboveTableLayout;
+    }
+    /**
+     * Render the given column as a Date cell.
+     *
+     * @param inTableColumn
+     * @return a <code>TableCell&lt;FixClazz,Date&gt;</code> value
+     */
+    protected TableCell<FixClazz,Date> renderDateCell(TableColumn<FixClazz,Date> inTableColumn)
     {
         TableCell<FixClazz,Date> tableCell = new TableCell<>() {
             @Override
-            protected void updateItem(Date item, boolean empty)
+            protected void updateItem(Date inItem,
+                                      boolean isEmpty)
             {
-                super.updateItem(item, empty);
+                super.updateItem(inItem,
+                                 isEmpty);
                 this.setText(null);
                 this.setGraphic(null);
-                if(!empty){
-                    this.setText(isoDateFormatter.print(new DateTime(item)));
+                if(!isEmpty){
+                    this.setText(isoDateFormatter.print(new DateTime(inItem)));
                 }
             }
         };
         return tableCell;
     }
-    protected TableCell<FixClazz,Instrument> renderInstrumentCell(TableColumn<FixClazz,Instrument> tableColumn)
+    /**
+     * Render the given column as an Instrument cell.
+     *
+     * @param inTableColumn a <code>TableColumn&lt;FixClazz,Instrument&gt;</code> value
+     * @return a <code>TableCell&lt;FixClazz,Instrument&gt;</code> value
+     */
+    protected TableCell<FixClazz,Instrument> renderInstrumentCell(TableColumn<FixClazz,Instrument> inTableColumn)
     {
         TableCell<FixClazz,Instrument> tableCell = new TableCell<>() {
             @Override
-            protected void updateItem(Instrument item,
-                                      boolean empty)
+            protected void updateItem(Instrument inItem,
+                                      boolean isEmpty)
             {
-                super.updateItem(item,
-                                 empty);
+                super.updateItem(inItem,
+                                 isEmpty);
                 this.setText(null);
                 this.setGraphic(null);
-                if(!empty && item != null){
-                    this.setText(item.getFullSymbol());
+                if(!isEmpty && inItem != null){
+                    this.setText(inItem.getFullSymbol());
                 }
             }
         };
         return tableCell;
     }
+    /**
+     * Render an order price cell.
+     *
+     * @param inTableColumn a <code>TableColumn&lt;FixClazz,BigDecimal&gt;</code> value
+     * @return a <code>TableCell&lt;FixClazz,BigDecimal&gt;</code> value
+     */
+    protected TableCell<FixClazz,BigDecimal> renderOrderPriceCell(TableColumn<FixClazz,BigDecimal> inTableColumn)
+    {
+        TableCell<FixClazz,BigDecimal> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(BigDecimal inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty) {
+                    if(inItem == null) {
+                        this.setText("MKT");
+                    } else {
+                        // TODO need to set up decimal preferences
+                        this.setText(inItem.toPlainString());
+                    }
+                }
+            }
+        };
+        return tableCell;
+    }
+    /**
+     * Render the given column as a regular numeric (not currency) cell.
+     *
+     * @param inTableColumn a <code>TableColumn&lt;FixClazz,BigDecimal&gt;</code> value
+     * @return a <code>TableCell&lt;FixClazz,BigDecimal&gt;</code> value
+     */
     protected TableCell<FixClazz,BigDecimal> renderNumberCell(TableColumn<FixClazz,BigDecimal> inTableColumn)
     {
         TableCell<FixClazz,BigDecimal> tableCell = new TableCell<>() {
@@ -308,63 +471,138 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         };
         return tableCell;
     }
+    /**
+     * Indicate if the <code>OrderQuantity</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeOrderQuantityColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>LeavesQuantity</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeLeavesQuantityColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>LastQuantity</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeLastQuantityColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>LastPrice</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeLastPriceColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>OrderPrice</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeOrderPriceColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>OriginalOrderId</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeOriginalOrderIdColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>Exchange</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeExchangeColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>TransactTime</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeTransactTimeColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>SendingTime</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeSendingTimeColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>OrderId</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeOrderIdColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>OrderStatus</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeOrderStatusColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>Account</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeAccountColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>BrokerId</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeBrokerIdColumn()
     {
         return true;
     }
+    /**
+     * Indicate if the <code>Trader</code> column should be included.
+     *
+     * @return a <code>boolean</code> value
+     */
     protected boolean includeTraderColumn()
     {
         return true;
     }
-    protected void initializeColumns(TableView<FixClazz> reportsTableView)
+    /**
+     * Initialize the table columns
+     *
+     * @param inTableView a <code>TableView&lt;FixClazz&gt;</code> value
+     */
+    protected void initializeColumns(TableView<FixClazz> inTableView)
     {
         transactTimeColumn = new TableColumn<>("TransactTime"); 
         sendingTimeColumn = new TableColumn<>("SendingTime"); 
@@ -394,71 +632,74 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         if(includeTransactTimeColumn()) {
             transactTimeColumn.setCellValueFactory(new PropertyValueFactory<>("transactTime"));
             transactTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
-            reportsTableView.getColumns().add(transactTimeColumn);
+            inTableView.getColumns().add(transactTimeColumn);
         }
         if(includeSendingTimeColumn()) {
             sendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("sendingTime"));
             sendingTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
-            reportsTableView.getColumns().add(sendingTimeColumn);
+            inTableView.getColumns().add(sendingTimeColumn);
         }
         if(includeOrderIdColumn()) {
             orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
-            reportsTableView.getColumns().add(orderIdColumn);
+            inTableView.getColumns().add(orderIdColumn);
         }
         if(includeOriginalOrderIdColumn()) {
             origOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("originalOrderId"));
-            reportsTableView.getColumns().add(origOrderIdColumn);
+            inTableView.getColumns().add(origOrderIdColumn);
         }
         if(includeOrderStatusColumn()) {
             orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
-            reportsTableView.getColumns().add(orderStatusColumn);
+            inTableView.getColumns().add(orderStatusColumn);
         }
-        reportsTableView.getColumns().add(sideColumn);
-        reportsTableView.getColumns().add(symbolColumn);
+        inTableView.getColumns().add(sideColumn);
+        inTableView.getColumns().add(symbolColumn);
         if(includeOrderQuantityColumn()) {
             ordQtyColumn.setCellValueFactory(new PropertyValueFactory<>("orderQuantity"));
             ordQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-            reportsTableView.getColumns().add(ordQtyColumn);
+            inTableView.getColumns().add(ordQtyColumn);
         }
-        reportsTableView.getColumns().add(cumQtyColumn);
+        inTableView.getColumns().add(cumQtyColumn);
         if(includeLeavesQuantityColumn()) {
             leavesQtyColumn.setCellValueFactory(new PropertyValueFactory<>("leavesQuantity"));
             leavesQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-            reportsTableView.getColumns().add(leavesQtyColumn);
+            inTableView.getColumns().add(leavesQtyColumn);
         }
         if(includeOrderPriceColumn()) {
             orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPrice"));
-            orderPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-            reportsTableView.getColumns().add(orderPriceColumn);
+            orderPriceColumn.setCellFactory(tableColumn -> renderOrderPriceCell(tableColumn));
+            inTableView.getColumns().add(orderPriceColumn);
         }
-        reportsTableView.getColumns().add(averagePriceColumn);
+        inTableView.getColumns().add(averagePriceColumn);
         if(includeAccountColumn()) {
             accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
-            reportsTableView.getColumns().add(accountColumn);
+            inTableView.getColumns().add(accountColumn);
         }
         if(includeLastQuantityColumn()) {
             lastQtyColumn.setCellValueFactory(new PropertyValueFactory<>("lastQuantity"));
             lastQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-            reportsTableView.getColumns().add(lastQtyColumn);
+            inTableView.getColumns().add(lastQtyColumn);
         }
         if(includeLastPriceColumn()) {
             lastPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
             lastPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-            reportsTableView.getColumns().add(lastPriceColumn);
+            inTableView.getColumns().add(lastPriceColumn);
         }
         if(includeExchangeColumn()) {
             exchangeColumn.setCellValueFactory(new PropertyValueFactory<>("exchange"));
-            reportsTableView.getColumns().add(exchangeColumn);
+            inTableView.getColumns().add(exchangeColumn);
         }
         if(includeBrokerIdColumn()) {
             brokerIdColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
-            reportsTableView.getColumns().add(brokerIdColumn);
+            inTableView.getColumns().add(brokerIdColumn);
         }
         if(includeTraderColumn()) {
             traderColumn.setCellValueFactory(new PropertyValueFactory<>("trader"));
-            reportsTableView.getColumns().add(traderColumn);
+            inTableView.getColumns().add(traderColumn);
         }
     }
+    /**
+     * Update the reports table view the set of reports dictated by the view controls.
+     */
     protected void updateReports()
     {
         CollectionPageResponse<ClientClazz> response = getClientReports(new PageRequest(currentPage,
@@ -477,8 +718,25 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             }}
         );
     }
+    /**
+     * Get a page of items to display in the FIX table.
+     *
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;ClientClazz&gt;</code> value
+     */
     protected abstract CollectionPageResponse<ClientClazz> getClientReports(PageRequest inPageRequest);
+    /**
+     * Create a single FIX item for the table.
+     *
+     * @param inClientClazz a <code>ClientClazz</code> value
+     * @return a <code>FixClazz</code> value
+     */
     protected abstract FixClazz createFixDisplayObject(ClientClazz inClientClazz);
+    /**
+     * Get the table placeholder for empty tables.
+     *
+     * @return a <code>Node</code> value
+     */
     protected Node getPlaceholder()
     {
         return new Label("no reports");
@@ -498,34 +756,132 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
               inEvent,
               inViewProperties);
     }
+    /**
+     * used to format date columns
+     */
     protected static final DateTimeFormatter isoDateFormatter = TimeFactoryImpl.FULL_MILLISECONDS;
+    /**
+     * provides access to trade services
+     */
     protected TradeClientService tradeClientService;
+    /**
+     * pagination current page value
+     */
     protected int currentPage;
+    /**
+     * pagination page size value
+     */
     protected int pageSize;
+    /**
+     * main layout of the window
+     */
     protected VBox mainLayout;
+    /**
+     * table pagination widget
+     */
     protected Pagination pagination;
+    /**
+     * FIX message table
+     */
     protected TableView<FixClazz> reportsTableView;
+    /**
+     * table context menu
+     */
     protected ContextMenu reportsTableContextMenu;
-    protected TableColumn<FixClazz,Date> transactTimeColumn; 
-    protected TableColumn<FixClazz,Date> sendingTimeColumn; 
-    protected TableColumn<FixClazz,OrderID> orderIdColumn; 
-    protected TableColumn<FixClazz,OrderID> origOrderIdColumn; 
-    protected TableColumn<FixClazz,OrderStatus> orderStatusColumn; 
-    protected TableColumn<FixClazz,Side> sideColumn; 
-    protected TableColumn<FixClazz,Instrument> symbolColumn; 
-    protected TableColumn<FixClazz,BigDecimal> ordQtyColumn; 
-    protected TableColumn<FixClazz,BigDecimal> cumQtyColumn; 
-    protected TableColumn<FixClazz,BigDecimal> leavesQtyColumn; 
-    protected TableColumn<FixClazz,BigDecimal> orderPriceColumn; 
-    protected TableColumn<FixClazz,BigDecimal> averagePriceColumn; 
-    protected TableColumn<FixClazz,String> accountColumn; 
-    protected TableColumn<FixClazz,BigDecimal> lastQtyColumn; 
-    protected TableColumn<FixClazz,BigDecimal> lastPriceColumn; 
-    protected TableColumn<FixClazz,String> exchangeColumn; 
-    protected TableColumn<FixClazz,BrokerID> brokerIdColumn; 
-    protected TableColumn<FixClazz,String> traderColumn; 
+    /**
+     * message transaction time table column
+     */
+    protected TableColumn<FixClazz,Date> transactTimeColumn;
+    /**
+     * message sending time table column
+     */
+    protected TableColumn<FixClazz,Date> sendingTimeColumn;
+    /**
+     * message order id table column
+     */
+    protected TableColumn<FixClazz,OrderID> orderIdColumn;
+    /**
+     * message original order id table column
+     */
+    protected TableColumn<FixClazz,OrderID> origOrderIdColumn;
+    /**
+     * message order status table column
+     */
+    protected TableColumn<FixClazz,OrderStatus> orderStatusColumn;
+    /**
+     * mesage side table column
+     */
+    protected TableColumn<FixClazz,Side> sideColumn;
+    /**
+     * message symbol table column
+     */
+    protected TableColumn<FixClazz,Instrument> symbolColumn;
+    /**
+     * message order quantity table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> ordQtyColumn;
+    /**
+     * message cumulative quantity table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> cumQtyColumn;
+    /**
+     * message leaves quantity table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> leavesQtyColumn;
+    /**
+     * message order price table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> orderPriceColumn;
+    /**
+     * message average price table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> averagePriceColumn;
+    /**
+     * message account table column
+     */
+    protected TableColumn<FixClazz,String> accountColumn;
+    /**
+     * message last quantity table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> lastQtyColumn;
+    /**
+     * message last price table column
+     */
+    protected TableColumn<FixClazz,BigDecimal> lastPriceColumn;
+    /**
+     * message exchange table column
+     */
+    protected TableColumn<FixClazz,String> exchangeColumn;
+    /**
+     * message broker id table column
+     */
+    protected TableColumn<FixClazz,BrokerID> brokerIdColumn;
+    /**
+     * message trader table column
+     */
+    protected TableColumn<FixClazz,String> traderColumn;
+    /**
+     * cancel order context menu item
+     */
     protected MenuItem cancelOrderMenuItem;
+    /**
+     * replace order context menu item
+     */
     protected MenuItem replaceOrderMenuItem;
+    /**
+     * view FIX messages details context menu item
+     */
     protected MenuItem viewFixMessageDetailsMenuItem;
+    /**
+     * copy FIX message context menu item
+     */
     protected MenuItem copyOrderMenuItem;
+    /**
+     * listens for trade messages
+     */
+    private TradeMessageListener tradeMessageListener;
+    /**
+     * optional layout used for above-the-table
+     */
+    private FlowPane aboveTableLayout;
 }

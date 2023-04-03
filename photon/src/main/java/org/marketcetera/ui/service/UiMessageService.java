@@ -17,7 +17,7 @@ import com.google.common.eventbus.EventBus;
  * @since $Release$
  */
 @Component
-public class WebMessageService
+public class UiMessageService
 {
     /**
      * Validate and start the service.

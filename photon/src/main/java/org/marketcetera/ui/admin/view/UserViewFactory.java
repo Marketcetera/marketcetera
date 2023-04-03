@@ -47,7 +47,7 @@ public class UserViewFactory
     @Override
     public URL getMenuIcon()
     {
-        return getClass().getClassLoader().getResource("images/Users.svg");
+        return getClass().getClassLoader().getResource("images/user.svg");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.admin.AbstractAdminViewFactory#getViewName()

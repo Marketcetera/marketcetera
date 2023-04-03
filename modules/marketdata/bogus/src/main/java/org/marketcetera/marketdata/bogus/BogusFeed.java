@@ -5,6 +5,7 @@ import static org.marketcetera.marketdata.AssetClass.CURRENCY;
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
 import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
+import static org.marketcetera.marketdata.Capability.BBO10;
 import static org.marketcetera.marketdata.Capability.DIVIDEND;
 import static org.marketcetera.marketdata.Capability.EVENT_BOUNDARY;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
@@ -13,7 +14,6 @@ import static org.marketcetera.marketdata.Capability.MARKET_STAT;
 import static org.marketcetera.marketdata.Capability.OPEN_BOOK;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Capability.TOTAL_VIEW;
-import static org.marketcetera.marketdata.Capability.BBO10;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
 import java.util.ArrayList;
@@ -37,6 +37,7 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.ExchangeRequest;
 import org.marketcetera.marketdata.ExchangeRequestBuilder;
 import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -67,12 +68,12 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class BogusFeed 
-    extends AbstractMarketDataFeed<BogusFeedToken,
-                                   BogusFeedCredentials,
-                                   BogusFeedMessageTranslator,
-                                   BogusFeedEventTranslator,
-                                   MarketDataRequest,
-                                   BogusFeed> 
+        extends AbstractMarketDataFeed<BogusFeedToken,
+                                       BogusFeedCredentials,
+                                       BogusFeedMessageTranslator,
+                                       BogusFeedEventTranslator,
+                                       MarketDataRequest,
+                                       BogusFeed>
 {
     /**
      * Returns an instance of <code>BogusFeed</code>.
@@ -82,8 +83,8 @@ public class BogusFeed
      * @throws NoMoreIDsException if a unique identifier could not be generated to
      *   be assigned
      */
-    public synchronized static BogusFeed getInstance(String inProviderName) 
-        throws NoMoreIDsException
+    public synchronized static BogusFeed getInstance(String inProviderName)
+            throws NoMoreIDsException
     {
         if(sInstance != null) {
             return sInstance;
@@ -126,6 +127,7 @@ public class BogusFeed
             exchanges.put(exchange.getCode(),
                           exchange);
         }
+        setFeedStatus(FeedStatus.AVAILABLE);
         super.start();
 	}
     /* (non-Javadoc)
@@ -133,6 +135,7 @@ public class BogusFeed
      */
     @Override
     public synchronized void stop() {
+        setFeedStatus(FeedStatus.OFFLINE);
         if(!getFeedStatus().isRunning()) {
             throw new IllegalStateException();
         }

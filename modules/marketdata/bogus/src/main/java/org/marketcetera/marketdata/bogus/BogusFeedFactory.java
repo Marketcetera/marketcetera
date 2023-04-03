@@ -19,15 +19,23 @@ import org.marketcetera.util.misc.ClassVersion;
 public class BogusFeedFactory 
     extends AbstractMarketDataFeedFactory<BogusFeed,BogusFeedCredentials> 
 {
-    private final static BogusFeedFactory sInstance = new BogusFeedFactory();
+    /**
+     * Get the <code>BogusFeedFactory</code> value.
+     *
+     * @return a <code>BogusFeedFactory</code> value
+     */
     public static BogusFeedFactory getInstance()
     {
         return sInstance;
     }
-	public String getProviderName()
-	{
-		return "Marketcetera (Bogus)"; //$NON-NLS-1$
-	}
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getProviderName()
+     */
+    @Override
+    public String getProviderName()
+    {
+        return BogusFeedModuleFactory.IDENTIFIER;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()
      */
@@ -41,4 +49,8 @@ public class BogusFeedFactory
             throw new FeedException(e);
         }
     }
+    /**
+     * creates new {@link BogusFeed} objects
+     */
+    private final static BogusFeedFactory sInstance = new BogusFeedFactory();
 }

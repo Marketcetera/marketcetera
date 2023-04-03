@@ -15,6 +15,8 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MarketDataStatus;
 import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpc;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.GetMarketDataProvidersRequest;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpc.GetMarketDataProvidersResponse;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc;
 import org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase;
 import org.marketcetera.marketdata.core.rpc.MarketDataTypesRpc;
@@ -284,6 +286,33 @@ public class MarketDataRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#getMarketDataProviders(org.marketcetera.marketdata.core.rpc.MarketDataRpc.GetMarketDataProvidersRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void getMarketDataProviders(GetMarketDataProvidersRequest inRequest,
+                                           StreamObserver<GetMarketDataProvidersResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Received market data providers request {}",
+                                       inRequest);
+                MarketDataRpc.GetMarketDataProvidersResponse.Builder responseBuilder = MarketDataRpc.GetMarketDataProvidersResponse.newBuilder();
+                Set<String> providers = marketDataService.getProviders();
+                providers.forEach(provider -> responseBuilder.addProvider(provider));
+                MarketDataRpc.GetMarketDataProvidersResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(MarketDataRpcService.this,
+                                       "Sending response: {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+                inResponseObserver.onCompleted();
+            }
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.marketdata.core.rpc.MarketDataRpcServiceGrpc.MarketDataRpcServiceImplBase#addMarketDataStatusListener(org.marketcetera.marketdata.core.rpc.MarketDataRpc.AddMarketDataStatusListenerRequest, io.grpc.stub.StreamObserver)
          */
         @Override
@@ -450,6 +479,31 @@ public class MarketDataRpcService<SessionClazz>
                                       "Unable to transmit market data to listener, closing client");
                 marketDataService.cancel(getId());
             }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.MarketDataListener#onError(java.lang.String)
+         */
+        @Override
+        public void onError(String inMessage)
+        {
+            MarketDataTypesRpc.LogEvent.Builder logEventBuilder = MarketDataTypesRpc.LogEvent.newBuilder();
+            logEventBuilder.setMessage(inMessage);
+            logEventBuilder.setLogEventLevel(MarketDataTypesRpc.LogEventLevel.ERROR_LOG_EVENT_LEVEL);
+            BaseRpcUtil.getRpcObject(new RuntimeException(inMessage)).ifPresent(rpcObject -> logEventBuilder.setException(rpcObject));
+            MarketDataTypesRpc.LogEvent rpcLogEvent = logEventBuilder.build();
+            MarketDataTypesRpc.EventHolder.Builder eventHolderBuilder = MarketDataTypesRpc.EventHolder.newBuilder();
+            eventHolderBuilder.setLogEvent(rpcLogEvent);
+            MarketDataTypesRpc.EventHolder rpcEventHolder = eventHolderBuilder.build();
+            responseBuilder.setEvent(rpcEventHolder);
+            responseBuilder.setRequestId(clientRequestId);
+            MarketDataRpc.EventsResponse response = responseBuilder.build();
+            SLF4JLoggerProxy.trace(MarketDataRpcService.class,
+                                   "{} received error {}, sending {}",
+                                   getId(),
+                                   inMessage,
+                                   response);
+            getObserver().onNext(response);
+            responseBuilder.clear();
         }
         /**
          * Create a new MarketDataListenerProxy instance.
