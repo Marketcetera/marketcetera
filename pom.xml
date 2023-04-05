@@ -38,7 +38,7 @@
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <esper.version>8.8.0</esper.version>
-    <mvn.flyway.version>9.15.2</mvn.flyway.version>
+    <mvn.flyway.version>9.16.3</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>
