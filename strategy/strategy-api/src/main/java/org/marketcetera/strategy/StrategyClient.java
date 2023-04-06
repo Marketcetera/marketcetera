@@ -68,14 +68,25 @@ public interface StrategyClient
     void uploadFile(FileUploadRequest inRequest)
             throws IOException, NoSuchAlgorithmException;
     /**
-     * 
+     * Cause a {@link StrategyMessage} to be created and emitted for the in-context strategy instance.
      *
-     *
-     * @param inSeverity
-     * @param inMessage
+     * @param inSeverity a <code>Severity</code> value
+     * @param inMessage a <code>String</code> value
      */
     void emitMessage(Severity inSeverity,
                      String inMessage);
+    /**
+     * Delete the strategy message with the given unique identifier.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     */
+    void deleteStrategyMessage(long inStrategyMessageId);
+    /**
+     * Delete all strategy messages for the given strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void deleteAllStrategyMessages(String inStrategyInstanceName);
     /**
      * Start a strategy instance.
      *

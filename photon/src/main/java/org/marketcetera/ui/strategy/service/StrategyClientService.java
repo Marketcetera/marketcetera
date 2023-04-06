@@ -93,6 +93,24 @@ public class StrategyClientService
         return strategyClient != null && strategyClient.isRunning();
     }
     /**
+     * Delete the strategy message with the given unique identifier.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     */
+    public void deleteStrategyMessage(long inStrategyMessageId)
+    {
+        strategyClient.deleteStrategyMessage(inStrategyMessageId);
+    }
+    /**
+     * Delete all strategy messages for the given strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    public void deleteAllStrategyMessages(String inStrategyInstanceName)
+    {
+        strategyClient.deleteAllStrategyMessages(inStrategyInstanceName);
+    }
+    /**
      * Unload a strategy instance.
      *
      * @param inStrategyInstanceName a <code>String</code> value

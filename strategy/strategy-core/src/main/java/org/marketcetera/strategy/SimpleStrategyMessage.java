@@ -3,6 +3,12 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.core.notifications.INotification;
+
 /* $License$ */
 
 /**
@@ -12,6 +18,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimpleStrategyMessage
         implements StrategyMessage
 {
@@ -27,6 +34,7 @@ public class SimpleStrategyMessage
     public SimpleStrategyMessage(StrategyMessage inStrategyMessage)
     {
         setStrategyInstance(inStrategyMessage.getStrategyInstance());
+        setStrategyMessageId(inStrategyMessage.getStrategyMessageId());
         setMessageTimestamp(inStrategyMessage.getMessageTimestamp());
         setSeverity(inStrategyMessage.getSeverity());
         setMessage(inStrategyMessage.getMessage());
@@ -34,62 +42,70 @@ public class SimpleStrategyMessage
     /**
      * Get the strategyInstance value.
      *
-     * @return an <code>org.marketcetera.strategy.StrategyInstance</code> value
+     * @return a <code>StrategyInstance</code> value
      */
     @Override
-    public org.marketcetera.strategy.StrategyInstance getStrategyInstance()
+    public StrategyInstance getStrategyInstance()
     {
         return strategyInstance;
     }
     /**
      * Set the strategyInstance value.
      *
-     * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyInstance</code> value
+     * @param inStrategyInstance a <code>StrategyInstance</code> value
      */
     @Override
-    public void setStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance)
+    public void setStrategyInstance(StrategyInstance inStrategyInstance)
     {
         strategyInstance = inStrategyInstance;
     }
     /**
      * Get the messageTimestamp value.
      *
-     * @return a <code>java.util.Date</code> value
+     * @return a <code>Date</code> value
      */
     @Override
-    public java.util.Date getMessageTimestamp()
+    public Date getMessageTimestamp()
     {
         return messageTimestamp;
     }
     /**
      * Set the messageTimestamp value.
      *
-     * @param inMessageTimestamp a <code>java.util.Date</code> value
+     * @param inMessageTimestamp a <code>Date</code> value
      */
     @Override
-    public void setMessageTimestamp(java.util.Date inMessageTimestamp)
+    public void setMessageTimestamp(Date inMessageTimestamp)
     {
         messageTimestamp = inMessageTimestamp;
     }
     /**
      * Get the severity value.
      *
-     * @return an <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @return an <code>INotification.Severity</code> value
      */
     @Override
-    public org.marketcetera.core.notifications.INotification.Severity getSeverity()
+    public INotification.Severity getSeverity()
     {
         return severity;
     }
     /**
      * Set the severity value.
      *
-     * @param inSeverity an <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @param inSeverity an <code>INotification.Severity</code> value
      */
     @Override
-    public void setSeverity(org.marketcetera.core.notifications.INotification.Severity inSeverity)
+    public void setSeverity(INotification.Severity inSeverity)
     {
         severity = inSeverity;
+    }
+    /* (non-Javadoc)
+     * @see StrategyMessage#getStrategyMessageId()
+     */
+    @Override
+    public long getStrategyMessageId()
+    {
+        return strategyMessageId;
     }
     /**
      * Get the message value.
@@ -109,7 +125,7 @@ public class SimpleStrategyMessage
     @Override
     public void setMessage(String inMessage)
     {
-        message = org.apache.commons.lang.StringUtils.trimToNull(inMessage);
+        message = StringUtils.trimToNull(inMessage);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -119,26 +135,40 @@ public class SimpleStrategyMessage
     {
         StringBuilder builder = new StringBuilder();
         builder.append("StrategyMessage [")
-            .append("strategyInstance=").append(strategyInstance)
+            .append("strategyMessageId=").append(strategyMessageId)
+            .append(", strategyInstance=").append(strategyInstance)
             .append(", messageTimestamp=").append(messageTimestamp)
             .append(", severity=").append(severity)
             .append(", message=").append(message).append("]");
         return builder.toString();
     }
     /**
+     * Sets the strategyMessageId value.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     */
+    public void setStrategyMessageId(long inStrategyMessageId)
+    {
+        strategyMessageId = inStrategyMessageId;
+    }
+    /**
      * strategy which created this message
      */
-    private org.marketcetera.strategy.StrategyInstance strategyInstance;
+    private StrategyInstance strategyInstance;
     /**
      * date message was created
      */
-    private java.util.Date messageTimestamp;
+    private Date messageTimestamp;
     /**
      * strategy message severity
      */
-    private org.marketcetera.core.notifications.INotification.Severity severity;
+    private INotification.Severity severity;
     /**
      * message from the strategy
      */
     private String message;
+    /**
+     * uniquely identifies this message
+     */
+    private long strategyMessageId;
 }

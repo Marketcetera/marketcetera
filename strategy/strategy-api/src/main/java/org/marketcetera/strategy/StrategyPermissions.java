@@ -22,6 +22,7 @@ public enum StrategyPermissions
     CancelStrategyUploadAction,
     ClearStrategyEventsAction,
     CreateStrategyMessagesAction,
+    DeleteStrategyMessagesAction,
     LoadStrategyAction,
     ReadStrategyAction,
     ReadStrategyMessagesAction,

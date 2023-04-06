@@ -50,6 +50,18 @@ public interface StrategyService
      */
     StrategyMessage createStrategyMessage(StrategyMessage inStrategyMessage);
     /**
+     * Delete the strategy message with the given unique identifier.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     */
+    void deleteStrategyMessage(long inStrategyMessageId);
+    /**
+     * Delete all strategy messages for the given strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    void deleteAllStrategyMessages(String inStrategyInstanceName);
+    /**
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value

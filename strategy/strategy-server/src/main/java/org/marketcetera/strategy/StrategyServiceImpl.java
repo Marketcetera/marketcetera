@@ -397,11 +397,39 @@ public class StrategyServiceImpl
         Path strategyTarget = Paths.get(strategyStorageDirectoryName,
                                         strategyInstance.getFilename());
         FileUtils.deleteQuietly(strategyTarget.toFile());
-        BooleanBuilder where = new BooleanBuilder();
-        where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(strategyInstance));
-        strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
+        deleteAllMessagesFor(strategyInstance);
         strategyInstanceDao.delete(strategyInstance);
         eventBusService.post(new SimpleStrategyUnloadedEvent(strategyInstance));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#deleteStrategyMessage(long)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void deleteStrategyMessage(long inStrategyMessageId)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Deleting strategy message with id {}",
+                               inStrategyMessageId);
+        Optional<PersistentStrategyMessage> strategyMessageOption = strategyMessageDao.findByStrategyMessageId(inStrategyMessageId);
+        Validate.isTrue(strategyMessageOption.isPresent(),
+                        "No strategy message with id '" + inStrategyMessageId + "'");
+        strategyMessageDao.delete(strategyMessageOption.get());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#deleteAllStrategyMessages(java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void deleteAllStrategyMessages(String inStrategyInstanceName)
+    {
+        Validate.notNull(inStrategyInstanceName,
+                         "Strategy instance name required");
+        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstanceName);
+        Validate.isTrue(strategyInstanceOption.isPresent(),
+                        "No strategy instance by name '" + inStrategyInstanceName + "'");
+        PersistentStrategyInstance strategyInstance = strategyInstanceOption.get();
+        deleteAllMessagesFor(strategyInstance);
     }
     /* (non-Javadoc)
      * @see StrategyService#getIncomingStrategyDirectory()
@@ -566,6 +594,19 @@ public class StrategyServiceImpl
     public Optional<? extends StrategyInstance> findByName(String inName)
     {
         return strategyInstanceDao.findByName(inName);
+    }
+    /**
+     * Delete all {@link PersistentStrategyMessage} values owned by the given <code>PersistentStrategyInstance</code>.
+     * 
+     * <p>This method assumes a transaction set up by the caller.</p>
+     *
+     * @param inStrategyInstance a <code>PersistentStrategyInstance</code> value
+     */
+    private void deleteAllMessagesFor(PersistentStrategyInstance inStrategyInstance)
+    {
+        BooleanBuilder where = new BooleanBuilder();
+        where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(inStrategyInstance));
+        strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
     }
     /**
      * Build the sort statement for a query using the given attributes.
