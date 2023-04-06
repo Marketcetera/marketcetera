@@ -803,8 +803,6 @@ public class StrategyServiceImpl
                         persistentStrategyMessages.add(strategyMessage);
                     }
                 }
-                // TODO coco - need the actual ids here, which means we need to save them one-by-one?
-                //  either that, or we just given up and add an identifier to the message that gets set by us before save
                 strategyMessageDao.saveAll(persistentStrategyMessages);
                 txManager.commit(status);
                 for(StrategyMessage strategyMessage : persistentStrategyMessages) {
