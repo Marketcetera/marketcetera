@@ -43,7 +43,7 @@ insert into metc_permissions values(((select max(id) from metc_permissions)+1),n
 insert into metc_roles_permissions select a.id as roles_id,b.id as permissions_id from metc_roles a,metc_permissions b where b.name like '%Strategy%Action' and (a.name='Trader' or a.name='TraderAdmin');
 
 --
--- Name: metc_strategy_messages; Type: TABLE; Schema: public; Owner: metc
+-- Name: metc_strategy_messages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE metc_strategy_messages (
@@ -53,11 +53,13 @@ CREATE TABLE metc_strategy_messages (
     message character varying(255),
     message_timestamp timestamp without time zone,
     severity character varying(255),
+    strategy_message_id bigint NOT NULL,
     strategy_instance_id bigint
 );
 
+
 --
--- Name: metc_strategy_messages metc_strategy_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: metc
+-- Name: metc_strategy_messages metc_strategy_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY metc_strategy_messages
@@ -65,8 +67,17 @@ ALTER TABLE ONLY metc_strategy_messages
 
 
 --
--- Name: metc_strategy_messages fk66jhynr1a7r5x55l5c0x0hasx; Type: FK CONSTRAINT; Schema: public; Owner: metc
+-- Name: metc_strategy_messages uk_ehwshs455mw0dcui1x6ra8a3y; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY metc_strategy_messages
+    ADD CONSTRAINT uk_ehwshs455mw0dcui1x6ra8a3y UNIQUE (strategy_message_id);
+
+
+--
+-- Name: metc_strategy_messages fk66jhynr1a7r5x55l5c0x0hasx; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY metc_strategy_messages
     ADD CONSTRAINT fk66jhynr1a7r5x55l5c0x0hasx FOREIGN KEY (strategy_instance_id) REFERENCES metc_strategy_instances(id);
+

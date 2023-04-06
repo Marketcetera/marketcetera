@@ -3,6 +3,10 @@
 //
 package org.marketcetera.strategy.dao;
 
+import java.util.Optional;
+
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,7 +16,15 @@ package org.marketcetera.strategy.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface StrategyMessageDao
         extends org.springframework.data.jpa.repository.JpaRepository<PersistentStrategyMessage,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentStrategyMessage>
 {
+    /**
+     * Find the strategy message by the given strategy message id, if possible.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     * @return an <code>Optional&lt;PersistentStrategyMessage&gt;</code> value
+     */
+    Optional<PersistentStrategyMessage> findByStrategyMessageId(long inStrategyMessageId);
 }

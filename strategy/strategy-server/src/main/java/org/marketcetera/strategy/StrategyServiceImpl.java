@@ -411,7 +411,10 @@ public class StrategyServiceImpl
         SLF4JLoggerProxy.debug(this,
                                "Deleting strategy message with id {}",
                                inStrategyMessageId);
-        strategyMessageDao.deleteById(inStrategyMessageId);
+        Optional<PersistentStrategyMessage> strategyMessageOption = strategyMessageDao.findByStrategyMessageId(inStrategyMessageId);
+        Validate.isTrue(strategyMessageOption.isPresent(),
+                        "No strategy message with id '" + inStrategyMessageId + "'");
+        strategyMessageDao.delete(strategyMessageOption.get());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyService#deleteAllStrategyMessages(java.lang.String)

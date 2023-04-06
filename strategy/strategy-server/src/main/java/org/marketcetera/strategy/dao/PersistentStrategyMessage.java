@@ -4,6 +4,7 @@
 package org.marketcetera.strategy.dao;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,7 +40,10 @@ public class PersistentStrategyMessage
     /**
      * Create a new PersistentStrategyMessage instance.
      */
-    public PersistentStrategyMessage() {}
+    public PersistentStrategyMessage()
+    {
+        setStrategyMessageId(strategyMessageIdCounter.incrementAndGet());
+    }
     /**
      * Create a new PersistentStrategyMessage instance.
      *
@@ -48,6 +52,7 @@ public class PersistentStrategyMessage
     public PersistentStrategyMessage(StrategyMessage inStrategyMessage)
     {
         setStrategyInstance(inStrategyMessage.getStrategyInstance());
+        setStrategyMessageId(inStrategyMessage.getStrategyMessageId());
         setMessageTimestamp(inStrategyMessage.getMessageTimestamp());
         setSeverity(inStrategyMessage.getSeverity());
         setMessage(inStrategyMessage.getMessage());
@@ -138,7 +143,16 @@ public class PersistentStrategyMessage
     @Override
     public long getStrategyMessageId()
     {
-        return getId();
+        return strategyMessageId;
+    }
+    /**
+     * Sets the strategyMessageId value.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     */
+    public void setStrategyMessageId(long inStrategyMessageId)
+    {
+        strategyMessageId = inStrategyMessageId;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -155,6 +169,15 @@ public class PersistentStrategyMessage
             .append(", message=").append(message).append("]");
         return builder.toString();
     }
+    /**
+     * provides a source for unique message ids
+     */
+    private static final AtomicLong strategyMessageIdCounter = new AtomicLong(System.currentTimeMillis());
+    /**
+     * unique identifies the strategy message
+     */
+    @Column(name="strategy_message_id",nullable=false,unique=true)
+    private long strategyMessageId;
     /**
      * strategy which created this message
      */
