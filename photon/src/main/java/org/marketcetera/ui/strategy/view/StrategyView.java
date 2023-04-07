@@ -154,11 +154,11 @@ public class StrategyView
         loadStrategyButton.setOnAction(event -> loadStrategy());
         buttonLayout = new HBox(10);
         buttonLayout.getChildren().add(loadStrategyButton);
-        strategyTable.prefWidthProperty().bind(getParentWindow().widthProperty());
-        eventTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        strategyTable.prefWidthProperty().bind(mainLayout.widthProperty());
+        eventTable.prefWidthProperty().bind(mainLayout.widthProperty());
         strategyTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         eventTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
+//        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         mainLayout.getChildren().addAll(strategyTable,
                                         new Separator(Orientation.HORIZONTAL),
                                         buttonLayout,

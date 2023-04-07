@@ -46,6 +46,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -439,6 +440,9 @@ public class WindowManagerService
             mainScrollPane = new ScrollPane();
             mainScrollPane.setContent(contentLayout);
             mainScrollPane.setPannable(true);
+            mainScrollPane.setPadding(new Insets(5));
+            mainScrollPane.setFitToHeight(true);
+            mainScrollPane.setFitToWidth(true);
             scrollHorizontalProperty.bind(mainScrollPane.hvalueProperty());
             scrollVerticalProperty.bind(mainScrollPane.vvalueProperty());
             windowLayout.getChildren().addAll(windowTitleLayout,
