@@ -313,3 +313,9 @@ message Position {
     PositionKey positionKey = 1;
     Qty position = 2;
 }
+
+message Suggestion {
+    string identifier = 1;
+    Qty score = 2;
+    Order order = 3;
+}

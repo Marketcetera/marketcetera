@@ -71,6 +71,7 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
@@ -1577,6 +1578,27 @@ public abstract class TradeRpcUtil
                            rpcOrderBase);
         }
         return orderBase;
+    }
+    /**
+     * Get the suggestion value from the given RPC message.
+     *
+     * @param inResponse a <code>TradeRpc.SuggestionListenerResponse</code> value
+     * @return a <code>Suggestion</code> value
+     */
+    public static Suggestion getSuggestion(TradeRpc.SuggestionListenerResponse inResponse)
+    {
+        throw new UnsupportedOperationException();
+    }
+    /**
+     * Set the suggestion value into the given RPC builder, if possible.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     * @param inResponseBuilder a <code>TradeRpc.SuggestionListenerResponse.Builder</code> value
+     */
+    public static void setSuggestion(Suggestion inSuggestion,
+                                     TradeRpc.SuggestionListenerResponse.Builder inResponseBuilder)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Get the trade message value from the given RPC message.

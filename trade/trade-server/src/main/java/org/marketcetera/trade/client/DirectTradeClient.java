@@ -33,6 +33,7 @@ import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.SendOrderFailed;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.service.OrderSummaryService;
@@ -117,6 +118,22 @@ public class DirectTradeClient
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
         tradeMessagePublisher.removeTradeMessageListener(inTradeMessageListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#addSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void addSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        tradeService.addSuggestionListener(inSuggestionListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#removeSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void removeSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        tradeService.removeSuggestionListener(inSuggestionListener);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#getOpenOrders()

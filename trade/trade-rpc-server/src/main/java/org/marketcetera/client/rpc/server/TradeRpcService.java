@@ -44,6 +44,8 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradePermissions;
@@ -398,6 +400,63 @@ public class TradeRpcService<SessionClazz>
                 TradeRpcUtil.setInstrument(instrument,
                                           responseBuilder);
                 TradeRpc.ResolveSymbolResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#addSuggestionListener(org.marketcetera.trade.rpc.TradeRpc.AddSuggestionListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void addSuggestionListener(TradeRpc.AddSuggestionListenerRequest inRequest,
+                                          StreamObserver<TradeRpc.SuggestionListenerResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received add suggestion listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                BaseRpcUtil.AbstractServerListenerProxy<?> suggestionListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                if(suggestionListenerProxy == null) {
+                    suggestionListenerProxy = new SuggestionListenerProxy(listenerId,
+                                                                          inResponseObserver);
+                    listenerProxiesById.put(suggestionListenerProxy.getId(),
+                                            suggestionListenerProxy);
+                    tradeService.addSuggestionListener((SuggestionListener)suggestionListenerProxy);
+                }
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#removeSuggestionListener(org.marketcetera.trade.rpc.TradeRpc.RemoveSuggestionListenerRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void removeSuggestionListener(TradeRpc.RemoveSuggestionListenerRequest inRequest,
+                                             StreamObserver<TradeRpc.RemoveSuggestionListenerResponse> inResponseObserver)
+        {
+            try {
+                validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received remove suggestion listener request {}",
+                                       inRequest);
+                String listenerId = inRequest.getListenerId();
+                BaseRpcUtil.AbstractServerListenerProxy<?> suggestionListenerProxy = listenerProxiesById.getIfPresent(listenerId);
+                listenerProxiesById.invalidate(listenerId);
+                if(suggestionListenerProxy != null) {
+                    tradeService.removeSuggestionListener((SuggestionListener)suggestionListenerProxy);
+                    suggestionListenerProxy.close();
+                }
+                TradeRpc.RemoveSuggestionListenerResponse.Builder responseBuilder = TradeRpc.RemoveSuggestionListenerResponse.newBuilder();
+                TradeRpc.RemoveSuggestionListenerResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Returning {}",
+                                       response);
                 inResponseObserver.onNext(response);
                 inResponseObserver.onCompleted();
             } catch (Exception e) {
@@ -839,6 +898,52 @@ public class TradeRpcService<SessionClazz>
          * builder used to construct messages
          */
         private final TradeRpc.TradeMessageListenerResponse.Builder responseBuilder = TradeRpc.TradeMessageListenerResponse.newBuilder();
+    }
+    /**
+     * Wraps a {@link SuggestionListener} with the RPC call from the client.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class SuggestionListenerProxy
+            extends BaseRpcUtil.AbstractServerListenerProxy<TradeRpc.SuggestionListenerResponse>
+            implements SuggestionListener
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.TradeMessageListener#receiveTradeMessage(org.marketcetera.trade.TradeMessage)
+         */
+        @Override
+        public void receiveSuggestion(Suggestion inSuggestion)
+        {
+            TradeRpcUtil.setSuggestion(inSuggestion,
+                                       responseBuilder);
+            TradeRpc.SuggestionListenerResponse response = responseBuilder.build();
+            SLF4JLoggerProxy.trace(TradeRpcService.class,
+                                   "{} received suggestion {}, sending {}",
+                                   getId(),
+                                   inSuggestion,
+                                   response);
+            // TODO does the user have permissions (including supervisor) to view this report?
+            getObserver().onNext(response);
+            responseBuilder.clear();
+        }
+        /**
+         * Create a new SuggestionListenerProxy instance.
+         *
+         * @param inId a <code>String</code> value
+         * @param inObserver a <code>StreamObserver&lt;TradeRpc.SuggestionListenerResponse&gt;</code> value
+         */
+        private SuggestionListenerProxy(String inId,
+                                        StreamObserver<TradeRpc.SuggestionListenerResponse> inObserver)
+        {
+            super(inId,
+                  inObserver);
+        }
+        /**
+         * builder used to construct messages
+         */
+        private final TradeRpc.SuggestionListenerResponse.Builder responseBuilder = TradeRpc.SuggestionListenerResponse.newBuilder();
     }
     /**
      * provides authorization services
