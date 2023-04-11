@@ -73,6 +73,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -277,6 +278,7 @@ public class FixSessionView
         hostIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("hostId"));
         statusTableColumn = new TableColumn<>("Status");
         statusTableColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        statusTableColumn.setCellFactory(tableColumn -> renderFixSessionStatusCell(tableColumn));
         senderSequenceNumberTableColumn = new TableColumn<>("Sender Seq Num");
         senderSequenceNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("senderSeqNum"));
         targetSequenceNumberTableColumn = new TableColumn<>("Target Seq Num");
@@ -287,6 +289,30 @@ public class FixSessionView
         fixSessionsTable.getColumns().add(statusTableColumn);
         fixSessionsTable.getColumns().add(senderSequenceNumberTableColumn);
         fixSessionsTable.getColumns().add(targetSequenceNumberTableColumn);
+    }
+    /**
+     * Render the given column as a FIX status cell.
+     *
+     * @param inTableColumn a <code>TableColumn&lt;DisplayFixSession,FixSessionStatus&gt;</code> value
+     * @return a <code>TableCell&lt;DisplayFixSession,FixSessionStatus&gt;</code> value
+     */
+    protected TableCell<DisplayFixSession,FixSessionStatus> renderFixSessionStatusCell(TableColumn<DisplayFixSession,FixSessionStatus> inTableColumn)
+    {
+        TableCell<DisplayFixSession,FixSessionStatus> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(FixSessionStatus inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty && inItem != null){
+                    this.setText(inItem.getHumanReadable());
+                }
+            }
+        };
+        return tableCell;
     }
     /**
      * Perform the context menu session action according to the given parameters.
