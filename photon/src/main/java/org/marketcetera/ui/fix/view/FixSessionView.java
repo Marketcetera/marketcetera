@@ -14,15 +14,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.Wizard.LinearFlow;
 import org.controlsfx.dialog.WizardPane;
 import org.marketcetera.admin.AdminPermissions;
-import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.cluster.MutableClusterData;
 import org.marketcetera.cluster.SimpleClusterData;
 import org.marketcetera.core.Pair;
@@ -31,6 +28,7 @@ import org.marketcetera.fix.ActiveFixSession;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.fix.FixSessionDay;
+import org.marketcetera.fix.FixSessionInstanceData;
 import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableActiveFixSession;
 import org.marketcetera.fix.impl.SimpleActiveFixSession;
@@ -174,8 +172,9 @@ public class FixSessionView
     protected void onStart()
     {
         fixAdminClient = serviceManager.getService(AdminClientService.class);
-        rootLayout = new VBox(5);
-        buttonLayout = new HBox(5);
+        rootLayout = new VBox();
+        buttonLayout = new HBox();
+        rootLayout.setPadding(new Insets(10));
         addFixSessionButton = new Button("Add FIX Session");
         addFixSessionButton.setOnAction(inEvent -> {
             MutableClusterData clusterData = new SimpleClusterData();
@@ -189,8 +188,9 @@ public class FixSessionView
                              true);
         });
         buttonLayout.getChildren().add(addFixSessionButton);
+        buttonLayout.setPadding(new Insets(5));
+        addFixSessionButton.visibleProperty().set(authzHelperService.hasPermission(AdminPermissions.AddSessionAction));
         initializeTable();
-        fixSessionsTable.prefWidthProperty().bind(getParentWindow().widthProperty());
         rootLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         rootLayout.getChildren().addAll(fixSessionsTable,
                                         buttonLayout);
@@ -244,6 +244,7 @@ public class FixSessionView
                 }}
             );
         });
+        fixSessionsTable.prefWidthProperty().bind(getParentWindow().widthProperty());
         fixSessionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
     /**
@@ -270,15 +271,15 @@ public class FixSessionView
     {
         nameTableColumn = new TableColumn<>("Name");
         nameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        brokerIdTableColumn = new TableColumn<>("BrokerId");
+        brokerIdTableColumn = new TableColumn<>("Broker Id");
         brokerIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
-        hostIdTableColumn = new TableColumn<>("HostId");
+        hostIdTableColumn = new TableColumn<>("Host Id");
         hostIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("hostId"));
         statusTableColumn = new TableColumn<>("Status");
         statusTableColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
-        senderSequenceNumberTableColumn = new TableColumn<>("SenderSeqNum");
+        senderSequenceNumberTableColumn = new TableColumn<>("Sender Seq Num");
         senderSequenceNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("senderSeqNum"));
-        targetSequenceNumberTableColumn = new TableColumn<>("TargetSeqNum");
+        targetSequenceNumberTableColumn = new TableColumn<>("Target Seq Num");
         targetSequenceNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("targetSeqNum"));
         fixSessionsTable.getColumns().add(nameTableColumn);
         fixSessionsTable.getColumns().add(brokerIdTableColumn);
@@ -586,8 +587,6 @@ public class FixSessionView
             public void onEnteringPage(Wizard inWizard)
             {
                 super.onEnteringPage(inWizard);
-                hostnameTextField.setText(inFixSession.sourceProperty().get().getFixSession().getHost());
-                portTextField.setText(String.valueOf(inFixSession.sourceProperty().get().getFixSession().getPort()));
                 if(inFixSession.sourceProperty().get().getFixSession().isAcceptor()) {
                     hostnameTextField.setTooltip(new Tooltip("The acceptor hostname is determined by the server and is not modifiable"));
                     hostnameTextField.setDisable(true);
@@ -597,6 +596,9 @@ public class FixSessionView
                     testConnectionButton.setVisible(false);
                     testConnectionLabel.setDisable(true);
                     testConnectionLabel.setVisible(false);
+                    FixSessionInstanceData instanceData = AdminClientService.getInstance().getFixSessionInstanceData(inFixSession.sourceProperty().get().getFixSession().getAffinity());
+                    hostnameTextField.setText(instanceData.getHostname());
+                    portTextField.setText(String.valueOf(instanceData.getPort()));
                 } else {
                     hostnameTextField.setTooltip(new Tooltip("Hostname of the FIX gateway to connect to"));
                     hostnameTextField.setDisable(false);
@@ -606,6 +608,13 @@ public class FixSessionView
                     testConnectionButton.setVisible(!networkInvalid.get());
                     testConnectionLabel.setDisable(networkInvalid.get());
                     testConnectionLabel.setVisible(!networkInvalid.get());
+                    if(inIsNew) {
+                        hostnameTextField.setText("exchange.marketcetera.com");
+                        portTextField.setText("7004");
+                    } else {
+                        hostnameTextField.setText(inFixSession.sourceProperty().get().getFixSession().getHost());
+                        portTextField.setText(String.valueOf(inFixSession.sourceProperty().get().getFixSession().getPort()));
+                    }
                 }
                 inWizard.invalidProperty().bind(networkInvalid);
             }
