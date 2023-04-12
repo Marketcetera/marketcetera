@@ -33,6 +33,7 @@ import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.SendOrderFailed;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
@@ -211,6 +212,14 @@ public class DirectTradeClient
         return response;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#sendOrderSuggestion(org.marketcetera.trade.Suggestion)
+     */
+    @Override
+    public void sendOrderSuggestion(Suggestion inSuggestion)
+    {
+        tradeService.reportSuggestion(inSuggestion);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
      */
     @Override
@@ -356,8 +365,8 @@ public class DirectTradeClient
      * @param inApplicationContext an <code>ApplicationContext</code> value
      * @param inUsername a <code>String</code> value
      */
-    protected DirectTradeClient(ApplicationContext inApplicationContext, 
-                                String inUsername)
+    public DirectTradeClient(ApplicationContext inApplicationContext, 
+                             String inUsername)
     {
         applicationContext = inApplicationContext;
         username = StringUtils.trimToNull(inUsername);

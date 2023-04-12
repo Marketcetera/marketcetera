@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.core.provider;
+package org.marketcetera.marketdata;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,9 +18,6 @@ import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.util.MarketstatEventCache;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.OrderBook;
-import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -203,8 +200,6 @@ public class MarketDataCacheElement
                 orderbook.process(quoteEvent);
                 latestTop = orderbook.getTopOfBook();
                 inoutResults.add(quoteEvent);
-            } else {
-                throw new IllegalArgumentException(Messages.CONTENT_REQUIRES_QUOTE_EVENTS.getText(inContent,event.getClass().getName()));
             }
         }
     }

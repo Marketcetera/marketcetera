@@ -56,6 +56,20 @@ public abstract class Factory {
     public abstract OrderSingleSuggestion createOrderSingleSuggestion();
 
     /**
+     * Creates a suggestion for a cancel order.
+     *
+     * @return an <code>OrderCancelSuggestion</code> value
+     */
+    public abstract OrderCancelSuggestion createOrderCancelSuggestion();
+
+    /**
+     * Creates a suggestion for a replace order.
+     *
+     * @return an <code>OrderReplaceSuggestion</code> value
+     */
+    public abstract OrderReplaceSuggestion createOrderReplaceSuggestion();
+    
+    /**
      * Creates an order to cancel a previously placed order as
      * identified by the supplied execution report. The execution
      * report should be the latest execution report for the order on a

@@ -55,10 +55,16 @@ import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderCancelSuggestion;
+import org.marketcetera.trade.OrderCancelSuggestionImpl;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderReplaceSuggestion;
+import org.marketcetera.trade.OrderReplaceSuggestionImpl;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderSingleSuggestionImpl;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
@@ -1587,7 +1593,34 @@ public abstract class TradeRpcUtil
      */
     public static Suggestion getSuggestion(TradeRpc.SuggestionListenerResponse inResponse)
     {
-        throw new UnsupportedOperationException();
+        if(!inResponse.hasSuggestion()) {
+            throw new UnsupportedOperationException();
+        }
+        return getSuggestion(inResponse.getSuggestion());
+    }
+    /**
+     * Get the suggestion value from the given RPC value.
+     *
+     * @param inRpcSuggestion a <code>TradeTypesRpc.Suggestion</code> value
+     * @return a <code>Suggestion</code> value
+     */
+    public static Suggestion getSuggestion(TradeTypesRpc.Suggestion inRpcSuggestion)
+    {
+        Order order = getOrder(inRpcSuggestion.getOrder());
+        Suggestion suggestion;
+        if(order instanceof OrderSingle) {
+            suggestion = new OrderSingleSuggestionImpl();
+            ((OrderSingleSuggestionImpl)suggestion).setOrder((OrderSingle)order);
+        } else if(order instanceof OrderReplace) {
+            suggestion = new OrderReplaceSuggestionImpl((OrderReplace)order);
+        } else if(order instanceof OrderCancel) {
+            suggestion = new OrderCancelSuggestionImpl((OrderCancel)order);
+        } else {
+            throw new UnsupportedOperationException("Unexpected RPC order type: " + inRpcSuggestion.getOrder().getMatpOrderTypeValue());
+        }
+        suggestion.setIdentifier(inRpcSuggestion.getIdentifier());
+        BaseRpcUtil.getScaledQuantity(inRpcSuggestion.getScore()).ifPresent(qty -> suggestion.setScore(qty));
+        return suggestion;
     }
     /**
      * Set the suggestion value into the given RPC builder, if possible.
@@ -1598,7 +1631,122 @@ public abstract class TradeRpcUtil
     public static void setSuggestion(Suggestion inSuggestion,
                                      TradeRpc.SuggestionListenerResponse.Builder inResponseBuilder)
     {
-        throw new UnsupportedOperationException(); // TODO
+        getSuggestion(inSuggestion).ifPresent(rpcSuggestion -> inResponseBuilder.setSuggestion(rpcSuggestion));
+    }
+    /**
+     * Get the RPC suggestion value from the given value.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     * @return an <code>Optional&lt;TradeTypesRpc.Suggestion&gt;</code> value
+     */
+    public static Optional<TradeTypesRpc.Suggestion> getSuggestion(Suggestion inSuggestion)
+    {
+        if(inSuggestion == null) {
+            return Optional.empty();
+        }
+        TradeTypesRpc.Suggestion.Builder builder = TradeTypesRpc.Suggestion.newBuilder();
+        builder.setIdentifier(inSuggestion.getIdentifier());
+        BaseRpcUtil.getRpcQty(inSuggestion.getScore()).ifPresent(rpcQty -> builder.setScore(rpcQty));
+        if(inSuggestion instanceof OrderSingleSuggestion) {
+            OrderSingleSuggestion suggestion = (OrderSingleSuggestion)inSuggestion;
+            getOrder(suggestion.getOrder()).ifPresent(rpcOrder -> builder.setOrder(rpcOrder));
+        } else if(inSuggestion instanceof OrderReplaceSuggestion) {
+            OrderReplaceSuggestion suggestion = (OrderReplaceSuggestion)inSuggestion;
+            getOrder(suggestion.getOrderReplace()).ifPresent(rpcOrder -> builder.setOrder(rpcOrder));
+        } else if(inSuggestion instanceof OrderCancelSuggestion) {
+            OrderCancelSuggestion suggestion = (OrderCancelSuggestion)inSuggestion;
+            getOrder(suggestion.getOrderCancel()).ifPresent(rpcOrder -> builder.setOrder(rpcOrder));
+        } else {
+            throw new UnsupportedOperationException("Unexpected suggestion type: " + inSuggestion.getClass().getSimpleName());
+        }
+        return Optional.of(builder.build());
+    }
+    /**
+     * Get the RPC order value from the given value.
+     *
+     * @param inOrder an <code>Order</code> value
+     */
+    public static Optional<TradeTypesRpc.Order> getOrder(Order inOrder)
+    {
+        if(inOrder == null) {
+            return Optional.empty();
+        }
+        TradeTypesRpc.Order.Builder orderBuilder = TradeTypesRpc.Order.newBuilder();
+        TradeTypesRpc.OrderBase.Builder orderBaseBuilder = TradeTypesRpc.OrderBase.newBuilder();
+        if(inOrder instanceof FIXOrder) {
+            FIXOrder fixOrder = (FIXOrder)inOrder;
+            TradeTypesRpc.FIXOrder.Builder fixOrderBuilder = TradeTypesRpc.FIXOrder.newBuilder();
+            BaseRpc.Map.Builder mapBuilder = BaseRpc.Map.newBuilder();
+            BaseRpc.KeyValuePair.Builder keyValuePairBuilder = BaseRpc.KeyValuePair.newBuilder();
+            for(Map.Entry<Integer,String> entry : fixOrder.getFields().entrySet()) {
+                keyValuePairBuilder.setKey(String.valueOf(entry.getKey()));
+                keyValuePairBuilder.setValue(entry.getValue());
+                mapBuilder.addKeyValuePairs(keyValuePairBuilder.build());
+            }
+            orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.FIXOrderType);
+            TradeRpcUtil.setBrokerId(fixOrder,
+                                     fixOrderBuilder);
+            // TODO
+//            fixOrderBuilder.setMessage(mapBuilder.build());
+            orderBuilder.setFixOrder(fixOrderBuilder.build());
+        } else if(inOrder instanceof OrderBase) {
+            // either an OrderSingle, OrderReplace, or OrderCancel
+            // the types overlap some, first, set all the common fields on OrderBase
+            OrderBase orderBase = (OrderBase)inOrder;
+            TradeRpcUtil.setAccount(orderBase,
+                                    orderBaseBuilder);
+            TradeRpcUtil.setBrokerId(orderBase,
+                                     orderBaseBuilder);
+            TradeRpcUtil.setRpcCustomFields(orderBase,
+                                            orderBaseBuilder);
+            TradeRpcUtil.setInstrument(orderBase,
+                                       orderBaseBuilder);
+            TradeRpcUtil.setOrderId(orderBase,
+                                    orderBaseBuilder);
+            TradeRpcUtil.setQuantity(orderBase,
+                                     orderBaseBuilder);
+            TradeRpcUtil.setSide(orderBase,
+                                 orderBaseBuilder);
+            TradeRpcUtil.setText(orderBase,
+                                 orderBaseBuilder);
+            // now, check for various special order types
+            if(orderBase instanceof NewOrReplaceOrder) {
+                NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)orderBase;
+                TradeRpcUtil.setDisplayQuantity(newOrReplaceOrder,
+                                                orderBaseBuilder);
+                TradeRpcUtil.setExecutionDestination(newOrReplaceOrder,
+                                                     orderBaseBuilder);
+                TradeRpcUtil.setOrderCapacity(newOrReplaceOrder,
+                                              orderBaseBuilder);
+                TradeRpcUtil.setOrderType(newOrReplaceOrder,
+                                          orderBaseBuilder);
+                TradeRpcUtil.setPositionEffect(newOrReplaceOrder,
+                                               orderBaseBuilder);
+                TradeRpcUtil.setPrice(newOrReplaceOrder,
+                                      orderBaseBuilder);
+                TradeRpcUtil.setTimeInForce(newOrReplaceOrder,
+                                            orderBaseBuilder);
+            }
+            if(inOrder instanceof RelatedOrder) {
+                RelatedOrder relatedOrder = (RelatedOrder)inOrder;
+                TradeRpcUtil.setOriginalOrderId(relatedOrder,
+                                                orderBaseBuilder);
+            }
+            TradeTypesRpc.OrderBase rpcOrderBase = orderBaseBuilder.build();
+            orderBuilder.setOrderBase(rpcOrderBase);
+            if(inOrder instanceof OrderCancel) {
+                orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.OrderCancelType);
+            } else if(inOrder instanceof OrderSingle) {
+                orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.OrderSingleType);
+            } else if(inOrder instanceof OrderReplace) {
+                orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.OrderReplaceType);
+            } else {
+                throw new UnsupportedOperationException("Unsupported order type: " + inOrder.getClass().getSimpleName());
+            }
+        } else {
+            throw new UnsupportedOperationException("Unsupported order type: " + inOrder.getClass().getSimpleName());
+        }
+        return Optional.of(orderBuilder.build());
     }
     /**
      * Get the trade message value from the given RPC message.

@@ -56,6 +56,8 @@ import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.trade.client.DirectTradeClient;
+import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -675,11 +677,17 @@ public class StrategyServiceImpl
                     return strategyInstance;
                 }}
             );
+            String strategyUsername = strategyInstance.getUser().getName();
             // TODO this needs to be configurable - this could be a direct client for DARE or an RPC client for an SE
             DirectStrategyClient strategyClient = new DirectStrategyClient(newContext,
-                                                                           "trader");
+                                                                           strategyUsername);
             beanFactory.registerSingleton(StrategyClient.class.getCanonicalName(),
                                           strategyClient);
+            // create a special trade client just for this strategy
+            DirectTradeClient tradeClient = new DirectTradeClient(newContext,
+                                                                  strategyUsername);
+            beanFactory.registerSingleton(TradeClient.class.getCanonicalName(),
+                                          tradeClient);
             // refresh the context, which allows it to prepare to use the strategy JAR
             newContext.refresh();
             // start the context
@@ -687,6 +695,9 @@ public class StrategyServiceImpl
             // start the embedded strategy client
             strategyClient.start();
         }
+        /**
+         * Stop the running strategy.
+         */
         private void stop()
         {
             try {

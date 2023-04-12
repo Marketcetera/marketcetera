@@ -177,6 +177,14 @@ message ReadAvailableFixInitiatorSessionsResponse {
     repeated ActiveFixSession fixSession = 1;
 }
 
+message SendSuggestionRequest {
+    string sessionId = 1;
+    repeated Suggestion suggestion = 2;
+}
+
+message SendSuggestionResponse {
+}
+
 service TradeRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -199,4 +207,5 @@ service TradeRpcService {
     rpc getAverageFillPrices(GetAverageFillPricesRequest) returns (GetAverageFillPricesResponse);
     rpc addSuggestionListener(AddSuggestionListenerRequest) returns (stream SuggestionListenerResponse);
     rpc removeSuggestionListener(RemoveSuggestionListenerRequest) returns (RemoveSuggestionListenerResponse);
+    rpc sendSuggestion(SendSuggestionRequest) returns (SendSuggestionResponse);
 }

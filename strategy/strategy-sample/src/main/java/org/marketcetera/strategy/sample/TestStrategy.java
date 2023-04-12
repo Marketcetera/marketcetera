@@ -1,22 +1,42 @@
 package org.marketcetera.strategy.sample;
 
+import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.util.Random;
+import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.event.Event;
+import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.TopOfBookEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataCacheElement;
 import org.marketcetera.marketdata.MarketDataClient;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.strategy.StrategyClient;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.client.TradeClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /* $License$ */
 
@@ -55,6 +75,21 @@ public class TestStrategy
             {
                 strategyClient.emitMessage(Severity.INFO,
                                            String.valueOf(inEvent));
+                if(inEvent instanceof QuoteEvent) {
+                    QuoteEvent quoteEvent = (QuoteEvent)inEvent;
+                    MarketDataCacheElement topOfBookCache = marketDataCache.getUnchecked(quoteEvent.getInstrument());
+                    topOfBookCache.update(Content.TOP_OF_BOOK,
+                                          inEvent);
+                } else if(inEvent instanceof TradeEvent) {
+                    TradeEvent tradeEvent = (TradeEvent)inEvent;
+                    MarketDataCacheElement topOfBookCache = marketDataCache.getUnchecked(tradeEvent.getInstrument());
+                    topOfBookCache.update(Content.LATEST_TICK,
+                                          inEvent);
+                    issueSuggestion(topOfBookCache);
+                } else {
+                    strategyClient.emitMessage(Severity.WARN,
+                                               "Ignored unexpected event: " + inEvent);
+                }
             }
         });
     }
@@ -73,6 +108,52 @@ public class TestStrategy
             } catch (Exception ignored) {}
         }
     }
+    private void issueSuggestion(MarketDataCacheElement inCacheElement)
+    {
+        TopOfBookEvent topOfBook = (TopOfBookEvent)inCacheElement.getSnapshot(Content.TOP_OF_BOOK);
+        if(topOfBook == null) {
+            return;
+        }
+        QuoteEvent quote;
+        Side side;
+        if(random.nextBoolean()) {
+            // trade on the bid
+            quote = topOfBook.getBid();
+            side = Side.Sell;
+        } else {
+            // trade on the ask
+            quote = topOfBook.getAsk();
+            side = Side.Buy;
+        }
+        if(quote == null) {
+            return;
+        }
+        OrderSingleSuggestion orderSingleSuggestion = Factory.getInstance().createOrderSingleSuggestion();
+        orderSingleSuggestion.setIdentifier("Suggestion created by test strategy: " + UUID.randomUUID().toString());
+        orderSingleSuggestion.setScore(new BigDecimal(random.nextDouble()));
+        OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
+        orderSingle.setInstrument(quote.getInstrument());
+        orderSingle.setOrderType(OrderType.Limit);
+        orderSingle.setPegToMidpoint(true);
+        orderSingle.setQuantity(new BigDecimal(10*(random.nextInt(10)+1)));
+        orderSingle.setSide(side);
+//        tradeClient.sendSuggestion(orderSingleSuggestion);
+    }
+    /**
+     * caches market data
+     */
+    private final LoadingCache<Instrument,MarketDataCacheElement> marketDataCache = CacheBuilder.newBuilder().build(new CacheLoader<Instrument,MarketDataCacheElement>() {
+        @Override
+        public MarketDataCacheElement load(Instrument inKey)
+                throws Exception
+        {
+            return new MarketDataCacheElement(inKey);
+        }}
+    );
+    /**
+     * generates random numbers
+     */
+    private Random random = new SecureRandom();
     /**
      * holds the market data request id
      */
@@ -87,4 +168,9 @@ public class TestStrategy
      */
     @Autowired
     private MarketDataClient marketDataClient;
+    /**
+     * provides access to trade services
+     */
+    @Autowired
+    private TradeClient tradeClient;
 }

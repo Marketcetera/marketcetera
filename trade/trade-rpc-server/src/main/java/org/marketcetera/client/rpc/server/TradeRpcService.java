@@ -80,8 +80,6 @@ import org.marketcetera.trade.rpc.TradeRpc.RemoveTradeMessageListenerRequest;
 import org.marketcetera.trade.rpc.TradeRpc.RemoveTradeMessageListenerResponse;
 import org.marketcetera.trade.rpc.TradeRpc.ResolveSymbolRequest;
 import org.marketcetera.trade.rpc.TradeRpc.ResolveSymbolResponse;
-import org.marketcetera.trade.rpc.TradeRpc.SendOrderRequest;
-import org.marketcetera.trade.rpc.TradeRpc.SendOrderResponse;
 import org.marketcetera.trade.rpc.TradeRpc.TradeMessageListenerResponse;
 import org.marketcetera.trade.rpc.TradeRpcServiceGrpc;
 import org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase;
@@ -332,11 +330,48 @@ public class TradeRpcService<SessionClazz>
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#sendOrders(org.marketcetera.trade.rpc.TradeRpc.SendOrderRequest, io.grpc.stub.StreamObserver)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#sendSuggestion(org.marketcetera.trade.rpc.TradeRpc.SendSuggestionRequest, io.grpc.stub.StreamObserver)
          */
         @Override
-        public void sendOrders(SendOrderRequest inRequest,
-                               StreamObserver<SendOrderResponse> inResponseObserver)
+        public void sendSuggestion(TradeRpc.SendSuggestionRequest inRequest,
+                                   StreamObserver<TradeRpc.SendSuggestionResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(TradeRpcService.this,
+                                       "Received send suggestion request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                authzService.authorize(sessionHolder.getUser(),
+                                       TradePermissions.SendSuggestionAction.name());
+                TradeRpc.SendSuggestionResponse.Builder responseBuilder = TradeRpc.SendSuggestionResponse.newBuilder();
+                for(TradeTypesRpc.Suggestion rpcSuggestion : inRequest.getSuggestionList()) {
+                    try {
+                        Suggestion matpSuggestion = TradeRpcUtil.getSuggestion(rpcSuggestion);
+//                        User user = userService.findByName(sessionHolder.getUser());
+                        // TODO need to attach a user to a suggestion
+                        tradeService.reportSuggestion(matpSuggestion);
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(TradeRpcService.this,
+                                              e,
+                                              "Unable to submit order {}",
+                                              rpcSuggestion);
+                    }
+                }
+                TradeRpc.SendSuggestionResponse response = responseBuilder.build();
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                handleError(e,
+                            inResponseObserver);
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceImplBase#sendSuggestions(org.marketcetera.trade.rpc.TradeRpc.SendOrderRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void sendOrders(TradeRpc.SendOrderRequest inRequest,
+                               StreamObserver<TradeRpc.SendOrderResponse> inResponseObserver)
         {
             try {
                 SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
