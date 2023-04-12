@@ -140,6 +140,10 @@ public abstract class AbstractTradeViewFactory
      */
     protected static final int orderTicketWeight = 500;
     /**
+     * weight of trade suggestions menu item
+     */
+    protected static final int tradeSuggestionsWeight = 600;
+    /**
      * provides access to web message services
      */
     @Autowired

@@ -19,7 +19,7 @@ import com.google.common.collect.Sets;
 /* $License$ */
 
 /**
- *
+ * Creates {@link StrategyView} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

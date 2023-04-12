@@ -21,6 +21,8 @@ import org.marketcetera.admin.User;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.persist.SummaryNDEntityBase;
+import org.marketcetera.trade.HasInstrument;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.admin.AdminClientService;
@@ -182,6 +184,30 @@ public abstract class PhotonServices
                 }
             };
         }
+    }
+    /**
+     * Render the given column as an Instrument cell.
+     *
+     * @param inTableColumn a <code>TableColumn&lt;? extends HasInstrument,Instrument&gt;</code> value
+     * @return a <code>TableCell&lt;? extends HasInstrument,Instrument&gt;</code> value
+     */
+    public static TableCell<? extends HasInstrument,Instrument> renderInstrumentCell(TableColumn<? extends HasInstrument,Instrument> inTableColumn)
+    {
+        TableCell<? extends HasInstrument,Instrument> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(Instrument inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty && inItem != null){
+                    this.setText(inItem.getFullSymbol());
+                }
+            }
+        };
+        return tableCell;
     }
     public static <T> TableCell<T,BigDecimal> renderNumberCell(TableColumn<T,BigDecimal> inTableColumn)
     {

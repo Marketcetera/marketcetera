@@ -1,0 +1,173 @@
+package org.marketcetera.ui.trade.view.suggestions;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.marketcetera.trade.HasInstrument;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
+
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+/* $License$ */
+
+/**
+ * Provides a display-oriented {@link Suggestion} implementation.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
+public class DisplaySuggestion
+        implements HasInstrument
+{
+    /**
+     * Create a new DisplaySuggestion instance.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     */
+    public DisplaySuggestion(Suggestion inSuggestion)
+    {
+        identifierProperty.set(inSuggestion.getIdentifier());
+        scoreProperty.set(inSuggestion.getScore());
+        if(inSuggestion instanceof OrderSingleSuggestion) {
+            OrderSingleSuggestion orderSingleSuggestion = (OrderSingleSuggestion)inSuggestion;
+            instrumentProperty.set(orderSingleSuggestion.getOrder().getInstrument());
+            orderTypeProperty.set(orderSingleSuggestion.getOrder().getOrderType());
+            priceProperty.set(orderSingleSuggestion.getOrder().getPrice());
+            quantityProperty.set(orderSingleSuggestion.getOrder().getQuantity());
+            sideProperty.set(orderSingleSuggestion.getOrder().getSide());
+            timestampProperty.set(new Date()); // TODO should be the timestamp from the suggestion, probably
+        } else {
+            throw new UnsupportedOperationException("Unsupported suggestion type: " + inSuggestion.getClass().getSimpleName());
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasInstrument#getInstrument()
+     */
+    @Override
+    public Instrument getInstrument()
+    {
+        return instrumentProperty.get();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.HasInstrument#setInstrument(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public void setInstrument(Instrument inInstrument)
+    {
+        instrumentProperty.set(inInstrument);
+    }
+    /**
+     * Get the identifierProperty value.
+     *
+     * @return a <code>ReadOnlyStringProperty</code> value
+     */
+    public ReadOnlyStringProperty identifierProperty()
+    {
+        return identifierProperty;
+    }
+    /**
+     * Get the scoreProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;BigDecimal&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<BigDecimal> scoreProperty()
+    {
+        return scoreProperty;
+    }
+    /**
+     * Get the sideProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;Side&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<Side> sideProperty()
+    {
+        return sideProperty;
+    }
+    /**
+     * Get the quantityProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;BigDecimal&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<BigDecimal> quantityProperty()
+    {
+        return quantityProperty;
+    }
+    /**
+     * Get the priceProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;BigDecimal&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<BigDecimal> priceProperty()
+    {
+        return priceProperty;
+    }
+    /**
+     * Get the instrumentProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;Instrument&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<Instrument> instrumentProperty()
+    {
+        return instrumentProperty;
+    }
+    /**
+     * Get the orderTypeProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;OrderType&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<OrderType> orderTypeProperty()
+    {
+        return orderTypeProperty;
+    }
+    /**
+     * Get the timestampProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;Date&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<Date> timestampProperty()
+    {
+        return timestampProperty;
+    }
+    /**
+     * identifier property value
+     */
+    private final StringProperty identifierProperty = new SimpleStringProperty();
+    /**
+     * score property value
+     */
+    private final ObjectProperty<BigDecimal> scoreProperty = new SimpleObjectProperty<>();
+    /**
+     * side property value
+     */
+    private final ObjectProperty<Side> sideProperty = new SimpleObjectProperty<>();
+    /**
+     * quantity property value
+     */
+    private final ObjectProperty<BigDecimal> quantityProperty = new SimpleObjectProperty<>();
+    /**
+     * price property value
+     */
+    private final ObjectProperty<BigDecimal> priceProperty = new SimpleObjectProperty<>();
+    /**
+     * instrument property value
+     */
+    private final ObjectProperty<Instrument> instrumentProperty = new SimpleObjectProperty<>();
+    /**
+     * order type property value
+     */
+    private final ObjectProperty<OrderType> orderTypeProperty = new SimpleObjectProperty<>();
+    /**
+     * timestamp property value
+     */
+    private final ObjectProperty<Date> timestampProperty = new SimpleObjectProperty<>();
+}

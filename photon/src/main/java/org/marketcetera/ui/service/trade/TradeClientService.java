@@ -18,6 +18,8 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
@@ -191,6 +193,33 @@ public class TradeClientService
     public SendOrderResponse send(Order inOrder)
     {
         return tradeClient.sendOrder(inOrder);
+    }
+    /**
+     * Submit a trade suggestion.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     */
+    public void sendOrderSuggestion(Suggestion inSuggestion)
+    {
+        tradeClient.sendOrderSuggestion(inSuggestion);
+    }
+    /**
+     * Add the given suggestion listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    public void addSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        tradeClient.addSuggestionListener(inSuggestionListener);
+    }
+    /**
+     * Remove the given suggestion listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    public void removeSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        tradeClient.removeSuggestionListener(inSuggestionListener);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.service.ConnectableService#isRunning()
