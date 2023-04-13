@@ -23,7 +23,6 @@ import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.admin.user.PersistentUserFactory;
 import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.service.FixSessionProvider;
-import org.marketcetera.client.rpc.server.TradeRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.rpc.ClusterRpcService;
@@ -66,6 +65,7 @@ import org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceCon
 import org.marketcetera.trade.event.connector.OrderConverterConnector;
 import org.marketcetera.trade.event.connector.OutgoingMessageCachingConnector;
 import org.marketcetera.trade.event.connector.OutgoingMessagePersistenceConnector;
+import org.marketcetera.trade.rpc.server.TradeRpcService;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

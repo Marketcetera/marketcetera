@@ -30,6 +30,7 @@ hs_err_pid*
 
 # Maven files
 target
+target-ide
 
 # Eclipse files
 .classpath
