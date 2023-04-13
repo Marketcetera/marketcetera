@@ -3,8 +3,9 @@ package org.marketcetera.ui.trade.event;
 import org.marketcetera.trade.HasSuggestion;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.ui.events.NewWindowEvent;
-import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
-import org.marketcetera.ui.view.ContentViewFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -15,7 +16,10 @@ import org.marketcetera.ui.view.ContentViewFactory;
  * @version $Id$
  * @since $Release$
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SuggestionEvent
+        extends AbstractOrderTicketEvent
         implements NewWindowEvent,HasSuggestion
 {
     /* (non-Javadoc)
@@ -33,14 +37,6 @@ public class SuggestionEvent
     public String getWindowTitle()
     {
         return title;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
-     */
-    @Override
-    public Class<? extends ContentViewFactory> getViewFactoryType()
-    {
-        return OrderTicketViewFactory.class;
     }
     /**
      * Create a new SuggestionEvent instance.

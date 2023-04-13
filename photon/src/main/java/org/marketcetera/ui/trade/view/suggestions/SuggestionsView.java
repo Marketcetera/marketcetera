@@ -22,8 +22,10 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -208,9 +210,6 @@ public class SuggestionsView
      */
     private void initializeSuggestionTableColumns()
     {
-//        suggestionTable.getSelectionModel().selectedItemProperty().addListener((ChangeListener<DisplayStrategyInstance>) (inObservable,inOldValue,inNewValue) -> {
-//            enableSuggestionContextMenuItems(inNewValue);
-//        });
         identifierColumn = new TableColumn<>("Identifier"); 
         identifierColumn.setCellValueFactory(new PropertyValueFactory<>("identifier"));
         scoreColumn = new TableColumn<>("Score"); 
@@ -259,7 +258,7 @@ public class SuggestionsView
             return;
         }
         // any suggestion can be executed or deleted, assuming appropriate permissions
-        executeMenuItem.setDisable(authzHelperService.hasPermission(TradePermissions.SendOrderAction));
+        executeMenuItem.setDisable(!authzHelperService.hasPermission(TradePermissions.SendOrderAction));
         deleteMenuItem.setDisable(false);
     }
     /**
@@ -318,8 +317,9 @@ public class SuggestionsView
     private void doExecute(Collection<DisplaySuggestion> inSuggestions)
     {
         for(DisplaySuggestion displaySuggestion : inSuggestions) {
-            uiMessageService.post(new SuggestionEvent(displaySuggestion.sideProperty().get().name() + " " + displaySuggestion.instrumentProperty().get().getFullSymbol(),
-                                                      displaySuggestion.sourceProperty().get()));
+            uiMessageService.post(applicationContext.getBean(SuggestionEvent.class,
+                                                             displaySuggestion.sideProperty().get().name() + " " + displaySuggestion.instrumentProperty().get().getFullSymbol(),
+                                                             displaySuggestion.sourceProperty().get()));
         }
     }
     /**
@@ -386,6 +386,11 @@ public class SuggestionsView
         }
         return table.render();
     }
+    /**
+     * provides access to the application context
+     */
+    @Autowired
+    private ApplicationContext applicationContext;
     /**
      * identifier column
      */

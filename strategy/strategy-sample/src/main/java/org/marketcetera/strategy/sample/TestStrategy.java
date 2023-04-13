@@ -19,7 +19,6 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.strategy.StrategyClient;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderSingle;
@@ -28,6 +27,7 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.client.TradeClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
@@ -92,7 +92,6 @@ public class TestStrategy
                 }
             }
         });
-        sendSuggestion();
     }
     /**
      * Stop the object.
@@ -116,6 +115,9 @@ public class TestStrategy
      */
     private void issueSuggestion(MarketDataCacheElement inCacheElement)
     {
+        if(!createSuggestions) {
+            return;
+        }
         TopOfBookEvent topOfBook = (TopOfBookEvent)inCacheElement.getSnapshot(Content.TOP_OF_BOOK);
         if(topOfBook == null) {
             return;
@@ -142,22 +144,8 @@ public class TestStrategy
         orderSingle.setOrderType(OrderType.Limit);
         orderSingle.setPegToMidpoint(true);
         orderSingle.setQuantity(new BigDecimal(10*(random.nextInt(10)+1)));
+        orderSingle.setPrice(quote.getPrice());
         orderSingle.setSide(side);
-        orderSingleSuggestion.setOrder(orderSingle);
-        tradeClient.sendOrderSuggestion(orderSingleSuggestion);
-    }
-    private void sendSuggestion()
-    {
-        OrderSingleSuggestion orderSingleSuggestion = Factory.getInstance().createOrderSingleSuggestion();
-        orderSingleSuggestion.setIdentifier("Test Strategy");
-        orderSingleSuggestion.setScore(new BigDecimal(random.nextDouble()));
-        OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
-        orderSingle.setInstrument(new Equity("AAPL"));
-        orderSingle.setOrderType(OrderType.Limit);
-        orderSingle.setPegToMidpoint(true);
-        orderSingle.setQuantity(new BigDecimal(10*(random.nextInt(10)+1)));
-        orderSingle.setSide(Side.Buy);
-        orderSingle.setPrice(new BigDecimal(50.00));
         orderSingleSuggestion.setOrder(orderSingle);
         tradeClient.sendOrderSuggestion(orderSingleSuggestion);
     }
@@ -181,6 +169,11 @@ public class TestStrategy
      */
     private String marketDataRequestId;
     /**
+     * strategy should create suggestions or not
+     */
+    @Value("${metc.strategy.create.suggestions}")
+    private boolean createSuggestions;
+    /**
      * provides access to strategy services
      */
     @Autowired
@@ -195,4 +188,5 @@ public class TestStrategy
      */
     @Autowired
     private TradeClient tradeClient;
+    
 }

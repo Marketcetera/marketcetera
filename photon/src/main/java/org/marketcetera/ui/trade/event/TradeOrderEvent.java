@@ -4,8 +4,6 @@ import java.util.Properties;
 
 import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.HasAverageFillPrice;
-import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
-import org.marketcetera.ui.view.ContentViewFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -40,14 +38,6 @@ public class TradeOrderEvent
     public String getWindowTitle()
     {
         return "Trade " + averageFillPrice.getInstrumentAsString();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
-     */
-    @Override
-    public Class<? extends ContentViewFactory> getViewFactoryType()
-    {
-        return OrderTicketViewFactory.class;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.events.NewWindowEvent#getProperties()
