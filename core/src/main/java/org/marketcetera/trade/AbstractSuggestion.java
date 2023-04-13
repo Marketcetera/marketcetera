@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for <code>Suggestion</code> implementations.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
