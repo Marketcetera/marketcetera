@@ -3,6 +3,11 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.Date;
+
+import org.marketcetera.admin.HasCurrentUser;
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,8 +17,9 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface StrategyInstance
-        extends org.marketcetera.admin.HasUser
+        extends HasCurrentUser
 {
     /**
      * Get the name value.
@@ -66,25 +72,25 @@ public interface StrategyInstance
     /**
      * Get the started value.
      *
-     * @return a <code>java.util.Date</code> value
+     * @return a <code>Date</code> value
      */
-    java.util.Date getStarted();
+    Date getStarted();
     /**
      * Set the started value.
      *
-     * @param inStarted a <code>java.util.Date</code> value
+     * @param inStarted a <code>Date</code> value
      */
-    void setStarted(java.util.Date inStarted);
+    void setStarted(Date inStarted);
     /**
      * Get the status value.
      *
-     * @return an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     * @return an <code>StrategyStatus</code> value
      */
-    org.marketcetera.strategy.StrategyStatus getStatus();
+    StrategyStatus getStatus();
     /**
      * Set the status value.
      *
-     * @param inStatus an <code>org.marketcetera.strategy.StrategyStatus</code> value
+     * @param inStatus an <code>StrategyStatus</code> value
      */
-    void setStatus(org.marketcetera.strategy.StrategyStatus inStatus);
+    void setStatus(StrategyStatus inStatus);
 }

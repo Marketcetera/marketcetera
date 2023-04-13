@@ -6,14 +6,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.admin.HasCurrentUser;
 import org.marketcetera.admin.User;
-import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.core.ClientStatusListener;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.fix.ActiveFixSession;
@@ -33,13 +33,15 @@ import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.SendOrderFailed;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradeMessagePublisher;
 import org.marketcetera.trade.service.OrderSummaryService;
 import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.trade.service.TradeService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 
@@ -59,25 +61,12 @@ public class DirectTradeClient
      * @see org.marketcetera.core.BaseClient#start()
      */
     @Override
+    @PostConstruct
     public void start()
             throws Exception
     {
         SLF4JLoggerProxy.info(this,
                               "Starting direct trade client");
-        Validate.notNull(applicationContext);
-        userService = applicationContext.getBean(UserService.class);
-        orderSummaryService = applicationContext.getBean(OrderSummaryService.class);
-        tradeMessagePublisher = applicationContext.getBean(TradeMessagePublisher.class);
-        reportService = applicationContext.getBean(ReportService.class);
-        tradeService = applicationContext.getBean(TradeService.class);
-        brokerService = applicationContext.getBean(BrokerService.class);
-        symbolResolverService = applicationContext.getBean(SymbolResolverService.class);
-        SLF4JLoggerProxy.debug(this,
-                               "Direct client {} owned by user {}",
-                               clientId,
-                               username);
-        user = userService.findByName(username);
-        Validate.notNull(user);
         running = true;
     }
     /* (non-Javadoc)
@@ -117,6 +106,22 @@ public class DirectTradeClient
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
         tradeMessagePublisher.removeTradeMessageListener(inTradeMessageListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#addSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void addSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        tradeService.addSuggestionListener(inSuggestionListener);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#removeSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void removeSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        tradeService.removeSuggestionListener(inSuggestionListener);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#getOpenOrders()
@@ -173,6 +178,7 @@ public class DirectTradeClient
     @Override
     public SendOrderResponse sendOrder(Order inOrder)
     {
+        validateUser();
         SLF4JLoggerProxy.info(this,
                               "{} submitting outgoing {}",
                               user.getName(),
@@ -194,6 +200,14 @@ public class DirectTradeClient
         return response;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#sendOrderSuggestion(org.marketcetera.trade.Suggestion)
+     */
+    @Override
+    public void sendOrderSuggestion(Suggestion inSuggestion)
+    {
+        tradeService.reportSuggestion(inSuggestion);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradeClient#getPositionAsOf(java.util.Date, org.marketcetera.trade.Instrument)
      */
     @Override
@@ -210,6 +224,7 @@ public class DirectTradeClient
     @Override
     public Map<PositionKey<? extends Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate)
     {
+        validateUser();
         return reportService.getAllPositionsAsOf(user,
                                                  inDate);
     }
@@ -220,6 +235,7 @@ public class DirectTradeClient
     public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
                                                                       String... inRootSymbols)
     {
+        validateUser();
         return reportService.getOptionPositionsAsOf(user,
                                                     inDate,
                                                     inRootSymbols);
@@ -231,6 +247,7 @@ public class DirectTradeClient
     public void addReport(HasFIXMessage inReport,
                           BrokerID inBrokerID)
     {
+        validateUser();
         reportService.addReport(inReport,
                                 inBrokerID,
                                 user.getUserID());
@@ -316,44 +333,34 @@ public class DirectTradeClient
         // no-op
     }
     /**
-     * Get the applicationContext value.
+     * Get the currentUser value.
      *
-     * @return an <code>ApplicationContext</code> value
+     * @return a <code>HasCurrentUser</code> value
      */
-    public ApplicationContext getApplicationContext()
+    public HasCurrentUser getCurrentUser()
     {
-        return applicationContext;
+        return currentUser;
     }
     /**
-     * Sets the applicationContext value.
+     * Sets the currentUser value.
      *
-     * @param inApplicationContext an <code>ApplicationContext</code> value
+     * @param inCurrentUser a <code>HasCurrentUser</code> value
      */
-    public void setApplicationContext(ApplicationContext inApplicationContext)
+    public void setCurrentUser(HasCurrentUser inCurrentUser)
     {
-        applicationContext = inApplicationContext;
+        currentUser = inCurrentUser;
     }
     /**
-     * Create a new DirectTradeClient instance.
-     *
-     * @param inApplicationContext an <code>ApplicationContext</code> value
-     * @param inUsername a <code>String</code> value
+     * Validate that the user is set.
      */
-    protected DirectTradeClient(ApplicationContext inApplicationContext, 
-                                String inUsername)
+    private void validateUser()
     {
-        applicationContext = inApplicationContext;
-        username = StringUtils.trimToNull(inUsername);
-        Validate.notNull(username);
+        if(user == null) {
+            Validate.notNull(currentUser,
+                             "Must provide a HasCurrentUser to " + getClass().getSimpleName());
+            user = currentUser.getUser();
+        }
     }
-    /**
-     * provides access to the application context
-     */
-    private ApplicationContext applicationContext;
-    /**
-     * name of user
-     */
-    private final String username;
     /**
      * user which owns the activity of this client
      */
@@ -363,37 +370,40 @@ public class DirectTradeClient
      */
     private boolean running = false;
     /**
-     * provides access to user services
+     * provides access to the current user
      */
-    private UserService userService;
+    @Autowired(required=false)
+    private HasCurrentUser currentUser;
     /**
      * provides access to broker services
      */
+    @Autowired
     private BrokerService brokerService;
     /**
      * provides access to trade messages
      */
+    @Autowired
     private TradeMessagePublisher tradeMessagePublisher;
     /**
      * provides access to report services
      */
+    @Autowired
     private ReportService reportService;
     /**
      * provides access to trade services
      */
+    @Autowired
     private TradeService tradeService;
     /**
      * provides access to order summary services
      */
+    @Autowired
     private OrderSummaryService orderSummaryService;
     /**
      * resolves symbols
      */
+    @Autowired
     private SymbolResolverService symbolResolverService;
-    /**
-     * uniquely identifies this client
-     */
-    private final String clientId = PlatformServices.generateId();
     /**
      * order id for unknown orders
      */

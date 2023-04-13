@@ -158,7 +158,6 @@ public class StrategyView
         eventTable.prefWidthProperty().bind(mainLayout.widthProperty());
         strategyTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         eventTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-//        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         mainLayout.getChildren().addAll(strategyTable,
                                         new Separator(Orientation.HORIZONTAL),
                                         buttonLayout,

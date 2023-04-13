@@ -1,21 +1,25 @@
-package org.marketcetera.ui.marketdata.event;
+package org.marketcetera.ui.trade.event;
 
 import org.marketcetera.trade.HasSuggestion;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.ui.events.NewWindowEvent;
-import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
-import org.marketcetera.ui.view.ContentViewFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /* $License$ */
 
 /**
- * Indicates that a trade suggestion has been triggered from market data.
+ * Indicates that a trade suggestion has been triggered.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class MarketDataSuggestionEvent
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class SuggestionEvent
+        extends AbstractOrderTicketEvent
         implements NewWindowEvent,HasSuggestion
 {
     /* (non-Javadoc)
@@ -34,22 +38,14 @@ public class MarketDataSuggestionEvent
     {
         return title;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
-     */
-    @Override
-    public Class<? extends ContentViewFactory> getViewFactoryType()
-    {
-        return OrderTicketViewFactory.class;
-    }
     /**
-     * Create a new MarketDataSuggestionEvent instance.
+     * Create a new SuggestionEvent instance.
      *
      * @param inTitle a <code>String</code> value
      * @param inSuggestion a <code>Suggestion</code> value
      */
-    public MarketDataSuggestionEvent(String inTitle,
-                                     Suggestion inSuggestion)
+    public SuggestionEvent(String inTitle,
+                           Suggestion inSuggestion)
     {
         title = inTitle;
         suggestion = inSuggestion;

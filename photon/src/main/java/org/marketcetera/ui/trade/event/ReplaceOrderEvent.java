@@ -2,11 +2,8 @@ package org.marketcetera.ui.trade.event;
 
 import java.util.Properties;
 
-import org.marketcetera.core.Pair;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.HasExecutionReport;
-import org.marketcetera.ui.trade.view.orderticket.OrderTicketViewFactory;
-import org.marketcetera.ui.view.ContentViewFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -43,29 +40,12 @@ public class ReplaceOrderEvent
         return "Replace " + executionReport.getOrderID();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()
-     */
-    @Override
-    public Class<? extends ContentViewFactory> getViewFactoryType()
-    {
-        return OrderTicketViewFactory.class;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.web.events.NewWindowEvent#getProperties()
      */
     @Override
     public Properties getProperties()
     {
         return windowProperties;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ui.events.NewWindowEvent#getWindowSize()
-     */
-    @Override
-    public Pair<Double,Double> getWindowSize()
-    {
-        return Pair.create(850.0, 
-                           200.0);
     }
     /**
      * Create a new ReplaceOrderEvent instance.

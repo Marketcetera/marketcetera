@@ -25,6 +25,8 @@ import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.SendOrderFailed;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageBroadcaster;
 import org.marketcetera.trade.TradeMessageListener;
@@ -45,9 +47,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
-
-import quickfix.FieldNotFound;
-import quickfix.Message;
 
 /* $License$ */
 
@@ -105,8 +104,8 @@ public class TradeServiceImpl
      * @see org.marketcetera.trade.service.TradeService#convertOrder(org.marketcetera.trade.Order, org.marketcetera.brokers.Broker)
      */
     @Override
-    public Message convertOrder(Order inOrder,
-                                ServerFixSession inServerFixSession)
+    public quickfix.Message convertOrder(Order inOrder,
+                                         ServerFixSession inServerFixSession)
     {
         boolean failed = false;
         String message = null;
@@ -143,7 +142,7 @@ public class TradeServiceImpl
             } else if(fixMessage != null && fixMessage.isSetField(quickfix.field.OrderID.FIELD)) {
                 try {
                     orderId = new OrderID(fixMessage.getString(quickfix.field.OrderID.FIELD));
-                } catch (FieldNotFound ignored) {} // this exception cannot occur because we explicitly check for the existance of the field above
+                } catch (quickfix.FieldNotFound ignored) {} // this exception cannot occur because we explicitly check for the existence of the field above
             }
             if(orderId == null) {
                 SLF4JLoggerProxy.warn(this,
@@ -168,14 +167,14 @@ public class TradeServiceImpl
     public TradeMessage convertResponse(HasFIXMessage inMessage,
                                         ServerFixSession inServerFixSession)
     {
-        Message fixMessage = inMessage.getMessage();
+        quickfix.Message fixMessage = inMessage.getMessage();
         try {
             if(FIXMessageUtil.isTradingSessionStatus(fixMessage)) {
                 Messages.TRADE_SESSION_STATUS.info(this,
                                                    inServerFixSession.getFIXDataDictionary().getHumanFieldValue(quickfix.field.TradSesStatus.FIELD,
                                                                                                                 fixMessage.getString(quickfix.field.TradSesStatus.FIELD)));
             }
-        } catch (FieldNotFound e) {
+        } catch (quickfix.FieldNotFound e) {
             PlatformServices.handleException(this,
                                              "Unable to process trading session status message",
                                              e);
@@ -208,7 +207,9 @@ public class TradeServiceImpl
     @Override
     public void addTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        tradeMessageListeners.add(inTradeMessageListener);
+        synchronized(tradeMessageListeners) {
+            tradeMessageListeners.add(inTradeMessageListener);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.TradeMessagePublisher#removeTradeMessageListener(org.marketcetera.trade.TradeMessageListener)
@@ -216,7 +217,51 @@ public class TradeServiceImpl
     @Override
     public void removeTradeMessageListener(TradeMessageListener inTradeMessageListener)
     {
-        tradeMessageListeners.remove(inTradeMessageListener);
+        synchronized(tradeMessageListeners) {
+            tradeMessageListeners.remove(inTradeMessageListener);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.TradeService#addSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void addSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        synchronized(suggestionListeners) {
+            suggestionListeners.add(inSuggestionListener);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.TradeService#removeSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void removeSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        synchronized(suggestionListeners) {
+            suggestionListeners.remove(inSuggestionListener);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.TradeService#reportSuggestion(org.marketcetera.trade.Suggestion)
+     */
+    @Override
+    public void reportSuggestion(Suggestion inSuggestion)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Reporting {}",
+                               inSuggestion);
+        synchronized(suggestionListeners) {
+            for(SuggestionListener suggestionListener : suggestionListeners) {
+                try {
+                    suggestionListener.receiveSuggestion(inSuggestion);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e,
+                                          "Error broadcasting suggestion, offending listener removed");
+                    removeSuggestionListener(suggestionListener);
+                }
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.TradeMessageBroadcaster#reportTradeMessage(org.marketcetera.trade.TradeMessage)
@@ -224,14 +269,16 @@ public class TradeServiceImpl
     @Override
     public void reportTradeMessage(TradeMessage inTradeMessage)
     {
-        for(TradeMessageListener tradeMessageListener : tradeMessageListeners) {
-            try {
-                tradeMessageListener.receiveTradeMessage(inTradeMessage);
-            } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Error broadcasting trade message",
-                                                 e);
-                removeTradeMessageListener(tradeMessageListener);
+        synchronized(tradeMessageListeners) {
+            for(TradeMessageListener tradeMessageListener : tradeMessageListeners) {
+                try {
+                    tradeMessageListener.receiveTradeMessage(inTradeMessage);
+                } catch (Exception e) {
+                    PlatformServices.handleException(this,
+                                                     "Error broadcasting trade message, offending listener removed",
+                                                     e);
+                    removeTradeMessageListener(tradeMessageListener);
+                }
             }
         }
     }
@@ -350,4 +397,8 @@ public class TradeServiceImpl
      * holds trade message listener subscribers
      */
     private final Set<TradeMessageListener> tradeMessageListeners = Sets.newConcurrentHashSet();
+    /**
+     * holds suggestion listener subscribers
+     */
+    private final Set<SuggestionListener> suggestionListeners = Sets.newConcurrentHashSet();
 }

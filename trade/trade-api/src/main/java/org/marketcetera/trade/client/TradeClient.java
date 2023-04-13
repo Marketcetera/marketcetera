@@ -23,6 +23,8 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessagePublisher;
 
 /* $License$ */
@@ -63,6 +65,12 @@ public interface TradeClient
      * @return a <code>List&lt;SendOrderResponse&gt;</code> value
      */
     List<SendOrderResponse> sendOrders(List<Order> inOrders);
+    /**
+     * Submit a trade suggestion.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     */
+    void sendOrderSuggestion(Suggestion inSuggestion);
     /**
      * Submit the given order.
      *
@@ -181,4 +189,16 @@ public interface TradeClient
      * @return a <code>CollectionPageResponse&lt;AveragePriceFill&gt;</code> value
      */
     CollectionPageResponse<AverageFillPrice> getAveragePriceFills(PageRequest inPageRequest);
+    /**
+     * Add the given suggestion listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    void addSuggestionListener(SuggestionListener inSuggestionListener);
+    /**
+     * Remove the given suggestion listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    void removeSuggestionListener(SuggestionListener inSuggestionListener);
 }
