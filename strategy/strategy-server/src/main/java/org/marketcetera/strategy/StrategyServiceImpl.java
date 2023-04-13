@@ -57,7 +57,6 @@ import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
 import org.marketcetera.trade.client.DirectTradeClient;
-import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -683,11 +682,10 @@ public class StrategyServiceImpl
                                                                            strategyUsername);
             beanFactory.registerSingleton(StrategyClient.class.getCanonicalName(),
                                           strategyClient);
-            // create a special trade client just for this strategy
-            DirectTradeClient tradeClient = new DirectTradeClient(newContext,
-                                                                  strategyUsername);
-            beanFactory.registerSingleton(TradeClient.class.getCanonicalName(),
-                                          tradeClient);
+            // get the trade client that we expect to be defined in the parent context
+            DirectTradeClient tradeClient = applicationContext.getBean(DirectTradeClient.class);
+            // define the current user, which is the user that owns the strategy
+            tradeClient.setCurrentUser(strategyInstance);
             // refresh the context, which allows it to prepare to use the strategy JAR
             newContext.refresh();
             // start the context

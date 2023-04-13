@@ -16,6 +16,7 @@ import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.service.trade.TradeClientService;
 import org.marketcetera.ui.strategy.view.DisplayStrategyMessage;
 import org.marketcetera.ui.view.AbstractContentView;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
@@ -57,8 +58,8 @@ public class SuggestionsView
     {
         tradeClient = serviceManager.getService(TradeClientService.class);
         mainLayout = new VBox(10);
-        mainLayout.getChildren().add(suggestionTable);
         initializeSuggestionTable();
+        mainLayout.getChildren().add(suggestionTable);
         suggestionTable.prefWidthProperty().bind(mainLayout.widthProperty());
         suggestionTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
@@ -141,6 +142,9 @@ public class SuggestionsView
             @Override
             public void receiveSuggestion(Suggestion inSuggestion)
             {
+                SLF4JLoggerProxy.trace(SuggestionsView.this,
+                                       "Received {}",
+                                       inSuggestion);
                 suggestionTable.getItems().add(new DisplaySuggestion(inSuggestion));
             }
         };

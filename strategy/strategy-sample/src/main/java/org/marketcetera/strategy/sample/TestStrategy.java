@@ -3,7 +3,6 @@ package org.marketcetera.strategy.sample;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.Random;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,6 +19,7 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.strategy.StrategyClient;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderSingle;
@@ -92,6 +92,7 @@ public class TestStrategy
                 }
             }
         });
+        sendSuggestion();
     }
     /**
      * Stop the object.
@@ -108,6 +109,11 @@ public class TestStrategy
             } catch (Exception ignored) {}
         }
     }
+    /**
+     * Create an order suggestion using the cached market data.
+     *
+     * @param inCacheElement a <code>MarketDataCacheElement</code> value
+     */
     private void issueSuggestion(MarketDataCacheElement inCacheElement)
     {
         TopOfBookEvent topOfBook = (TopOfBookEvent)inCacheElement.getSnapshot(Content.TOP_OF_BOOK);
@@ -129,7 +135,7 @@ public class TestStrategy
             return;
         }
         OrderSingleSuggestion orderSingleSuggestion = Factory.getInstance().createOrderSingleSuggestion();
-        orderSingleSuggestion.setIdentifier("Suggestion created by test strategy: " + UUID.randomUUID().toString());
+        orderSingleSuggestion.setIdentifier("Test Strategy");
         orderSingleSuggestion.setScore(new BigDecimal(random.nextDouble()));
         OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
         orderSingle.setInstrument(quote.getInstrument());
@@ -137,7 +143,23 @@ public class TestStrategy
         orderSingle.setPegToMidpoint(true);
         orderSingle.setQuantity(new BigDecimal(10*(random.nextInt(10)+1)));
         orderSingle.setSide(side);
-//        tradeClient.sendSuggestion(orderSingleSuggestion);
+        orderSingleSuggestion.setOrder(orderSingle);
+        tradeClient.sendOrderSuggestion(orderSingleSuggestion);
+    }
+    private void sendSuggestion()
+    {
+        OrderSingleSuggestion orderSingleSuggestion = Factory.getInstance().createOrderSingleSuggestion();
+        orderSingleSuggestion.setIdentifier("Test Strategy");
+        orderSingleSuggestion.setScore(new BigDecimal(random.nextDouble()));
+        OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
+        orderSingle.setInstrument(new Equity("AAPL"));
+        orderSingle.setOrderType(OrderType.Limit);
+        orderSingle.setPegToMidpoint(true);
+        orderSingle.setQuantity(new BigDecimal(10*(random.nextInt(10)+1)));
+        orderSingle.setSide(Side.Buy);
+        orderSingle.setPrice(new BigDecimal(50.00));
+        orderSingleSuggestion.setOrder(orderSingle);
+        tradeClient.sendOrderSuggestion(orderSingleSuggestion);
     }
     /**
      * caches market data

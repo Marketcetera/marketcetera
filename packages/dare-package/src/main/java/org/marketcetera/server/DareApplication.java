@@ -59,6 +59,7 @@ import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BasicSelector;
 import org.marketcetera.trade.SimpleAverageFillPriceFactory;
+import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceConnector;
@@ -196,6 +197,16 @@ public class DareApplication
     public DirectMarketDataClient getMarketDataClient()
     {
         return new DirectMarketDataClient();
+    }
+    /**
+     * Get the trade client value.
+     *
+     * @return a <code>DirectTradeClient</code> value
+     */
+    @Bean
+    public DirectTradeClient getTradeClient()
+    {
+        return new DirectTradeClient();
     }
     /**
      * Get the strategy message factory value.

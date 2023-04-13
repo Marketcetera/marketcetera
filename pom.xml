@@ -429,9 +429,9 @@
       <!-- Compile: Other -->
       <!-- used to generate Docker-like variable names -->
       <dependency>
-	<groupId>info.schnatterer.moby-names-generator</groupId>
-	<artifactId>moby-names-generator</artifactId>
-	<version>20.10.0-r0</version>
+        <groupId>info.schnatterer.moby-names-generator</groupId>
+        <artifactId>moby-names-generator</artifactId>
+        <version>20.10.0-r0</version>
       </dependency>
       <dependency>
         <groupId>org.flywaydb</groupId>
@@ -1129,8 +1129,8 @@
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
         <version>1.7.0</version>
-	<!-- see this for building on Eclipse: https://stackoverflow.com/questions/47477194/os-detected-classifier-not-set-os-maven-plugin-and-eclipse-oxygen -->
-	<!-- copy the plugin to the Eclipse plugins directory as instructed -->
+        <!-- see this for building on Eclipse: https://stackoverflow.com/questions/47477194/os-detected-classifier-not-set-os-maven-plugin-and-eclipse-oxygen -->
+        <!-- copy the plugin to the Eclipse plugins directory as instructed -->
       </extension>
     </extensions>
     <resources>
@@ -1151,6 +1151,12 @@
     </resources>
   </build>
   <profiles>
+    <profile>
+      <id>ide-build</id>
+      <build>
+        <directory>${project.basedir}/target-ide</directory>
+      </build>
+    </profile>
     <profile>
       <id>release-sign-artifacts</id>
       <activation>

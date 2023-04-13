@@ -1,4 +1,4 @@
-package org.marketcetera.client.rpc.server;
+package org.marketcetera.trade.rpc.server;
 
 import java.math.BigDecimal;
 import java.time.Instant;
