@@ -1056,6 +1056,8 @@ public class TradeRpcClient
     {
         if(inListener instanceof TradeMessageListener) {
             return new TradeMessageListenerProxy((TradeMessageListener)inListener);
+        } else if(inListener instanceof SuggestionListener) {
+            return new SuggestionListenerProxy((SuggestionListener)inListener);
         } else {
             throw new UnsupportedOperationException();
         }

@@ -227,6 +227,37 @@ public abstract class PhotonServices
         };
         return tableCell;
     }
+    /**
+     * Create a <code>TableCell</code> <code>BigDecimal</code> implementation that is rendered with the given scale. 
+     *
+     * @param <T> the type of the row item in the table
+     * @param inTableColumn a <code>TableColumn&lt;T,BigDecimal</code> value
+     * @param inPreferredScale an <code>int</code> value
+     * @param inMaxScale an <code>int</code> value
+     * @return a <code>TableCell&lt;T,BigDecimal&gt;</code> value
+     */
+    public static <T> TableCell<T,BigDecimal> renderNumberCell(TableColumn<T,BigDecimal> inTableColumn,
+                                                               int inPreferredScale,
+                                                               int inMaxScale)
+    {
+        TableCell<T,BigDecimal> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(BigDecimal inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty && inItem != null){
+                    this.setText(BigDecimalUtil.renderDecimal(inItem,
+                                                              inPreferredScale,
+                                                              inMaxScale));
+                }
+            }
+        };
+        return tableCell;
+    }
     public static <T> TableCell<T,BigDecimal> renderCurrencyCell(TableColumn<T,BigDecimal> inTableColumn)
     {
         TableCell<T,BigDecimal> tableCell = new TableCell<>() {

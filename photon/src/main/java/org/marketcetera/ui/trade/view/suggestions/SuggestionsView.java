@@ -5,16 +5,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.SuggestionListener;
+import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.service.trade.TradeClientService;
-import org.marketcetera.ui.strategy.view.DisplayStrategyMessage;
+import org.marketcetera.ui.trade.event.SuggestionEvent;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
@@ -26,12 +28,18 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -62,6 +70,7 @@ public class SuggestionsView
         mainLayout.getChildren().add(suggestionTable);
         suggestionTable.prefWidthProperty().bind(mainLayout.widthProperty());
         suggestionTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        initializeSuggestionListener();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.view.ContentView#onClose()
@@ -206,7 +215,9 @@ public class SuggestionsView
         identifierColumn.setCellValueFactory(new PropertyValueFactory<>("identifier"));
         scoreColumn = new TableColumn<>("Score"); 
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score"));
-        scoreColumn.setCellFactory(tableColumn -> PhotonServices.renderNumberCell(tableColumn));
+        scoreColumn.setCellFactory(tableColumn -> PhotonServices.renderNumberCell(tableColumn,
+                                                                                  4,
+                                                                                  4));
         quantityColumn = new TableColumn<>("Quantity"); 
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         quantityColumn.setCellFactory(tableColumn -> PhotonServices.renderNumberCell(tableColumn));
@@ -230,9 +241,26 @@ public class SuggestionsView
         suggestionTable.getColumns().add(scoreColumn);
         suggestionTable.getColumns().add(sideColumn);
         suggestionTable.getColumns().add(instrumentColumn);
+        suggestionTable.getColumns().add(quantityColumn);
         suggestionTable.getColumns().add(priceColumn);
         suggestionTable.getColumns().add(orderTypeColumn);
         suggestionTable.getColumns().add(timestampColumn);
+    }
+    /**
+     * Enable or disable context menu items based on the given selected row items.
+     *
+     * @param inSelectedItems a <code>Collection&lt;DisplaySuggestion&gt;</code> value
+     */
+    protected void enableContextMenuItems(Collection<DisplaySuggestion> inSelectedItems)
+    {
+        if(inSelectedItems == null || inSelectedItems.isEmpty()) {
+            executeMenuItem.setDisable(true);
+            deleteMenuItem.setDisable(true);
+            return;
+        }
+        // any suggestion can be executed or deleted, assuming appropriate permissions
+        executeMenuItem.setDisable(authzHelperService.hasPermission(TradePermissions.SendOrderAction));
+        deleteMenuItem.setDisable(false);
     }
     /**
      * Get the selected suggestions.
@@ -244,43 +272,119 @@ public class SuggestionsView
         return suggestionTable.getSelectionModel().getSelectedItems();
     }
     /**
-     * Create a human-readable representation of the given strategy messages.
-     *
-     * @param inStrategyMessages a <code>Collection&lt;DisplayStrategymessage&gt;</code> value
-     * @return a <code>String</code> value
-     */
-    private String renderStrategyMessages(Collection<DisplayStrategyMessage> inStrategyMessages)
-    {
-        Table table = new Table(4,
-                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
-                                ShownBorders.ALL,
-                                false);
-        table.addCell("Strategy Messages",
-                      PlatformServices.cellStyle,
-                      4);
-        table.addCell("Timestamp",
-                      PlatformServices.cellStyle);
-        table.addCell("Strategy",
-                      PlatformServices.cellStyle);
-        table.addCell("Severity",
-                      PlatformServices.cellStyle);
-        table.addCell("Message",
-                      PlatformServices.cellStyle);
-        for(DisplayStrategyMessage message : inStrategyMessages) {
-            table.addCell(String.valueOf(message.timestampProperty().get()));
-            table.addCell(message.strategyNameProperty().get());
-            table.addCell(message.severityProperty().get().name());
-            table.addCell(message.messageProperty().get());
-        }
-        return table.render();
-    }
-    /**
      * Initialize the strategy context menu.
      */
     private void initializeSuggestionContextMenu()
     {
-        // execute
-        // delete
+        executeMenuItem = new MenuItem("Execute");
+        executeMenuItem.setOnAction(event -> {
+            Collection<DisplaySuggestion> selectedItems = getSelectedSuggestions();
+            if(selectedItems == null || selectedItems.isEmpty()) {
+                return;
+            }
+            doExecute(selectedItems);
+        });
+        deleteMenuItem = new MenuItem("Delete");
+        deleteMenuItem.setOnAction(event -> {
+            Collection<DisplaySuggestion> selectedItems = getSelectedSuggestions();
+            if(selectedItems == null || selectedItems.isEmpty()) {
+                return;
+            }
+            doDelete(selectedItems);
+        });
+        copyMenuItem = new MenuItem("Copy");
+        copyMenuItem.setOnAction(event -> {
+            Collection<DisplaySuggestion> selectedItems = getSelectedSuggestions();
+            if(selectedItems == null || selectedItems.isEmpty()) {
+                return;
+            }
+            doCopy(selectedItems);
+        });
+        suggestionContextMenu = new ContextMenu();
+        suggestionContextMenu.getItems().addAll(executeMenuItem,
+                                                deleteMenuItem,
+                                                new SeparatorMenuItem(),
+                                                copyMenuItem);
+        suggestionTable.setContextMenu(suggestionContextMenu);
+        suggestionTable.getSelectionModel().selectedItemProperty().addListener((ChangeListener<DisplaySuggestion>) (inObservable,inOldValue,inNewValue) -> {
+            enableContextMenuItems(getSelectedSuggestions());
+        });
+    }
+    /**
+     * Perform the execute operation on the given suggestions.
+     *
+     * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
+     */
+    private void doExecute(Collection<DisplaySuggestion> inSuggestions)
+    {
+        for(DisplaySuggestion displaySuggestion : inSuggestions) {
+            uiMessageService.post(new SuggestionEvent(displaySuggestion.sideProperty().get().name() + " " + displaySuggestion.instrumentProperty().get().getFullSymbol(),
+                                                      displaySuggestion.sourceProperty().get()));
+        }
+    }
+    /**
+     * Perform the delete operation on the given suggestions.
+     *
+     * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
+     */
+    private void doDelete(Collection<DisplaySuggestion> inSuggestions)
+    {
+        suggestionTable.getItems().removeAll(inSuggestions);
+    }
+    /**
+     * Perform the copy operation on the given suggestions.
+     *
+     * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
+     */
+    private void doCopy(Collection<DisplaySuggestion> inSuggestions)
+    {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent clipboardContent = new ClipboardContent();
+        clipboardContent.putString(renderSuggestions(inSuggestions));
+        clipboard.setContent(clipboardContent);
+    }
+    /**
+     * Create a human-readable representation of the given suggestions.
+     *
+     * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
+     * @return a <code>String</code> value
+     */
+    private String renderSuggestions(Collection<DisplaySuggestion> inSuggestions)
+    {
+        Table table = new Table(8,
+                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                ShownBorders.ALL,
+                                false);
+        table.addCell("Trade Suggestions",
+                      PlatformServices.cellStyle,
+                      8);
+        table.addCell("Identifier",
+                      PlatformServices.cellStyle);
+        table.addCell("Score",
+                      PlatformServices.cellStyle);
+        table.addCell("Side",
+                      PlatformServices.cellStyle);
+        table.addCell("Instrument",
+                      PlatformServices.cellStyle);
+        table.addCell("Quantity",
+                      PlatformServices.cellStyle);
+        table.addCell("Price",
+                      PlatformServices.cellStyle);
+        table.addCell("Order Type",
+                      PlatformServices.cellStyle);
+        table.addCell("Timestamp",
+                      PlatformServices.cellStyle);
+        for(DisplaySuggestion suggestion : inSuggestions) {
+            table.addCell(suggestion.identifierProperty().get());
+            table.addCell(BigDecimalUtil.renderDecimal(suggestion.scoreProperty().get(),4,4));
+            table.addCell(suggestion.sideProperty().get().name());
+            table.addCell(suggestion.instrumentProperty().get().getFullSymbol());
+            table.addCell(BigDecimalUtil.render(suggestion.quantityProperty().get()));
+            table.addCell(BigDecimalUtil.renderCurrency(suggestion.priceProperty().get()));
+            table.addCell(suggestion.orderTypeProperty().get().name());
+            table.addCell(String.valueOf(suggestion.timestampProperty().get()));
+        }
+        return table.render();
     }
     /**
      * identifier column
@@ -316,6 +420,22 @@ public class SuggestionsView
     private TableColumn<DisplaySuggestion,Date> timestampColumn;
     // TODO suggestion type column?
     // TODO suggestion owner column?
+    /**
+     * context menu for the suggestion table
+     */
+    private ContextMenu suggestionContextMenu;
+    /**
+     * execute menu item for the suggestion table
+     */
+    private MenuItem executeMenuItem;
+    /**
+     * delete menu item for the suggestion table
+     */
+    private MenuItem deleteMenuItem;
+    /**
+     * copy menu item for the suggestion table
+     */
+    private MenuItem copyMenuItem;
     /**
      * listens for suggestions
      */

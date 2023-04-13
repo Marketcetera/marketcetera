@@ -36,6 +36,7 @@ public class DisplaySuggestion
      */
     public DisplaySuggestion(Suggestion inSuggestion)
     {
+        sourceProperty.set(inSuggestion);
         identifierProperty.set(inSuggestion.getIdentifier());
         scoreProperty.set(inSuggestion.getScore());
         if(inSuggestion instanceof OrderSingleSuggestion) {
@@ -139,6 +140,23 @@ public class DisplaySuggestion
         return timestampProperty;
     }
     /**
+     * Get the sourceProperty value.
+     *
+     * @return a <code>ReadOnlyObjectProperty<Suggestion></code> value
+     */
+    public ReadOnlyObjectProperty<Suggestion> sourceProperty()
+    {
+        return sourceProperty;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return sourceProperty.get().toString();
+    }
+    /**
      * identifier property value
      */
     private final StringProperty identifierProperty = new SimpleStringProperty();
@@ -170,4 +188,8 @@ public class DisplaySuggestion
      * timestamp property value
      */
     private final ObjectProperty<Date> timestampProperty = new SimpleObjectProperty<>();
+    /**
+     * original source suggestion property value
+     */
+    private final ObjectProperty<Suggestion> sourceProperty = new SimpleObjectProperty<>();
 }

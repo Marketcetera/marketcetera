@@ -1,4 +1,4 @@
-package org.marketcetera.ui.marketdata.event;
+package org.marketcetera.ui.trade.event;
 
 import org.marketcetera.trade.HasSuggestion;
 import org.marketcetera.trade.Suggestion;
@@ -9,13 +9,13 @@ import org.marketcetera.ui.view.ContentViewFactory;
 /* $License$ */
 
 /**
- * Indicates that a trade suggestion has been triggered from market data.
+ * Indicates that a trade suggestion has been triggered.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class MarketDataSuggestionEvent
+public class SuggestionEvent
         implements NewWindowEvent,HasSuggestion
 {
     /* (non-Javadoc)
@@ -43,13 +43,13 @@ public class MarketDataSuggestionEvent
         return OrderTicketViewFactory.class;
     }
     /**
-     * Create a new MarketDataSuggestionEvent instance.
+     * Create a new SuggestionEvent instance.
      *
      * @param inTitle a <code>String</code> value
      * @param inSuggestion a <code>Suggestion</code> value
      */
-    public MarketDataSuggestionEvent(String inTitle,
-                                     Suggestion inSuggestion)
+    public SuggestionEvent(String inTitle,
+                           Suggestion inSuggestion)
     {
         title = inTitle;
         suggestion = inSuggestion;
