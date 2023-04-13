@@ -313,8 +313,9 @@ public class MarketDataDetailView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        uiMessageService.post(new SuggestionEvent(inSide.name() + " " + marketDataInstrument.getSymbol(),
-                                                             suggestion));
+        uiMessageService.post(applicationContext.getBean(SuggestionEvent.class,
+                                                         inSide.name() + " " + marketDataInstrument.getSymbol(),
+                                                         suggestion));
     }
     /**
      * Execute the market data request.
