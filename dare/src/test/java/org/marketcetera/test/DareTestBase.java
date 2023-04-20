@@ -566,7 +566,7 @@ public class DareTestBase
      * @param inRootOrderId an <code>OrderID</code> value
      * @param inOrderId an <code>OrderID</code> value
      * @param inExpectedOrderStatus an <code>OrderStatus</code> value
-     * @param return an <code>OrderSummary</code> value
+     * @return an <code>OrderSummary</code> value
      * @throws Exception if an unexpected error occurs
      */
     protected OrderSummary verifyOrderStatus(final OrderID inRootOrderId,
@@ -595,7 +595,7 @@ public class DareTestBase
      *
      * @param inRootOrderId an <code>OrderID</code> value
      * @param inOrderId an <code>OrderID</code> value
-     * @param return an <code>OrderSummary</code> value
+     * @return an <code>OrderSummary</code> value
      * @throws Exception if an unexpected error occurs
      */
     protected OrderSummary findOrderStatus(final OrderID inRootOrderId,
@@ -2701,8 +2701,6 @@ public class DareTestBase
          * Generate and send an ack for the given new order.
          *
          * @param inMessage a <code>quickfix.Message</code> value
-         * @param inOrderStatus an <code>OrderStatus</code> value
-         * @param inExecutionType an <code>ExecutionType</code> value
          * @return a <code>quickfix.Message</code> value
          * @throws Exception if the message could not be sent
          */
@@ -2714,14 +2712,11 @@ public class DareTestBase
                                          ExecutionType.New);
         }
         /**
-         * 
+         * Generate and send a cancel ack for the given order.
          *
-         *
-         * @param inMessage
-         * @param inOrderStatus
-         * @param inExecutionType
-         * @return
-         * @throws Exception
+         * @param inMessage a <code>quickfix.Message</code> value
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if the message could not be sent
          */
         public quickfix.Message generateAndSendCancelAck(quickfix.Message inMessage)
                 throws Exception

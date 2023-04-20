@@ -322,7 +322,7 @@ public abstract class AbstractMockFixApplication
      *
      * @param inSessionId a <code>quickfix.SessionID</code> value
      * @param inMessage a <code>quickfix.Message</code> value
-     * @param inMessageContainers a <code>Map&lt;quickfix.SessionID,BlockingDeque&lt;quickfix.Message&gt;&gt;
+     * @param inMessageContainers a <code>Map&lt;quickfix.SessionID,BlockingDeque&lt;quickfix.Message&gt;&gt;</code>
      * @throws quickfix.FieldNotFound if the message could not be added
      */
     protected void addMessageToContainer(String inLabel,

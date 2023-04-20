@@ -39,32 +39,42 @@ public class StyleService
                               PlatformServices.getServiceName(getClass()));
     }
     /**
+     * Add styles to the given view.
      *
-     *
-     * @param inContentView
+     * @param inContentView a <code>ContentView</code> value
      */
     public void addStyle(ContentView inContentView)
     {
 //        addStyle(inContentView.getScene());
     }
     /**
+     * Add styles to the given scene.
      *
-     *
-     * @param inContentView
+     * @param inScene a <code>Scene</code> value
      */
-    public void addStyle(Scene scene)
+    public void addStyle(Scene inScene)
     {
-        Parent root = scene.getRoot();
+        Parent root = inScene.getRoot();
         for(Node node : root.getChildrenUnmodifiable()) {
             addStyle(node);
         }
     }
-    public void addStyleToAll(Node...inComponents)
+    /**
+     * Add styles to the given nodes.
+     *
+     * @param inNodes a <code>Node[]</code> value
+     */
+    public void addStyleToAll(Node...inNodes)
     {
-        for(Node node : inComponents) {
+        for(Node node : inNodes) {
             addStyle(node);
         }
     }
+    /**
+     * Add style to the given node.
+     *
+     * @param inComponent a <code>Node</code> value
+     */
     public void addStyle(Node inComponent)
     {
 //        String componentId = inComponent.getId();
@@ -82,6 +92,13 @@ public class StyleService
 //                   componentId,
 //                   inComponent);
     }
+    /**
+     * Apply style to the node with the given key.
+     *
+     * @param inIndex an <code>int</code> value
+     * @param inKey a <code>String</code> value
+     * @param inComponent a <code>Node</code> value
+     */
     private void applyStyle(int inIndex,
                             String inKey,
                             Node inComponent)

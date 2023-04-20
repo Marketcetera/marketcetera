@@ -288,6 +288,9 @@ public class CSVParser {
  
   /**
    * Convenience method for <code>nextToken(null)</code>.
+   *
+   * @return a <code>Token</code> value
+   * @throws IOException if an error occurs
    */
   protected Token nextToken() throws IOException {
       return nextToken(new Token());
@@ -563,6 +566,7 @@ public class CSVParser {
   /**
    * Sets the specified CSV Strategy
    *
+   * @param strategy a <code>CSVStrategy</code> value
    * @return current instance of CSVParser to allow chained method calls
    * @deprecated the strategy should be set in the constructor {@link #CSVParser(Reader,CSVStrategy)}.
    */

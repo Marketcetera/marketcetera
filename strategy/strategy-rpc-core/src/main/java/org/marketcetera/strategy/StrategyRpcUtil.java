@@ -169,7 +169,7 @@ public abstract class StrategyRpcUtil
     /**
      * Get the object from the given RPC value.
      *
-     * @param inSeverityan <code>StrategyTypesRpc.StrategyMessageSeverity</code> value
+     * @param inSeverity an <code>StrategyTypesRpc.StrategyMessageSeverity</code> value
      * @return an Optional&lt;INotification.Severity&gt; value
      */
     public static Optional<INotification.Severity> getStrategyMessageSeverity(StrategyTypesRpc.StrategyMessageSeverity inSeverity)

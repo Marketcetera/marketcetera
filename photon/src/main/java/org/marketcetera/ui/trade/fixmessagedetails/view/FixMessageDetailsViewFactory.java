@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /* $License$ */
 
 /**
- * Creates {@link OpenOrderView} content objects.
+ * Creates {@link FixMessageDetailsView} content objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

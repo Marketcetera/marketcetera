@@ -41,7 +41,6 @@ import javafx.stage.Stage;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
- * @see https://openjfx.io/openjfx-docs/#maven
  */
 public class PhotonApp
         extends Application

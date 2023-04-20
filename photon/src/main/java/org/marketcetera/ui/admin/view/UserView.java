@@ -63,7 +63,7 @@ public class UserView
      * Create a new UserView instance.
      *
      * @param inParentWindow a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public UserView(Region inParentWindow,

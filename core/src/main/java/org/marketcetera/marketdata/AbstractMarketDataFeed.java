@@ -376,13 +376,12 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * Connects to the feed and supplies the given credentials.
      *
      * @param inCredentials a <code>C</code> value
-     * @return a <code>boolean<code> value indicating whether the login
+     * @return a <code>boolean</code> value indicating whether the login
      *   was successful or not
      */
     protected abstract boolean doLogin(C inCredentials);
     /**
      * Disconnect from the feed.
-     * @throws InterruptedException if the thread was interrupted during execution
     */
     protected abstract void doLogout();
     /**

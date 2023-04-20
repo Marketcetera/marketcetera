@@ -98,7 +98,7 @@ public interface TradeClient
      * Returns all positions of options with the given root symbols based on reports generated and received on or before the supplied date in UTC.
      *
      * @param inDate a <code>Date</code> value
-     * @param inRootElements a <code>String[]</code> value
+     * @param inRootSymbols a <code>String[]</code> value
      * @return a <code>Map&lt;PositionKey&lt;Optiont&gt;,BigDecimal&gt;</code> value
      */
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,

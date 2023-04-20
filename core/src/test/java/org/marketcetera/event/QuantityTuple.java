@@ -29,6 +29,7 @@ public class QuantityTuple
      *
      * @param inPrice a <code>BigDecimal</code> value
      * @param inSize a <code>BigDecimal</code> value
+     * @param inType a <code>Class&lt;? extends MarketDataEvent&gt;</code> value
      */
     public QuantityTuple(BigDecimal inPrice,
                          BigDecimal inSize,
@@ -59,7 +60,7 @@ public class QuantityTuple
     /**
      * Get the type value.
      *
-     * @return a <code>Class<? extends MarketDataEvent></code> value
+     * @return a <code>Class&lt;? extends MarketDataEvent&gt;</code> value
      */
     public Class<? extends MarketDataEvent> getType()
     {

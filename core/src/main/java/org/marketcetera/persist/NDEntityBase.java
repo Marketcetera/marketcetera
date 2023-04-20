@@ -22,20 +22,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>
  * Supporting query classes are also provided to easily add
  * query support for the subclasses.
- * 
- * <p>
- * {@link org.marketcetera.persist.SingleNDEntityQuery} provides
- * support for queries that fetch single instance given the entity
- * name. Note that this assumes the names of the entities are unique
- * amongst all its instances. To ensure that, subclasses that make
- * use of this feature should declare a unique constraint on the
- * name attribute.
- * <p>
- * {@link org.marketcetera.persist.MultiNDQuery} provides support
- * for queries that fetch multiple instances of subclasses of this
- * class. The query class provides filters to filter the query
- * results by name and description filters. It also provides
- * orders to order the results by name or description.
  *
  */
 @MappedSuperclass

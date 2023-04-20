@@ -60,7 +60,7 @@ public class PermissionView
      * Create a new PermissionView instance.
      *
      * @param inParentWindow a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public PermissionView(Region inParentWindow,

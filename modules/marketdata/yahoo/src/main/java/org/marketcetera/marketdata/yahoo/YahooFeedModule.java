@@ -16,7 +16,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * <p>
  * Module Features
- * <table summary="YahooFeedModule capabilities">
+ * <table>
+ * <caption>YahooFeedModule capabilities</caption>
  * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Starts the feed, logs into it.</td></tr>

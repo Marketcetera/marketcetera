@@ -199,7 +199,7 @@ public abstract class ExpectedFailure<T extends Exception> {
     /**
      * Subclasses should implement this method to execute
      * code that is expected to fail with the exception of type
-     * <code>T<code>
+     * <code>T</code>.
      *
      * @throws Exception if there's a failure.
      */

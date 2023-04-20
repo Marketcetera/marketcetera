@@ -1128,7 +1128,7 @@ public abstract class TradeRpcUtil
      * Set the order ID from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOrderId(OrderBase inOrder,
                                   TradeTypesRpc.OrderBase inRpcOrder)
@@ -1143,7 +1143,7 @@ public abstract class TradeRpcUtil
      * Set the original order ID from the given RPC order.
      *
      * @param inOrder a <code>RelatedOrder</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setOriginalOrderId(RelatedOrder inOrder,
                                           TradeTypesRpc.OrderBase inRpcOrder)
@@ -1158,7 +1158,7 @@ public abstract class TradeRpcUtil
      * Set the broker order ID from the given RPC order.
      *
      * @param inOrder a <code>RelatedOrder</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerOrderId(RelatedOrder inOrder,
                                         TradeTypesRpc.OrderBase inRpcOrder)
@@ -1173,7 +1173,7 @@ public abstract class TradeRpcUtil
      * Set the broker ID from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerId(OrderBase inOrder,
                                    TradeTypesRpc.OrderBase inRpcOrder)
@@ -1188,7 +1188,7 @@ public abstract class TradeRpcUtil
      * Set the instrument from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setInstrument(OrderBase inOrder,
                                      TradeTypesRpc.OrderBase inRpcOrder)
@@ -1201,7 +1201,7 @@ public abstract class TradeRpcUtil
      * Set the account from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setAccount(OrderBase inOrder,
                                   TradeTypesRpc.OrderBase inRpcOrder)
@@ -1215,7 +1215,7 @@ public abstract class TradeRpcUtil
      * Set the text from the given RPC order.
      *
      * @param inOrder an <code>OrderBase</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setText(OrderBase inOrder,
                                TradeTypesRpc.OrderBase inRpcOrder)
@@ -1229,7 +1229,7 @@ public abstract class TradeRpcUtil
      * Set the execution destination from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setExecutionDestination(NewOrReplaceOrder inOrder,
                                                TradeTypesRpc.OrderBase inRpcOrder)
@@ -1258,7 +1258,7 @@ public abstract class TradeRpcUtil
      * Set the peg-to-midpoint value from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setPegToMidpoint(NewOrReplaceOrder inOrder,
                                         TradeTypesRpc.OrderBase inRpcOrder)
@@ -1269,7 +1269,7 @@ public abstract class TradeRpcUtil
      * Set the broker algo from the given RPC order.
      *
      * @param inOrder a <code>NewOrReplaceOrder</code> value
-     * @param inBuilder a <code>TradeTypesRpc.OrderBase.Builder</code> value
+     * @param inRpcOrder a <code>TradeTypesRpc.OrderBase.Builder</code> value
      */
     public static void setBrokerAlgo(NewOrReplaceOrder inOrder,
                                      TradeTypesRpc.OrderBase inRpcOrder)
@@ -1488,7 +1488,7 @@ public abstract class TradeRpcUtil
     /**
      * Get the broker order ID from the given RPC report.
      *
-     * @param inObject a <code>TradeTypesRpc.Report</code> value
+     * @param inReport a <code>TradeTypesRpc.Report</code> value
      * @return an <code>Optional&lt;OrderID&gt;</code> value
      */
     public static Optional<OrderID> getBrokerOrderId(TradeTypesRpc.Report inReport)
@@ -1764,7 +1764,7 @@ public abstract class TradeRpcUtil
     /**
      * Get the trade message value from the given RPC trade message.
      *
-     * @param inReport a <code>TradeTypesRpc.TradeMessage</code> value
+     * @param inRpcTradeMessage a <code>TradeTypesRpc.TradeMessage</code> value
      * @return a <code>TradeMessage</code> value
      */
     public static TradeMessage getTradeMessage(TradeTypesRpc.TradeMessage inRpcTradeMessage)

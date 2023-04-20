@@ -50,7 +50,7 @@ public class DisplayStrategyMessage
     /**
      *  the timestampProperty value.
      *
-     * @return a <code>ReadOnlyObjectProperty<DateTime></code> value
+     * @return a <code>ReadOnlyObjectProperty&lt;DateTime&gt;</code> value
      */
     public ReadOnlyObjectProperty<DateTime> timestampProperty()
     {
@@ -59,7 +59,7 @@ public class DisplayStrategyMessage
     /**
      *  the severityProperty value.
      *
-     * @return a <code>ReadOnlyObjectProperty<Severity></code> value
+     * @return a <code>ReadOnlyObjectProperty&lt;Severity&gt;</code> value
      */
     public ReadOnlyObjectProperty<Severity> severityProperty()
     {

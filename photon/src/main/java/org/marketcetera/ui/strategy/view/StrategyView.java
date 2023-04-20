@@ -145,7 +145,7 @@ public class StrategyView
         filterLayout.setPadding(new Insets(10,10,10,10));
         int rowCount = 0;
         int colCount = 0;
-        filterLayout.add(new Label("Strategy Id"),colCount,rowCount);
+        filterLayout.add(new Label("Strategy Name"),colCount,rowCount);
         filterLayout.add(strategyNameComboBox,++colCount,rowCount);
         filterLayout.add(new Label("Severity"),++colCount,rowCount);
         filterLayout.add(severityComboBox,++colCount,rowCount);
@@ -239,7 +239,7 @@ public class StrategyView
      * Create a new StrategyView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public StrategyView(Region inParent,
@@ -841,10 +841,10 @@ public class StrategyView
             firstGroup = true;
             strategyTableContextMenu.getItems().add(unloadStrategyMenuItem);
         }
-        if(authzHelperService.hasPermission(StrategyPermissions.CancelStrategyUploadAction)) {
-            firstGroup = true;
-            strategyTableContextMenu.getItems().add(cancelStrategyUploadMenuItem);
-        }
+//        if(authzHelperService.hasPermission(StrategyPermissions.CancelStrategyUploadAction)) {
+//            firstGroup = true;
+//            strategyTableContextMenu.getItems().add(cancelStrategyUploadMenuItem);
+//        }
         if(authzHelperService.hasPermission(StrategyPermissions.ClearStrategyEventsAction)) {
             if(firstGroup) {
                 strategyTableContextMenu.getItems().add(new SeparatorMenuItem());

@@ -3,6 +3,11 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.persist.PageRequest;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.UserID;
+
 /* $License$ */
 
 /**
@@ -12,24 +17,28 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface TradePnlClient
         extends org.marketcetera.core.BaseClient
 {
     /**
      * Requests positions for a user.
      *
-     * @param inUserID a <code>org.marketcetera.trade.UserID</code> value
-     * @param inPageRequest a <code>org.marketcetera.persist.PageRequest</code> value
-     * @returns a <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
+     * @param inUserID a <code>UserID</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CurrentPosition</code> value
      */
-    org.marketcetera.trade.pnl.CurrentPosition getCurrentPositions(org.marketcetera.trade.UserID inUserID,org.marketcetera.persist.PageRequest inPageRequest);
+    CurrentPosition getCurrentPositions(UserID inUserID,
+                                        PageRequest inPageRequest);
     /**
      * Requests profit and loss for a user and an instrument.
      *
-     * @param inUserID a <code>org.marketcetera.trade.UserID</code> value
-     * @param inInstrument a <code>org.marketcetera.trade.Instrument</code> value
-     * @param inPageRequest a <code>org.marketcetera.persist.PageRequest</code> value
-     * @returns a <code>org.marketcetera.trade.pnl.ProfitAndLoss</code> value
+     * @param inUserID a <code>UserID</code> value
+     * @param inInstrument a <code>Instrument</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>ProfitAndLoss</code> value
      */
-    org.marketcetera.trade.pnl.ProfitAndLoss getProfitAndLoss(org.marketcetera.trade.UserID inUserID,org.marketcetera.trade.Instrument inInstrument,org.marketcetera.persist.PageRequest inPageRequest);
+    ProfitAndLoss getProfitAndLoss(UserID inUserID,
+                                   Instrument inInstrument,
+                                   PageRequest inPageRequest);
 }

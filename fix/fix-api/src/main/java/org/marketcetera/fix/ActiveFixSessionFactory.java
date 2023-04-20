@@ -24,9 +24,9 @@ public interface ActiveFixSessionFactory
     /**
      * Create an <code>ActiveFixSession</code> object.
      *
-     * @param inFixSession a <code>FixSession</code> value
-     * @param inClusterData a <code>ClusterData</code> value
-     * @param inStatus a <code>FixSessionStatus</code> value
+     * @param inUnderlyingFixSession a <code>FixSession</code> value
+     * @param inInstanceData a <code>ClusterData</code> value
+     * @param inBrokerStatus a <code>FixSessionStatus</code> value
      * @param inSessionCustomization a <code>SessionCustomization</code> value
      * @return an <code>ActiveFixSession</code> value
      */

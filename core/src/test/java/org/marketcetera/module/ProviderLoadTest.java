@@ -26,7 +26,7 @@ public class ProviderLoadTest extends ModuleTestBase {
         mManager.stop();
     }
     /**
-     * Tests various failures in {@link ModuleManager#init()} &
+     * Tests various failures in {@link ModuleManager#init()} &amp;
      * {@link ModuleManager#refresh()}
      *  and their expected behavior.
      *

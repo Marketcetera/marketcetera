@@ -12,13 +12,14 @@ import org.marketcetera.module.ModuleURN;
  * <p>
  * The factory has the following characteristics.
  * <table>
+ * <caption>Describes the module characteristics</caption>
  * <tr><th>Provider URN:</th><td><code>metc:mdata:feeder</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:mdata:bogus:feeder</code></td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>
  * <tr><th>Auto-Started:</th><td>Yes</td></tr>
  * <tr><th>Instantiation Arguments:</th><td>None</td></tr>
- * <tr><th>Module Type:</th><td>{@link FeederModule}</td></tr>
+ * <tr><th>Module Type:</th><td>{@link TestFeedModule}</td></tr>
  * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>

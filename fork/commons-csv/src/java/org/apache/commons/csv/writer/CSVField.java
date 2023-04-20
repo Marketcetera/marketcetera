@@ -103,7 +103,7 @@ public class CSVField {
     /**
      * Does this field override fill ?
      * 
-     * @return
+     * @return a <code>boolean</code> value
      */
     public boolean overrideFill() {
         return overrideFill;

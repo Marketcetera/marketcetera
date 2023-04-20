@@ -37,7 +37,7 @@ public class PersistentMetric
     /**
      * Sets the name value.
      *
-     * @param a <code>String</code> value
+     * @param inName a <code>String</code> value
      */
     public void setName(String inName)
     {
@@ -55,7 +55,7 @@ public class PersistentMetric
     /**
      * Sets the timestamp value.
      *
-     * @param a <code>Date</code> value
+     * @param inTimestamp a <code>Date</code> value
      */
     public void setTimestamp(Date inTimestamp)
     {
@@ -73,7 +73,7 @@ public class PersistentMetric
     /**
      * Sets the type value.
      *
-     * @param a <code>MetricType</code> value
+     * @param inType a <code>MetricType</code> value
      */
     public void setType(MetricType inType)
     {
@@ -91,7 +91,7 @@ public class PersistentMetric
     /**
      * Sets the count value.
      *
-     * @param a <code>long</code> value
+     * @param inCount a <code>long</code> value
      */
     public void setCount(long inCount)
     {
@@ -127,7 +127,7 @@ public class PersistentMetric
     /**
      * Sets the mean value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inMean a <code>BigDecimal</code> value
      */
     public void setMean(BigDecimal inMean)
     {
@@ -145,7 +145,7 @@ public class PersistentMetric
     /**
      * Sets the m1 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inM1 a <code>BigDecimal</code> value
      */
     public void setM1(BigDecimal inM1)
     {
@@ -163,7 +163,7 @@ public class PersistentMetric
     /**
      * Sets the m5 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inM5 a <code>BigDecimal</code> value
      */
     public void setM5(BigDecimal inM5)
     {
@@ -181,7 +181,7 @@ public class PersistentMetric
     /**
      * Sets the m15 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inM15 a <code>BigDecimal</code> value
      */
     public void setM15(BigDecimal inM15)
     {
@@ -199,7 +199,7 @@ public class PersistentMetric
     /**
      * Sets the min value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inMin a <code>BigDecimal</code> value
      */
     public void setMin(BigDecimal inMin)
     {
@@ -217,7 +217,7 @@ public class PersistentMetric
     /**
      * Sets the max value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inMax a <code>BigDecimal</code> value
      */
     public void setMax(BigDecimal inMax)
     {
@@ -235,7 +235,7 @@ public class PersistentMetric
     /**
      * Sets the stdDev value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inStdDev a <code>BigDecimal</code> value
      */
     public void setStdDev(BigDecimal inStdDev)
     {
@@ -253,7 +253,7 @@ public class PersistentMetric
     /**
      * Sets the median value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inMedian a <code>BigDecimal</code> value
      */
     public void setMedian(BigDecimal inMedian)
     {
@@ -271,7 +271,7 @@ public class PersistentMetric
     /**
      * Sets the p75 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inP75 a <code>BigDecimal</code> value
      */
     public void setP75(BigDecimal inP75)
     {
@@ -289,7 +289,7 @@ public class PersistentMetric
     /**
      * Sets the p95 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inP95 a <code>BigDecimal</code> value
      */
     public void setP95(BigDecimal inP95)
     {
@@ -307,7 +307,7 @@ public class PersistentMetric
     /**
      * Sets the p98 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inP98 a <code>BigDecimal</code> value
      */
     public void setP98(BigDecimal inP98)
     {
@@ -325,7 +325,7 @@ public class PersistentMetric
     /**
      * Sets the p99 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inP99 a <code>BigDecimal</code> value
      */
     public void setP99(BigDecimal inP99)
     {
@@ -343,7 +343,7 @@ public class PersistentMetric
     /**
      * Sets the p999 value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inP999 a <code>BigDecimal</code> value
      */
     public void setP999(BigDecimal inP999)
     {
@@ -361,7 +361,7 @@ public class PersistentMetric
     /**
      * Sets the meanRate value.
      *
-     * @param a <code>BigDecimal</code> value
+     * @param inMeanRate a <code>BigDecimal</code> value
      */
     public void setMeanRate(BigDecimal inMeanRate)
     {
@@ -379,7 +379,7 @@ public class PersistentMetric
     /**
      * Sets the rateUnit value.
      *
-     * @param a <code>String</code> value
+     * @param inRateUnit a <code>String</code> value
      */
     public void setRateUnit(String inRateUnit)
     {
@@ -397,7 +397,7 @@ public class PersistentMetric
     /**
      * Sets the durationUnit value.
      *
-     * @param a <code>String</code> value
+     * @param inDurationUnit a <code>String</code> value
      */
     public void setDurationUnit(String inDurationUnit)
     {
@@ -415,7 +415,7 @@ public class PersistentMetric
     /**
      * Sets the hour value.
      *
-     * @param an <code>int</code> value
+     * @param inHour an <code>int</code> value
      */
     public void setHour(int inHour)
     {
@@ -433,7 +433,7 @@ public class PersistentMetric
     /**
      * Sets the minute value.
      *
-     * @param an <code>int</code> value
+     * @param inMinute an <code>int</code> value
      */
     public void setMinute(int inMinute)
     {
@@ -451,7 +451,7 @@ public class PersistentMetric
     /**
      * Sets the second value.
      *
-     * @param an <code>int</code> value
+     * @param inSecond an <code>int</code> value
      */
     public void setSecond(int inSecond)
     {
@@ -469,7 +469,7 @@ public class PersistentMetric
     /**
      * Sets the millis value.
      *
-     * @param an <code>int</code> value
+     * @param inMillis an <code>int</code> value
      */
     public void setMillis(int inMillis)
     {

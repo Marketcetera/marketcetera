@@ -98,7 +98,8 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  * while the sink module processes the event (for example, logs it). 
  * <p>
  * Module Features
- * <table summary="Describes the module attributes">
+ * <table>
+ * <caption>Describes the module attributes</caption>
  * <tr><th>Capabilities</th><td>Data Emitter, Data Reciever</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td>None.</td></tr>
  * <tr><th>Stops data flows</th><td>No.</td></tr>

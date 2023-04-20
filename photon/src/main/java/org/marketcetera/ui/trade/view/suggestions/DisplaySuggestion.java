@@ -142,7 +142,7 @@ public class DisplaySuggestion
     /**
      * Get the sourceProperty value.
      *
-     * @return a <code>ReadOnlyObjectProperty<Suggestion></code> value
+     * @return a <code>ReadOnlyObjectProperty&lt;Suggestion&gt;</code> value
      */
     public ReadOnlyObjectProperty<Suggestion> sourceProperty()
     {

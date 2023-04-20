@@ -28,7 +28,6 @@ public interface TradeService
      *
      * @param inOrder an <code>Order</code> value
      * @return a <code>ServerFixSession</code> value
-     * @throws NoBrokerSelected if a session could not be determined
      */
     ServerFixSession selectServerFixSession(Order inOrder);
     /**
@@ -37,8 +36,6 @@ public interface TradeService
      * @param inOrder an <code>Order</code> value
      * @param inServerFixSession a <code>ServerFixSession</code> value
      * @return a <code>quickfix.Message</code> value
-     * @throws BrokerUnavailable if the broker is unavailable or unknown
-     * @throws MessageIntercepted if the order should not be sent on in the data flow
      */
     quickfix.Message convertOrder(Order inOrder,
                                   ServerFixSession inServerFixSession);

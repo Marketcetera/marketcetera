@@ -16,7 +16,8 @@ import org.marketcetera.module.ModuleURN;
  * </ol>
  * <p>
  * The factory has the following characteristics.
- * <table summary="MarketDataRecorderModuleFactory characteristics">
+ * <table>
+ * <caption>MarketDataRecorderModuleFactory characteristics</caption>
  * <tr><th>Provider URN:</th><td><code>metc:mdata:recorder</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>No</td></tr>

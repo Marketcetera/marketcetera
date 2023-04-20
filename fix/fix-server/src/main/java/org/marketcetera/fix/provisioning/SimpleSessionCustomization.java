@@ -118,7 +118,7 @@ public class SimpleSessionCustomization
     /**
      * Sets the brokerAlgos value.
      *
-     * @param inBrokerAlgos a <code>Set<BrokerAlgoSpec&gt;</code> value
+     * @param inBrokerAlgos a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
      */
     public void setBrokerAlgos(Set<BrokerAlgoSpec> inBrokerAlgos)
     {
@@ -127,7 +127,7 @@ public class SimpleSessionCustomization
     /**
      * Sets the userWhitelist value.
      *
-     * @param inUserWhitelist a <code>Set<String&gt;</code> value
+     * @param inUserWhitelist a <code>Set&lt;String&gt;</code> value
      */
     public void setUserWhitelist(Set<String> inUserWhitelist)
     {
@@ -136,7 +136,7 @@ public class SimpleSessionCustomization
     /**
      * Sets the userBlacklist value.
      *
-     * @param inUserBlacklist a <code>Set<String&gt;</code> value
+     * @param inUserBlacklist a <code>Set&lt;String&gt;</code> value
      */
     public void setUserBlacklist(Set<String> inUserBlacklist)
     {

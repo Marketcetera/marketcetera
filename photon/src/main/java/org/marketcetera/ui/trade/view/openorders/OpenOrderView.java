@@ -55,7 +55,7 @@ public class OpenOrderView
      * Create a new OpenOrderView instance.
      *
      * @param inParentWindow a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public OpenOrderView(Region inParentWindow,

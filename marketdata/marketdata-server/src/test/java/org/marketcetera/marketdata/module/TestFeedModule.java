@@ -10,6 +10,7 @@ import org.marketcetera.marketdata.AbstractMarketDataModule;
  * <p>
  * Module Features
  * <table>
+ * <caption>Describes the module characteristics</caption>
  * <tr><th>Factory:</th><td>{@link TestFeedModuleFactory}</td></tr>
  * <tr><th colspan="2">See {@link AbstractMarketDataModule parent} for module features.</th></tr>
  * </table>

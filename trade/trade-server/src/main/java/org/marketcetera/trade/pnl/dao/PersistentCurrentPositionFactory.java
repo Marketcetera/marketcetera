@@ -3,6 +3,10 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.trade.pnl.CurrentPosition;
+import org.marketcetera.trade.pnl.CurrentPositionFactory;
+
 /* $License$ */
 
 /**
@@ -12,28 +16,29 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class PersistentCurrentPositionFactory
-        implements org.marketcetera.trade.pnl.CurrentPositionFactory
+        implements CurrentPositionFactory
 {
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> instance.
+     * Create a new <code>PersistentCurrentPosition</code> instance.
      *
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> value
+     * @return a <code>PersistentCurrentPosition</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentCurrentPosition create()
+    public PersistentCurrentPosition create()
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentCurrentPosition();
+        return new PersistentCurrentPosition();
     }
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> instance from the given object.
+     * Create a new <code>PersistentCurrentPosition</code> instance from the given object.
      *
-     * @param inObject a <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> value
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> value
+     * @param inCurrentPosition a <code>CurrentPosition</code> value
+     * @return a <code>PersistentCurrentPosition</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentCurrentPosition create(org.marketcetera.trade.pnl.CurrentPosition inPersistentCurrentPosition)
+    public PersistentCurrentPosition create(CurrentPosition inCurrentPosition)
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentCurrentPosition(inPersistentCurrentPosition);
+        return new PersistentCurrentPosition(inCurrentPosition);
     }
 }

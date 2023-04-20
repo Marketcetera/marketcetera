@@ -6,7 +6,7 @@ package org.marketcetera.trade.pnl.dao;
 /* $License$ */
 
 /**
- * Provides a user-centric view of a {@link Trade}.
+ * Provides a user-centric view of a {@link org.marketcetera.trade.pnl.UserTrade}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

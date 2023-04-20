@@ -3,6 +3,10 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.trade.pnl.Lot;
+import org.marketcetera.trade.pnl.LotFactory;
+
 /* $License$ */
 
 /**
@@ -12,28 +16,29 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class PersistentLotFactory
-        implements org.marketcetera.trade.pnl.LotFactory
+        implements LotFactory
 {
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentLot</code> instance.
+     * Create a new <code>PersistentLot</code> instance.
      *
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentLot</code> value
+     * @return a <code>PersistentLot</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentLot create()
+    public PersistentLot create()
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentLot();
+        return new PersistentLot();
     }
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentLot</code> instance from the given object.
+     * Create a new <code>PersistentLot</code> instance from the given object.
      *
-     * @param inObject a <code>org.marketcetera.trade.pnl.dao.PersistentLot</code> value
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentLot</code> value
+     * @param inLot a <code>Lot</code> value
+     * @return a <code>PersistentLot</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentLot create(org.marketcetera.trade.pnl.Lot inPersistentLot)
+    public PersistentLot create(Lot inLot)
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentLot(inPersistentLot);
+        return new PersistentLot(inLot);
     }
 }

@@ -173,7 +173,7 @@ public class StrategyServiceImpl
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>Collection<StrategyInstance></code> value
+     * @return a <code>Collection&lt;StrategyInstance&gt;</code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
@@ -188,8 +188,8 @@ public class StrategyServiceImpl
      *
      * @param inStrategyName a <code>String</code> value
      * @param inSeverity a <code>Severity</code> value
-     * @param inPageRequest an <code>PageRequest</code> value
-     * @returns a <code>CollectionPageResut<? extends StrategyMessage></code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
@@ -451,8 +451,8 @@ public class StrategyServiceImpl
     /**
      * Load a new strategy instances.
      *
-     * @param inStrategyInstance an <code>StrategyInstance</code> value
-     * @returns an <code>StrategyStatus</code> value
+     * @param inFile a <code>File</code> value
+     * @param inOriginalFileName a <code>String</code> value
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
@@ -514,7 +514,7 @@ public class StrategyServiceImpl
      * Load a new strategy instances.
      *
      * @param inStrategyInstance an <code>StrategyInstance</code> value
-     * @returns an <code>StrategyStatus</code> value
+     * @return a <code>StrategyStatus</code> value
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
@@ -588,7 +588,7 @@ public class StrategyServiceImpl
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value
-     * @returns a <code>Optional<? extends StrategyInstance></code> value
+     * @return a <code>Optional&lt;? extends StrategyInstance&gt;</code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)

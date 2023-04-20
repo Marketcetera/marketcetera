@@ -107,7 +107,7 @@ public class ThreadPoolMonitor
     /**
      * Sets the monitorInterval value.
      *
-     * @param a <code>long</code> value
+     * @param inMonitorInterval a <code>long</code> value
      */
     public void setMonitorInterval(long inMonitorInterval)
     {

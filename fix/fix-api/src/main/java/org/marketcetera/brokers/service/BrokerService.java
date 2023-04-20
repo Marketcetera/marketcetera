@@ -135,8 +135,8 @@ public interface BrokerService
     /**
      * Finds the fix session corresponding to the given broker ID.
      *
-     * @param inBrokerId a <code>String<code> value
-     * @return a <code>FixSession<code> value or <code>null</code>
+     * @param inBrokerId a <code>String</code> value
+     * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionByBrokerId(BrokerID inBrokerId);
     /**
@@ -168,7 +168,7 @@ public interface BrokerService
      */
     AcceptorSessionAttributes getFixSettingsFor(int inAffinity);
     /**
-     * Generates a <code>SessionSettings<code> value based on the given collection of fix sessions.
+     * Generates a <code>SessionSettings</code> value based on the given collection of fix sessions.
      *
      * @param inFixSessions a <code>Collection&lt;FixSession&gt;</code> value
      * @return a <code>SessionSettings</code> value

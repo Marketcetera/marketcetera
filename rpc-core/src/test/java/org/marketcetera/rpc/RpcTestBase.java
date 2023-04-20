@@ -288,7 +288,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     /**
      * Get a client factory instance.
      *
-     * @return a <code>RpcClientFactory&lt;RpcClientParametersClazz,RpcClientClazz&;gt;</code> value
+     * @return a <code>RpcClientFactory&lt;RpcClientParametersClazz,RpcClientClazz&gt;</code> value
      */
     protected abstract RpcClientFactory<RpcClientParametersClazz,RpcClientClazz> getRpcClientFactory();
     /**
@@ -324,7 +324,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
      * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
      * @param inUsername a <code>String</code> value
-     * @param inPassword a <code>String<code> value
+     * @param inPassword a <code>String</code> value
      * @return a <code>RpcClientClazz</code> value
      * @throws Exception if an unexpected error occurs
      */

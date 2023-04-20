@@ -188,5 +188,4 @@ public class TestStrategy
      */
     @Autowired
     private TradeClient tradeClient;
-    
 }

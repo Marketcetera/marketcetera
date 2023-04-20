@@ -16,7 +16,7 @@ public interface MarketDataClientFactory<ParameterClazz extends ClientParameters
         extends ClientFactory<MarketDataClient,ParameterClazz>
 {
     /**
-     * Create a {@link MarketDataServiceClient} instance.
+     * Create a {@link MarketDataClient} instance.
      *
      * @param inParameters a <code>ParameterClazz</code> value
      * @return a <code>MarketDataServiceClient</code> value

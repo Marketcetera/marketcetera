@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 /* $License$ */
 /**
- * Tests {@link CheckpointInfo}, {@link IterationInfo} & {@link PerThreadInfo}.
+ * Tests {@link CheckpointInfo}, {@link IterationInfo} &amp; {@link PerThreadInfo}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$

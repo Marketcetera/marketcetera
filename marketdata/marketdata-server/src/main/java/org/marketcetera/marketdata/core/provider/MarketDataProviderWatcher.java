@@ -119,7 +119,7 @@ public class MarketDataProviderWatcher
     /**
      * Sets the marketDataStatusListeners value.
      *
-     * @param a <code>List&lt;MarketDataStatusListener&gt;</code> value
+     * @param inMarketDataStatusListeners a <code>List&lt;MarketDataStatusListener&gt;</code> value
      */
     public void setMarketDataStatusListeners(List<MarketDataStatusListener> inMarketDataStatusListeners)
     {
@@ -131,7 +131,6 @@ public class MarketDataProviderWatcher
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#addMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
      */
-//    @Override
     public void addMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
         marketDataStatusListeners.add(inMarketDataStatusListener);
@@ -139,7 +138,6 @@ public class MarketDataProviderWatcher
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#removeMarketDataStatusListener(org.marketcetera.marketdata.core.provider.MarketDataStatusListener)
      */
-//    @Override
     public void removeMarketDataStatusListener(MarketDataStatusListener inMarketDataStatusListener)
     {
         marketDataStatusListeners.remove(inMarketDataStatusListener);
@@ -147,7 +145,6 @@ public class MarketDataProviderWatcher
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.provider.MarketDataStatusProvider#isRunning()
      */
-//    @Override
     public boolean isRunning()
     {
         return lastStatus;

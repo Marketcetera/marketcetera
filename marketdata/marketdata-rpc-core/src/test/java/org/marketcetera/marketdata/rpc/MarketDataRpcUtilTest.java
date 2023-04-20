@@ -682,7 +682,7 @@ public class MarketDataRpcUtilTest
     /**
      * Verify the given RPC event matches the given event.
      *
-     * @param inEvent a <code>MarketDataTypesRpc.Event</code> value
+     * @param inExpectedEvent a <code>MarketDataTypesRpc.Event</code> value
      * @param inActualEvent an <code>Event</code> value
      */
     public static void verifyEvent(MarketDataTypesRpc.Event inExpectedEvent,

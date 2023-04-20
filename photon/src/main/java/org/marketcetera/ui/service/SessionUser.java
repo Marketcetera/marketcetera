@@ -93,8 +93,8 @@ public class SessionUser
      * <p>
      * The fully qualified name of the type is used as the name when getting the
      * value. The outcome of calling this method is thus the same as if
-     * calling<br />
-     * <br />
+     * calling
+     * 
      * <code>getAttribute(type.getName());</code>
      *
      * @see #setAttribute(Class, Object)
@@ -142,8 +142,7 @@ public class SessionUser
      * <p>
      * The fully qualified name of the type is used as the name when storing the
      * value. The outcome of calling this method is thus the same as if
-     * calling<br />
-     * <br />
+     * calling
      * <code>setAttribute(type.getName(), value);</code>
      *
      * @see #getAttribute(Class)

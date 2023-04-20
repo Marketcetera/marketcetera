@@ -3,6 +3,8 @@
 //
 package org.marketcetera.strategy.dao;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ package org.marketcetera.strategy.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class PersistentStrategyInstanceFactory
         implements org.marketcetera.strategy.StrategyInstanceFactory
 {
@@ -32,8 +35,8 @@ public class PersistentStrategyInstanceFactory
      * @return an <code>org.marketcetera.strategy.dao.PersistentStrategyInstance</code> value
      */
     @Override
-    public org.marketcetera.strategy.dao.PersistentStrategyInstance create(org.marketcetera.strategy.StrategyInstance inPersistentStrategyInstance)
+    public org.marketcetera.strategy.dao.PersistentStrategyInstance create(org.marketcetera.strategy.StrategyInstance inStrategyInstance)
     {
-        return new org.marketcetera.strategy.dao.PersistentStrategyInstance(inPersistentStrategyInstance);
+        return new org.marketcetera.strategy.dao.PersistentStrategyInstance(inStrategyInstance);
     }
 }
