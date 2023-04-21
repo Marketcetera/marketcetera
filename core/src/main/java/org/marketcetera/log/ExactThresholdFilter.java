@@ -13,7 +13,7 @@ import org.apache.logging.log4j.message.Message;
 /* $License$ */
 
 /**
- *
+ * Provides an {@link AbstractFilter} implementat that matches an exact threshold.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -64,17 +64,17 @@ public class ExactThresholdFilter
     }
  
     /**
-     * Create a ThresholdFilter.
-     * @param loggerLevel The log Level.
-     * @param match The action to take on a match.
-     * @param mismatch The action to take on a mismatch.
-     * @return The created ThresholdFilter.
+     * Create an ExactThresholdFilter.
+     *
+     * @param level a <code>Level</code> value
+     * @param onMatch a <code>Result</code> value
+     * @param onMismatch a <code>Result</code> value
+     * @return an <code>ExactThresholdFilter</code> value
      */
     @PluginFactory
     public static ExactThresholdFilter createFilter(@PluginAttribute(value = "level", defaultString = "ERROR") Level level,
-                                               @PluginAttribute(value = "onMatch", defaultString = "NEUTRAL") Result onMatch,
-                                               @PluginAttribute(value = "onMismatch", defaultString = "DENY") Result onMismatch) {
+                                                    @PluginAttribute(value = "onMatch", defaultString = "NEUTRAL") Result onMatch,
+                                                    @PluginAttribute(value = "onMismatch", defaultString = "DENY") Result onMismatch) {
         return new ExactThresholdFilter(level, onMatch, onMismatch);
     }
-    private static final long serialVersionUID = 5773154389436464026L;
 }

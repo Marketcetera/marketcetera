@@ -25,14 +25,14 @@ public interface FixSessionProvider
     /**
      * Finds the fix session corresponding to the given name.
      *
-     * @param inFixSessionName a <code>String<code> value
-     * @return a <code>FixSession<code> value or <code>null</code>
+     * @param inFixSessionName a <code>String</code> value
+     * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionByName(String inFixSessionName);
     /**
      * Finds the fix session with the given session id.
      *
-     * @param inFixSessionListener a <code>FixSessionListener</code> value
+     * @param inSessionId a <code>SessionID</code> value
      * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionBySessionId(SessionID inSessionId);
@@ -58,8 +58,8 @@ public interface FixSessionProvider
     /**
      * Finds the fix session corresponding to the given broker ID.
      *
-     * @param inBrokerId a <code>String<code> value
-     * @return a <code>FixSession<code> value or <code>null</code>
+     * @param inBrokerId a <code>BrokerID</code> value
+     * @return a <code>FixSession</code> value or <code>null</code>
      */
     FixSession findFixSessionByBrokerId(BrokerID inBrokerId);
     /**

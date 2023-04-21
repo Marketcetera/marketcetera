@@ -27,7 +27,7 @@ public class FixSettingsProviderImpl
      * @param inLogFactoryClass a <code>Class&lt;LogFactory&gt;</code> value
      * @param inMessageFactory a <code>MessageFactory</code> value
      * @param inAcceptorHost a <code>String</code> value
-     * @param inAcceptorProtocol a <code>String<code> value
+     * @param inAcceptorProtocol a <code>String</code> value
      * @param inAcceptorPort an <code>int</code> value
      */
     public FixSettingsProviderImpl(Class<MessageStoreFactory> inMessageStoreFactoryClass,

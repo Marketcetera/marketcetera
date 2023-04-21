@@ -2,9 +2,6 @@ package org.marketcetera.marketdata;
 
 import java.io.Serializable;
 
-import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.MarketDataStatus;
-
 /* $License$ */
 
 /**
@@ -36,7 +33,7 @@ public class MarketDataProviderStatus
     /**
      * Sets the provider value.
      *
-     * @param a <code>String</code> value
+     * @param inProvider a <code>String</code> value
      */
     public void setProvider(String inProvider)
     {

@@ -183,7 +183,7 @@ public class MessageOwnerServiceImpl
     /**
      * Sets the orderCacheSize value.
      *
-     * @param a <code>long</code> value
+     * @param inOrderCacheSize a <code>long</code> value
      */
     public void setOrderCacheSize(long inOrderCacheSize)
     {
@@ -201,7 +201,7 @@ public class MessageOwnerServiceImpl
     /**
      * Set the identifyOwnerStrategies value.
      *
-     * @param a <code>List&lt;IdentifyOwnerStrategy&gt;</code> value
+     * @param inIdentifyOwnerStrategies a <code>List&lt;IdentifyOwnerStrategy&gt;</code> value
      */
     public void setIdentifyOwnerStrategies(List<IdentifyOwnerStrategy> inIdentifyOwnerStrategies)
     {

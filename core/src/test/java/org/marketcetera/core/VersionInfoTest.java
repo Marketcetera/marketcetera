@@ -13,7 +13,7 @@ import org.springframework.util.SerializationUtils;
 /* $License$ */
 
 /**
- * Tests {@link #VersionInfo}.
+ * Tests {@link VersionInfo}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

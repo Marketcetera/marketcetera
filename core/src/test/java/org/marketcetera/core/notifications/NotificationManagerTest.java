@@ -26,7 +26,7 @@ public class NotificationManagerTest
     /**
      * Tests that the static getter returns a non-null value.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void testGetter()
@@ -40,7 +40,7 @@ public class NotificationManagerTest
      * <p>Note that this is not an exhaustive test of the {@link PublisherEngine} because
      * that is covered in {@link PublisherEngineTest}.
      *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @Test
     public void testSubscribeAndPublish()

@@ -3,6 +3,10 @@
 //
 package org.marketcetera.strategy.dao;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.strategy.StrategyMessage;
+import org.marketcetera.strategy.StrategyMessageFactory;
+
 /* $License$ */
 
 /**
@@ -12,28 +16,29 @@ package org.marketcetera.strategy.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class PersistentStrategyMessageFactory
-        implements org.marketcetera.strategy.StrategyMessageFactory
+        implements StrategyMessageFactory
 {
     /**
-     * Create a new <code>org.marketcetera.strategy.dao.PersistentStrategyMessage</code> instance.
+     * Create a new <code>PersistentStrategyMessage</code> instance.
      *
-     * @return a <code>org.marketcetera.strategy.dao.PersistentStrategyMessage</code> value
+     * @return a <code>PersistentStrategyMessage</code> value
      */
     @Override
-    public org.marketcetera.strategy.dao.PersistentStrategyMessage create()
+    public PersistentStrategyMessage create()
     {
-        return new org.marketcetera.strategy.dao.PersistentStrategyMessage();
+        return new PersistentStrategyMessage();
     }
     /**
-     * Create a new <code>org.marketcetera.strategy.dao.PersistentStrategyMessage</code> instance from the given object.
+     * Create a new <code>PersistentStrategyMessage</code> instance from the given object.
      *
-     * @param inStrategyMessage an <code>org.marketcetera.strategy.dao.PersistentStrategyMessage</code> value
-     * @return an <code>org.marketcetera.strategy.dao.PersistentStrategyMessage</code> value
+     * @param inStrategyMessage an <code>PersistentStrategyMessage</code> value
+     * @return a <code>PersistentStrategyMessage</code> value
      */
     @Override
-    public org.marketcetera.strategy.dao.PersistentStrategyMessage create(org.marketcetera.strategy.StrategyMessage inPersistentStrategyMessage)
+    public PersistentStrategyMessage create(StrategyMessage inStrategyMessage)
     {
-        return new org.marketcetera.strategy.dao.PersistentStrategyMessage(inPersistentStrategyMessage);
+        return new PersistentStrategyMessage(inStrategyMessage);
     }
 }

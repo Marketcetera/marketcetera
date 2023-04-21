@@ -55,7 +55,8 @@ import com.codahale.metrics.MetricRegistry;
  * Provides an implementation that writes market data to files in a given directory.
  * <p>
  * Module Features
- * <table summary="MarketDataRecorderModule featues">
+ * <table>
+ * <caption>MarketDataRecorderModule featues</caption>
  * <tr><th>Capabilities</th><td>Data Receiver,Data Emitter</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Checks that the directory exists and is writable</td></tr>

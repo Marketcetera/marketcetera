@@ -650,7 +650,7 @@ public class DeployAnywhereRoutingEngine
     /**
      * Indicates that the given FIX session has been enabled.
      *
-     * @param fixSession a <code>FixSessionEnabledEvent</code> value
+     * @param inEvent a <code>FixSessionEnabledEvent</code> value
      */
     @Subscribe
     public void sessionEnabled(FixSessionEnabledEvent inEvent)

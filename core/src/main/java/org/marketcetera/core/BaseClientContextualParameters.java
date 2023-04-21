@@ -26,7 +26,7 @@ public class BaseClientContextualParameters
     /**
      * Sets the contextClassProvider value.
      *
-     * @param a <code>ContextClassProvider</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
      */
     public void setContextClassProvider(ContextClassProvider inContextClassProvider)
     {

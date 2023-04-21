@@ -53,7 +53,7 @@ public abstract class AbstractSuggestion
     /**
      * Create a new AbstractSuggestion instance.
      *
-     * @param inIdentifier a <code>String<code> value
+     * @param inIdentifier a <code>String</code> value
      * @param inScore a <code>BigDecimal</code> value
      */
     protected AbstractSuggestion(String inIdentifier,

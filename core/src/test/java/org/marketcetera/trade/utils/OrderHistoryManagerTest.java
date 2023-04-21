@@ -116,7 +116,7 @@ public class OrderHistoryManagerTest
         assertNull(manager.getLatestReportFor(new OrderID("some-orderid-that-doesn't-exist")));
     }
     /**
-     * Tests {@link OrderHistoryManager#add(ReportBase)}.
+     * Tests {@link OrderHistoryManager#add(TradeMessage)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -555,7 +555,7 @@ public class OrderHistoryManagerTest
         assertTrue(report6OrderChain.isEmpty());
     }
     /**
-     * Tests {@link LiveOrderHistoryManager#getOpenOrders()}.
+     * Tests {@link OrderHistoryManager#getOpenOrders()}.
      *
      * @throws Exception if an unexpected error occurs
      */

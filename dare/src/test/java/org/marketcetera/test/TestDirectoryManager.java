@@ -22,7 +22,7 @@ public class TestDirectoryManager
     /**
      * Get the testDirectories value.
      *
-     * @return a <code>List<String></code> value
+     * @return a <code>List&lt;String&gt;</code> value
      */
     public List<String> getTestDirectories()
     {
@@ -31,7 +31,7 @@ public class TestDirectoryManager
     /**
      * Sets the testDirectories value.
      *
-     * @param inTestDirectories a <code>List<String></code> value
+     * @param inTestDirectories a <code>List&lt;String&gt;</code> value
      */
     public void setTestDirectories(List<String> inTestDirectories)
     {
@@ -40,7 +40,7 @@ public class TestDirectoryManager
     /**
      * Get the deleteDirectories value.
      *
-     * @return a <code>List<String></code> value
+     * @return a <code>List&lt;String&gt;</code> value
      */
     public List<String> getDeleteDirectories()
     {
@@ -49,7 +49,7 @@ public class TestDirectoryManager
     /**
      * Sets the deleteDirectories value.
      *
-     * @param inDeleteDirectories a <code>List<String></code> value
+     * @param inDeleteDirectories a <code>List&lt;String&gt;</code> value
      */
     public void setDeleteDirectories(List<String> inDeleteDirectories)
     {

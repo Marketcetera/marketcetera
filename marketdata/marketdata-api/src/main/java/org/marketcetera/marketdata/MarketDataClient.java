@@ -53,7 +53,7 @@ public interface MarketDataClient
     /**
      * Gets a subset of the most recent snapshot available of the given market data.
      *
-     * <p>Market data must be pre-requested via {@link #request(ClientContext, MarketDataRequest, boolean)}.
+     * <p>Market data must be pre-requested via {@link #request(MarketDataRequest, MarketDataListener)}.</p>
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value

@@ -13,10 +13,7 @@ import quickfix.field.Symbol;
  * from a FIX message.
  * <p>
  * Typical usage is
- * <pre>
- * quickfix.Message message =...
- * {@link InstrumentFromMessage}.{@link #SELECTOR}.{@link DynamicInstrumentFunctionSelector#forValue(Object) forValue}(message).{@link #extract(quickfix.Message) extract}(message);
- * </pre>
+ * <pre>Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(quickfix.Message).extract(quickfix.Message);</pre>
  *
  * @author anshul@marketcetera.com
  * @version $Id$

@@ -161,7 +161,7 @@ public class MarketDataListView
      * Create a new MarketDataListView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public MarketDataListView(Region inParent,

@@ -30,7 +30,7 @@ import org.marketcetera.trade.OptionType;
 public class OptionUtilsTest {
     	
     /**
-     * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &
+     * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &amp;
      * {@link OptionUtils#normalizeUSEquityOptionExpiry(String)}.
      *
      * @throws Exception if there were unexpected errors

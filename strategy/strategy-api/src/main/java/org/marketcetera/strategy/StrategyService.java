@@ -28,7 +28,7 @@ public interface StrategyService
      * Requests loaded strategy instances.
      * 
      * @param inCurrentUserName a <code>String</code> value
-     * @returns a <code>Collection&lt;StrategyInstance&gt;</code> value
+     * @return a <code>Collection&lt;StrategyInstance&gt;</code> value
      */
     Collection<? extends StrategyInstance> getStrategyInstances(String inCurrentUserName);
     /**
@@ -37,7 +37,7 @@ public interface StrategyService
      * @param inStrategyName a <code>String</code> value
      * @param inSeverity a <code>Severity</code> value
      * @param inPageRequest an <code>PageRequest</code> value
-     * @returns a <code>CollectionPageResponse<? extends StrategyMessage></code> value
+     * @return a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
      */
     CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
                                                                           Severity inSeverity,
@@ -65,14 +65,14 @@ public interface StrategyService
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value
-     * @returns an <code>Optional<? extends StrategyInstance></code> value
+     * @return an <code>Optional&lt;? extends StrategyInstance&gt;</code> value
      */
     Optional<? extends StrategyInstance> findByName(String inName);
     /**
      * Load a new strategy instances.
      *
      * @param inStrategyInstance an <code>StrategyInstance</code> value
-     * @returns an <code>StrategyStatus</code> value
+     * @return a <code>StrategyStatus</code> value
      */
     StrategyStatus loadStrategyInstance(StrategyInstance inStrategyInstance);
     /**

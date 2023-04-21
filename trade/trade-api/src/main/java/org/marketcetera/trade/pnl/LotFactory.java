@@ -3,6 +3,9 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.core.Factory;
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,8 +15,9 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface LotFactory
-        extends org.marketcetera.core.Factory<Lot>
+        extends Factory<Lot>
 {
     /**
      * Create a new <code>Lot</code> instance.
@@ -25,7 +29,7 @@ public interface LotFactory
     /**
      * Create a new <code>Lot</code> instance from the given object.
      *
-     * @param inObject a <code>Lot</code> value
+     * @param inLot a <code>Lot</code> value
      * @return a <code>Lot</code> value
      */
     @Override

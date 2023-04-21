@@ -12,6 +12,7 @@ import org.marketcetera.module.ModuleURN;
  * <p>
  * The factory has the following characteristics.
  * <table>
+ * <caption>Transaction Module Factory capabilities</caption>
  * <tr><th>Provider URN:</th><td><code>metc:core:transaction</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:core:transaction:single</code></td></tr>

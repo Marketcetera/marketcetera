@@ -36,7 +36,7 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
      * Create a new AbstractDeletableFixMessageView instance.
      *
      * @param inParentWindow a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     protected AbstractDeletableFixMessageView(Region inParentWindow,

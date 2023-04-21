@@ -106,7 +106,7 @@ public class AdminRpcUtilTest
                       rpcRole);
     }
     /**
-     * Test {@link AdminRpcUtil#getRole(com.marketcetera.admin.AdminRpc.Role, RoleFactory)}.
+     * Test <code>getRole</code>.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -170,7 +170,7 @@ public class AdminRpcUtilTest
                             rpcPermission);
     }
     /**
-     * Test {@link AdminRpcUtil#getUserAttribute(com.marketcetera.admin.AdminRpc.UserAttribute)}.
+     * Test <code>getUserAttribute</code>.
      *
      * @throws Exception if an unexpected error occurs
      */

@@ -246,7 +246,7 @@ public class FixRpcUtil
     /**
      * Get the RPC value from the given value.
      *
-     * @param inBrokerAlgoSpec a <code>BrokerAlgoSpec<code> value
+     * @param inBrokerAlgoSpec a <code>BrokerAlgoSpec</code> value
      * @return an <code>Optional&lt;FixAdminRpc.BrokerAlgoSpec&gt;</code> value
      */
     public static Optional<FixAdminRpc.BrokerAlgoSpec> getRpcBrokerAlgo(BrokerAlgoSpec inBrokerAlgoSpec)

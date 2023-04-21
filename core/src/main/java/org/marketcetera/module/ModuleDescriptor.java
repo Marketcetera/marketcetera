@@ -18,7 +18,7 @@ public class ModuleDescriptor
     /**
      * Get the parameters value.
      *
-     * @return a <code>List<Object></code> value
+     * @return a <code>List&lt;Object&gt;</code> value
      */
     public List<Object> getParameters()
     {
@@ -27,7 +27,7 @@ public class ModuleDescriptor
     /**
      * Sets the parameters value.
      *
-     * @param inParameters a <code>List<Object></code> value
+     * @param inParameters a <code>List&lt;Object&gt;</code> value
      */
     public void setParameters(List<Object> inParameters)
     {

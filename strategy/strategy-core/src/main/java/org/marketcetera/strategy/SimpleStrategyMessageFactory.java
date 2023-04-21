@@ -3,6 +3,8 @@
 //
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimpleStrategyMessageFactory
         implements org.marketcetera.strategy.StrategyMessageFactory
 {
@@ -32,8 +35,8 @@ public class SimpleStrategyMessageFactory
      * @return an <code>org.marketcetera.strategy.SimpleStrategyMessage</code> value
      */
     @Override
-    public org.marketcetera.strategy.SimpleStrategyMessage create(org.marketcetera.strategy.StrategyMessage inSimpleStrategyMessage)
+    public org.marketcetera.strategy.SimpleStrategyMessage create(org.marketcetera.strategy.StrategyMessage inStrategyMessage)
     {
-        return new org.marketcetera.strategy.SimpleStrategyMessage(inSimpleStrategyMessage);
+        return new org.marketcetera.strategy.SimpleStrategyMessage(inStrategyMessage);
     }
 }

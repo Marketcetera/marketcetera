@@ -38,7 +38,7 @@ public class SlackNotificationExecutorMethod
     /**
      * Sets the slackWebHookUrl value.
      *
-     * @param a <code>String</code> value
+     * @param inSlackWebHookUrl a <code>String</code> value
      */
     public void setSlackWebHookUrl(String inSlackWebHookUrl)
     {
@@ -56,7 +56,7 @@ public class SlackNotificationExecutorMethod
     /**
      * Sets the slackWebHookParams value.
      *
-     * @param a <code>String</code> value
+     * @param inSlackWebHookParams a <code>String</code> value
      */
     public void setSlackWebHookParams(String inSlackWebHookParams)
     {

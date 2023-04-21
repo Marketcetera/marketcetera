@@ -715,7 +715,7 @@ public class OrderTicketView
      * Create a new OrderTicketView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public OrderTicketView(Region inParent,

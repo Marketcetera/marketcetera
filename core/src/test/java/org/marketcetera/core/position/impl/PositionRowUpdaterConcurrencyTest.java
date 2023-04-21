@@ -260,6 +260,8 @@ public class PositionRowUpdaterConcurrencyTest {
 
         /**
          * Hook for subclass code to run. Any thrown exception will be reported.
+         *
+         * @throws Exception if an unexpected error occurs
          */
         protected abstract void runWithReporting() throws Exception;
     }

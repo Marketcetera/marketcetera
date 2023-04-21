@@ -37,9 +37,15 @@ public class AccessViolator {
 		theMethod.setAccessible(true);
 		return theMethod.invoke(reference, args);
 	}
-    
-
-    /** Sets the speicified field to the passed-in value */
+    /**
+     * Sets the specified field to the passed-in value
+     *
+     * @param fieldName a <code>String</code> value
+     * @param reference an <code>Object</code> value
+     * @param value an <code>Object</code> value
+     * @throws NoSuchFieldException if the specified field does not exist
+     * @throws IllegalAccessException if access is not allowed
+     */
     public void setField(String fieldName, Object reference, Object value)
             throws NoSuchFieldException, IllegalAccessException {
         Field theField = violatedClass.getDeclaredField(fieldName);

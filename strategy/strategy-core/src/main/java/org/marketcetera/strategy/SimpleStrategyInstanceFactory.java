@@ -3,6 +3,8 @@
 //
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,6 +14,7 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimpleStrategyInstanceFactory
         implements org.marketcetera.strategy.StrategyInstanceFactory
 {
@@ -28,7 +31,7 @@ public class SimpleStrategyInstanceFactory
     /**
      * Create a new <code>org.marketcetera.strategy.SimpleStrategyInstance</code> instance from the given object.
      *
-     * @param inStrategyInstance an <code>org.marketcetera.strategy.SimpleStrategyInstance</code> value
+     * @param inSimpleStrategyInstance an <code>org.marketcetera.strategy.SimpleStrategyInstance</code> value
      * @return an <code>org.marketcetera.strategy.SimpleStrategyInstance</code> value
      */
     @Override

@@ -194,9 +194,6 @@ public class PersistentUser
      * {@link #validatePassword(char[]) validating} the supplied password.
      * @param originalPassword the original password. This password should
      * match the currently configured password.
-     * <p>
-     * The new password is not saved to the database. To save
-     * the new password to the database, invoke {@link #save()}
      *
      * @param newPassword the new password, cannot be empty.
      *

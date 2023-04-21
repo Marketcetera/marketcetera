@@ -26,7 +26,7 @@ public class CollectionPageResponse<Clazz>
     /**
      * Create a new CollectionPageResponse instance.
      *
-     * @param inPage a <code>Page&lt;Clazz&gt:</code> value
+     * @param inPage a <code>Page&lt;Clazz&gt;</code> value
      */
     public CollectionPageResponse(Page<Clazz> inPage)
     {

@@ -3,6 +3,8 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,28 +14,29 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimplePositionFactory
-        implements org.marketcetera.trade.pnl.PositionFactory
+        implements PositionFactory
 {
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.SimplePosition</code> instance.
+     * Create a new <code>SimplePosition</code> instance.
      *
-     * @return a <code>org.marketcetera.trade.pnl.SimplePosition</code> value
+     * @return a <code>SimplePosition</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.SimplePosition create()
+    public SimplePosition create()
     {
-        return new org.marketcetera.trade.pnl.SimplePosition();
+        return new SimplePosition();
     }
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.SimplePosition</code> instance from the given object.
+     * Create a new <code>SimplePosition</code> instance from the given object.
      *
-     * @param inObject a <code>org.marketcetera.trade.pnl.SimplePosition</code> value
-     * @return a <code>org.marketcetera.trade.pnl.SimplePosition</code> value
+     * @param inPosition a <code>SimplePosition</code> value
+     * @return a <code>SimplePosition</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.SimplePosition create(org.marketcetera.trade.pnl.Position inSimplePosition)
+    public SimplePosition create(Position inPosition)
     {
-        return new org.marketcetera.trade.pnl.SimplePosition(inSimplePosition);
+        return new SimplePosition(inPosition);
     }
 }

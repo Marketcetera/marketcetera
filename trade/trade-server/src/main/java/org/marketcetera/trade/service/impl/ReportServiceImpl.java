@@ -1130,7 +1130,7 @@ public class ReportServiceImpl
     /**
      * Sets the cacheSize value.
      *
-     * @param an <code>int</code> value
+     * @param inCacheSize an <code>int</code> value
      */
     public void setCacheSize(int inCacheSize)
     {

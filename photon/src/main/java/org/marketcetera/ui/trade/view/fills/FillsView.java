@@ -31,7 +31,7 @@ public class FillsView
      * Create a new FillsView instance.
      *
      * @param inParentWindow a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public FillsView(Region inParentWindow,

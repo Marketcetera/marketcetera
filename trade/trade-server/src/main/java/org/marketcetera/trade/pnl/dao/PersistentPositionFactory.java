@@ -3,6 +3,10 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.trade.pnl.Position;
+import org.marketcetera.trade.pnl.PositionFactory;
+
 /* $License$ */
 
 /**
@@ -12,28 +16,29 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class PersistentPositionFactory
-        implements org.marketcetera.trade.pnl.PositionFactory
+        implements PositionFactory
 {
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentPosition</code> instance.
+     * Create a new <code>PersistentPosition</code> instance.
      *
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentPosition</code> value
+     * @return a <code>PersistentPosition</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentPosition create()
+    public PersistentPosition create()
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentPosition();
+        return new PersistentPosition();
     }
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentPosition</code> instance from the given object.
+     * Create a new <code>PersistentPosition</code> instance from the given object.
      *
-     * @param inObject a <code>org.marketcetera.trade.pnl.dao.PersistentPosition</code> value
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentPosition</code> value
+     * @param inPosition a <code>Position</code> value
+     * @return a <code>PersistentPosition</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentPosition create(org.marketcetera.trade.pnl.Position inPersistentPosition)
+    public PersistentPosition create(Position inPosition)
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentPosition(inPersistentPosition);
+        return new PersistentPosition(inPosition);
     }
 }

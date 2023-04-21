@@ -187,7 +187,7 @@ public class BrokerAlgoTagSpec
     /**
      * Sets the defaultValue value.
      *
-     * @param a <code>String</code> value
+     * @param inDefaultValue a <code>String</code> value
      */
     public void setDefaultValue(String inDefaultValue)
     {
@@ -205,7 +205,7 @@ public class BrokerAlgoTagSpec
     /**
      * Sets the isReadOnly value.
      *
-     * @param a <code>boolean</code> value
+     * @param inIsReadOnly a <code>boolean</code> value
      */
     public void setIsReadOnly(boolean inIsReadOnly)
     {
@@ -223,7 +223,7 @@ public class BrokerAlgoTagSpec
     /**
      * Sets the advice value.
      *
-     * @param a <code>String</code> value
+     * @param inAdvice a <code>String</code> value
      */
     public void setAdvice(String inAdvice)
     {

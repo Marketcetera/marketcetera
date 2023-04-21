@@ -155,7 +155,7 @@ public class FixSessionView
      * Create a new FixSessionView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public FixSessionView(Region inParent,

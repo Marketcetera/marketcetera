@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
  * <p>
  * The factory has the following characteristics.
  * <table>
+ * <caption>Manual Feed Module Capabilities</caption>
  * <tr><th>Provider URN:</th><td><code>metc:mdata:manual</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:mdata:manual:single</code></td></tr>
