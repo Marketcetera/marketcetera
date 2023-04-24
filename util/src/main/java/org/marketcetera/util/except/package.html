@@ -69,7 +69,7 @@ message handles and parameters, instead of relying on a less reliable
 locale-specific string comparison. For example:</p>
 
 <pre>
-&#x40Test
+&#64;Test
 public void findWorks()
 {
     try {
@@ -145,39 +145,39 @@ following tools:</p>
 
 <ul>
 
-<p><li>The exception classes {@link
+<li>The exception classes {@link
 org.marketcetera.util.except.I18NInterruptedException} and {@link
 org.marketcetera.util.except.I18NInterruptedRuntimeException}, which
 can be thrown to indicate unsuccessful task completion due to
 interruption. These are subclasses of {@link
 org.marketcetera.util.except.I18NException} and {@link
 org.marketcetera.util.except.I18NRuntimeException} respectively, and
-include a default i18n message for interruption.</li></p>
+include a default i18n message for interruption.</li>
 
-<p><li>The wrapping utilities in {@link
+<li>The wrapping utilities in {@link
 org.marketcetera.util.except.ExceptUtils} use these classes instead of
 the generic {@link org.marketcetera.util.except.I18NException} and
 {@link org.marketcetera.util.except.I18NRuntimeException} when the
 wrapped exception indicates an interruption; these utilities also
-ensure that, in such a case, the interrupted flag is set.</li></p>
+ensure that, in such a case, the interrupted flag is set.</li>
 
-<p><li>The exception swallowing utilities in {@link
+<li>The exception swallowing utilities in {@link
 org.marketcetera.util.except.ExceptUtils} also set the interrupted
 flag if the exception being swallowed indicates an
-interruption.</li></p>
+interruption.</li>
 
-<p><li>{@link org.marketcetera.util.except.I18NInterruptedException}
+<li>{@link org.marketcetera.util.except.I18NInterruptedException}
 and {@link
 org.marketcetera.util.except.I18NInterruptedRuntimeException} provide
 static methods such as {@link
 org.marketcetera.util.except.I18NInterruptedException#checkInterruption()}
-that make it easy for your code to check if interruption has occured
+that make it easy for your code to check if interruption has occurred
 (i.e. the interrupt flag is set) and, if so, throw the exception on
-your behalf (while leaving the flag set).</li></p>
+your behalf (while leaving the flag set).</li>
 
-<p><li>{@link org.marketcetera.util.except.ExceptUtils} provides similar
+<li>{@link org.marketcetera.util.except.ExceptUtils} provides similar
 static methods that throw an {@link
-java.lang.InterruptedException} (the flag remains set).</li></p>
+java.lang.InterruptedException} (the flag remains set).</li>
 
 </ul>
 

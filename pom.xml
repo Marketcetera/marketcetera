@@ -32,7 +32,7 @@
   </developers>
   <properties>
     <mvn.javase.version>11</mvn.javase.version>
-    <mvn.spring.boot.version>2.7.9</mvn.spring.boot.version>
+    <mvn.spring.boot.version>2.7.10</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
     <mvn.log4j.version>2.17.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
@@ -429,9 +429,9 @@
       <!-- Compile: Other -->
       <!-- used to generate Docker-like variable names -->
       <dependency>
-	<groupId>info.schnatterer.moby-names-generator</groupId>
-	<artifactId>moby-names-generator</artifactId>
-	<version>20.10.0-r0</version>
+        <groupId>info.schnatterer.moby-names-generator</groupId>
+        <artifactId>moby-names-generator</artifactId>
+        <version>20.10.0-r0</version>
       </dependency>
       <dependency>
         <groupId>org.flywaydb</groupId>
@@ -909,6 +909,25 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.4.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.5.0</version>
+          <configuration>
+            <failOnError>false</failOnError>
+            <show>private</show>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.12.1</version>
+        </plugin>
+        <plugin>
           <groupId>org.xolstice.maven.plugins</groupId>
           <artifactId>protobuf-maven-plugin</artifactId>
           <version>0.6.1</version>
@@ -1055,7 +1074,7 @@
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M5</version>
+          <version>3.0.0</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkCount>2.5C</forkCount>
@@ -1073,18 +1092,6 @@
           <configuration>
             <source>${mvn.javase.version}</source>
             <target>${mvn.javase.version}</target>
-          </configuration>
-        </plugin>
-        <!-- mvn javadoc:* -->
-        <plugin>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.3.2</version>
-          <configuration>
-            <!-- add this to disable checking -->
-            <failOnError>false</failOnError>
-            <!-- add this to disable checking -->
-            <additionalparam>-Xdoclint:none</additionalparam>
-            <doclint>none</doclint>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
@@ -1129,8 +1136,8 @@
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
         <version>1.7.0</version>
-	<!-- see this for building on Eclipse: https://stackoverflow.com/questions/47477194/os-detected-classifier-not-set-os-maven-plugin-and-eclipse-oxygen -->
-	<!-- copy the plugin to the Eclipse plugins directory as instructed -->
+        <!-- see this for building on Eclipse: https://stackoverflow.com/questions/47477194/os-detected-classifier-not-set-os-maven-plugin-and-eclipse-oxygen -->
+        <!-- copy the plugin to the Eclipse plugins directory as instructed -->
       </extension>
     </extensions>
     <resources>
@@ -1151,6 +1158,12 @@
     </resources>
   </build>
   <profiles>
+    <profile>
+      <id>ide-build</id>
+      <build>
+        <directory>${project.basedir}/target-ide</directory>
+      </build>
+    </profile>
     <profile>
       <id>release-sign-artifacts</id>
       <activation>
@@ -1174,29 +1187,6 @@
                 </goals>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.3.2</version>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <doctitle>Marketcetera Platform ${project.version} API</doctitle>
-              <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
-              <overview>tools/javadoc/overview.html</overview>
-              <links>
-                <link>https://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
-                <link>https://logging.apache.org/log4j/2.x/log4j-api/apidocs/</link>
-                <link>https://docs.spring.io/spring/docs/4.3.8.RELEASE/javadoc-api/</link>
-                <link>https://www.quickfixj.org/javadoc/1.6.3/</link>
-              </links>
-            </configuration>
           </plugin>
         </plugins>
       </build>
@@ -1260,27 +1250,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.2</version>
         <configuration>
-          <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-          <docletArtifact>
-            <groupId>org.umlgraph</groupId>
-            <artifactId>umlgraph</artifactId>
-            <version>5.6.6</version>
-          </docletArtifact>
-          <additionalparam>-views -all</additionalparam>
-          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <failOnError>false</failOnError>
+          <show>private</show>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.11.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>3.2.1</version>
       </plugin>
     </plugins>
   </reporting>

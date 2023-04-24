@@ -88,7 +88,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     /**
      * Get the sessionManager value.
      *
-     * @return a <code>SessionManager<SessionClazz></code> value
+     * @return a <code>SessionManager&lt;SessionClazz&gt;</code> value
      */
     public SessionManager<SessionClazz> getSessionManager()
     {
@@ -97,7 +97,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     /**
      * Sets the sessionManager value.
      *
-     * @param inSessionManager a <code>SessionManager<SessionClazz></code> value
+     * @param inSessionManager a <code>SessionManager&lt;SessionClazz&gt;</code> value
      */
     public void setSessionManager(SessionManager<SessionClazz> inSessionManager)
     {
@@ -106,7 +106,7 @@ public abstract class AbstractRpcService<SessionClazz,ServiceClazz extends Binda
     /**
      * Get the description of the service.
      *
-     * @return a <code>String<code> value
+     * @return a <code>String</code> value
      */
     protected abstract String getServiceDescription();
     /**

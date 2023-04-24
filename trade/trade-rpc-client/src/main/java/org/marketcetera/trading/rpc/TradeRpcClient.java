@@ -42,7 +42,6 @@ import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionReportSummary;
-import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.MutableExecutionReportSummary;
 import org.marketcetera.trade.MutableExecutionReportSummaryFactory;
@@ -50,23 +49,20 @@ import org.marketcetera.trade.MutableOrderSummary;
 import org.marketcetera.trade.MutableOrderSummaryFactory;
 import org.marketcetera.trade.MutableReport;
 import org.marketcetera.trade.MutableReportFactory;
-import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderBase;
-import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSummary;
-import org.marketcetera.trade.RelatedOrder;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.rpc.TradeRpc;
+import org.marketcetera.trade.rpc.TradeRpc.SuggestionListenerResponse;
 import org.marketcetera.trade.rpc.TradeRpc.TradeMessageListenerResponse;
 import org.marketcetera.trade.rpc.TradeRpcServiceGrpc;
 import org.marketcetera.trade.rpc.TradeRpcServiceGrpc.TradeRpcServiceBlockingStub;
@@ -164,6 +160,80 @@ public class TradeRpcClient
                                        getSessionId(),
                                        removeTradeMessageListenerRequest);
                 TradeRpc.RemoveTradeMessageListenerResponse response = getBlockingStub().removeTradeMessageListener(removeTradeMessageListenerRequest);
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#addSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void addSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        // check to see if this listener is already registered
+        if(listenerProxies.asMap().containsKey(inSuggestionListener)) {
+            return;
+        }
+        // make sure that this listener wasn't just whisked out from under us
+        final AbstractClientListenerProxy<?,?,?> listener = listenerProxies.getUnchecked(inSuggestionListener);
+        if(listener == null) {
+            return;
+        }
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} adding suggestion listener",
+                                       getSessionId());
+                TradeRpc.AddSuggestionListenerRequest.Builder requestBuilder = TradeRpc.AddSuggestionListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(listener.getId());
+                TradeRpc.AddSuggestionListenerRequest addSuggestionListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       addSuggestionListenerRequest);
+                getAsyncStub().addSuggestionListener(addSuggestionListenerRequest,
+                                                     (SuggestionListenerProxy)listener);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#removeSuggestionListener(org.marketcetera.trade.SuggestionListener)
+     */
+    @Override
+    public void removeSuggestionListener(SuggestionListener inSuggestionListener)
+    {
+        final AbstractClientListenerProxy<?,?,?> proxy = listenerProxies.getIfPresent(inSuggestionListener);
+        listenerProxies.invalidate(inSuggestionListener);
+        if(proxy == null) {
+            return;
+        }
+        listenerProxiesById.invalidate(proxy.getId());
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} removing report listener",
+                                       getSessionId());
+                TradeRpc.RemoveSuggestionListenerRequest.Builder requestBuilder = TradeRpc.RemoveSuggestionListenerRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                requestBuilder.setListenerId(proxy.getId());
+                TradeRpc.RemoveSuggestionListenerRequest removeSuggestionListenerRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       removeSuggestionListenerRequest);
+                TradeRpc.RemoveSuggestionListenerResponse response = getBlockingStub().removeSuggestionListener(removeSuggestionListenerRequest);
                 SLF4JLoggerProxy.trace(TradeRpcClient.this,
                                        "{} received {}",
                                        getSessionId(),
@@ -575,6 +645,38 @@ public class TradeRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.trade.client.TradeClient#sendOrderSuggestion(org.marketcetera.trade.Suggestion)
+     */
+    @Override
+    public void sendOrderSuggestion(Suggestion inSuggestion)
+    {
+        executeCall(new Callable<Void>(){
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       inSuggestion);
+                TradeRpc.SendSuggestionRequest.Builder requestBuilder = TradeRpc.SendSuggestionRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                TradeRpcUtil.getSuggestion(inSuggestion).ifPresent(rpcSuggestion -> requestBuilder.addSuggestion(rpcSuggestion));
+                TradeRpc.SendSuggestionRequest sendSuggestionRequest = requestBuilder.build();
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} sending {}",
+                                       getSessionId(),
+                                       sendSuggestionRequest);
+                TradeRpc.SendSuggestionResponse response = getBlockingStub().sendSuggestion(sendSuggestionRequest);
+                SLF4JLoggerProxy.trace(TradeRpcClient.this,
+                                       "{} returning {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.trade.client.TradingClient#sendOrders(java.util.List)
      */
     @Override
@@ -590,109 +692,10 @@ public class TradeRpcClient
                                        getSessionId(),
                                        inOrders.size());
                 TradeRpc.SendOrderRequest.Builder requestBuilder = TradeRpc.SendOrderRequest.newBuilder();
-                TradeTypesRpc.Order.Builder orderBuilder = TradeTypesRpc.Order.newBuilder();
-                TradeTypesRpc.OrderBase.Builder orderBaseBuilder = null;
-                TradeTypesRpc.FIXOrder.Builder fixOrderBuilder = null;
-                BaseRpc.Map.Builder mapBuilder = null;
-                BaseRpc.KeyValuePair.Builder keyValuePairBuilder = null;
                 requestBuilder.setSessionId(getSessionId().getValue());
                 for(Order order : inOrders) {
                     try {
-                        if(order instanceof FIXOrder) {
-                            FIXOrder fixOrder = (FIXOrder)order;
-                            if(fixOrderBuilder == null) {
-                                fixOrderBuilder = TradeTypesRpc.FIXOrder.newBuilder();
-                            } else {
-                                fixOrderBuilder.clear();
-                            }
-                            if(mapBuilder == null) {
-                                mapBuilder = BaseRpc.Map.newBuilder();
-                            } else {
-                                mapBuilder.clear();
-                            }
-                            for(Map.Entry<Integer,String> entry : fixOrder.getFields().entrySet()) {
-                                if(keyValuePairBuilder == null) {
-                                    keyValuePairBuilder = BaseRpc.KeyValuePair.newBuilder();
-                                } else {
-                                    keyValuePairBuilder.clear();
-                                }
-                                keyValuePairBuilder.setKey(String.valueOf(entry.getKey()));
-                                keyValuePairBuilder.setValue(entry.getValue());
-                                mapBuilder.addKeyValuePairs(keyValuePairBuilder.build());
-                            }
-                            orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.FIXOrderType);
-                            TradeRpcUtil.setBrokerId(fixOrder,
-                                                     fixOrderBuilder);
-                            // TODO
-//                            fixOrderBuilder.setMessage(mapBuilder.build());
-                            orderBuilder.setFixOrder(fixOrderBuilder.build());
-                        } else if(order instanceof OrderBase) {
-                            if(orderBaseBuilder == null) {
-                                orderBaseBuilder = TradeTypesRpc.OrderBase.newBuilder();
-                            } else {
-                                orderBaseBuilder.clear();
-                            }
-                            // either an OrderSingle, OrderReplace, or OrderCancel
-                            // the types overlap some, first, set all the common fields on OrderBase
-                            OrderBase orderBase = (OrderBase)order;
-                            TradeRpcUtil.setAccount(orderBase,
-                                                    orderBaseBuilder);
-                            TradeRpcUtil.setBrokerId(orderBase,
-                                                     orderBaseBuilder);
-                            TradeRpcUtil.setRpcCustomFields(orderBase,
-                                                            orderBaseBuilder);
-                            TradeRpcUtil.setInstrument(orderBase,
-                                                       orderBaseBuilder);
-                            TradeRpcUtil.setOrderId(orderBase,
-                                                    orderBaseBuilder);
-                            TradeRpcUtil.setQuantity(orderBase,
-                                                     orderBaseBuilder);
-                            TradeRpcUtil.setSide(orderBase,
-                                                 orderBaseBuilder);
-                            TradeRpcUtil.setText(orderBase,
-                                                 orderBaseBuilder);
-                            // now, check for various special order types
-                            if(orderBase instanceof NewOrReplaceOrder) {
-                                NewOrReplaceOrder newOrReplaceOrder = (NewOrReplaceOrder)orderBase;
-                                TradeRpcUtil.setDisplayQuantity(newOrReplaceOrder,
-                                                                orderBaseBuilder);
-                                TradeRpcUtil.setExecutionDestination(newOrReplaceOrder,
-                                                                     orderBaseBuilder);
-                                TradeRpcUtil.setOrderCapacity(newOrReplaceOrder,
-                                                              orderBaseBuilder);
-                                TradeRpcUtil.setOrderType(newOrReplaceOrder,
-                                                          orderBaseBuilder);
-                                TradeRpcUtil.setPositionEffect(newOrReplaceOrder,
-                                                               orderBaseBuilder);
-                                TradeRpcUtil.setPrice(newOrReplaceOrder,
-                                                      orderBaseBuilder);
-                                TradeRpcUtil.setTimeInForce(newOrReplaceOrder,
-                                                            orderBaseBuilder);
-                            }
-                            if(order instanceof RelatedOrder) {
-                                RelatedOrder relatedOrder = (RelatedOrder)order;
-                                TradeRpcUtil.setOriginalOrderId(relatedOrder,
-                                                                orderBaseBuilder);
-                            }
-                            TradeTypesRpc.OrderBase rpcOrderBase = orderBaseBuilder.build();
-                            orderBuilder.setOrderBase(rpcOrderBase);
-                            if(order instanceof OrderCancel) {
-                                orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.OrderCancelType);
-                            } else if(order instanceof OrderSingle) {
-                                orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.OrderSingleType);
-                            } else if(order instanceof OrderReplace) {
-                                orderBuilder.setMatpOrderType(TradeTypesRpc.MatpOrderType.OrderReplaceType);
-                            } else {
-                                throw new UnsupportedOperationException("Unsupported order type: " + order.getClass().getSimpleName());
-                            }
-                        } else {
-                            throw new UnsupportedOperationException("Unsupported order type: " + order.getClass().getSimpleName());
-                        }
-                        requestBuilder.addOrder(orderBuilder.build());
-                        orderBuilder.clear();
-                        if(orderBaseBuilder != null) {
-                            orderBaseBuilder.clear();
-                        }
+                        TradeRpcUtil.getOrder(order).ifPresent(rpcOrder -> requestBuilder.addOrder(rpcOrder));
                     } catch (Exception e) {
                         PlatformServices.handleException(TradeRpcClient.this,
                                                          "Unable to send " + order,
@@ -1053,6 +1056,8 @@ public class TradeRpcClient
     {
         if(inListener instanceof TradeMessageListener) {
             return new TradeMessageListenerProxy((TradeMessageListener)inListener);
+        } else if(inListener instanceof SuggestionListener) {
+            return new SuggestionListenerProxy((SuggestionListener)inListener);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -1092,6 +1097,43 @@ public class TradeRpcClient
         protected TradeMessageListenerProxy(TradeMessageListener inTradeMessageListener)
         {
             super(inTradeMessageListener);
+        }
+    }
+    /**
+     * Provides an interface between suggestion stream listeners and their handlers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class SuggestionListenerProxy
+            extends BaseRpcUtil.AbstractClientListenerProxy<TradeRpc.SuggestionListenerResponse,Suggestion,SuggestionListener>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcClient.AbstractListenerProxy#translateMessage(java.lang.Object)
+         */
+        @Override
+        protected Suggestion translateMessage(SuggestionListenerResponse inResponse)
+        {
+            return TradeRpcUtil.getSuggestion(inResponse);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.trade.rpc.TradeRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        protected void sendMessage(SuggestionListener inMessageListener,
+                                   Suggestion inMessage)
+        {
+            inMessageListener.receiveSuggestion(inMessage);
+        }
+        /**
+         * Create a new SuggestionListenerProxy instance.
+         *
+         * @param inSuggestionListener a <code>SuggestionListener</code> value
+         */
+        protected SuggestionListenerProxy(SuggestionListener inSuggestionListener)
+        {
+            super(inSuggestionListener);
         }
     }
     /**

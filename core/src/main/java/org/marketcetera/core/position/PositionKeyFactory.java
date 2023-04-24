@@ -41,18 +41,11 @@ public class PositionKeyFactory {
      * Creates an currency position key. Note that account and traderId are
      * converted to null if they only contain whitespace.
      * 
-     * @param baseCCY
-     *            baseCCY, cannot be null or whitespace
-     * @param plCCY
-     *            plCCY, cannot be null or whitespace
-     * @param nearTenor
-     *            nearTenor, cannot be null or whitespace
-     * @param account
-     *            account
-     * @param traderId
-     *            trader id
-     * @throws IllegalArgumentException
-     *             if symbol is null or whitespace
+     * @param symbol a <code>String</code> value
+     * @param account a <code>String</code> value
+     * @param traderId a <code>String</code> value
+     * @return a <code>PositionKey&lt;Currency&gt;</code> value
+     * @throws IllegalArgumentException if one of the given parameters are invalid
      */
     public static PositionKey<Currency> createCurrencyKey(String symbol,
             @Nullable String account, @Nullable String traderId) {

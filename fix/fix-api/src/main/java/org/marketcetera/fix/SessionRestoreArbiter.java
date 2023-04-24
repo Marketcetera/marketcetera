@@ -16,7 +16,7 @@ public interface SessionRestoreArbiter
     /**
      * Indicates if the given session should be restored or allowed to start as-is.
      *
-     * @param inSessionId a <code>SessionID</cod> value
+     * @param inSessionId a <code>SessionID</code> value
      * @return a <code>boolean</code>
      */
     boolean shouldRestore(SessionID inSessionId);

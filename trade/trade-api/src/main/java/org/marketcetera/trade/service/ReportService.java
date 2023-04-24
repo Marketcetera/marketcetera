@@ -325,7 +325,7 @@ public interface ReportService
      *
      * @param inMessage a <code>HasFIXMessage</code> value
      * @param inBrokerID a <code>BrokerID</code> value
-     * @param inUserID a <code>UserID</code> value
+     * @param inUserId a <code>UserID</code> value
      */
     void addReport(HasFIXMessage inMessage,
                    BrokerID inBrokerID,

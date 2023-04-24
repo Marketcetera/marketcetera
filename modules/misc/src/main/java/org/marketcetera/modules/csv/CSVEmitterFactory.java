@@ -10,7 +10,8 @@ import org.marketcetera.module.ModuleURN;
  * Provider that will emit data contained in CSV as a series of maps.
  * <p>
  * The factory has the following characteristics.
- * <table summary="Describes the module attributes">
+ * <table>
+ * <caption>Describes the module attributes</caption>
  * <tr><th>Provider URN:</th><td><code>metc:csv:system</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>InstanceURN:</th><td><code>metc:csv:system:single</code></td></tr>

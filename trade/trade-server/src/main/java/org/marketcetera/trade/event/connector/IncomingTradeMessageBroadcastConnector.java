@@ -27,7 +27,7 @@ public class IncomingTradeMessageBroadcastConnector
     /**
      * Receive the incoming FIX application message.
      *
-     * @param inEvent an <code>IncomingFixAppMessageEvent</code> value
+     * @param inTradeMessage a <code>TradeMessage</code> value
      */
     @Subscribe
     public void receive(TradeMessage inTradeMessage)

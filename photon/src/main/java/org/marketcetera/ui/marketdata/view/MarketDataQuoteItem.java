@@ -20,7 +20,7 @@ import javafx.beans.property.StringProperty;
 /* $License$ */
 
 /**
- *
+ * Provides a display implementation of a market data quote.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -28,6 +28,11 @@ import javafx.beans.property.StringProperty;
  */
 public class MarketDataQuoteItem
 {
+    /**
+     * Create a new MarketDataQuoteItem instance.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     */
     public MarketDataQuoteItem(Instrument inInstrument)
     {
         instrument = inInstrument;
@@ -40,7 +45,7 @@ public class MarketDataQuoteItem
     /**
      * Create a new MarketDataQuoteItem instance.
      *
-     * @param inQuoteEvent
+     * @param inQuoteEvent a <code>QuoteEvent</code> value
      */
     public MarketDataQuoteItem(QuoteEvent inQuoteEvent)
     {
@@ -57,7 +62,7 @@ public class MarketDataQuoteItem
     /**
      * Get the quoteActionProperty value.
      *
-     * @return a <code>ObjectProperty<QuoteAction></code> value
+     * @return an <code>ObjectProperty&lt;QuoteAction&gt;</code> value
      */
     public ObjectProperty<QuoteAction> quoteActionProperty()
     {
@@ -66,7 +71,7 @@ public class MarketDataQuoteItem
     /**
      * Get the eventTypeProperty value.
      *
-     * @return a <code>ObjectProperty<EventType></code> value
+     * @return an <code>ObjectProperty&lt;EventType&gt;</code> value
      */
     public ObjectProperty<EventType> eventTypeProperty()
     {
@@ -75,7 +80,7 @@ public class MarketDataQuoteItem
     /**
      * Get the quoteLevelProperty value.
      *
-     * @return a <code>IntegerProperty</code> value
+     * @return an <code>IntegerProperty</code> value
      */
     public IntegerProperty quoteLevelProperty()
     {
@@ -84,7 +89,7 @@ public class MarketDataQuoteItem
     /**
      * Get the quoteCountProperty value.
      *
-     * @return a <code>IntegerProperty</code> value
+     * @return an <code>IntegerProperty</code> value
      */
     public IntegerProperty quoteCountProperty()
     {
@@ -102,7 +107,7 @@ public class MarketDataQuoteItem
     /**
      * Get the timestampProperty value.
      *
-     * @return a <code>ObjectProperty<DateTime></code> value
+     * @return an <code>ObjectProperty&lt;DateTime&gt;</code> value
      */
     public ObjectProperty<DateTime> timestampProperty()
     {
@@ -120,7 +125,7 @@ public class MarketDataQuoteItem
     /**
      * Get the quantityProperty value.
      *
-     * @return a <code>ObjectProperty<BigDecimal></code> value
+     * @return an <code>ObjectProperty&lt;BigDecimal&gt;</code> value
      */
     public ObjectProperty<BigDecimal> quantityProperty()
     {
@@ -129,12 +134,17 @@ public class MarketDataQuoteItem
     /**
      * Get the priceProperty value.
      *
-     * @return a <code>ObjectProperty<BigDecimal></code> value
+     * @return an <code>ObjectProperty&lt;BigDecimal&gt;</code> value
      */
     public ObjectProperty<BigDecimal> priceProperty()
     {
         return priceProperty;
     }
+    /**
+     * Update the item with the given event.
+     *
+     * @param inEvent an <code>Event</code> value
+     */
     public void update(Event inEvent)
     {
         SLF4JLoggerProxy.trace(this,
@@ -152,14 +162,44 @@ public class MarketDataQuoteItem
             quoteCountProperty.set(quoteEvent.getCount());
         }
     }
+    /**
+     * quote action property value
+     */
     private final ObjectProperty<QuoteAction> quoteActionProperty = new SimpleObjectProperty<>();
+    /**
+     * event type property value
+     */
     private final ObjectProperty<EventType> eventTypeProperty = new SimpleObjectProperty<>();
+    /**
+     * quote level property value
+     */
     private final IntegerProperty quoteLevelProperty = new SimpleIntegerProperty();
+    /**
+     * quote count property value
+     */
     private final IntegerProperty quoteCountProperty = new SimpleIntegerProperty();
+    /**
+     * instrument value
+     */
     private final Instrument instrument;
+    /**
+     * symbol property
+     */
     private final StringProperty symbolProperty;
+    /**
+     * timestamp property
+     */
     private final ObjectProperty<DateTime> timestampProperty;
+    /**
+     * exchange property
+     */
     private final StringProperty exchangeProperty;
+    /**
+     * quantity property
+     */
     private final ObjectProperty<BigDecimal> quantityProperty;
+    /**
+     * price property
+     */
     private final ObjectProperty<BigDecimal> priceProperty;
 }

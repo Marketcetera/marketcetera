@@ -3,12 +3,9 @@ package org.marketcetera.ui;
 import java.awt.Taskbar;
 import java.awt.Taskbar.Feature;
 import java.awt.Toolkit;
-import java.io.IOException;
-import java.util.Properties;
 
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.events.LogoutEvent;
-import org.marketcetera.ui.service.DisplayLayoutService;
 import org.marketcetera.ui.service.PhotonNotificationService;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
@@ -23,9 +20,7 @@ import com.google.common.eventbus.Subscribe;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -46,11 +41,19 @@ import javafx.stage.Stage;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
- * @see https://openjfx.io/openjfx-docs/#maven
  */
 public class PhotonApp
         extends Application
 {
+    /**
+     * Main application entry point.
+     *
+     * @param args a <code>String[]</code> value
+     */
+    public static void main(String[] args)
+    {
+        launch();
+    }
     /* (non-Javadoc)
      * @see javafx.application.Application#init()
      */
@@ -58,11 +61,11 @@ public class PhotonApp
     public void init()
             throws Exception
     {
+        instance = this;
         super.init();
         applicationContext = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
         webMessageService = applicationContext.getBean(UiMessageService.class);
         styleService = applicationContext.getBean(StyleService.class);
-        displayLayoutService = applicationContext.getBean(DisplayLayoutService.class);
         webMessageService.register(this);
     }
     /* (non-Javadoc)
@@ -106,13 +109,7 @@ public class PhotonApp
             }
         }
         inPrimaryStage.setOnCloseRequest(closeEvent -> {
-            isShuttingDown = true;
-            webMessageService.post(new LogoutEvent());
-            try {
-                ((ConfigurableApplicationContext)applicationContext).close();
-            } catch (Exception ignored) {}
-            Platform.exit();
-            System.exit(0);
+            doAppShutdown();
         });
         VBox.setVgrow(menuLayout,
                       Priority.NEVER);
@@ -129,6 +126,19 @@ public class PhotonApp
         scene.getStylesheets().add("dark-mode.css");
         inPrimaryStage.show();
         doLogin();
+    }
+    /**
+     * Shutdown the app.
+     */
+    public void doAppShutdown()
+    {
+        isShuttingDown = true;
+        webMessageService.post(new LogoutEvent());
+        try {
+            ((ConfigurableApplicationContext)applicationContext).close();
+        } catch (Exception ignored) {}
+        Platform.exit();
+        System.exit(0);
     }
     /**
      * Receive <code>LoginEvent</code> values.
@@ -174,6 +184,33 @@ public class PhotonApp
         });
     }
     /**
+     * Get the primary application stage.
+     *
+     * @return a <code>Stage</code> value
+     */
+    public static Stage getPrimaryStage()
+    {
+        return primaryStage;
+    }
+    /**
+     * Get the main workspace.
+     *
+     * @return a <code>Pane</code> value
+     */
+    public static Pane getWorkspace()
+    {
+        return workspace;
+    }
+    /**
+     * Get the main singleton application instance.
+     *
+     * @return a <code>PhotonApp</code> value
+     */
+    public static PhotonApp getApp()
+    {
+        return instance;
+    }
+    /**
      * Initialize the workspace footer.
      */
     private void initializeFooter()
@@ -213,6 +250,9 @@ public class PhotonApp
                                    clockLabel,
                                    userLabel);
     }
+    /**
+     * Build and show the main application menu.
+     */
     private void showMenu()
     {
         SessionUser currentUser = SessionUser.getCurrent();
@@ -230,53 +270,15 @@ public class PhotonApp
         }
         applicationMenu.refreshMenuPermissions();
     }
+    /**
+     * Perform the login sequence, including showing the login dialog to the user.
+     */
     private void doLogin()
     {
         LoginView loginView = applicationContext.getBean(LoginView.class);
         loginView.showAndWait();
         showMenu();
     }
-    static void setRoot(String fxml)
-            throws IOException
-    {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml)
-            throws IOException
-    {
-        FXMLLoader fxmlLoader = new FXMLLoader(PhotonApp.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
-    public static Stage getPrimaryStage()
-    {
-        return primaryStage;
-    }
-    public static Pane getWorkspace()
-    {
-        return workspace;
-    }
-    public static void main(String[] args)
-    {
-        launch();
-    }
-    private Properties displayProperties;
-    /**
-     * base key for {@see UserAttributeType} display layout properties
-     */
-    private static final String propId = PhotonApp.class.getSimpleName();
-    /**
-     * workspace width key name
-     */
-    private static final String workspaceWidthProp = propId + "_workspaceWidth";
-    /**
-     * workspace height key name
-     */
-    private static final String workspaceHeightProp = propId + "_workspaceHeight";
-    /**
-     * workspace layout key name
-     */
-    private static final String mainWorkspaceLayoutKey = propId + "_workspaceDisplayLayout";
     /**
      * footer holder for the server connection status image
      */
@@ -313,7 +315,7 @@ public class PhotonApp
     private ToolBar footerToolBar;
     private PhotonNotificationService notificationService;
     /**
-     * provides access to display layout services
+     * singleton applcation isntance
      */
-    private DisplayLayoutService displayLayoutService;
+    private static PhotonApp instance;
 }

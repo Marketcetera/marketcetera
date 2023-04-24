@@ -23,6 +23,8 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessagePublisher;
 
 /* $License$ */
@@ -64,6 +66,12 @@ public interface TradeClient
      */
     List<SendOrderResponse> sendOrders(List<Order> inOrders);
     /**
+     * Submit a trade suggestion.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     */
+    void sendOrderSuggestion(Suggestion inSuggestion);
+    /**
      * Submit the given order.
      *
      * @param inOrder an <code>Order</code> value
@@ -90,7 +98,7 @@ public interface TradeClient
      * Returns all positions of options with the given root symbols based on reports generated and received on or before the supplied date in UTC.
      *
      * @param inDate a <code>Date</code> value
-     * @param inRootElements a <code>String[]</code> value
+     * @param inRootSymbols a <code>String[]</code> value
      * @return a <code>Map&lt;PositionKey&lt;Optiont&gt;,BigDecimal&gt;</code> value
      */
     Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(Date inDate,
@@ -181,4 +189,16 @@ public interface TradeClient
      * @return a <code>CollectionPageResponse&lt;AveragePriceFill&gt;</code> value
      */
     CollectionPageResponse<AverageFillPrice> getAveragePriceFills(PageRequest inPageRequest);
+    /**
+     * Add the given suggestion listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    void addSuggestionListener(SuggestionListener inSuggestionListener);
+    /**
+     * Remove the given suggestion listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    void removeSuggestionListener(SuggestionListener inSuggestionListener);
 }

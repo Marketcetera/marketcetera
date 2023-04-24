@@ -32,9 +32,9 @@ public interface MutableActiveFixSessionFactory
     /**
      * Create a <code>MutableActiveFixSession</code> object.
      *
-     * @param inFixSession a <code>FixSession</code> value
-     * @param inClusterData a <code>ClusterData</code> value
-     * @param inStatus a <code>FixSessionStatus</code> value
+     * @param inUnderlyingFixSession a <code>FixSession</code> value
+     * @param inInstanceData a <code>ClusterData</code> value
+     * @param inBrokerStatus a <code>FixSessionStatus</code> value
      * @param inSessionCustomization a <code>SessionCustomization</code> value
      * @return a <code>MutableActiveFixSession</code> value
      */

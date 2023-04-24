@@ -33,7 +33,7 @@ public interface MutableActiveFixSession
     /**
      * Set the session status.
      *
-     * @param inSessionStatus a <code>FixSessionStatus</code> value
+     * @param inFixSessionStatus a <code>FixSessionStatus</code> value
      */
     void setStatus(FixSessionStatus inFixSessionStatus);
     /**
@@ -51,7 +51,7 @@ public interface MutableActiveFixSession
     /**
      * Set the brokerAlgos value.
      *
-     * @param a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+     * @param inBrokerAlgoSpecs a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
      */
     void setBrokerAlgos(Set<BrokerAlgoSpec> inBrokerAlgoSpecs);
 }

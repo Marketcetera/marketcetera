@@ -17,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Module for {@link BogusFeed}.
  * <p>
  * Module Features
- * <table summary="Describes the module attributes">
+ * <table>
+ * <caption>Describes the module attributes</caption>
  * <tr><th>Factory:</th><td>{@link BogusFeedModuleFactory}</td></tr>
  * <tr><th colspan="2">See {@link AbstractMarketDataModule parent} for module features.</th></tr>
  * </table>

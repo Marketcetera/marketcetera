@@ -5,8 +5,6 @@ import java.util.Collections;
 import org.marketcetera.brokers.service.FixSessionProvider;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
-import org.marketcetera.cluster.SimpleClusterService;
-import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.fix.dao.PersistentFixSessionFactory;
 import org.marketcetera.fix.dao.PersistentFixSessionProvider;
 import org.marketcetera.fix.impl.SimpleActiveFixSessionFactory;
@@ -117,15 +115,5 @@ public class FixServerTestConfiguration
     public MutableFixSessionFactory getFixSessionFactory()
     {
         return new PersistentFixSessionFactory();
-    }
-    /**
-     * Get the cluster service.
-     *
-     * @return a <code>ClusterService</code> value
-     */
-    @Bean
-    public ClusterService getClusterService()
-    {
-        return new SimpleClusterService();
     }
 }

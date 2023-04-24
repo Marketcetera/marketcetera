@@ -96,8 +96,8 @@ public class OptionImbalanceEvent
     /**
      * Create a new OptionImbalanceEvent instance.
      *
-     * @param inImbalanceBean a <code>ImbalanceBean</code> value
-     * @param inOptionBean an <code>OptionBean</code> value
+     * @param inImbalance a <code>ImbalanceBean</code> value
+     * @param inOption an <code>OptionBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>

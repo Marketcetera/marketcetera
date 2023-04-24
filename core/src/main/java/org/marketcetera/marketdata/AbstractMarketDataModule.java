@@ -52,7 +52,8 @@ import com.google.common.collect.Maps;
  * may extend this class.
  * <p>
  * Module Features
- * <table summary="Indicates the module features">
+ * <table>
+ * <caption>Indicates the module features</caption>
  * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Starts the feed, logs into it.</td></tr>

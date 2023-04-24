@@ -31,7 +31,7 @@ public interface EmailNotification
     /**
      * Get the recipients for this email.
      *
-     * @return a <code>Set&t;String&gt;</code> value
+     * @return a <code>Set&lt;String&gt;</code> value
      */
     Set<String> getRecipients();
     /**

@@ -13,7 +13,8 @@ import org.tensorflow.Tensor;
  * Provider that will convert incoming data flow data to {@link Tensor} types.
  *
  * <p>The factory has the following characteristics.</p>
- * <table summary="TensorFlowConverterModuleFactory characteristics">
+ * <table>
+ * <caption>TensorFlowConverterModuleFactory characteristics</caption>
  * <tr><th>Provider URN:</th><td><code>metc:tensorflow:converter</code></td></tr>
  * <tr><th>Cardinality:</th><td>Single Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>

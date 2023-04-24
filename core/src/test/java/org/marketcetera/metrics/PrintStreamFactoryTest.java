@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
- * Tests {@link PrintStreamFactory} subclasses, {@link FileStreamFactory} &
+ * Tests {@link PrintStreamFactory} subclasses, {@link FileStreamFactory} &amp;
  * {@link StdErrFactory}
  *
  * @author anshul@marketcetera.com

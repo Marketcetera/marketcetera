@@ -16,7 +16,8 @@ import java.util.Map;
  *
  * <p>
  * Module Features
- * <table summary="CEPSystemProcessor Capabilities">
+ * <table>
+ * <caption>CEPSystemProcessor Capabilities</caption>
  * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td><code>String</code>: The CEP query</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>

@@ -43,6 +43,9 @@ import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.strategy.service.StrategyClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -142,7 +145,7 @@ public class StrategyView
         filterLayout.setPadding(new Insets(10,10,10,10));
         int rowCount = 0;
         int colCount = 0;
-        filterLayout.add(new Label("Strategy Id"),colCount,rowCount);
+        filterLayout.add(new Label("Strategy Name"),colCount,rowCount);
         filterLayout.add(strategyNameComboBox,++colCount,rowCount);
         filterLayout.add(new Label("Severity"),++colCount,rowCount);
         filterLayout.add(severityComboBox,++colCount,rowCount);
@@ -151,11 +154,10 @@ public class StrategyView
         loadStrategyButton.setOnAction(event -> loadStrategy());
         buttonLayout = new HBox(10);
         buttonLayout.getChildren().add(loadStrategyButton);
-        strategyTable.prefWidthProperty().bind(getParentWindow().widthProperty());
-        eventTable.prefWidthProperty().bind(getParentWindow().widthProperty());
+        strategyTable.prefWidthProperty().bind(mainLayout.widthProperty());
+        eventTable.prefWidthProperty().bind(mainLayout.widthProperty());
         strategyTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         eventTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        mainLayout.prefHeightProperty().bind(getParentWindow().heightProperty());
         mainLayout.getChildren().addAll(strategyTable,
                                         new Separator(Orientation.HORIZONTAL),
                                         buttonLayout,
@@ -237,7 +239,7 @@ public class StrategyView
      * Create a new StrategyView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public StrategyView(Region inParent,
@@ -602,7 +604,7 @@ public class StrategyView
     private void initializeEventTableColumns()
     {
         eventStrategyNameColumn = new TableColumn<>("Strategy");
-        eventStrategyNameColumn.setCellValueFactory(new PropertyValueFactory<>("strategyId"));
+        eventStrategyNameColumn.setCellValueFactory(new PropertyValueFactory<>("strategyName"));
         eventTimestampColumn = new TableColumn<>("Timestamp");
         eventTimestampColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
         eventTimestampColumn.setCellFactory(tableColumn -> PhotonServices.renderDateTimeCell(tableColumn));
@@ -638,6 +640,46 @@ public class StrategyView
         });
     }
     /**
+     * Get the selected strategy messages.
+     *
+     * @return a <code>Collection&lt;DisplayStrategyMessage&gt;</code> value
+     */
+    private Collection<DisplayStrategyMessage> getSelectedMessages()
+    {
+        return eventTable.getSelectionModel().getSelectedItems();
+    }
+    /**
+     * Create a human-readable representation of the given strategy messages.
+     *
+     * @param inStrategyMessages a <code>Collection&lt;DisplayStrategymessage&gt;</code> value
+     * @return a <code>String</code> value
+     */
+    private String renderStrategyMessages(Collection<DisplayStrategyMessage> inStrategyMessages)
+    {
+        Table table = new Table(4,
+                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                ShownBorders.ALL,
+                                false);
+        table.addCell("Strategy Messages",
+                      PlatformServices.cellStyle,
+                      4);
+        table.addCell("Timestamp",
+                      PlatformServices.cellStyle);
+        table.addCell("Strategy",
+                      PlatformServices.cellStyle);
+        table.addCell("Severity",
+                      PlatformServices.cellStyle);
+        table.addCell("Message",
+                      PlatformServices.cellStyle);
+        for(DisplayStrategyMessage message : inStrategyMessages) {
+            table.addCell(String.valueOf(message.timestampProperty().get()));
+            table.addCell(message.strategyNameProperty().get());
+            table.addCell(message.severityProperty().get().name());
+            table.addCell(message.messageProperty().get());
+        }
+        return table.render();
+    }
+    /**
      * Initialize the event context menu.
      */
     private void initializeEventContextMenu()
@@ -645,17 +687,36 @@ public class StrategyView
         eventTableContextMenu = new ContextMenu();
         copyStrategyEventMenuItem = new MenuItem("Copy");
         copyStrategyEventMenuItem.setOnAction(event -> {
-            DisplayStrategyMessage message = eventTable.getSelectionModel().getSelectedItem();
-            if(message == null) {
+            Collection<DisplayStrategyMessage> selectedItems = getSelectedMessages();
+            if(selectedItems == null || selectedItems.isEmpty()) {
                 return;
             }
             Clipboard clipboard = Clipboard.getSystemClipboard();
             ClipboardContent clipboardContent = new ClipboardContent();
-            String output = message.messageProperty().get();
-            clipboardContent.putString(output);
+            clipboardContent.putString(renderStrategyMessages(selectedItems));
             clipboard.setContent(clipboardContent);
         });
         deleteStrategyEventMenuItem = new MenuItem("Delete");
+        deleteStrategyEventMenuItem.setOnAction(event -> {
+            Collection<DisplayStrategyMessage> selectedItems = getSelectedMessages();
+            if(selectedItems == null || selectedItems.isEmpty()) {
+                return;
+            }
+            for(DisplayStrategyMessage message : selectedItems) {
+                try {
+                    strategyClient.deleteStrategyMessage(message.strategyIdProperty().get());
+                    uiMessageService.post(new NotificationEvent("Delete Strategy",
+                                                                "Strategy message deleted",
+                                                                AlertType.INFORMATION));
+                    updateEvents();
+                } catch (Exception e) {
+                    String errorMessage = PlatformServices.getMessage(e);
+                    uiMessageService.post(new NotificationEvent("Delete Strategy Message",
+                                                                "Unable to delete strategy message: " + errorMessage,
+                                                                AlertType.ERROR));
+                }
+            }
+        });
         eventTableContextMenu.getItems().addAll(copyStrategyEventMenuItem,
                                                 new SeparatorMenuItem(),
                                                 deleteStrategyEventMenuItem);
@@ -749,6 +810,24 @@ public class StrategyView
             }
             stopStrategy(selectedStrategy);
         });
+        clearEventsMenuItem.setOnAction(event -> {
+            DisplayStrategyInstance selectedStrategy = strategyTable.getSelectionModel().getSelectedItem();
+            if(selectedStrategy == null) {
+                return;
+            }
+            try {
+                strategyClient.deleteAllStrategyMessages(selectedStrategy.strategyNameProperty().get());
+                uiMessageService.post(new NotificationEvent("Delete All Strategy Messages",
+                                                            "Strategy messages deleted",
+                                                            AlertType.INFORMATION));
+                updateEvents();
+            } catch (Exception e) {
+                String errorMessage = PlatformServices.getMessage(e);
+                uiMessageService.post(new NotificationEvent("Delete Strategy All Messages",
+                                                            "Unable to delete strategy messages: " + errorMessage,
+                                                            AlertType.ERROR));
+            }
+        });
         boolean firstGroup = false;
         if(authzHelperService.hasPermission(StrategyPermissions.StartStrategyAction)) {
             firstGroup = true;
@@ -762,10 +841,10 @@ public class StrategyView
             firstGroup = true;
             strategyTableContextMenu.getItems().add(unloadStrategyMenuItem);
         }
-        if(authzHelperService.hasPermission(StrategyPermissions.CancelStrategyUploadAction)) {
-            firstGroup = true;
-            strategyTableContextMenu.getItems().add(cancelStrategyUploadMenuItem);
-        }
+//        if(authzHelperService.hasPermission(StrategyPermissions.CancelStrategyUploadAction)) {
+//            firstGroup = true;
+//            strategyTableContextMenu.getItems().add(cancelStrategyUploadMenuItem);
+//        }
         if(authzHelperService.hasPermission(StrategyPermissions.ClearStrategyEventsAction)) {
             if(firstGroup) {
                 strategyTableContextMenu.getItems().add(new SeparatorMenuItem());

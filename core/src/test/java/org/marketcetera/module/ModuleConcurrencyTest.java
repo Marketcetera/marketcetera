@@ -276,7 +276,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
     }
 
     /**
-     * Tests locking & module operations when module start takes a long time
+     * Tests locking &amp; module operations when module start takes a long time
      * to complete and succeeds.
      *
      * @throws Exception if there were errors.
@@ -306,7 +306,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         getManager().deleteModule(urn);
     }
     /**
-     * Tests locking & module operations when module start takes a long time
+     * Tests locking &amp; module operations when module start takes a long time
      * to complete and fails.
      *
      * @throws Exception if there were errors.
@@ -338,7 +338,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
         getManager().deleteModule(urn);
     }
     /**
-     * Tests locking & module operations when module's setFlowSupport
+     * Tests locking &amp; module operations when module's setFlowSupport
      * API takes a lot of time. Do note that setFlowSupport is meant
      * to be doing anything complicated. This unit test is there to
      * verify that the system is robust enough to deal with a rogue
@@ -372,7 +372,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
     }
 
     /**
-     * Verifies locking & module operations when stopping module instances.
+     * Verifies locking &amp; module operations when stopping module instances.
      *
      * @throws Exception if there were errors
      */
@@ -399,7 +399,7 @@ public class ModuleConcurrencyTest extends ModuleTestBase {
 
     }
     /**
-     * Verifies locking & module operations when stopping module instance fails.
+     * Verifies locking &amp; module operations when stopping module instance fails.
      *
      * @throws Exception if there were errors
      */

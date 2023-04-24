@@ -243,7 +243,7 @@ public class MockMarketDataServiceAdapter
         capabilityRequests.set(0);
     }
     /**
-     * Records requests to {@link MockMarketDataServiceAdapter#getSnapshot(Instrument, Content, String)}.
+     * Records requests to {@link MockMarketDataServiceAdapter#getSnapshot(Instrument, Content)}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$

@@ -12,7 +12,8 @@ import org.marketcetera.tensorflow.Messages;
  * Provides a module that invokes an existing TensorFlow model.
  *
  * <p>The factory has the following characteristics.</p>
- * <table summary="TensorFlowModelModuleFactory characteristics">
+ * <table>
+ * <caption>TensorFlowModelModuleFactory characteristics</caption>
  * <tr><th>Provider URN:</th><td><code>metc:tensorflow:model</code></td></tr>
  * <tr><th>Cardinality:</th><td>Single Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>

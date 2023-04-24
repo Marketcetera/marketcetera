@@ -38,6 +38,7 @@ import java.util.Map;
  * <p>
  * Module Features
  * <table>
+ * <caption>Sink Module Capabilities</caption>
  * <tr><th>Capabilities</th><td>DataReceiver</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Does nothing</td></tr>

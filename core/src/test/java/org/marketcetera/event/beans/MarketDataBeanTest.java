@@ -40,7 +40,7 @@ public class MarketDataBeanTest
         doCopyTest(new MarketDataBean());
     }
     /**
-     * Tests {@link E#getInstrument()} and {@link E#setInstrument(org.marketcetera.trade.Instrument)}. 
+     * Tests <code>getInstrument</code> and <code>setInstrument</code>. 
      *
      * @throws Exception if an unexpected error occurs
      */

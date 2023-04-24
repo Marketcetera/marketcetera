@@ -3,6 +3,10 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
+import org.marketcetera.core.Preserve;
+import org.marketcetera.trade.pnl.ProfitAndLoss;
+import org.marketcetera.trade.pnl.ProfitAndLossFactory;
+
 /* $License$ */
 
 /**
@@ -12,28 +16,29 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class PersistentProfitAndLossFactory
-        implements org.marketcetera.trade.pnl.ProfitAndLossFactory
+        implements ProfitAndLossFactory
 {
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> instance.
+     * Create a new <code>PersistentProfitAndLoss</code> instance.
      *
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> value
+     * @return a <code>PersistentProfitAndLoss</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss create()
+    public PersistentProfitAndLoss create()
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss();
+        return new PersistentProfitAndLoss();
     }
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> instance from the given object.
+     * Create a new <code>PersistentProfitAndLoss</code> instance from the given object.
      *
-     * @param inObject a <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> value
-     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> value
+     * @param inProfitAndLoss a <code>ProfitAndLoss</code> value
+     * @return a <code>PersistentProfitAndLoss</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss create(org.marketcetera.trade.pnl.ProfitAndLoss inPersistentProfitAndLoss)
+    public PersistentProfitAndLoss create(ProfitAndLoss inProfitAndLoss)
     {
-        return new org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss(inPersistentProfitAndLoss);
+        return new PersistentProfitAndLoss(inProfitAndLoss);
     }
 }

@@ -6,7 +6,9 @@ package org.marketcetera.strategy;
 import java.util.Optional;
 
 import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.rpc.AdminRpcUtil;
 import org.marketcetera.core.Preserve;
+import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.rpc.base.BaseRpcUtil;
 import org.marketcetera.strategy.events.SimpleStrategyMessageEvent;
 import org.marketcetera.strategy.events.SimpleStrategyStartFailedEvent;
@@ -41,16 +43,16 @@ public abstract class StrategyRpcUtil
     /**
      * Get the RPC object from the given value.
      *
-     * @param inStrategyInstance a <code>org.marketcetera.strategy.StrategyInstance</code> value
-     * @return a java.util.Optional<StrategyTypesRpc.StrategyInstance> value
+     * @param inStrategyInstance a <code>StrategyInstance</code> value
+     * @return an Optional&lt;StrategyTypesRpc.StrategyInstance&gt; value
      */
-    public static java.util.Optional<StrategyTypesRpc.StrategyInstance> getRpcStrategyInstance(org.marketcetera.strategy.StrategyInstance inStrategyInstance)
+    public static Optional<StrategyTypesRpc.StrategyInstance> getRpcStrategyInstance(StrategyInstance inStrategyInstance)
     {
         if(inStrategyInstance == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         StrategyTypesRpc.StrategyInstance.Builder builder = StrategyTypesRpc.StrategyInstance.newBuilder();
-        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inStrategyInstance.getUser()).ifPresent(value->builder.setUser(value));
+        AdminRpcUtil.getRpcUser(inStrategyInstance.getUser()).ifPresent(value->builder.setUser(value));
         if(inStrategyInstance.getName() != null) {
             builder.setName(inStrategyInstance.getName());
         }
@@ -65,129 +67,136 @@ public abstract class StrategyRpcUtil
         }
         org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inStrategyInstance.getStarted()).ifPresent(value->builder.setStarted(value));
         getRpcStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->builder.setStatus(value));
-        return java.util.Optional.of(builder.build());
+        return Optional.of(builder.build());
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inStrategyStatusan <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus</code> value
-     * @return an org.marketcetera.strategy.StrategyStatus value
+     * @param inStrategyStatus an <code>StrategyTypesRpc.StrategyStatus</code> value
+     * @return an Optional&lt;StrategyStatus&gt; value
      */
-    public static java.util.Optional<org.marketcetera.strategy.StrategyStatus> getStrategyStatus(org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus inStrategyStatus)
+    public static Optional<StrategyStatus> getStrategyStatus(StrategyTypesRpc.StrategyStatus inStrategyStatus)
     {
         if(inStrategyStatus == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        return java.util.Optional.of(org.marketcetera.strategy.StrategyStatus.values()[inStrategyStatus.getNumber()]);
+        return Optional.of(StrategyStatus.values()[inStrategyStatus.getNumber()]);
     }
     /**
      * Get the RPC value from the given object.
      *
-     * @param inRpcStrategyStatus a <code>org.marketcetera.strategy.StrategyStatus</code> value
-     * @return an org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus value
+     * @param inRpcStrategyStatus a <code>StrategyStatus</code> value
+     * @return an Optional&lt;StrategyTypesRpc.StrategyStatus&gt; value
      */
-    public static java.util.Optional<org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus> getRpcStrategyStatus(org.marketcetera.strategy.StrategyStatus inRpcStrategyStatus)
+    public static Optional<StrategyTypesRpc.StrategyStatus> getRpcStrategyStatus(StrategyStatus inRpcStrategyStatus)
     {
         if(inRpcStrategyStatus == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        return java.util.Optional.of(org.marketcetera.strategy.StrategyTypesRpc.StrategyStatus.forNumber(inRpcStrategyStatus.ordinal()));
+        return Optional.of(StrategyTypesRpc.StrategyStatus.forNumber(inRpcStrategyStatus.ordinal()));
     }
     /**
      * Get the RPC object from the given value.
      *
-     * @param inStrategyMessage a <code>org.marketcetera.strategy.StrategyMessage</code> value
-     * @return a java.util.Optional<StrategyTypesRpc.StrategyMessage> value
+     * @param inStrategyMessage a <code>StrategyMessage</code> value
+     * @return an Optional&lt;StrategyTypesRpc.StrategyMessage&gt; value
      */
-    public static java.util.Optional<StrategyTypesRpc.StrategyMessage> getRpcStrategyMessage(org.marketcetera.strategy.StrategyMessage inStrategyMessage)
+    public static Optional<StrategyTypesRpc.StrategyMessage> getRpcStrategyMessage(StrategyMessage inStrategyMessage)
     {
         if(inStrategyMessage == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         StrategyTypesRpc.StrategyMessage.Builder builder = StrategyTypesRpc.StrategyMessage.newBuilder();
-        org.marketcetera.strategy.StrategyRpcUtil.getRpcStrategyInstance(inStrategyMessage.getStrategyInstance()).ifPresent(value->builder.setStrategyInstance(value));
+        StrategyRpcUtil.getRpcStrategyInstance(inStrategyMessage.getStrategyInstance()).ifPresent(value->builder.setStrategyInstance(value));
         getRpcStrategyMessageSeverity(inStrategyMessage.getSeverity()).ifPresent(value->builder.setSeverity(value));
         BaseRpcUtil.getTimestampValue(inStrategyMessage.getMessageTimestamp()).ifPresent(rpcTimestamp -> builder.setMessageTimestamp(rpcTimestamp));
         if(inStrategyMessage.getMessage() != null) {
             builder.setMessage(inStrategyMessage.getMessage());
         }
-        return java.util.Optional.of(builder.build());
+        builder.setStrategyMessageId(inStrategyMessage.getStrategyMessageId());
+        return Optional.of(builder.build());
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inStrategyMessage an <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyMessage</code> value
-     * @param inStrategyMessageFactory an <code>org.marketcetera.strategy.StrategyMessageFactory</code> value
-     * @param inStrategyInstanceFactory an <code>org.marketcetera.strategy.StrategyInstanceFactory</code> value
-     * @param inUserFactory an <code>org.marketcetera.admin.UserFactory</code> value
-     * @return an org.marketcetera.strategy.StrategyMessage value
+     * @param inStrategyMessage an <code>StrategyTypesRpc.StrategyMessage</code> value
+     * @param inStrategyMessageFactory an <code>StrategyMessageFactory</code> value
+     * @param inStrategyInstanceFactory an <code>StrategyInstanceFactory</code> value
+     * @param inUserFactory an <code>UserFactory</code> value
+     * @return an Optional&lt;StrategyMessage&gt; value
      */
-    public static java.util.Optional<org.marketcetera.strategy.StrategyMessage> getStrategyMessage(org.marketcetera.strategy.StrategyTypesRpc.StrategyMessage inStrategyMessage,org.marketcetera.strategy.StrategyMessageFactory inStrategyMessageFactory,org.marketcetera.strategy.StrategyInstanceFactory inStrategyInstanceFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    public static Optional<StrategyMessage> getStrategyMessage(StrategyTypesRpc.StrategyMessage inStrategyMessage,
+                                                               StrategyMessageFactory inStrategyMessageFactory,
+                                                               StrategyInstanceFactory inStrategyInstanceFactory,
+                                                               UserFactory inUserFactory)
     {
         if(inStrategyMessage == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.strategy.StrategyMessage strategyMessage = inStrategyMessageFactory.create();
-        org.marketcetera.strategy.StrategyRpcUtil.getStrategyInstance(inStrategyMessage.getStrategyInstance(),inStrategyInstanceFactory,inUserFactory).ifPresent(value->strategyMessage.setStrategyInstance(value));
+        StrategyMessage strategyMessage = inStrategyMessageFactory.create();
+        StrategyRpcUtil.getStrategyInstance(inStrategyMessage.getStrategyInstance(),inStrategyInstanceFactory,inUserFactory).ifPresent(value->strategyMessage.setStrategyInstance(value));
         getStrategyMessageSeverity(inStrategyMessage.getSeverity()).ifPresent(value->strategyMessage.setSeverity(value));
         BaseRpcUtil.getDateValue(inStrategyMessage.getMessageTimestamp()).ifPresent(messageTimestamp -> strategyMessage.setMessageTimestamp(messageTimestamp));
         strategyMessage.setMessage(inStrategyMessage.getMessage());
-        return java.util.Optional.of(strategyMessage);
+        ((SimpleStrategyMessage)strategyMessage).setStrategyMessageId(inStrategyMessage.getStrategyMessageId());
+        return Optional.of(strategyMessage);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inStrategyInstance an <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyInstance</code> value
-     * @param inStrategyInstanceFactory an <code>org.marketcetera.strategy.StrategyInstanceFactory</code> value
-     * @param inUserFactory an <code>org.marketcetera.admin.UserFactory</code> value
-     * @return an org.marketcetera.strategy.StrategyInstance value
+     * @param inStrategyInstance an <code>StrategyTypesRpc.StrategyInstance</code> value
+     * @param inStrategyInstanceFactory an <code>StrategyInstanceFactory</code> value
+     * @param inUserFactory an <code>UserFactory</code> value
+     * @return an Optional&lt;StrategyInstance&gt; value
      */
-    public static java.util.Optional<org.marketcetera.strategy.StrategyInstance> getStrategyInstance(org.marketcetera.strategy.StrategyTypesRpc.StrategyInstance inStrategyInstance,org.marketcetera.strategy.StrategyInstanceFactory inStrategyInstanceFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    public static Optional<StrategyInstance> getStrategyInstance(StrategyTypesRpc.StrategyInstance inStrategyInstance,
+                                                                 StrategyInstanceFactory inStrategyInstanceFactory,
+                                                                 UserFactory inUserFactory)
     {
         if(inStrategyInstance == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.strategy.StrategyInstance strategyInstance = inStrategyInstanceFactory.create();
-        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inStrategyInstance.getUser(),inUserFactory).ifPresent(value->strategyInstance.setUser(value));
+        StrategyInstance strategyInstance = inStrategyInstanceFactory.create();
+        AdminRpcUtil.getUser(inStrategyInstance.getUser(),inUserFactory).ifPresent(value->strategyInstance.setUser(value));
         strategyInstance.setName(inStrategyInstance.getName());
         strategyInstance.setFilename(inStrategyInstance.getFilename());
         strategyInstance.setHash(inStrategyInstance.getHash());
         strategyInstance.setNonce(inStrategyInstance.getNonce());
         org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inStrategyInstance.getStarted()).ifPresent(value->strategyInstance.setStarted(value));
         getStrategyStatus(inStrategyInstance.getStatus()).ifPresent(value->strategyInstance.setStatus(value));
-        return java.util.Optional.of(strategyInstance);
+        return Optional.of(strategyInstance);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inSeverityan <code>org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity</code> value
-     * @return an org.marketcetera.core.notifications.INotification.Severity value
+     * @param inSeverity an <code>StrategyTypesRpc.StrategyMessageSeverity</code> value
+     * @return an Optional&lt;INotification.Severity&gt; value
      */
-    public static java.util.Optional<org.marketcetera.core.notifications.INotification.Severity> getStrategyMessageSeverity(org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity inSeverity)
+    public static Optional<INotification.Severity> getStrategyMessageSeverity(StrategyTypesRpc.StrategyMessageSeverity inSeverity)
     {
         if(inSeverity == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        return java.util.Optional.of(org.marketcetera.core.notifications.INotification.Severity.values()[inSeverity.getNumber()]);
+        return Optional.of(INotification.Severity.values()[inSeverity.getNumber()]);
     }
     /**
      * Get the RPC value from the given object.
      *
-     * @param inRpcSeverity a <code>org.marketcetera.core.notifications.INotification.Severity</code> value
-     * @return an org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity value
+     * @param inRpcSeverity a <code>INotification.Severity</code> value
+     * @return an Optional&lt;StrategyTypesRpc.StrategyMessageSeverity&gt; value
      */
-    public static java.util.Optional<org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity> getRpcStrategyMessageSeverity(org.marketcetera.core.notifications.INotification.Severity inRpcSeverity)
+    public static Optional<StrategyTypesRpc.StrategyMessageSeverity> getRpcStrategyMessageSeverity(INotification.Severity inRpcSeverity)
     {
         if(inRpcSeverity == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        return java.util.Optional.of(org.marketcetera.strategy.StrategyTypesRpc.StrategyMessageSeverity.forNumber(inRpcSeverity.ordinal()));
+        return Optional.of(StrategyTypesRpc.StrategyMessageSeverity.forNumber(inRpcSeverity.ordinal()));
     }
     /**
+     * Write the given strategy event to the given response builder.
      *
-     *
-     * @param inStrategyEvent
-     * @param inResponseBuilder
+     * @param inStrategyEvent a <code>StrategyEvent</code> value
+     * @param inResponseBuilder a <code>StrategyRpc.StrategyEventListenerResponse.Builder</code> value
      */
     public static void setStrategyEvent(StrategyEvent inStrategyEvent,
                                         StrategyRpc.StrategyEventListenerResponse.Builder inResponseBuilder)
@@ -219,6 +228,7 @@ public abstract class StrategyRpcUtil
             rpcEventBuilder.setMessage(messageEvent.getStrategyMessage().getMessage());
             getRpcStrategyMessageSeverity(messageEvent.getStrategyMessage().getSeverity()).ifPresent(rpcSeverity -> rpcEventBuilder.setSeverity(rpcSeverity));
             BaseRpcUtil.getTimestampValue(messageEvent.getStrategyMessage().getMessageTimestamp()).ifPresent(rpcTimestamp -> rpcEventBuilder.setMessageTimestamp(rpcTimestamp));
+            rpcEventBuilder.setId(messageEvent.getStrategyMessage().getStrategyMessageId());
         } else {
             throw new UnsupportedOperationException("Unexpected strategy event type: " + inStrategyEvent.getClass().getSimpleName());
         }
@@ -249,6 +259,7 @@ public abstract class StrategyRpcUtil
                             SimpleStrategyMessageEvent messageEvent = new SimpleStrategyMessageEvent();
                             SimpleStrategyMessage message = new SimpleStrategyMessage();
                             message.setMessage(rpcEvent.getMessage());
+                            message.setStrategyMessageId(rpcEvent.getId());
                             getStrategyMessageSeverity(rpcEvent.getSeverity()).ifPresent(severity -> message.setSeverity(severity));
                             BaseRpcUtil.getDateValue(rpcEvent.getMessageTimestamp()).ifPresent(timestamp -> message.setMessageTimestamp(timestamp));
                             message.setStrategyInstance(strategyInstance);

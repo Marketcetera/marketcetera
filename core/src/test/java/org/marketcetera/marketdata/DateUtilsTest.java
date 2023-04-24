@@ -23,7 +23,7 @@ import org.marketcetera.module.ExpectedFailure;
 /* $License$ */
 
 /**
- * Tests {@link DateUtil}.
+ * Tests {@link DateUtils}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

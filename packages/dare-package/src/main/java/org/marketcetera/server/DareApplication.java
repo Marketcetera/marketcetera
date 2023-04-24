@@ -23,7 +23,6 @@ import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.admin.user.PersistentUserFactory;
 import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.service.FixSessionProvider;
-import org.marketcetera.client.rpc.server.TradeRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
 import org.marketcetera.cluster.rpc.ClusterRpcService;
@@ -59,12 +58,14 @@ import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BasicSelector;
 import org.marketcetera.trade.SimpleAverageFillPriceFactory;
+import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceConnector;
 import org.marketcetera.trade.event.connector.OrderConverterConnector;
 import org.marketcetera.trade.event.connector.OutgoingMessageCachingConnector;
 import org.marketcetera.trade.event.connector.OutgoingMessagePersistenceConnector;
+import org.marketcetera.trade.rpc.server.TradeRpcService;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -196,6 +197,16 @@ public class DareApplication
     public DirectMarketDataClient getMarketDataClient()
     {
         return new DirectMarketDataClient();
+    }
+    /**
+     * Get the trade client value.
+     *
+     * @return a <code>DirectTradeClient</code> value
+     */
+    @Bean
+    public DirectTradeClient getTradeClient()
+    {
+        return new DirectTradeClient();
     }
     /**
      * Get the strategy message factory value.

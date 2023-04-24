@@ -15,7 +15,8 @@ import org.marketcetera.module.ModuleURN;
  * request and they are auto-started.
  * <p>
  * The factory has the following characteristics.
- * <table summary="CEPEsperFactory characteristics">
+ * <table>
+ * <caption>CEPEsperFactory characteristics</caption>
  * <tr><th>Provider URN:</th><td><code>metc:cep:esper</code></td></tr>
  * <tr><th>Cardinality:</th><td>Multi-Instance</td></tr>
  * <tr><th>Auto-Instantiated:</th><td>Yes</td></tr>

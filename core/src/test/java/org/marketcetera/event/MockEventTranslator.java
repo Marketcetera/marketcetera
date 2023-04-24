@@ -99,7 +99,7 @@ public class MockEventTranslator
     /**
      * Sets the requestToReturn value.
      *
-     * @param a <code>DataRequest</code> value
+     * @param inRequestToReturn a <code>DataRequest</code> value
      */
     public static void setRequestToReturn(MarketDataRequest inRequestToReturn)
     {

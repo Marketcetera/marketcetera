@@ -93,6 +93,24 @@ public class StrategyClientService
         return strategyClient != null && strategyClient.isRunning();
     }
     /**
+     * Delete the strategy message with the given unique identifier.
+     *
+     * @param inStrategyMessageId a <code>long</code> value
+     */
+    public void deleteStrategyMessage(long inStrategyMessageId)
+    {
+        strategyClient.deleteStrategyMessage(inStrategyMessageId);
+    }
+    /**
+     * Delete all strategy messages for the given strategy instance.
+     *
+     * @param inStrategyInstanceName a <code>String</code> value
+     */
+    public void deleteAllStrategyMessages(String inStrategyInstanceName)
+    {
+        strategyClient.deleteAllStrategyMessages(inStrategyInstanceName);
+    }
+    /**
      * Unload a strategy instance.
      *
      * @param inStrategyInstanceName a <code>String</code> value
@@ -114,7 +132,7 @@ public class StrategyClientService
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value
-     * @returns a <code>java.util.Optional<? extends StrategyInstance></code> value
+     * @return a <code>java.util.Optional&lt;? extends StrategyInstance&gt;</code> value
      */
     public Optional<? extends StrategyInstance> findByName(String inName)
     {
@@ -123,7 +141,7 @@ public class StrategyClientService
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>Collection&lt;? extends StrategyInstance&gt;</code> value
+     * @return a <code>Collection&lt;? extends StrategyInstance&gt;</code> value
      */
     public Collection<? extends StrategyInstance> getStrategyInstances()
     {
@@ -135,7 +153,7 @@ public class StrategyClientService
      * @param inStrategyName a <code>String</code> value
      * @param inSeverity a <code>Severity</code> value
      * @param inPageRequest an <code>PageRequest</code> value
-     * @returns a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
+     * @return a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
      */
     public CollectionPageResponse<? extends StrategyMessage> getStrategyMessages(String inStrategyName,
                                                                                  Severity inSeverity,

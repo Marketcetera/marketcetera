@@ -20,7 +20,7 @@ public interface NewWindowEvent
     /**
      * Get the icon to display for the window, if any.
      *
-     * @return a <code>URL</cod> value or <code>null</code>
+     * @return a <code>URL</code> value or <code>null</code>
      */
     default URL getWindowIcon()
     {

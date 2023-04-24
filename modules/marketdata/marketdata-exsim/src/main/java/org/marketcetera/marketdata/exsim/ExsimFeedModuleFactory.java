@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
  * <code>ModuleFactory</code> implementation for the <code>ExsimFeed</code> market data provider.
  * <p>
  * The factory has the following characteristics.
- * <table summary="ExsimFeedModuleFactory characteristics">
+ * <table>
+ * <caption>ExsimFeedModuleFactory characteristics</caption>
  * <tr><th>Provider URN:</th><td><code>metc:mdata:exsim</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:mdata:exsim:single</code></td></tr>

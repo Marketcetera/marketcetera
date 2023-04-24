@@ -29,7 +29,8 @@ import com.google.common.cache.CacheBuilder;
  * Converts conventional data types to {@link Tensor} objects.
  * 
  * <p>Module Features</p>
- * <table summary="TensorFlowConverterModule capabilities">
+ * <table>
+ * <caption>TensorFlowConverterModule capabilities</caption>
  * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
  * <tr><th>DataFlow Request Parameters</th><td>none</td></tr>
  * <tr><th>Stops data flows</th><td>n/a</td></tr>

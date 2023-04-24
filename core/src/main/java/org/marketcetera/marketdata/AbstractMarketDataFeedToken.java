@@ -2,8 +2,8 @@ package org.marketcetera.marketdata;
 
 import java.util.concurrent.ExecutionException;
 
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.core.publisher.Subscriber;
 
 /**
  * Represents the responses to a market data request.
@@ -59,9 +59,6 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      * Publishes the given data to all subscribers.
      *
      * @param inData an <code>Object</code> value
-     * @throws InterruptedException if synchronous publications are selected and the thread is interrupted
-     *   while notifying a publisher
-     * @throws ExecutionException 
      */
     @Override
     public final void publish(Object inData) 

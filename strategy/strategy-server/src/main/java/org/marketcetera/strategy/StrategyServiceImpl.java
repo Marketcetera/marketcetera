@@ -56,6 +56,7 @@ import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -172,7 +173,7 @@ public class StrategyServiceImpl
     /**
      * Requests loaded strategy instances.
      *
-     * @returns a <code>Collection<StrategyInstance></code> value
+     * @return a <code>Collection&lt;StrategyInstance&gt;</code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
@@ -187,8 +188,8 @@ public class StrategyServiceImpl
      *
      * @param inStrategyName a <code>String</code> value
      * @param inSeverity a <code>Severity</code> value
-     * @param inPageRequest an <code>PageRequest</code> value
-     * @returns a <code>CollectionPageResut<? extends StrategyMessage></code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;? extends StrategyMessage&gt;</code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
@@ -397,11 +398,39 @@ public class StrategyServiceImpl
         Path strategyTarget = Paths.get(strategyStorageDirectoryName,
                                         strategyInstance.getFilename());
         FileUtils.deleteQuietly(strategyTarget.toFile());
-        BooleanBuilder where = new BooleanBuilder();
-        where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(strategyInstance));
-        strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
+        deleteAllMessagesFor(strategyInstance);
         strategyInstanceDao.delete(strategyInstance);
         eventBusService.post(new SimpleStrategyUnloadedEvent(strategyInstance));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#deleteStrategyMessage(long)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void deleteStrategyMessage(long inStrategyMessageId)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Deleting strategy message with id {}",
+                               inStrategyMessageId);
+        Optional<PersistentStrategyMessage> strategyMessageOption = strategyMessageDao.findByStrategyMessageId(inStrategyMessageId);
+        Validate.isTrue(strategyMessageOption.isPresent(),
+                        "No strategy message with id '" + inStrategyMessageId + "'");
+        strategyMessageDao.delete(strategyMessageOption.get());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyService#deleteAllStrategyMessages(java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void deleteAllStrategyMessages(String inStrategyInstanceName)
+    {
+        Validate.notNull(inStrategyInstanceName,
+                         "Strategy instance name required");
+        Optional<PersistentStrategyInstance> strategyInstanceOption = strategyInstanceDao.findByName(inStrategyInstanceName);
+        Validate.isTrue(strategyInstanceOption.isPresent(),
+                        "No strategy instance by name '" + inStrategyInstanceName + "'");
+        PersistentStrategyInstance strategyInstance = strategyInstanceOption.get();
+        deleteAllMessagesFor(strategyInstance);
     }
     /* (non-Javadoc)
      * @see StrategyService#getIncomingStrategyDirectory()
@@ -422,8 +451,8 @@ public class StrategyServiceImpl
     /**
      * Load a new strategy instances.
      *
-     * @param inStrategyInstance an <code>StrategyInstance</code> value
-     * @returns an <code>StrategyStatus</code> value
+     * @param inFile a <code>File</code> value
+     * @param inOriginalFileName a <code>String</code> value
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
@@ -485,7 +514,7 @@ public class StrategyServiceImpl
      * Load a new strategy instances.
      *
      * @param inStrategyInstance an <code>StrategyInstance</code> value
-     * @returns an <code>StrategyStatus</code> value
+     * @return a <code>StrategyStatus</code> value
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
@@ -559,13 +588,26 @@ public class StrategyServiceImpl
      * Finds the strategy instance with the given name.
      *
      * @param inName a <code>String</code> value
-     * @returns a <code>Optional<? extends StrategyInstance></code> value
+     * @return a <code>Optional&lt;? extends StrategyInstance&gt;</code> value
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
     public Optional<? extends StrategyInstance> findByName(String inName)
     {
         return strategyInstanceDao.findByName(inName);
+    }
+    /**
+     * Delete all {@link PersistentStrategyMessage} values owned by the given <code>PersistentStrategyInstance</code>.
+     * 
+     * <p>This method assumes a transaction set up by the caller.</p>
+     *
+     * @param inStrategyInstance a <code>PersistentStrategyInstance</code> value
+     */
+    private void deleteAllMessagesFor(PersistentStrategyInstance inStrategyInstance)
+    {
+        BooleanBuilder where = new BooleanBuilder();
+        where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(inStrategyInstance));
+        strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
     }
     /**
      * Build the sort statement for a query using the given attributes.
@@ -634,11 +676,16 @@ public class StrategyServiceImpl
                     return strategyInstance;
                 }}
             );
+            String strategyUsername = strategyInstance.getUser().getName();
             // TODO this needs to be configurable - this could be a direct client for DARE or an RPC client for an SE
             DirectStrategyClient strategyClient = new DirectStrategyClient(newContext,
-                                                                           "trader");
+                                                                           strategyUsername);
             beanFactory.registerSingleton(StrategyClient.class.getCanonicalName(),
                                           strategyClient);
+            // get the trade client that we expect to be defined in the parent context
+            DirectTradeClient tradeClient = applicationContext.getBean(DirectTradeClient.class);
+            // define the current user, which is the user that owns the strategy
+            tradeClient.setCurrentUser(strategyInstance);
             // refresh the context, which allows it to prepare to use the strategy JAR
             newContext.refresh();
             // start the context
@@ -646,6 +693,9 @@ public class StrategyServiceImpl
             // start the embedded strategy client
             strategyClient.start();
         }
+        /**
+         * Stop the running strategy.
+         */
         private void stop()
         {
             try {

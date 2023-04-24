@@ -1,8 +1,5 @@
 package org.marketcetera.trade.client;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
 /* $License$ */
 
 /**
@@ -21,13 +18,6 @@ public class DirectTradeClientFactory
     @Override
     public TradeClient create(DirectTradeClientParameters inParameterClazz)
     {
-        DirectTradeClient tradeClient = new DirectTradeClient(applicationContext,
-                                                              inParameterClazz.getUsername());
-        return tradeClient;
+        return new DirectTradeClient();
     }
-    /**
-     * provides access to the application context
-     */
-    @Autowired
-    private ApplicationContext applicationContext;
 }

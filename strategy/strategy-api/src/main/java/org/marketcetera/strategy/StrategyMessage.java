@@ -3,6 +3,11 @@
 //
 package org.marketcetera.strategy;
 
+import java.util.Date;
+
+import org.marketcetera.core.Preserve;
+import org.marketcetera.core.notifications.INotification;
+
 /* $License$ */
 
 /**
@@ -12,33 +17,40 @@ package org.marketcetera.strategy;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface StrategyMessage
-        extends org.marketcetera.strategy.HasStrategyInstance
+        extends HasStrategyInstance
 {
+    /**
+     * Get the strategy message unique identifier.
+     *
+     * @return a <code>long</code> value
+     */
+    long getStrategyMessageId();
     /**
      * Get the messageTimestamp value.
      *
-     * @return a <code>java.util.Date</code> value
+     * @return a <code>Date</code> value
      */
-    java.util.Date getMessageTimestamp();
+    Date getMessageTimestamp();
     /**
      * Set the messageTimestamp value.
      *
-     * @param inMessageTimestamp a <code>java.util.Date</code> value
+     * @param inMessageTimestamp a <code>Date</code> value
      */
-    void setMessageTimestamp(java.util.Date inMessageTimestamp);
+    void setMessageTimestamp(Date inMessageTimestamp);
     /**
      * Get the severity value.
      *
-     * @return an <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @return an <code>INotification.Severity</code> value
      */
-    org.marketcetera.core.notifications.INotification.Severity getSeverity();
+    INotification.Severity getSeverity();
     /**
      * Set the severity value.
      *
-     * @param inSeverity an <code>org.marketcetera.core.notifications.INotification.Severity</code> value
+     * @param inSeverity an <code>INotification.Severity</code> value
      */
-    void setSeverity(org.marketcetera.core.notifications.INotification.Severity inSeverity);
+    void setSeverity(INotification.Severity inSeverity);
     /**
      * Get the message value.
      *

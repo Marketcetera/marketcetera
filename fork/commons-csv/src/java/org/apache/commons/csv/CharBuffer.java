@@ -46,6 +46,8 @@ public class CharBuffer {
     /**
      * Creates a new CharBuffer with an initial capacity 
      * of <code>length</code> characters.
+     *
+     * @param length an <code>int</code> value
      */
     public CharBuffer(final int length) {
         if (length == 0) {
@@ -171,7 +173,7 @@ public class CharBuffer {
      * modifying it.
      * This method allows to avoid copying if the caller knows the exact capacity
      * before.
-     * @return
+     * @return a <code>char[]</code> value
      */
     public char[] getCharacters() {
         if (c.length == length) {
@@ -182,9 +184,12 @@ public class CharBuffer {
         return chars;
     }
 
-   /**
-    * Returns the character at the specified position.
-    */
+    /**
+     * Returns the character at the specified position.
+     *
+     * @param pos an <code>int</code> value
+     * @return a <code>char</code> value
+     */
     public char charAt(int pos) {
       return c[pos];
    }
@@ -192,7 +197,8 @@ public class CharBuffer {
     /**
      * Converts the contents of the buffer into a StringBuffer.
      * This method involves copying the new data once!
-     * @return
+     *
+     * @return a <code>StringBuffer</code> value
      */
     public StringBuffer toStringBuffer() {
         StringBuffer sb = new StringBuffer(length);
@@ -203,7 +209,8 @@ public class CharBuffer {
     /**
      * Converts the contents of the buffer into a StringBuffer.
      * This method involves copying the new data once!
-     * @return
+     *
+     * @return a <code>String</code> value
      */
     public String toString() {
         return new String(c, 0, length);
@@ -211,7 +218,8 @@ public class CharBuffer {
     
     /**
      * Copies the data into a new array of at least <code>capacity</code> size.
-     * @param capacity
+     *
+     * @param capacity an <code>int</code> value
      */
     public void provideCapacity(final int capacity) {
         if (c.length >= capacity) {

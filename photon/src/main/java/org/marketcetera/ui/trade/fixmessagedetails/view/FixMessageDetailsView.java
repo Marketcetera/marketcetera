@@ -63,8 +63,8 @@ public class FixMessageDetailsView
     /**
      * Create a new FixMessageDetailsView instance.
      *
-     * @param inParentWindow a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inParent a <code>Region</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inViewProperties a <code>Properties</code> value
      */
     public FixMessageDetailsView(Region inParent,

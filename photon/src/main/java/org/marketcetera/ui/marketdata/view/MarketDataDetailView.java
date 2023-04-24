@@ -24,9 +24,9 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataDetailEvent;
-import org.marketcetera.ui.marketdata.event.MarketDataSuggestionEvent;
 import org.marketcetera.ui.marketdata.service.MarketDataClientService;
 import org.marketcetera.ui.service.trade.TradeClientService;
+import org.marketcetera.ui.trade.event.SuggestionEvent;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -169,7 +169,7 @@ public class MarketDataDetailView
      * Create a new MarketDataDetailView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public MarketDataDetailView(Region inParent,
@@ -313,8 +313,9 @@ public class MarketDataDetailView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        uiMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + marketDataInstrument.getSymbol(),
-                                                             suggestion));
+        uiMessageService.post(applicationContext.getBean(SuggestionEvent.class,
+                                                         inSide.name() + " " + marketDataInstrument.getSymbol(),
+                                                         suggestion));
     }
     /**
      * Execute the market data request.
@@ -391,7 +392,6 @@ public class MarketDataDetailView
             getViewProperties().setProperty(symbolKey,
                                             marketDataInstrument.getFullSymbol());
         }
-        System.out.println("COCO: view properties are now " + getViewProperties());
     }
     /**
      * Update the display table.

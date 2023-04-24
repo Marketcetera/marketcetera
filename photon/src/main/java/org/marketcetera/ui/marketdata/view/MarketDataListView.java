@@ -24,9 +24,9 @@ import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataDetailEvent;
-import org.marketcetera.ui.marketdata.event.MarketDataSuggestionEvent;
 import org.marketcetera.ui.marketdata.service.MarketDataClientService;
 import org.marketcetera.ui.service.trade.TradeClientService;
+import org.marketcetera.ui.trade.event.SuggestionEvent;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -161,7 +161,7 @@ public class MarketDataListView
      * Create a new MarketDataListView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public MarketDataListView(Region inParent,
@@ -425,8 +425,9 @@ public class MarketDataListView
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
-        uiMessageService.post(new MarketDataSuggestionEvent(inSide.name() + " " + inSelectedItem.symbolProperty().get(),
-                                                             suggestion));
+        uiMessageService.post(applicationContext.getBean(SuggestionEvent.class,
+                                                         inSide.name() + " " + inSelectedItem.symbolProperty().get(),
+                                                         suggestion));
     }
     /**
      * Prepare a nice, human-readable rendering of the given market data item.

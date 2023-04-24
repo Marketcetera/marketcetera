@@ -13,7 +13,8 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * Publishes received data to a given publisher before optionally passing it on in the flow.
  *
  * <p>Module Features
- * <table summary="Describes the module attributes">
+ * <table>
+ * <caption>Describes the module attributes</caption>
  * <tr><th>Capabilities</th><td>Data Emitter, Data Receiver</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>None</td></tr>

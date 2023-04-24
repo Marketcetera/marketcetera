@@ -650,9 +650,9 @@ public class OrderTicketView
                                       "{} failed validation: {}",
                                       newOrder,
                                       errorMessage);
-                // TODO
-//                Notification.show("Unable to submit: " + errorMessage,
-//                                  Type.ERROR_MESSAGE);
+                uiMessageService.post(new NotificationEvent("Submit Order Failed",
+                                                            "Unable to submit order: " + errorMessage,
+                                                            AlertType.ERROR));
                 sendButton.requestFocus();
                 return;
             }
@@ -662,13 +662,15 @@ public class OrderTicketView
                                   newOrder);
             SendOrderResponse response = serviceManager.getService(TradeClientService.class).send(newOrder);
             if(response.getFailed()) {
-//                Notification.show("Unable to submit: " + response.getOrderId() + " " + response.getMessage(),
-//                                  Type.ERROR_MESSAGE);
+                uiMessageService.post(new NotificationEvent("Submit Order Failed",
+                                                            "Unable to submit: " + response.getOrderId() + " " + response.getMessage(),
+                                                            AlertType.ERROR));
                 sendButton.requestFocus();
                 return;
             } else {
-//                Notification.show(response.getOrderId() + " submitted",
-//                                  Type.TRAY_NOTIFICATION);
+                uiMessageService.post(new NotificationEvent("Submit Order Succeeded",
+                                                            response.getOrderId() + " submitted",
+                                                            AlertType.INFORMATION));
                 if(replaceExecutionReportOption.isPresent()) {
                     // close containing ticket
                     // TODO need to trigger a close action
@@ -679,6 +681,7 @@ public class OrderTicketView
                 }
             }
         });
+        clearButton.setOnAction(event -> resetTicket(true));
         orderTicketLayout.setVgap(5);
         orderTicketLayout.setHgap(5);
         int rowCount = 0;
@@ -712,7 +715,7 @@ public class OrderTicketView
      * Create a new OrderTicketView instance.
      *
      * @param inParent a <code>Region</code> value
-     * @param inNewWindowEvent a <code>NewWindowEvent</code> value
+     * @param inEvent a <code>NewWindowEvent</code> value
      * @param inProperties a <code>Properties</code> value
      */
     public OrderTicketView(Region inParent,
@@ -999,7 +1002,7 @@ public class OrderTicketView
     private void resetTicket(boolean inCompletelyReset)
     {
         SLF4JLoggerProxy.debug(this,
-                "Clearing order ticket");
+                               "Clearing order ticket");
         // this one is always cleared (to prevent accidentally submitting the same order twice)
         quantityTextField.clear();
         if(inCompletelyReset) {

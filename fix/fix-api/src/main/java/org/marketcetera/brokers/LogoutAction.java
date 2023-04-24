@@ -20,6 +20,6 @@ public interface LogoutAction
      * @param inFixSession a <code>ServerFixSession</code> value
      * @param inSender a <code>QuickFIXSender</code> value
      */
-    public void onLogout(ServerFixSession FixSession,
+    public void onLogout(ServerFixSession inFixSession,
                          QuickFIXSender inSender);
 }

@@ -27,8 +27,8 @@ import java.util.Map;
  * If creating new implementations, consider subclassing this class to test the behaviour of that implementation.
  * The tests assume the provided <code>MessageProvider</code>
  * contains the following entries:
- * <p />
  * <table>
+ *   <caption>Describes entries for the message provider</caption>
  *   <tr>
  *     <th>Language/<code>Locale</code></th>
  *     <th>ID</th>
@@ -70,7 +70,6 @@ import java.util.Map;
  *     <td>This entry is not translated to any other languages</td>
  *   <tr>
  * </table>
- * <p />
  * Specifically, the ID <code>nonExistentId</code> and the entry <code>nonExistentEntry</code> of ID
  * <code>helloWorld</code> must NOT be existent.
  */
@@ -102,7 +101,7 @@ public abstract class MessageProviderTestBase extends TestCase {
     /**
      * Test functionality of getText() method, which should be common for all implementations of the
      * <code>MessageProvider</code> interface.
-     * @param messageProvider
+     * @param messageProvider a <code>MessageProvider</code> value
      */
     protected void testGetText(MessageProvider messageProvider) {
         // Explicit default locale
