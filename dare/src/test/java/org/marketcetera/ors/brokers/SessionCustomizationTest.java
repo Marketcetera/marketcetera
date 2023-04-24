@@ -216,7 +216,7 @@ public class SessionCustomizationTest
         order.setPrice(orderPrice);
         order.setQuantity(BigDecimal.TEN);
         order.setSide(Side.Buy);
-        client.sendOrder(order);
+        tradeClient.sendOrder(order);
         return order;
     }
     /**

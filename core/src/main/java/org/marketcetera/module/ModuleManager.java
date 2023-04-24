@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.management.DynamicMBean;
+import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMException;
 import javax.management.JMX;
 import javax.management.MBeanAttributeInfo;
@@ -1794,6 +1795,10 @@ public final class ModuleManager
         try {
             //Register the factory with the mbean server
             getMBeanServer().registerMBean(proxy, inObjectName);
+        } catch (InstanceAlreadyExistsException e) {
+            Messages.BEAN_REGISTRATION_ERROR.warn(this,
+                                                  e,
+                                                  inObjectName);
         } catch (JMException e) {
             Messages.BEAN_REGISTRATION_ERROR.warn(this,
                                                   e,

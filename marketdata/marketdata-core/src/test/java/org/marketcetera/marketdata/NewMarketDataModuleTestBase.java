@@ -44,7 +44,7 @@ import org.marketcetera.util.test.CollectionAssert;
  * @version $Id$
  * @since 1.0.0
  */
-public abstract class MarketDataModuleTestBase
+public abstract class NewMarketDataModuleTestBase
         extends ModuleTestBase
 {
     /**

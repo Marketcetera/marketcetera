@@ -38,6 +38,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.marketcetera.admin.HasCurrentUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.PersistentPermissionDao;
 import org.marketcetera.admin.service.AuthorizationService;
@@ -83,8 +84,7 @@ import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
-import org.marketcetera.trade.client.DirectTradeClientFactory;
-import org.marketcetera.trade.client.DirectTradeClientParameters;
+import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.trade.client.TradeClient;
 import org.marketcetera.trade.dao.ExecutionReportDao;
 import org.marketcetera.trade.dao.OrderSummaryDao;
@@ -154,10 +154,21 @@ public class DareTestBase
         eventBusService.register(this);
         fixSettingsProvider = fixSettingsProviderFactory.create();
         traderUser = userService.findByName("trader");
-        DirectTradeClientParameters tradeClientParameters = new DirectTradeClientParameters();
-        tradeClientParameters.setUsername(traderUser.getName());
-        client = tradeClientFactory.create(tradeClientParameters);
-        client.start();
+        tradeClient = new DirectTradeClient();
+        PlatformServices.autowire(tradeClient,
+                                  applicationContext);
+        ((DirectTradeClient)tradeClient).setCurrentUser(new HasCurrentUser() {
+            @Override
+            public User getUser()
+            {
+                return traderUser;
+            }
+            @Override
+            public void setUser(User inUser)
+            {
+                throw new UnsupportedOperationException();
+            }}
+        );
         reports.clear();
         tradeMessageListener = new TradeMessageListener() {
             @Override
@@ -169,7 +180,7 @@ public class DareTestBase
                 }
             }
         };
-        client.addTradeMessageListener(tradeMessageListener);
+        tradeClient.addTradeMessageListener(tradeMessageListener);
         hostAcceptorPort = fixSettingsProvider.getAcceptorPort();
         remoteAcceptorPort = hostAcceptorPort + 1000;
         asyncExecutorService = Executors.newCachedThreadPool();
@@ -193,9 +204,9 @@ public class DareTestBase
             SLF4JLoggerProxy.info(this,
                                   "{} cleanup beginning",
                                   name.getMethodName());
-            if(client != null) {
-                client.removeTradeMessageListener(tradeMessageListener);
-                client.stop();
+            if(tradeClient != null) {
+                tradeClient.removeTradeMessageListener(tradeMessageListener);
+                tradeClient.stop();
             }
             try {
                 if(receiver != null) {
@@ -2911,7 +2922,7 @@ public class DareTestBase
     /**
      * provides access to client trading services
      */
-    protected TradeClient client;
+    protected TradeClient tradeClient;
     /**
      * provides fix settings
      */
@@ -3024,11 +3035,6 @@ public class DareTestBase
      */
     @Autowired
     protected ApplicationContext applicationContext;
-    /**
-     * creates Direct Trade client objects
-     */
-    @Autowired
-    protected DirectTradeClientFactory tradeClientFactory;
     /**
      * transaction manager value
      */

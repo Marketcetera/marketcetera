@@ -41,6 +41,11 @@
     <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
