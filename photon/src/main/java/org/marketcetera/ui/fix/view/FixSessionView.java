@@ -116,7 +116,7 @@ public class FixSessionView
     @Override
     protected void onBrokerStatusChange(ActiveFixSession inActiveFixSession)
     {
-        SLF4JLoggerProxy.warn(this,
+        SLF4JLoggerProxy.trace(this,
                                "{} receiveBrokerStatus: {}",
                                PlatformServices.getServiceName(getClass()),
                                inActiveFixSession);
