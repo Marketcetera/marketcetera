@@ -116,7 +116,7 @@ public class FixSessionView
     @Override
     protected void onBrokerStatusChange(ActiveFixSession inActiveFixSession)
     {
-        SLF4JLoggerProxy.trace(this,
+        SLF4JLoggerProxy.warn(this,
                                "{} receiveBrokerStatus: {}",
                                PlatformServices.getServiceName(getClass()),
                                inActiveFixSession);
@@ -196,6 +196,7 @@ public class FixSessionView
         rootLayout.getChildren().addAll(fixSessionsTable,
                                         buttonLayout);
         updateSessions();
+        initializeBrokerStatusListener();
     }
     /**
      * Initialize the table widget.
