@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
  * @since 1.0.0
  */
 public abstract class SimulatedMarketDataModuleTestBase
-        extends MarketDataModuleTestBase
+        extends NewMarketDataModuleTestBase
 {
     @BeforeClass
     public static void setupOnce()

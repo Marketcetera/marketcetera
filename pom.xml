@@ -604,6 +604,11 @@
         <version>${esper.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.janino</groupId>
+        <artifactId>janino</artifactId>
+        <version>3.1.6</version>
+      </dependency>
+      <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper-common-avro</artifactId>
         <version>${esper.version}</version>

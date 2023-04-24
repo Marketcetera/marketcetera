@@ -25,8 +25,8 @@ import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.marketdata.MarketDataModuleTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.NewMarketDataModuleTestBase;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleException;
@@ -44,7 +44,7 @@ import org.marketcetera.module.SinkDataListener;
  * @since 1.0.0
  */
 public class BogusFeedModuleTest
-    extends MarketDataModuleTestBase
+    extends NewMarketDataModuleTestBase
 {
     /**
      * Tests a deadlock scenario that occurred for Bogus feed.
