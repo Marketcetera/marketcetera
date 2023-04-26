@@ -3,6 +3,7 @@ package org.marketcetera.rpc;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -275,6 +276,13 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 public Boolean call()
                         throws Exception
                 {
+                    Iterator<RpcClientClazz> clientIterator = multipleClients.iterator();
+                    while(clientIterator.hasNext()) {
+                        RpcClientClazz nextClient = clientIterator.next();
+                        if(nextClient == null) {
+                            clientIterator.remove();
+                        }
+                    }
                     return multipleClients.isEmpty();
                 }
             });
