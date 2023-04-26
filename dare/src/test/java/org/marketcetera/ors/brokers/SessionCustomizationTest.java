@@ -129,7 +129,7 @@ public class SessionCustomizationTest
         resetMessageInterceptedEvents();
         outgoingMessageRecorder.reset();
         OrderSingle outgoingOrder = sendOrder(brokerId);
-        quickfix.Message outgoingOrderMessage = outgoingMessageRecorder.getFirstRecordedMessage();
+        quickfix.Message outgoingOrderMessage = outgoingMessageRecorder.getFirstRecordedAppMessage();
         assertTrue("Expected order single: " + FIXMessageUtil.toHumanDelimitedString(outgoingOrderMessage),
                    FIXMessageUtil.isOrderSingle(outgoingOrderMessage));
         assertEquals(outgoingOrder.getOrderID().getValue(),
@@ -146,7 +146,7 @@ public class SessionCustomizationTest
         resetMessageInterceptedEvents();
         incomingMessageRecorder.reset();
         quickfix.Message report = ackOrder(targetSessionId); 
-        quickfix.Message incomingReportMessage = incomingMessageRecorder.getFirstRecordedMessage();
+        quickfix.Message incomingReportMessage = incomingMessageRecorder.getFirstRecordedAppMessage();
         assertTrue(FIXMessageUtil.isExecutionReport(incomingReportMessage));
         assertEquals(report.getString(quickfix.field.ClOrdID.FIELD),
                      incomingReportMessage.getString(quickfix.field.ClOrdID.FIELD));
@@ -264,6 +264,18 @@ public class SessionCustomizationTest
             return false;
         }
         /**
+         * Wait for and return the first recorded app (not admin) message (FIFO).
+         *
+         * @return a <code>quickfix.Message</code> value
+         * @throws Exception if an unexpected error occurs
+         */
+        private quickfix.Message getFirstRecordedAppMessage()
+                throws Exception
+        {
+            return getFirstRecordedMessage(10,
+                                           true);
+        }
+        /**
          * Wait for and return the first recorded message (FIFO).
          *
          * @return a <code>quickfix.Message</code> value
@@ -272,16 +284,19 @@ public class SessionCustomizationTest
         private quickfix.Message getFirstRecordedMessage()
                 throws Exception
         {
-            return getFirstRecordedMessage(10);
+            return getFirstRecordedMessage(10,
+                                           false);
         }
         /**
          * Wait for the given number of seconds for a message to be available and return it (FIFO).
          *
          * @param inSeconds an <code>int</code> value
+         * @param inAppMessageOnly a <code>boolean</code> value
          * @return a <code>quickfix.Message</code> value
          * @throws Exception if an unexpected error occurs
          */
-        private quickfix.Message getFirstRecordedMessage(int inSeconds)
+        private quickfix.Message getFirstRecordedMessage(int inSeconds,
+                                                         boolean inAppMessageOnly)
                 throws Exception
         {
             long startTime = System.currentTimeMillis();
@@ -290,6 +305,20 @@ public class SessionCustomizationTest
             while(recordedMessage == null && System.currentTimeMillis() < timeout) {
                 synchronized(recordedMessages) {
                     recordedMessage = recordedMessages.pollFirst();
+                }
+                if(recordedMessage != null) {
+                    if(inAppMessageOnly) {
+                        if(FIXMessageUtil.isApplicationMessage(recordedMessage)) {
+                            // we want an app message and this is an app message - stop looking
+                            break;
+                        } else {
+                            // we want an app message and this is not an app message - keep looking
+                            recordedMessage = null;
+                        }
+                    } else {
+                        // we don't care what message we get, either session or app, and there is a message, so just keep that one
+                        break;
+                    }
                 }
                 Thread.sleep(100);
             }
