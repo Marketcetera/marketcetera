@@ -654,7 +654,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.19.4</version>
+        <version>3.19.6</version>
       </dependency>
       <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
       <dependency>

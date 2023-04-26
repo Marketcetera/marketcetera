@@ -269,15 +269,22 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return !multipleClients.isEmpty();
             }
         });
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return multipleClients.isEmpty();
-            }
-        });
-        assertTrue(exceptions.isEmpty());
+        try {
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    return multipleClients.isEmpty();
+                }
+            });
+        } catch (AssertionError e) {
+            assertTrue("Expected no clients, got: " + multipleClients,
+                       multipleClients.isEmpty());
+            throw e;
+        }
+        assertTrue("Expected no exceptions, got: " + exceptions,
+                   exceptions.isEmpty());
     }
     /**
      * Create a service class instance.
