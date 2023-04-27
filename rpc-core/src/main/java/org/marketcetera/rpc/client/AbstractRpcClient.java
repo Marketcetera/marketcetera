@@ -55,6 +55,9 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
         startService();
         doLogin();
         scheduleHeartbeat();
+        SLF4JLoggerProxy.warn(this,
+                              "COCO {} started",
+                              this);
     }
     /**
      * Validate and stop the object.
@@ -63,10 +66,22 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     public void stop()
             throws Exception
     {
+        SLF4JLoggerProxy.warn(this,
+                              "COCO Stopping {}",
+                              this);
         stopped.set(true);
         cancelHeartbeat();
+        SLF4JLoggerProxy.warn(this,
+                              "COCO {} heartbeat canceled",
+                              this);
         doLogout();
+        SLF4JLoggerProxy.warn(this,
+                              "COCO {} logout completed",
+                              this);
         stopService();
+        SLF4JLoggerProxy.warn(this,
+                              "COCO {} service stopped",
+                              this);
     }
     /**
      * Indicate if the service is running.

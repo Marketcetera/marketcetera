@@ -27,6 +27,7 @@ import org.marketcetera.util.quickfix.AnalyzedMessage;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Sets;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -702,6 +703,30 @@ public class FIXMessageUtil {
         }
         return output.toString();
     }
+    /**
+     * Indicate if the given message is a session message.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @return a <code>boolean</code> value
+     * @throws quickfix.FieldNotFound if the message is malformed
+     */
+    public static boolean isSessionMessage(quickfix.Message inMessage)
+            throws quickfix.FieldNotFound
+    {
+        return sessionMessageTypes.contains(inMessage.getHeader().getString(quickfix.field.MsgType.FIELD));
+    }
+    /**
+     * Indicate if the given message is an application message.
+     *
+     * @param inMessage a <code>quickfix.Message</code> value
+     * @return a <code>boolean</code> value
+     * @throws quickfix.FieldNotFound if the message is malformed
+     */
+    public static boolean isApplicationMessage(quickfix.Message inMessage)
+            throws quickfix.FieldNotFound
+    {
+        return !(isSessionMessage(inMessage));
+    }
     public static boolean isExecutionReport(Message message) {
         return msgTypeHelper(message, MsgType.EXECUTION_REPORT);
     }
@@ -1337,4 +1362,9 @@ public class FIXMessageUtil {
         }
         return fields;
     }
+    /**
+     * holds the session message types
+     */
+    public static final Set<String> sessionMessageTypes = Sets.newHashSet(quickfix.field.MsgType.HEARTBEAT,quickfix.field.MsgType.TEST_REQUEST,quickfix.field.MsgType.RESEND_REQUEST,quickfix.field.MsgType.REJECT,
+                                                                          quickfix.field.MsgType.SEQUENCE_RESET,quickfix.field.MsgType.LOGOUT,quickfix.field.MsgType.LOGON);
 }

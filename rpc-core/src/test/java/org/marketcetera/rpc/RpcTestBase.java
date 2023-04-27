@@ -3,6 +3,7 @@ package org.marketcetera.rpc;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -269,15 +270,29 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return !multipleClients.isEmpty();
             }
         });
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return multipleClients.isEmpty();
-            }
-        });
-        assertTrue(exceptions.isEmpty());
+        try {
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    Iterator<RpcClientClazz> clientIterator = multipleClients.iterator();
+                    while(clientIterator.hasNext()) {
+                        RpcClientClazz nextClient = clientIterator.next();
+                        if(nextClient == null) {
+                            clientIterator.remove();
+                        }
+                    }
+                    return multipleClients.isEmpty();
+                }
+            });
+        } catch (AssertionError e) {
+            assertTrue("Expected no clients, got: " + multipleClients,
+                       multipleClients.isEmpty());
+            throw e;
+        }
+        assertTrue("Expected no exceptions, got: " + exceptions,
+                   exceptions.isEmpty());
     }
     /**
      * Create a service class instance.

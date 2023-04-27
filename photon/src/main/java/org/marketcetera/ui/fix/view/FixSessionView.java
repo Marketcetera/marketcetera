@@ -196,6 +196,7 @@ public class FixSessionView
         rootLayout.getChildren().addAll(fixSessionsTable,
                                         buttonLayout);
         updateSessions();
+        initializeBrokerStatusListener();
     }
     /**
      * Initialize the table widget.
