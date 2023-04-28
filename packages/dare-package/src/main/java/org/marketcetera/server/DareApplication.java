@@ -1,5 +1,6 @@
 package org.marketcetera.server;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.marketcetera.admin.dao.PersistentRoleFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
 import org.marketcetera.admin.provisioning.ProvisioningAgent;
 import org.marketcetera.admin.rpc.AdminRpcService;
+import org.marketcetera.admin.service.BCryptPasswordService;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
@@ -133,6 +136,16 @@ public class DareApplication
                               org.marketcetera.core.Version.build_time,
                               org.marketcetera.core.Version.build_repository,
                               org.marketcetera.core.Version.build_path);
+    }
+    /**
+     * Get the password service value.
+     *
+     * @return a <code>PasswordService</code> value
+     */
+    @Bean
+    public PasswordService getPasswordService()
+    {
+        return new BCryptPasswordService();
     }
     /**
      * Get the strategy service bean.
@@ -392,6 +405,13 @@ public class DareApplication
         RpcServer rpcServer = new RpcServer();
         rpcServer.setHostname(serverHostname);
         rpcServer.setPort(rpcPort);
+        rpcServer.setUseSsl(useSsl);
+        if(useSsl) {
+            File publicKey = new File(publicKeyPath);
+            File privateKey = new File(privateKeyPath);
+            rpcServer.setPublicKey(publicKey);
+            rpcServer.setPrivateKey(privateKey);
+        }
         if(inServiceSpecs != null) {
             for(BindableService service : inServiceSpecs) {
                 rpcServer.getServerServiceDefinitions().add(service);
@@ -720,6 +740,21 @@ public class DareApplication
           "API license URL",
           Collections.emptyList());
     }
+    /**
+     * indicates whether to use SSL or not
+     */
+    @Value("${metc.security.use.ssl:false}")
+    private boolean useSsl;
+    /**
+     * public key path for SSL cert
+     */
+    @Value("${metc.security.ssl.public.key.path:#{null}}")
+    private String publicKeyPath;
+    /**
+     * private key path for SSL cert
+     */
+    @Value("${metc.security.ssl.private.key.path:#{null}}")
+    private String privateKeyPath;
     /**
      * web services port
      */

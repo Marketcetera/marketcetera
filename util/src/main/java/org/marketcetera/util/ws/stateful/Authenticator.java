@@ -22,9 +22,9 @@ public interface Authenticator
      * Checks whether the given credentials can be used to initiate a
      * new session on behalf of the client with the given context.
      *
-     * @param context The context.
-     * @param user The user name.
-     * @param password The password.
+     * @param inContext The context.
+     * @param inUsername The user name.
+     * @param inRawPassword The password.
      *
      * @return True if the given credentials are acceptable.
      *
@@ -32,9 +32,8 @@ public interface Authenticator
      * error while checking the credentials.
      */
 
-    boolean shouldAllow
-        (StatelessClientContext context,
-         String user,
-         char[] password)
+    boolean shouldAllow (StatelessClientContext inContext,
+                         String inUsername,
+                         char[] inRawPassword)
         throws I18NException;
 }

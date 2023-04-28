@@ -246,13 +246,14 @@ public class TradeClientService
         tradeClient = null;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.services.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
+     * @see org.marketcetera.ui.service.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int, boolean)
      */
     @Override
     public boolean connect(String inUsername,
                            String inPassword,
                            String inHostname,
-                           int inPort)
+                           int inPort,
+                           boolean inUseSsl)
             throws Exception
     {
         if(tradeClient != null) {
@@ -268,15 +269,17 @@ public class TradeClientService
             }
         }
         SLF4JLoggerProxy.debug(this,
-                               "Creating Trade client for {} to {}:{}",
+                               "Creating trade client for {} to {}:{} with ssl: {}",
                                inUsername,
                                inHostname,
-                               inPort);
+                               inPort,
+                               inUseSsl);
         TradeRpcClientParametersImpl params = new TradeRpcClientParametersImpl();
         params.setHostname(inHostname);
         params.setPort(inPort);
         params.setUsername(inUsername);
         params.setPassword(inPassword);
+        params.setUseSsl(inUseSsl);
         tradeClient = tradeClientFactory.create(params);
         tradeClient.start();
         return tradeClient.isRunning();

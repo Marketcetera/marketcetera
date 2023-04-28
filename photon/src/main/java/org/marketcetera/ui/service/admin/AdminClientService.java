@@ -81,13 +81,14 @@ public class AdminClientService
         adminClient = null;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.web.services.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
+     * @see org.marketcetera.ui.service.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int, boolean)
      */
     @Override
     public boolean connect(String inUsername,
                            String inPassword,
                            String inHostname,
-                           int inPort)
+                           int inPort,
+                           boolean inUseSsl)
             throws Exception
     {
         if(adminClient != null) {
@@ -103,15 +104,17 @@ public class AdminClientService
             }
         }
         SLF4JLoggerProxy.debug(this,
-                               "Creating admin client for {} to {}:{}",
+                               "Creating admin client for {} to {}:{} with ssl: {}",
                                inUsername,
                                inHostname,
-                               inPort);
+                               inPort,
+                               inUseSsl);
         AdminRpcClientParameters params = new AdminRpcClientParameters();
         params.setHostname(inHostname);
         params.setPort(inPort);
         params.setUsername(inUsername);
         params.setPassword(inPassword);
+        params.setUseSsl(inUseSsl);
         adminClient = adminClientFactory.create(params);
         adminClient.start();
         if(fixAdminClient != null) {

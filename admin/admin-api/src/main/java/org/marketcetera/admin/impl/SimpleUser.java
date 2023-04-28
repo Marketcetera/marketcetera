@@ -31,17 +31,17 @@ public class SimpleUser
      *
      * @param inName a <code>String</code> value
      * @param inDescription a <code>String</code> value
-     * @param inPassword a <code>String</code> value
+     * @param inHashedPassword a <code>String</code> value
      * @param inIsActive a <code>boolean</code> value
      */
     public SimpleUser(String inName,
                       String inDescription,
-                      String inPassword,
+                      String inHashedPassword,
                       boolean inIsActive)
     {
         setName(inName);
         setDescription(inDescription);
-        hashedPassword = inPassword;
+        hashedPassword = inHashedPassword;
         isActive = inIsActive;
     }
     /* (non-Javadoc)

@@ -1,10 +1,7 @@
 package org.marketcetera.admin.user;
 
-import static org.marketcetera.admin.Messages.CANNOT_SET_PASSWORD;
 import static org.marketcetera.admin.Messages.EMPTY_PASSWORD;
-import static org.marketcetera.admin.Messages.INVALID_PASSWORD;
 import static org.marketcetera.admin.Messages.SIMPLE_USER_NAME;
-import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -20,11 +17,9 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.ValidationException;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage0P;
 
 
@@ -156,84 +151,6 @@ public class PersistentUser
             setHashedPassword(null);
         }
     }
-    
-    public void resetUserPassword(String password)
-            throws ValidationException
-    {
-        setHashedPassword(null);
-        setPassword(password.toCharArray());
-    }
-    /**
-     * Sets the user's password. The user name should be set to a
-     * non-empty value before this method is invoked 
-     *
-     * This method can be used to set the password
-     * when the current user password is empty. The user password is empty
-     * for a newly created user or a user who's name has been reset via
-     * {@link #setName(String)}
-     *
-     * @param password The user password value, cannot be null.
-     *
-     * @throws ValidationException If the user password is already set, or if
-     * an empty password is supplied or if the user name is not set.
-     */
-    public void setPassword(char[] password)
-            throws ValidationException
-    {
-        if(getName() == null) {
-            throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
-        }
-        if(isPasswordSet()) {
-            throw new ValidationException(new I18NBoundMessage1P(CANNOT_SET_PASSWORD,
-                                                                 getName()));
-        }
-        validateAndSetPassword(password);
-    }
-    /**
-     * Changes the user's password after
-     * {@link #validatePassword(char[]) validating} the supplied password.
-     * @param originalPassword the original password. This password should
-     * match the currently configured password.
-     *
-     * @param newPassword the new password, cannot be empty.
-     *
-     * @throws org.marketcetera.persist.ValidationException if there were
-     * errors validating the original or the new password password.
-     */
-    public void changePassword(char [] originalPassword,
-                               char[] newPassword)
-            throws ValidationException
-    {
-        validatePassword(originalPassword);
-        validateAndSetPassword(newPassword);
-    }
-    /**
-     * Verifies if the supplied password matches the configured
-     * password for the user. If no nonempty password is presently
-     * configured, validation succeeds regardless of the supplied
-     * password; this provides a back-door to address forgotten
-     * password problems, wherein an admin can modify the database
-     * directly and empty out the present password.
-     *
-     * @param password the password to test.
-     *
-     * @throws ValidationException If a nonempty password is presently
-     * configured and either an empty password value was specified, or
-     * the specified password doesn't match the currently configured
-     * user password.
-     */
-    public void validatePassword(char[] password)
-            throws ValidationException
-    {
-        if(getHashedPassword() == null || getHashedPassword().length() == 0) {
-            return;
-        }
-        validatePasswordValue(password);
-        if(!PlatformServices.getPasswordEncoder().matches(new String(password),
-                                                          getHashedPassword())) {
-            throw new ValidationException(INVALID_PASSWORD);
-        }
-    }
     /**
      * Validates if the attributes of this instance are valid
      * to attempt a save operation.
@@ -253,20 +170,6 @@ public class PersistentUser
         if(getHashedPassword() == null || getHashedPassword().length() == 0) {
             throw new ValidationException(EMPTY_PASSWORD);
         }
-    }
-    /**
-     * Validates if the supplied password matches the password rules
-     * and saves it
-     *
-     * @param password the user password
-     *
-     * @throws ValidationException if the supplied password is empty.
-     */
-    private void validateAndSetPassword(char[] password)
-            throws ValidationException
-    {
-        validatePasswordValue(password);
-        setHashedPassword(hash(password));
     }
     public String getHashedPassword() {
         return hashedPassword;
@@ -316,19 +219,6 @@ public class PersistentUser
         return new CompareToBuilder().append(inO.getName(),getName()).toComparison();
     }
     /**
-     * Validates if the supplied password value is valid
-     *
-     * @param password the user password
-     *
-     * @throws ValidationException if the user password is empty
-     */
-    private static void validatePasswordValue(char[] password)
-            throws ValidationException {
-        if(password == null || password.length == 0) {
-            throw new ValidationException(EMPTY_PASSWORD);
-        }
-    }
-    /**
      * The custom localized name for users.
      *
      * @return custom localized name for users.
@@ -336,19 +226,6 @@ public class PersistentUser
     @SuppressWarnings("unused")
     private static I18NMessage0P getUserFriendlyName() {
         return SIMPLE_USER_NAME;
-    }
-    /**
-     * Hashes the supplied value
-     *
-     * @param value the supplied char array that needs to be hashed.
-     *
-     * @return the hashed value
-     *
-     * @throws IllegalArgumentException If there's a bug in the code.
-     */
-    private static String hash(char[] value)
-    {
-        return PlatformServices.getPasswordEncoder().encode(new String(value));
     }
     /**
      * indicates if this user is a super user

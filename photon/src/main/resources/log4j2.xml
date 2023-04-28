@@ -11,5 +11,6 @@
     </Root>
     <logger name="org.marketcetera" level="info"/>
     <logger name="org.marketcetera.ui" level="trace"/>
+    <logger name="org.marketcetera.admin" level="trace"/>
   </Loggers>
 </Configuration>

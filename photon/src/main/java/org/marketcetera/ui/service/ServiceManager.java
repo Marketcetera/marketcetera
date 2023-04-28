@@ -131,7 +131,8 @@ public class ServiceManager
                 if(service.connect(sessionUser.getUsername(),
                                    sessionUser.getPassword(),
                                    hostname,
-                                   port)) {
+                                   port,
+                                   useSsl)) {
                     SLF4JLoggerProxy.debug(this,
                                            "Created {} for {}",
                                            service,
@@ -185,6 +186,11 @@ public class ServiceManager
      */
     @Autowired
     private ApplicationContext applicationContext;
+    /**
+     * indicates whether to use SSL or not
+     */
+    @Value("${metc.security.use.ssl:false}")
+    private boolean useSsl;
     /**
      * hostname to connect to
      */

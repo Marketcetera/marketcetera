@@ -18,13 +18,13 @@ public interface UserFactory
      * Create user objects.
      *
      * @param inName a <code>String</code> value
-     * @param inPassword a <code>String</code> value
+     * @param inHashedPassword a <code>String</code> value
      * @param inDescription a <code>String</code> value
      * @param inIsActive a <code>boolean</code> value
      * @return a <code>User</code> value
      */
     User create(String inName,
-                String inPassword,
+                String inHashedPassword,
                 String inDescription,
                 boolean inIsActive);
 }
