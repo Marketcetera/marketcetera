@@ -474,8 +474,6 @@ public class AuthorizationServiceImpl
             }
         }
     }
-    @Autowired
-    private PasswordService passwordService;
     /**
      * Starts and validates object.
      */
@@ -878,6 +876,11 @@ public class AuthorizationServiceImpl
      */
     @Autowired(required=false)
     private AdminConfiguration adminConfiguration;
+    /**
+     * provides access to password services
+     */
+    @Autowired
+    private PasswordService passwordService;
     /**
      * length of time to cache user permissions in milliseconds
      */
