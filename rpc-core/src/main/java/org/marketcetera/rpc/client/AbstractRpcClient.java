@@ -115,7 +115,7 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     /**
      * Create a new AbstractRpcClient instance.
      *
-     * @param inParameters
+     * @param inParameters a <code>ParameterClazz</code> value
      */
     protected AbstractRpcClient(ParameterClazz inParameters)
     {

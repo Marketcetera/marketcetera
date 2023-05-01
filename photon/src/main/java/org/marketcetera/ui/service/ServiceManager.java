@@ -10,6 +10,7 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ import com.google.common.collect.Maps;
  * @since $Release$
  */
 @Service
+@EnableAutoConfiguration
 public class ServiceManager
 {
     /**

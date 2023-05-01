@@ -47,6 +47,7 @@ import org.marketcetera.ui.service.admin.AdminClientService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -302,4 +303,9 @@ public class PhotonConfiguration
         };
         return authenticator;
     }
+    /**
+     * indicates whether to use SSL or not
+     */
+    @Value("${metc.security.use.ssl:false}")
+    private boolean useSsl;
 }

@@ -139,6 +139,7 @@ public class AdminClientService
         fixParams.setPort(inPort);
         fixParams.setUsername(inUsername);
         fixParams.setPassword(inPassword);
+        fixParams.setUseSsl(inUseSsl);
         fixAdminClient = fixAdminClientFactory.create(fixParams);
         fixAdminClient.start();
         if(adminClient.isRunning() && fixAdminClient.isRunning()) {
