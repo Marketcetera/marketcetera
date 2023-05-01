@@ -7,6 +7,8 @@ import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.dao.PersistentPermissionFactory;
 import org.marketcetera.admin.dao.PersistentRoleFactory;
+import org.marketcetera.admin.service.BCryptPasswordService;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.admin.user.PersistentUserFactory;
@@ -57,6 +59,16 @@ import quickfix.MessageFactory;
 @SpringBootConfiguration
 public class DareTestConfiguration
 {
+    /**
+     * Get the password service value.
+     *
+     * @return a <code>PasswordService</code> value
+     */
+    @Bean
+    public PasswordService getPasswordService()
+    {
+        return new BCryptPasswordService();
+    }
     /**
      * Get the symbol resolver service value.
      *

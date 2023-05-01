@@ -10,6 +10,6 @@
       <AppenderRef ref="STDOUT"/>
     </Root>
     <logger name="org.marketcetera" level="info"/>
-    <logger name="org.marketcetera.ui" level="trace"/>
+    <logger name="org.marketcetera.ui" level="info"/>
   </Loggers>
 </Configuration>

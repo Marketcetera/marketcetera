@@ -64,9 +64,9 @@ public class PhotonApp
         instance = this;
         super.init();
         applicationContext = new AnnotationConfigApplicationContext("org.marketcetera","com.marketcetera");
-        webMessageService = applicationContext.getBean(UiMessageService.class);
+        uiMessageService = applicationContext.getBean(UiMessageService.class);
         styleService = applicationContext.getBean(StyleService.class);
-        webMessageService.register(this);
+        uiMessageService.register(this);
     }
     /* (non-Javadoc)
      * @see javafx.application.Application#start(javafx.stage.Stage)
@@ -133,7 +133,7 @@ public class PhotonApp
     public void doAppShutdown()
     {
         isShuttingDown = true;
-        webMessageService.post(new LogoutEvent());
+        uiMessageService.post(new LogoutEvent());
         try {
             ((ConfigurableApplicationContext)applicationContext).close();
         } catch (Exception ignored) {}
@@ -301,21 +301,51 @@ public class PhotonApp
      */
     private StyleService styleService;
     /**
-     * web message service value
+     * ui message service value
      */
-    private UiMessageService webMessageService;
+    private UiMessageService uiMessageService;
+    /**
+     * layout for the menu
+     */
     private VBox menuLayout;
+    /**
+     * application context value
+     */
     private ApplicationContext applicationContext;
+    /**
+     * root view layout
+     */
     private VBox root;
+    /**
+     * footer view layout
+     */
     private HBox footer;
+    /**
+     * widget that holds the clock
+     */
     private Label clockLabel;
+    /**
+     * widget that holds the user name
+     */
     private Label userLabel;
+    /**
+     * main workspace view
+     */
     private static Pane workspace;
+    /**
+     * connection status widget
+     */
     private ToolBar statusToolBar;
+    /**
+     * widget layout that holds the items in the footer
+     */
     private ToolBar footerToolBar;
+    /**
+     * provides notification services
+     */
     private PhotonNotificationService notificationService;
     /**
-     * singleton applcation isntance
+     * singleton application instance
      */
     private static PhotonApp instance;
 }

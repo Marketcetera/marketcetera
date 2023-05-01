@@ -33,13 +33,14 @@ public class StrategyClientService
         implements ConnectableService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.services.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
+     * @see org.marketcetera.ui.service.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int, boolean)
      */
     @Override
     public boolean connect(String inUsername,
                            String inPassword,
                            String inHostname,
-                           int inPort)
+                           int inPort,
+                           boolean inUseSsl)
             throws Exception
     {
         if(strategyClient != null) {
@@ -47,7 +48,7 @@ public class StrategyClientService
                 strategyClient.stop();
             } catch (Exception e) {
                 SLF4JLoggerProxy.warn(this,
-                                      "Unable to stop existing market data client for {}: {}",
+                                      "Unable to stop existing strategy client for {}: {}",
                                       inUsername,
                                       ExceptionUtils.getRootCauseMessage(e));
             } finally {
@@ -55,15 +56,17 @@ public class StrategyClientService
             }
         }
         SLF4JLoggerProxy.debug(this,
-                               "Creating market data client for {} to {}:{}",
+                               "Creating strategy client for {} to {}:{} with ssl: {}",
                                inUsername,
                                inHostname,
-                               inPort);
+                               inPort,
+                               inUseSsl);
         StrategyRpcClientParameters params = new StrategyRpcClientParameters();
         params.setHostname(inHostname);
         params.setPort(inPort);
         params.setUsername(inUsername);
         params.setPassword(inPassword);
+        params.setUseSsl(inUseSsl);
         strategyClient = strategyClientFactory.create(params);
         strategyClient.start();
         return strategyClient.isRunning();

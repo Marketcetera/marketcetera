@@ -1,5 +1,7 @@
 package org.marketcetera.admin.service.impl;
 
+import static org.marketcetera.admin.Messages.INVALID_PASSWORD;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +14,20 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.admin.user.QPersistentUser;
-import org.marketcetera.core.PlatformServices;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.SortDirection;
+import org.marketcetera.persist.ValidationException;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +48,8 @@ import com.querydsl.jpa.impl.JPAQuery;
  * @version $Id$
  * @since 2.4.2
  */
-@Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id$")
+@Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 public class UserServiceImpl
         implements UserService
 {
@@ -65,9 +67,7 @@ public class UserServiceImpl
         if(inNameFilter != null) {
             // prepare name filter, check for presence of wildcards
             if(inNameFilter.contains("*") || inNameFilter.contains("?")) {
-                inNameFilter = inNameFilter.replaceAll("\\*",
-                        "%").replaceAll("\\?",
-                                        "_");
+                inNameFilter = inNameFilter.replaceAll("\\*","%").replaceAll("\\?","_");
                 wherePredicate = simpleUser.name.like(inNameFilter);
             } else {
                 wherePredicate = simpleUser.name.eq(inNameFilter);
@@ -167,15 +167,17 @@ public class UserServiceImpl
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public PersistentUser changeUserPassword(User inUser,
-                                             String inOldPassword,
-                                             String inNewPassword)
+                                             String inOldRawPassword,
+                                             String inNewRawPassword)
     {
         PersistentUser result = userDao.findByName(inUser.getName());
         if(result == null) {
             throw new IllegalArgumentException("Unknown user: " + inUser.getName());
         }
-        result.changePassword(inOldPassword.toCharArray(),
-                              inNewPassword.toCharArray());
+        if(!passwordService.matches(inOldRawPassword,result.getHashedPassword())) {
+            throw new ValidationException(INVALID_PASSWORD);
+        }
+        result.setHashedPassword(passwordService.getHash(inNewRawPassword));
         result = userDao.save(result);
         usersByUserId.invalidate(inUser.getUserID());
         usersByUsername.invalidate(inUser.getName());
@@ -245,14 +247,6 @@ public class UserServiceImpl
         response.setElements(users);
         return response;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.admin.service.UserService#getPasswordEncoder()
-     */
-    @Override
-    public PasswordEncoder getPasswordEncoder()
-    {
-        return passwordEncoder;
-    }
     /**
      * Get the userDao value.
      *
@@ -297,9 +291,6 @@ public class UserServiceImpl
     @PostConstruct
     public void start()
     {
-        if(passwordEncoder != null) {
-            PlatformServices.setPasswordEncoder(passwordEncoder);
-        }
         if(userAliases == null) {
             userAliases = Maps.newHashMap();
             userAliases.put("name",
@@ -349,8 +340,8 @@ public class UserServiceImpl
      */
     private Map<String,String> userAliases;
     /**
-     * password encoder to use (optional, otherwise, use the default one)
+     * provides access to password services
      */
-    @Autowired(required=false)
-    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordService passwordService;
 }

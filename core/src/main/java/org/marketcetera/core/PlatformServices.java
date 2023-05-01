@@ -26,8 +26,6 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
@@ -217,25 +215,6 @@ public class PlatformServices
                                inTarget);
     }
     /**
-     * Set the password encoder to use.
-     *
-     * @param inPasswordEncoder a <code>PasswordEncoder</code> value
-     */
-    public static void setPasswordEncoder(PasswordEncoder inPasswordEncoder)
-    {
-        Validate.notNull(inPasswordEncoder);
-        passwordEncoder = inPasswordEncoder;
-    }
-    /**
-     * Get the password encoder to use.
-     *
-     * @return a <code>PasswordEncoder</code> value
-     */
-    public static PasswordEncoder getPasswordEncoder()
-    {
-        return passwordEncoder;
-    }
-    /**
      * Get the hostname value.
      *
      * @return a <code>String</code> value
@@ -301,10 +280,6 @@ public class PlatformServices
      * constant representing one penny
      */
     public static final BigDecimal ONE_PENNY = new BigDecimal("0.01");
-    /**
-     * password encoder to use for the platform
-     */
-    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     /**
      * hostname value
      */

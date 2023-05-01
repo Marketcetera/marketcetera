@@ -32,13 +32,13 @@ public class SimpleUserFactory
      */
     @Override
     public MutableUser create(String inName,
-                              String inPassword,
+                              String inHashedPassword,
                               String inDescription,
                               boolean inIsActive)
     {
         return new SimpleUser(inName,
                               inDescription,
-                              inPassword,
+                              inHashedPassword,
                               inIsActive);
     }
     /* (non-Javadoc)

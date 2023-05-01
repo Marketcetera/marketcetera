@@ -27,13 +27,14 @@ public class MarketDataClientService
         implements ConnectableService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.web.services.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int)
+     * @see org.marketcetera.ui.service.ConnectableService#connect(java.lang.String, java.lang.String, java.lang.String, int, boolean)
      */
     @Override
     public boolean connect(String inUsername,
                            String inPassword,
                            String inHostname,
-                           int inPort)
+                           int inPort,
+                           boolean inUseSsl)
             throws Exception
     {
         if(marketDataClient != null) {
@@ -49,15 +50,17 @@ public class MarketDataClientService
             }
         }
         SLF4JLoggerProxy.debug(this,
-                               "Creating market data client for {} to {}:{}",
+                               "Creating market data client for {} to {}:{} with ssl: {}",
                                inUsername,
                                inHostname,
-                               inPort);
+                               inPort,
+                               inUseSsl);
         MarketDataRpcClientParameters params = new MarketDataRpcClientParameters();
         params.setHostname(inHostname);
         params.setPort(inPort);
         params.setUsername(inUsername);
         params.setPassword(inPassword);
+        params.setUseSsl(inUseSsl);
         marketDataClient = marketDataClientFactory.create(params);
         marketDataClient.start();
         return marketDataClient.isRunning();
