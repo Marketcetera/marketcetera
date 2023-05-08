@@ -60,11 +60,6 @@
                     <include name="dare-package-${project.version}.jar"/>
                   </fileset>
                 </copy>
-                <delete>
-                  <fileset dir="${project.build.directory}/output-dare" includes="**/*">
-                    <present targetdir="${project.build.directory}/output-common"/>
-                  </fileset>
-                </delete>
               </target>
             </configuration>
           </execution>

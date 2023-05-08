@@ -20,14 +20,14 @@ else
 fi
 
 # validate current version
-find . -name 'sixer-core-${CURRENT_VERSION}.jar' > /dev/null 2>&1 || (echo "Cannot verify ${CURRENT_VERSION}";exit 2)
+find . -name 'core-${CURRENT_VERSION}.jar' > /dev/null 2>&1 || (echo "Cannot verify ${CURRENT_VERSION}";exit 2)
 echo "Confirmed current version ${CURRENT_VERSION}"
 
 # backup existing
 echo "Backing up ${CURRENT_VERSION}"
 BACKUP_FILE="${BACKUP_DIR}/backup-${CURRENT_VERSION}.tar.bz2"
 mkdir -p ${BACKUP_DIR}
-tar jcvf ${BACKUP_FILE} dare/bin dare/conf dare/contrib dare/lib ui/bin ui/lib ui/conf
+tar jcvf ${BACKUP_FILE} dare/bin dare/conf dare/contrib dare/lib
 
 # remove current version libs
 echo "Removing current version JARs"
@@ -36,8 +36,7 @@ find . -name "*-${CURRENT_VERSION}.jar" -exec rm -f {} \;
 # install packages
 echo "Installing new packages"
 cd ${METC_HOME}/..
-tar jxvf /home/colin/packages/sixer-server-package.tar.bz2
-tar jxvf /home/colin/packages/sixer-ui-package.tar.bz2
+tar jxvf /home/colin/packages/server-package.tar.bz2
 
 echo "New version installed"
 popd
