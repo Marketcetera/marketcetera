@@ -15,13 +15,6 @@ cd ${DARE_HOME}
 
 THE_CLASSPATH=./conf
 
-#cd ${COMMON_HOME}
-#
-#for file in `ls -1 ${COMMON_HOME}/lib/*.jar`
-#do
-#    THE_CLASSPATH=${THE_CLASSPATH}:${file}
-#done
-
 cd ${DARE_HOME}
 
 for file in `ls -1 ${DARE_HOME}/lib/*.jar`
@@ -72,7 +65,7 @@ INSTANCE_XMX=4096m
 #
 java -Xms384m -Xmx512m -Xlog:gc:${LOGDIR}/dare_gc.out -server -Dorg.marketcetera.appDir=${METC_HOME}/${APPLICATION_DIR}\
  -XX:+UseParallelGC\
- -Dlog.configurationFile=${METC_HOME}/${APPLICATION_DIR}/conf/logback.xml\
+ -Dlog.configurationFile=${METC_HOME}/${APPLICATION_DIR}/conf/log4j2.xml\
  -cp "${THE_CLASSPATH}"\
  -Dorg.marketcetera.app=org.marketcetera.server.DareApplication\
  -Dmetc.cluster.tcpip.members=${CLUSTER_TCPIP_MEMBERS}\
@@ -90,9 +83,6 @@ java -Xms384m -Xmx512m -Xlog:gc:${LOGDIR}/dare_gc.out -server -Dorg.marketcetera
  -Dmetc.port.metc.dare.acceptor.port=${DARE_ACCEPTOR_PORT}\
  -Dmetc.port.metc.exsim.acceptor.port=${EXSIM_ACCEPTOR_PORT}\
  -Dorg.marketcetera.instanceDir=${INSTANCE_DIR}\
- -Dmetc.instance.ALL.LOG.LEVEL=${ALL_LOG_LEVEL}\
- -Dmetc.instance.METC.LOGBACK.APPENDERS=${METC_LOGBACK_APPENDERS}\
- -Dmetc.instance.METC.LOG.LEVEL=${METC_LOG_LEVEL}\
  -Dmetc.instance.XX:+UseParallelGC\
  -Dmetc.instance.Xlog:gc:${LOGDIR}/dare_gc.out\
  -Dmetc.instance=0\

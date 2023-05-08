@@ -20,11 +20,3 @@ then
 else
     pkill -f java
 fi
-
-#cd ${UI_HOME}
-#if [ -f ui.pid ]
-#then
-#    kill `cat ui.pid`
-#else
-#    pkill -f java
-#fi

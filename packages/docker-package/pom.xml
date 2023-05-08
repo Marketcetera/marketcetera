@@ -21,10 +21,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>dare-package</artifactId>
     </dependency>
-    <!--dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>webui-package</artifactId>
-    </dependency-->
   </dependencies>
   <build>
     <plugins>
@@ -39,6 +35,7 @@
           <locations>
             <location>classpath:db/migration/${metc.flyway.vendor}</location>
           </locations>
+          <cleanDisabled>false</cleanDisabled>
         </configuration>
       </plugin>
       <plugin>
@@ -63,31 +60,6 @@
                     <include name="dare-package-${project.version}.jar"/>
                   </fileset>
                 </copy>
-                <!--mkdir dir="${project.build.directory}/output-webui"/>
-                <copy todir="${project.build.directory}/output-webui">
-                  <fileset dir="../webui-package/target/output"/>
-                </copy>
-                <copy todir="${project.build.directory}/output-webui">
-                  <fileset dir="../webui-package/target/">
-                    <include name="webui-package-${project.version}.jar"/>
-                  </fileset>
-                </copy>
-                <mkdir dir="${project.build.directory}/output-common"/>
-                <copy todir="${project.build.directory}/output-common">
-                  <fileset dir="${project.build.directory}/output-dare">
-                    <present targetdir="${project.build.directory}/output-webui" present="both"/>
-                  </fileset>
-                </copy-->
-                <delete>
-                  <fileset dir="${project.build.directory}/output-dare" includes="**/*">
-                    <present targetdir="${project.build.directory}/output-common"/>
-                  </fileset>
-                </delete>
-                <!--delete>
-                  <fileset dir="${project.build.directory}/output-webui" includes="**/*">
-                    <present targetdir="${project.build.directory}/output-common"/>
-                  </fileset>
-                </delete-->
               </target>
             </configuration>
           </execution>
@@ -236,8 +208,6 @@
                 <argument>run</argument>
                 <argument>--add-host</argument>
                 <argument>host.docker.internal:host-gateway</argument>
-                <argument>-p</argument>
-                <argument>8080:8080</argument>
                 <argument>-p</argument>
                 <argument>9000:9000</argument>
                 <argument>-p</argument>
