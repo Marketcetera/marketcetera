@@ -49,9 +49,9 @@ public class ClientStatusUpdater
     public void start()
     {
         AdminClientService adminClientService = serviceManager.getService(AdminClientService.class);
-        availableImage = new Image("/images/LedGreen.gif");
-        unavailableImage = new Image("/images/LedRed.gif");
-        unknownImage = new Image("/images/LedNone.gif");
+        availableImage = new Image(String.valueOf(getClass().getClassLoader().getResource("images/LedGreen.gif")));
+        unavailableImage = new Image(String.valueOf(getClass().getClassLoader().getResource("images/LedRed.gif")));
+        unknownImage = new Image(String.valueOf(getClass().getClassLoader().getResource("images/LedNone.gif")));
         if(adminClientService.isRunning()) {
             setAvailable();
         } else {

@@ -222,7 +222,7 @@ public class PhotonApp
         footerToolBar.setId(getClass().getCanonicalName() + ".footerToolBar");
         statusToolBar = new ToolBar();
         statusToolBar.setId(getClass().getCanonicalName() + ".statusToolBar");
-        clientStatusImageView = new ImageView(new Image("/images/LedNone.gif"));
+        clientStatusImageView = new ImageView(new Image(String.valueOf(getClass().getClassLoader().getResource("images/LedNone.gif"))));
         statusToolBar.getItems().add(clientStatusImageView);
         clockLabel = new Label();
         clockLabel.setId(getClass().getCanonicalName() + ".clockLabel");

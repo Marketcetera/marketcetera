@@ -241,7 +241,7 @@ public class MarketDataListView
         addSymbolLayout.setPadding(new Insets(10,30,10,10));
         addSymbolTextField = new TextField();
         addSymbolButton = new Button();
-        addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
+        addSymbolButton.setGraphic(new ImageView(PhotonServices.getIcon("images/add.png")));
         addSymbolButton.setDisable(true);
         addSymbolTextField.textProperty().addListener((observableValue,oldValue,newValue) -> {
             newValue = tradeClient.getTreatedSymbol(newValue);

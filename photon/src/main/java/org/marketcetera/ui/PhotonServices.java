@@ -53,10 +53,16 @@ import javafx.util.Callback;
  */
 public abstract class PhotonServices
 {
-    public static Image getIcon(String inName)
+    /**
+     * Get an <code>Image</code> with the given URL.
+     *
+     * @param inUrl a <code>String</code> value
+     * @return an <code>Image</code> value
+     */
+    public static Image getIcon(String inUrl)
     {
         // TODO maybe cache these?
-        return new Image(inName);
+        return new Image(String.valueOf(PhotonServices.class.getClassLoader().getResource(inUrl)));
     }
     public static Optional<User> getCurrentUser()
     {
