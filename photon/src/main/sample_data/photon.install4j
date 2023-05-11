@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.5" transformSequenceNumber="10">
   <directoryPresets config="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data" />
-  <application name="Marketcetera Automated Trading Platform Photon" applicationId="8493-4718-6568-1000" mediaDir="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target" shortName="Photon" publisher="Marketcetera, INC" publisherWeb="https://www.marketcetera.com" version="4.1.0-SNAPSHOT" macVolumeId="371f08086a64d74b">
+  <application name="Marketcetera-Client-${compiler:sys.version}" applicationId="8493-4718-6568-1000" mediaDir="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target" shortName="Photon" publisher="Marketcetera, INC" publisherWeb="https://www.marketcetera.com" version="4.1.0-SNAPSHOT" macVolumeId="371f08086a64d74b">
     <jreBundles jdkProviderId="Zulu" release="17/latest">
       <modules>
         <defaultModules set="all" />
@@ -12,6 +12,7 @@
     <mountPoints>
       <mountPoint id="29" location="conf" />
       <mountPoint id="30" location="lib" />
+      <mountPoint id="44" location="logs" />
     </mountPoints>
     <entries>
       <dirEntry mountPoint="29" file="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data/conf" subDirectory="conf" />
@@ -20,14 +21,20 @@
     </entries>
   </files>
   <launchers>
-    <launcher name="photon" id="25">
-      <executable name="Photon" iconSet="true" executableMode="gui" />
-      <splashScreen show="true" bitmapFile="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/resources/images/photon-128x128.png" />
-      <java mainClass="org.marketcetera.ui.PhotonApp">
+    <launcher name="photon" id="25" menuName="Marketcetera Client-${compiler:sys.version}">
+      <executable name="Photon" iconSet="true" stderrFile="logs/photon-error.log" redirectStdout="true" stdoutFile="logs/photon-out.log" executableMode="gui" />
+      <splashScreen show="true" width="128" height="128" bitmapFile="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/resources/images/photon-128x128.png">
+        <text>
+          <statusLine x="32" y="80" fontSize="16" bold="true" />
+          <versionLine x="31" y="112" text="version ${compiler:sys.version} Copyright 2008-2023" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.marketcetera.ui.PhotonApp" vmParameters="-Dlog4j.configurationFile=conf/log4j2.xml">
         <classPath>
           <scanDirectory location="lib" failOnError="false" />
         </classPath>
       </java>
+      <vmOptionsFile mode="none" />
       <iconImageFiles>
         <file path="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/resources/images/photon-128x128.png" />
       </iconImageFiles>

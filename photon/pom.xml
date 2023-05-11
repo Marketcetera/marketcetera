@@ -157,6 +157,7 @@
               <mainClass>org.marketcetera.ui.PhotonApp</mainClass>
               <workingDirectory>src/test/cmd_exec</workingDirectory>
               <options>
+                <option>-Dlog4j.configurationFile=conf/log4j2.xml</option>
                 <option>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</option>
               </options>
             </configuration>
