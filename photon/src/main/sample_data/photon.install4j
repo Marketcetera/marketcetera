@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.5" transformSequenceNumber="10">
-  <directoryPresets config="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data" />
+  <directoryPresets config="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data/conf/dark-mode.css" />
   <application name="Marketcetera Client-${compiler:sys.version}" applicationId="8493-4718-6568-1000" mediaDir="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target" shortName="Photon" publisher="Marketcetera, INC" publisherWeb="https://www.marketcetera.com" version="4.1.0-SNAPSHOT" macVolumeId="371f08086a64d74b">
     <jreBundles jdkProviderId="Zulu" release="17/latest">
       <modules>
@@ -220,6 +220,18 @@ return console.askYesNo(message, true);
           <screen id="27" beanClass="com.install4j.runtime.beans.screens.UninstallationScreen" rollbackBarrierExitCode="0">
             <actions>
               <action id="29" beanClass="com.install4j.runtime.beans.actions.UninstallFilesAction" actionElevationType="elevated" rollbackBarrierExitCode="0" />
+              <action id="51" beanClass="com.install4j.runtime.beans.actions.files.DeleteFileAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
+                <serializedBean>
+                  <property name="files" type="array" class="java.io.File" length="1">
+                    <element index="0">
+                      <object class="java.io.File">
+                        <string>logs</string>
+                      </object>
+                    </element>
+                  </property>
+                  <property name="recursive" type="boolean" value="true" />
+                </serializedBean>
+              </action>
             </actions>
             <formComponents>
               <formComponent id="28" beanClass="com.install4j.runtime.beans.formcomponents.ProgressComponent">

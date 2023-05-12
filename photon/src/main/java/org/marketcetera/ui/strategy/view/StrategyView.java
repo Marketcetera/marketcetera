@@ -429,7 +429,7 @@ public class StrategyView
             nameConfirmationDialogPane.getButtonTypes().setAll(okButtonType,
                                                                cancelButton);
             nameConfirmationDialog.getDialogPane().lookupButton(okButtonType).disableProperty().bind(disableOkButton);
-            PhotonServices.styleDialog(nameConfirmationDialog);
+            PhotonServices.style(nameConfirmationDialog);
             nameConfirmationDialog.initModality(Modality.APPLICATION_MODAL);
             nameConfirmationDialog.setResultConverter(dialogButton -> {
                 if(dialogButton == okButtonType) {

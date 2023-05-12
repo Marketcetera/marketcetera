@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.trade.TradePermissions;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -14,7 +15,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableView;
@@ -68,9 +68,7 @@ public abstract class AbstractDeletableFixMessageView<FixClazz extends Deletable
                                                      ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(okButton,
                                           cancelButton);
-            DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().clear();
-            dialogPane.getStylesheets().add("dark-mode.css");
+            PhotonServices.style(alert);
             alert.showAndWait().ifPresent(type -> {
                 if (type == okButton) {
                     try {

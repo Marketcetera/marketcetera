@@ -498,11 +498,7 @@ public class WindowManagerService
                 }
             });
             windowLayout.getStyleClass().add("view");
-            windowLayout.getStylesheets().clear();
-            windowLayout.getStylesheets().add("dark-mode.css");
-//            DropShadow dropShadow = new DropShadow(BlurType.THREE_PASS_BOX,new Color(0,0,0,0.8),10,0,0,0);
-//            windowLayout.setEffect(dropShadow);
-//            windowLayout.setPickOnBounds(false);
+            PhotonServices.style(windowLayout);
             setupWindowListeners();
             Pair<Double,Double> suggestedWindowSize = inEvent.getWindowSize();
             String rawProperty = StringUtils.trimToNull(windowProperties.getProperty(windowWidthProp));

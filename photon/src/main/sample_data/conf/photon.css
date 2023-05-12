@@ -5,6 +5,7 @@
     -fx-control-inner-background: derive(-fx-base, 35%);
     -fx-control-inner-background-alt: -fx-control-inner-background ;
     -fx-font-size: 12px;
+    font-size: 12px;
 }
 
 .view {
@@ -21,7 +22,6 @@
     border-radius: 5px;
      -fx-border-color: black;
     border-color: black;
-/*  this is cool but seems to prevent resizing    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 10, 0, 0, 0); */
 }
 
 .label{
@@ -35,6 +35,9 @@
 .titulo{
     -fx-font-weight: bold;
     -fx-font-size: 18px;
+    font-weight: bold;
+    font-size: 18px;
+    size: 18px;
 }
 
 .button{
@@ -49,10 +52,14 @@
     -fx-background-color: #3C3C3C;
     -fx-border-style: solid;
     -fx-border-width: 1px;
+    background-color: #3C3C3C;
+    border-style: solid;
+    border-width: 1px;
 }
 
 .scroll-bar{
-    -fx-background-color: derive(-fx-base,45%)
+    -fx-background-color: derive(-fx-base,45%);
+    background-color: derive(-fx-base,45%);
 }
 
 .button:default {
@@ -67,6 +74,7 @@
 .table-view .column-header .label{
     -fx-alignment: CENTER_LEFT;
     -fx-font-weight: none;
+    font-weight: none;
 }
 
 .list-cell:even,
@@ -79,35 +87,44 @@
 .list-cell:empty,
 .table-row-cell:empty {
     -fx-background-color: transparent;
+    background-color: transparent;
 }
 
 .list-cell,
 .table-row-cell{
     -fx-border-color: transparent;
     -fx-table-cell-border-color:transparent;
+    border-color: transparent;
 }
 
 .notification-bar>.pane {
     -fx-background-color: red, yellow, blue;
     -fx-padding: 5 5 5 5;
     -fx-background-insets: 0, 1, 2;
+    background-color: red, yellow, blue;
+    padding: 5 5 5 5;
 }
 
 .notification-bar>.pane .title {
     -fx-font-size: 16px;
     -fx-text-fill: #000;
     -fx-font-weight: bold;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .notification-bar>.pane .label {
     -fx-font-size: 12px;
     -fx-text-fill: #000;
     -fx-alignment: top-left;
+    font-size: 12px;
 }
 
 .title-bar { 
   -fx-padding: 10px;
   -fx-background-color: #676666;
+  padding: 10px;
+  background-color: #676666;
  }
 
 .title-bar Label {

@@ -122,8 +122,7 @@ public class PhotonApp
                                    separator,
                                    footer,
                                    root);
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add("dark-mode.css");
+        PhotonServices.style(scene);
         inPrimaryStage.show();
         doLogin();
     }
