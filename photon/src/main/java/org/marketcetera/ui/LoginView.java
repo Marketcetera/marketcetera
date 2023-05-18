@@ -137,9 +137,11 @@ public class LoginView
             disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
             String rawValue = StringUtils.trimToNull(newValue);
             if(rawValue != null) {
-                serverConnectionData.setPort(Integer.parseInt(rawValue));
+                try {
+                    serverConnectionData.setPort(Integer.parseInt(rawValue));
+                    serverConnectionDataChanged = true;
+                } catch (NumberFormatException ignored) {}
             }
-            serverConnectionDataChanged = true;
         });
         serverConnectionGrid.setHgap(10);
         serverConnectionGrid.setVgap(10);
