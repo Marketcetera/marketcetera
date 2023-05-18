@@ -156,14 +156,20 @@ public abstract class PhotonServices
         }
         return isAlive;
     }
-    public static boolean isValidHostNameSyntax(String candidateHost)
+    /**
+     * Indicates if the given candidate host value is valid or not.
+     *
+     * @param inCandidateHostname a <code>String</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isValidHostNameSyntax(String inCandidateHostname)
     {
-        if (candidateHost.contains("/")) {
+        if (inCandidateHostname.contains("/")) {
             return false;
         }
         try {
             // WORKAROUND: add any scheme and port to make the resulting URI valid
-            return new URI("my://userinfo@" + candidateHost + ":80").getHost() != null;
+            return new URI("my://userinfo@" + inCandidateHostname + ":80").getHost() != null;
         } catch (URISyntaxException e) {
             return false;
         }

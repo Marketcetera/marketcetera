@@ -7,9 +7,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.marketcetera.core.PlatformServices;
+import org.marketcetera.ui.service.ServerConnectionService.ServerConnectionData;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -130,11 +130,12 @@ public class ServiceManager
                                        "Connecting {} service for {}",
                                        inServiceClass.getSimpleName(),
                                        sessionUser);
+                ServerConnectionData connectionData = serverConnectionService.getConnectionData();
                 if(service.connect(sessionUser.getUsername(),
                                    sessionUser.getPassword(),
-                                   hostname,
-                                   port,
-                                   useSsl)) {
+                                   connectionData.getHostname(),
+                                   connectionData.getPort(),
+                                   connectionData.useSsl())) {
                     SLF4JLoggerProxy.debug(this,
                                            "Created {} for {}",
                                            service,
@@ -189,20 +190,10 @@ public class ServiceManager
     @Autowired
     private ApplicationContext applicationContext;
     /**
-     * indicates whether to use SSL or not
+     * provides access to server connection services
      */
-    @Value("${metc.security.use.ssl:false}")
-    private boolean useSsl;
-    /**
-     * hostname to connect to
-     */
-    @Value("${host.name}")
-    private String hostname;
-    /**
-     * port to connect to
-     */
-    @Value("${host.port}")
-    private int port;
+    @Autowired
+    private ServerConnectionService serverConnectionService;
     /**
      * holds connectable services by service class
      */
