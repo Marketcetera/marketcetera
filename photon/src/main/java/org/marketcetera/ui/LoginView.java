@@ -6,8 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ui.events.LoginEvent;
 import org.marketcetera.ui.service.NoServiceException;
+import org.marketcetera.ui.service.ServerConnectionService;
+import org.marketcetera.ui.service.ServerConnectionService.ServerConnectionData;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.UiMessageService;
+import org.marketcetera.ui.view.ValidatingTextField;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +19,22 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import io.grpc.StatusRuntimeException;
-import javafx.beans.value.ChangeListener;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -53,6 +62,8 @@ public class LoginView
     @PostConstruct
     public void start()
     {
+        serverConnectionDataChanged = false;
+        serverConnectionData = serverConnectionService.getConnectionData();
         initModality(Modality.APPLICATION_MODAL);
         HBox usernameBox = new HBox(5);
         Label usernameLabel = new Label("Username");
@@ -64,22 +75,35 @@ public class LoginView
         passwordText = new PasswordField();
         passwordBox.getChildren().addAll(passwordLabel,
                                          passwordText);
-        // A button to close the stage
+        final BooleanProperty networkInvalid = new SimpleBooleanProperty(false);
+        final BooleanProperty credentialsInvalid = new SimpleBooleanProperty(true);
+        final BooleanProperty disableLogin = new SimpleBooleanProperty(networkInvalid.get() || credentialsInvalid.get());
+        networkInvalid.addListener((observable,oldValue,newValue) -> {
+            disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
+        });
+        credentialsInvalid.addListener((observable,oldValue,newValue) -> {
+            disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
+        });
         loginButton = new Button("Login");
         loginButton.setOnAction(this::onLogin);
         loginButton.setDisable(true);
-        usernameText.textProperty().addListener((ChangeListener<String>) (inObservable,inOldValue,inNewValue) -> enableLoginButton()); 
-        passwordText.textProperty().addListener((ChangeListener<String>) (inObservable,inOldValue,inNewValue) -> enableLoginButton()); 
+        usernameText.textProperty().addListener((observable,oldValue,newValue) -> {
+            credentialsInvalid.set(!(StringUtils.trimToNull(newValue) != null && StringUtils.trimToNull(passwordText.textProperty().get()) != null));
+            disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
+        }); 
+        passwordText.textProperty().addListener((observable,oldValue,newValue) -> {
+            credentialsInvalid.set(!(StringUtils.trimToNull(usernameText.textProperty().get()) != null && StringUtils.trimToNull(newValue) != null));
+            disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
+        }); 
         adviceLabel = new Label();
         adviceLabel.setVisible(false);
         setOnCloseRequest(this::onCloseRequest);
         VBox root = new VBox(5);
-        root.getChildren().addAll(usernameBox,
-                                  passwordBox,
-                                  adviceLabel,
-                                  loginButton);
         root.setPadding(new Insets(10));
         root.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if(networkInvalid.get()) {
+                return;
+            }
             if(event.getCode() == KeyCode.ENTER) {
                loginButton.fire();
                event.consume(); 
@@ -88,22 +112,68 @@ public class LoginView
                                           WindowEvent.WINDOW_CLOSE_REQUEST));
             }
         });
+        loginButton.disableProperty().bind(disableLogin);
+        GridPane serverConnectionGrid = new GridPane();
+        ValidatingTextField hostnameTextField = new ValidatingTextField(input -> PhotonServices.isValidHostNameSyntax(input));
+        hostnameTextField.setPromptText("MATP host or ip address");
+        hostnameTextField.textProperty().set(serverConnectionData.getHostname());
+        ValidatingTextField portTextField = new ValidatingTextField(input -> StringUtils.trimToNull(input) != null && input.matches("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"));
+        portTextField.setPromptText("MATP port");
+        portTextField.textProperty().set(String.valueOf(serverConnectionData.getPort()));
+        CheckBox useSslCheckBox = new CheckBox();
+        useSslCheckBox.selectedProperty().set(serverConnectionData.useSsl());
+        useSslCheckBox.selectedProperty().addListener((observable,oldValue,newValue) -> {
+            serverConnectionData.setUseSsl(newValue);
+            serverConnectionDataChanged = true;
+        });
+        hostnameTextField.textProperty().addListener((observable,oldValue,newValue) -> {
+            networkInvalid.set(!(hostnameTextField.isValidProperty().get() && portTextField.isValidProperty().get()));
+            disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
+            serverConnectionDataChanged = true;
+            serverConnectionData.setHostname(StringUtils.trimToNull(newValue));
+        });
+        portTextField.textProperty().addListener((observable,oldValue,newValue) -> {
+            networkInvalid.set(!(hostnameTextField.isValidProperty().get() && portTextField.isValidProperty().get()));
+            disableLogin.set(networkInvalid.get() || credentialsInvalid.get());
+            String rawValue = StringUtils.trimToNull(newValue);
+            if(rawValue != null) {
+                try {
+                    serverConnectionData.setPort(Integer.parseInt(rawValue));
+                    serverConnectionDataChanged = true;
+                } catch (NumberFormatException ignored) {}
+            }
+        });
+        serverConnectionGrid.setHgap(10);
+        serverConnectionGrid.setVgap(10);
+        serverConnectionGrid.setPadding(new Insets(20,150,10,10));
+        serverConnectionGrid.add(new Label("Hostname"),0,0);
+        serverConnectionGrid.add(hostnameTextField,1,0);
+        serverConnectionGrid.add(new Label("Port"),0,1);
+        serverConnectionGrid.add(portTextField,1,1);
+        serverConnectionGrid.add(new Label("SSL"),0,2);
+        serverConnectionGrid.add(useSslCheckBox,1,2);
+        Accordion accordion = new Accordion();
+        TitledPane pane1 = new TitledPane("Server Connection" ,
+                                          serverConnectionGrid);
+        pane1.setAnimated(false);
+        pane1.expandedProperty().addListener((observable,oldValue,newValue) -> {
+            Platform.runLater(() -> {
+                sizeToScene();
+            });
+        });
+        accordion.getPanes().add(pane1);
+        VBox serverConnectionLayout = new VBox(accordion);
+        root.getChildren().addAll(usernameBox,
+                                  passwordBox,
+                                  serverConnectionLayout,
+                                  adviceLabel,
+                                  loginButton);
         mainScene = new Scene(root);
         PhotonServices.style(mainScene);
         setScene(mainScene);
-        // The title of the stage is not visible for all styles.
         setTitle("Login");
         initStyle(StageStyle.UTILITY);
         setResizable(false);
-    }
-    /**
-     * Enables or disables the login button.
-     */
-    private void enableLoginButton()
-    {
-        String value = StringUtils.trimToNull(usernameText.getText());
-        String password = StringUtils.trimToNull(passwordText.getText());
-        loginButton.setDisable(value == null || password == null);
     }
     /**
      * Fired when the logon button is pressed.
@@ -112,6 +182,10 @@ public class LoginView
      */
     private void onLogin(ActionEvent inEvent)
     {
+        if(serverConnectionDataChanged) {
+            serverConnectionDataChanged = false;
+            serverConnectionService.setConnectionData(serverConnectionData);
+        }
         adviceLabel.setText("");
         adviceLabel.setVisible(false);
         sizeToScene();
@@ -192,6 +266,19 @@ public class LoginView
      * shows an error message, if appropriate
      */
     private Label adviceLabel;
+    /**
+     * holds information about how to connect to the server
+     */
+    private ServerConnectionData serverConnectionData;
+    /**
+     * indicates if the server connection data has changed or not
+     */
+    private boolean serverConnectionDataChanged;
+    /**
+     * provides access to server connection services
+     */
+    @Autowired
+    private ServerConnectionService serverConnectionService;
     /**
      * provides authentication services
      */

@@ -105,7 +105,6 @@
     <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
-      <version>1.7</version>
     </dependency>
     <dependency>
       <groupId>com.github.hervegirod</groupId>
@@ -125,6 +124,27 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/output</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <includeScope>runtime</includeScope>
+              <excludeScope>test</excludeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+       <plugin>
         <groupId>org.openjfx</groupId>
         <artifactId>javafx-maven-plugin</artifactId>
         <version>${javafx.maven.plugin.version}</version>
@@ -137,6 +157,7 @@
               <mainClass>org.marketcetera.ui.PhotonApp</mainClass>
               <workingDirectory>src/test/cmd_exec</workingDirectory>
               <options>
+                <option>-Dlog4j.configurationFile=conf/log4j2.xml</option>
                 <option>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</option>
               </options>
             </configuration>

@@ -1,5 +1,6 @@
 package org.marketcetera.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
@@ -30,11 +31,11 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
@@ -53,10 +54,16 @@ import javafx.util.Callback;
  */
 public abstract class PhotonServices
 {
-    public static Image getIcon(String inName)
+    /**
+     * Get an <code>Image</code> with the given URL.
+     *
+     * @param inUrl a <code>String</code> value
+     * @return an <code>Image</code> value
+     */
+    public static Image getIcon(String inUrl)
     {
         // TODO maybe cache these?
-        return new Image(inName);
+        return new Image(String.valueOf(PhotonServices.class.getClassLoader().getResource(inUrl)));
     }
     public static Optional<User> getCurrentUser()
     {
@@ -73,18 +80,41 @@ public abstract class PhotonServices
         }
         return Optional.of(currentUser);
     }
-    public static <Clazz> Dialog<Clazz> styleDialog(Dialog<Clazz> inDialog)
+    /**
+     * Apply consistent style to the given dialog.
+     *
+     * @param <Clazz> the return type of the dialog
+     * @param inDialog a <code>Dialog&lt;Clazz&gt;</code> value
+     * @return a <code>Dialog&lt;Clazz&gt;</code> value
+     */
+    public static <Clazz> Dialog<Clazz> style(Dialog<Clazz> inDialog)
     {
-        DialogPane dialogPane = inDialog.getDialogPane();
-        dialogPane.getStylesheets().clear();
-        dialogPane.getStylesheets().add("dark-mode.css");
+        style(inDialog.getDialogPane());
         return inDialog;
     }
+    /**
+     * Apply consistent style to the given scene.
+     *
+     * @param inScene a <code>Scene</code> value
+     * @return a <code>Scene</code> value
+     */
     public static Scene style(Scene inScene)
     {
         inScene.getStylesheets().clear();
-        inScene.getStylesheets().add("dark-mode.css");
+        inScene.getStylesheets().add(getStyleSheetUrl());
         return inScene;
+    }
+    /**
+     * Apply consistent style to the given parent.
+     *
+     * @param inParent a <code>Parent</code> value
+     * @return a <code>Parent</code> value
+     */
+    public static Parent style(Parent inParent)
+    {
+        inParent.getStylesheets().clear();
+        inParent.getStylesheets().add(getStyleSheetUrl());
+        return inParent;
     }
     public static Alert generateAlert(String inTitle,
                                       String inContent,
@@ -93,7 +123,7 @@ public abstract class PhotonServices
         Alert alert = new Alert(inAlertType);
         alert.setTitle(inTitle);
         alert.setContentText(inContent);
-        styleDialog(alert);
+        style(alert);
         return alert;
     }
     public static boolean isSocketAlive(String inHostname,
@@ -126,14 +156,20 @@ public abstract class PhotonServices
         }
         return isAlive;
     }
-    public static boolean isValidHostNameSyntax(String candidateHost)
+    /**
+     * Indicates if the given candidate host value is valid or not.
+     *
+     * @param inCandidateHostname a <code>String</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isValidHostNameSyntax(String inCandidateHostname)
     {
-        if (candidateHost.contains("/")) {
+        if (inCandidateHostname.contains("/")) {
             return false;
         }
         try {
             // WORKAROUND: add any scheme and port to make the resulting URI valid
-            return new URI("my://userinfo@" + candidateHost + ":80").getHost() != null;
+            return new URI("my://userinfo@" + inCandidateHostname + ":80").getHost() != null;
         } catch (URISyntaxException e) {
             return false;
         }
@@ -330,6 +366,19 @@ public abstract class PhotonServices
             }
         };
         return tableCell;
+    }
+    /**
+     * Get the external style sheet.
+     *
+     * @return a <code>String</code> value
+     */
+    private static String getStyleSheetUrl()
+    {
+        File cssFile = new File("conf/photon.css");
+        String filePath = "file:///" + cssFile.getAbsolutePath();
+        filePath = filePath.replace("\\", "/");
+        filePath = filePath.replace(" ","%20");
+        return filePath;
     }
     public static final DateTimeFormatter isoDateFormatter = TimeFactoryImpl.FULL_MILLISECONDS;
     public static String successMessage = String.format("-fx-text-fill: GREEN;");

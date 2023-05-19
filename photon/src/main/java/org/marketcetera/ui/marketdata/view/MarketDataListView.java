@@ -52,7 +52,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -241,7 +240,7 @@ public class MarketDataListView
         addSymbolLayout.setPadding(new Insets(10,30,10,10));
         addSymbolTextField = new TextField();
         addSymbolButton = new Button();
-        addSymbolButton.setGraphic(new ImageView(new Image("images/add.png")));
+        addSymbolButton.setGraphic(new ImageView(PhotonServices.getIcon("images/add.png")));
         addSymbolButton.setDisable(true);
         addSymbolTextField.textProperty().addListener((observableValue,oldValue,newValue) -> {
             newValue = tradeClient.getTreatedSymbol(newValue);

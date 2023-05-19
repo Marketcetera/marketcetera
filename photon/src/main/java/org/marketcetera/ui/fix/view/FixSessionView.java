@@ -1127,7 +1127,7 @@ public class FixSessionView
             }
             return null;
         });
-        PhotonServices.styleDialog(dialog);
+        PhotonServices.style(dialog);
         Optional<Pair<Integer,Integer>> result = dialog.showAndWait();
         result.ifPresent(sequenceNumberPairs -> {
             int newSenderSequenceNumber = sequenceNumberPairs.getFirstMember();
