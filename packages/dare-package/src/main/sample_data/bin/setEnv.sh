@@ -17,14 +17,8 @@ if [ "$(id -u)" = "0" ]; then
     exit 1
 fi
 
-export METC_HOME="/opt/Marketcetera"
-export DATA_HOME="/opt/Marketcetera"
+export METC_HOME="${installer:sys.installationDir}"
+export DATA_HOME="${installer:sys.installationDir}"
 
 export DARE_HOME=${METC_HOME}/dare
-export EXSIM_HOME=${METC_HOME}/exsim
-export PHOTON_HOME=${METC_HOME}/photon
-export SE_HOME=${METC_HOME}/strategyengine
-export UI_HOME=${METC_HOME}/ui
-export UBUNTU_MENUPROXY=0
-export PATH=${METC_HOME}/jdk1.8.0_261/bin:${DARE_HOME}/bin:${EXSIM_HOME}/bin:${PHOTON_HOME}/:${SE_HOME}/bin:${PATH}
-export LD_LIBRARY_PATH=${SE_HOME}/modules/lib:${LD_LIBRARY_PATH}
+export PATH=${DARE_HOME}/bin:${PATH}

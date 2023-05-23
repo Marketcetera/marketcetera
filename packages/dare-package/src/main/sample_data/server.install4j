@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.5" transformSequenceNumber="10">
   <directoryPresets config="./bin/stopServerComponents.sh" />
-  <application name="Marketcetera Server-${compiler:sys.version}" applicationId="8655-7418-0245-0302" mediaDir="../../../target/install4j" compression="9" shortName="Marketcetera" publisher="Marketcetera, Inc." publisherWeb="https://www.marketcetera.com" version="${compiler:majorVersion}.${compiler:minorVersion}.${compiler:patchVersion}" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="371f08086a64d74b">
+  <application name="Marketcetera-Server-${compiler:sys.version}" applicationId="8655-7418-0245-0302" mediaDir="../../../target/install4j" compression="9" shortName="Marketcetera" publisher="Marketcetera, Inc." publisherWeb="https://www.marketcetera.com" version="${compiler:majorVersion}.${compiler:minorVersion}.${compiler:patchVersion}" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="371f08086a64d74b">
     <variables>
       <variable name="majorVersion" value="4" />
       <variable name="minorVersion" value="1" />
@@ -226,40 +226,34 @@ switch((int)context.getVariable("databaseSource")) {
             context.setVariable("jdbcUrl","jdbc:hsqldb:file:"+localAppDir+"/Marketcetera/dare/data/metc");
         } else {
             String installDir = (String)context.getVariable("sys.installationDir");
-            context.setVariable("jdbcUrl","jdbc:hsqldb:file:dare/data/metc");
+            context.setVariable("jdbcUrl","jdbc:hsqldb:file:data/metc");
         }
-        context.setVariable("testQuery","CALL NOW()");
-        context.setVariable("dialect","hsqldb");
+        context.setVariable("flywayVendor","hsqldb");
         break;
     case 1: // postgressql
         context.setVariable("jdbcDriver","org.postgresql.Driver");
         context.setVariable("jdbcUrl","jdbc:postgresql://localhost/metc");
-        context.setVariable("testQuery","select 1");
-        context.setVariable("dialect","psql");
+        context.setVariable("flywayVendor","psql");
         break;
     case 2: // mysql
         context.setVariable("jdbcDriver","com.mysql.jdbc.Driver");
         context.setVariable("jdbcUrl","jdbc:mysql://localhost:3306/metc");
-        context.setVariable("testQuery","select 1");
-        context.setVariable("dialect","mysql");
+        context.setVariable("flywayVendor","mysql");
         break;
     case 3: // oracle
         context.setVariable("jdbcDriver","oracle.jdbc.OracleDriver");
         context.setVariable("jdbcUrl","jdbc:oracle:thin:@hostName:port:SID");
-        context.setVariable("testQuery","select 1 from dual");
-        context.setVariable("dialect","oracle");
+        context.setVariable("flywayVendor","oracle");
         break;
     case 4: // sqlserver
         context.setVariable("jdbcDriver","com.microsoft.sqlserver.jdbc.SQLServerDriver");
         context.setVariable("jdbcUrl","jdbc:sqlserver://hostName\\instanceName:portNumber");
-        context.setVariable("testQuery","select 1");
-        context.setVariable("dialect","sqlserver");
+        context.setVariable("flywayVendor","sqlserver");
         break;
     case 5: // other
         context.setVariable("jdbcDriver","");
         context.setVariable("jdbcUrl","");
-        context.setVariable("testQuery","select 1");
-        context.setVariable("dialect","");
+        context.setVariable("flywayVendor","");
         break;
   default:
     throw new IllegalArgumentException("Unknown database type: " + context.getVariable("databaseSource")); 
@@ -322,9 +316,33 @@ switch((int)context.getVariable("databaseSource")) {
                   <property name="checkIfEmpty" type="boolean" value="true" />
                   <property name="enterGoesToNextScreen" type="boolean" value="true" />
                   <property name="helpText" type="string">Enter the Flyway migration dialect to use</property>
-                  <property name="initialText" type="string">${installer:dialect}</property>
-                  <property name="labelText" type="string">Flyway Migration Dialect</property>
-                  <property name="variableName" type="string">dialect</property>
+                  <property name="initialText" type="string">${installer:flywayVendor}</property>
+                  <property name="labelText" type="string">Flyway Migration Vendor</property>
+                  <property name="variableName" type="string">flywayVendor</property>
+                </serializedBean>
+              </formComponent>
+            </formComponents>
+          </screen>
+          <screen id="87" beanClass="com.install4j.runtime.beans.screens.FormScreen" backButton="visible">
+            <serializedBean>
+              <property name="subTitle" type="string">Configure exchange connection settings</property>
+              <property name="title" type="string">Exchange Setup</property>
+            </serializedBean>
+            <formComponents>
+              <formComponent id="88" beanClass="com.install4j.runtime.beans.formcomponents.MultilineLabelComponent">
+                <serializedBean>
+                  <property name="labelText" type="string">These settings tell Marketcetera how to connect to the Marketcetera Exchange Simulator.</property>
+                </serializedBean>
+              </formComponent>
+              <formComponent id="89" beanClass="com.install4j.runtime.beans.formcomponents.SeparatorComponent" />
+              <formComponent id="90" beanClass="com.install4j.runtime.beans.formcomponents.TextfieldComponent">
+                <serializedBean>
+                  <property name="checkIfEmpty" type="boolean" value="true" />
+                  <property name="enterGoesToNextScreen" type="boolean" value="true" />
+                  <property name="helpText" type="string">Uniquely identifies this installation to the Exchange</property>
+                  <property name="initialText" type="string">${installer:sys.userName}-sender-comp-id</property>
+                  <property name="labelText" type="string">Sender Comp ID</property>
+                  <property name="variableName" type="string">senderCompId</property>
                 </serializedBean>
               </formComponent>
             </formComponents>
@@ -357,6 +375,7 @@ switch((int)context.getVariable("databaseSource")) {
                       </object>
                     </element>
                   </property>
+                  <property name="ignoreMissing" type="boolean" value="false" />
                 </serializedBean>
                 <condition>!Util.isWindows()</condition>
               </action>
@@ -450,7 +469,7 @@ return console.askYesNo(message, true);
                   <property name="files" type="array" class="java.io.File" length="1">
                     <element index="0">
                       <object class="java.io.File">
-                        <string>logs</string>
+                        <string>dare</string>
                       </object>
                     </element>
                   </property>
@@ -719,7 +738,7 @@ return console.askYesNo(message, true);
     <windows name="Windows x64" id="32" architecture="64" />
     <unixInstaller name="Linux amd64" id="33" mediaFileName="${compiler:sys.shortName}_linux_amd64_${compiler:sys.version}" customInstallBaseDir="/opt/Marketcetera" />
   </mediaSets>
-  <buildIds buildAll="false">
+  <buildIds>
     <mediaSet refId="27" />
   </buildIds>
 </install4j>

@@ -13,8 +13,5 @@
 
 . "$(dirname $0)/setEnv.sh"
 
-cd ${DARE_HOME}
+cd "${DARE_HOME}"
 ./bin/dare.sh
-
-#cd ${UI_HOME}
-#./bin/ui.sh > /dev/null 2>&1

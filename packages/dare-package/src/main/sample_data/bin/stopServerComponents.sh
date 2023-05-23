@@ -13,18 +13,10 @@
 
 . "$(dirname $0)/setEnv.sh"
 
-cd ${DARE_HOME}
+cd "${DARE_HOME}"
 if [ -f dare.pid ]
 then
     kill `cat dare.pid`
 else
     pkill -f java
 fi
-
-#cd ${UI_HOME}
-#if [ -f ui.pid ]
-#then
-#    kill `cat ui.pid`
-#else
-#    pkill -f java
-#fi
