@@ -1117,6 +1117,17 @@
     </pluginManagement>
     <!-- **** PLUGINS SECTION **** -->
     <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
       <!-- source jar generation -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1275,9 +1286,10 @@
       </plugin>
     </plugins>
   </reporting>
-  <scm>
-    <url>https://source.marketcetera.org/root/trunk</url>
-    <connection>scm:svn:https://source.marketcetera.org/root/trunk</connection>
-    <developerConnection>scm:svn:https://source.marketcetera.org/root/trunk</developerConnection>
-  </scm>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
