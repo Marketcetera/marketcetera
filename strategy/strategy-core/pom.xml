@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>strategy-parent</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>strategy-core</artifactId>
-  <version>4.1.0-SNAPSHOT</version>
+  <version>4.1.0</version>
   <name>Strategy Core</name>
   <url>http://maven.apache.org</url>
   <properties>
