@@ -31,13 +31,13 @@ public class PersistentUserFactory
      */
     @Override
     public PersistentUser create(String inName,
-                                 String inPassword,
+                                 String inHashedPassword,
                                  String inDescription,
                                  boolean inIsActive)
     {
         PersistentUser user = new PersistentUser();
         user.setName(inName);
-        user.setPassword(inPassword.toCharArray());
+        user.setHashedPassword(inHashedPassword);
         user.setDescription(inDescription);
         user.setActive(inIsActive);
         user.setSuperuser(false);

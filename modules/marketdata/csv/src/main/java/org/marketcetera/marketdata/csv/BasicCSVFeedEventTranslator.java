@@ -73,7 +73,8 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * more detailed behavior.
  * 
  * <p>The default implementation expects data in the following format:
- * <table summary="BasicCSVFeedEventTranslator data format">
+ * <table>
+ *   <caption>BasicCSVFeedEventTranslator data format</caption>
  *   <tr><td>Column0</td><td><strong>BID</strong></td><td><strong>ASK</strong></td><td><strong>TRADE</strong></td><td><strong>DIVIDEND</strong></td><td><strong>STAT</strong></td></tr>
  *   <tr><td>Column1</td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td><td><strong>Timestamp</strong></td></tr>
  *   <tr><td>Column2</td><td><strong>Symbol</strong></td><td><strong>Symbol</strong></td><td><strong>Symbol</strong></td><td><strong>Equity Symbol</strong></td><td><strong>Symbol</strong></td></tr>

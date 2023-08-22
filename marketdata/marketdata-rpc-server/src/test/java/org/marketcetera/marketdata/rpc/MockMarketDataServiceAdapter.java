@@ -118,6 +118,14 @@ public class MockMarketDataServiceAdapter
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.service.MarketDataService#getProviders()
+     */
+    @Override
+    public Set<String> getProviders()
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * Get the requests value.
      *
@@ -218,9 +226,7 @@ public class MockMarketDataServiceAdapter
         return capabilitiesToReturn;
     }
     /**
-     * 
-     *
-     *
+     * Reset the object. 
      */
     public void reset()
     {
@@ -237,7 +243,7 @@ public class MockMarketDataServiceAdapter
         capabilityRequests.set(0);
     }
     /**
-     * Records requests to {@link MockMarketDataServiceAdapter#getSnapshot(Instrument, Content, String)}.
+     * Records requests to {@link MockMarketDataServiceAdapter#getSnapshot(Instrument, Content)}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$

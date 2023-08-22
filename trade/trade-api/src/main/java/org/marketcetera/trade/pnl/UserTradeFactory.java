@@ -3,6 +3,9 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.core.Factory;
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,8 +15,9 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface UserTradeFactory
-        extends org.marketcetera.core.Factory<UserTrade>
+        extends Factory<UserTrade>
 {
     /**
      * Create a new <code>UserTrade</code> instance.
@@ -25,7 +29,7 @@ public interface UserTradeFactory
     /**
      * Create a new <code>UserTrade</code> instance from the given object.
      *
-     * @param inObject a <code>UserTrade</code> value
+     * @param inUserTrade a <code>UserTrade</code> value
      * @return a <code>UserTrade</code> value
      */
     @Override

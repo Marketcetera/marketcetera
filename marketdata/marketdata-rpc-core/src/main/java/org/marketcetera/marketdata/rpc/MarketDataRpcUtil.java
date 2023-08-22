@@ -333,7 +333,9 @@ public class MarketDataRpcUtil
             default:
                 throw new UnsupportedOperationException(String.valueOf(inLogEvent.getLogEventLevel()));
         }
-        BaseRpcUtil.getObject(inLogEvent.getException()).ifPresent(value->builder.withException((Throwable)value));
+        if(inLogEvent.hasException()) {
+            BaseRpcUtil.getObject(inLogEvent.getException()).ifPresent(value->builder.withException((Throwable)value));
+        }
         builder.withMessage(Messages.MESSAGE_HOLDER,
                             inLogEvent.getMessage());
         builder.withMessageId(inLogEvent.getEvent().getMessageId());

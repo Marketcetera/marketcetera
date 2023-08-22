@@ -469,7 +469,7 @@ public class PositionTest
         order.setPrice(orderPrice);
         order.setQuantity(inOrderQty);
         order.setSide(Side.Buy);
-        client.sendOrder(order);
+        tradeClient.sendOrder(order);
         quickfix.Message receivedOrder = waitForAndVerifySenderMessage(sender,
                                                                        quickfix.field.MsgType.ORDER_SINGLE);
         // send a pending new

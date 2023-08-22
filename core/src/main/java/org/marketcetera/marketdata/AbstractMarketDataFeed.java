@@ -16,8 +16,8 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
@@ -120,8 +120,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     private static final Callable<Boolean> PUBLISHING_CONDITION = ConditionsFactory.createSamplingCondition(100,
                                                                                                             "metc.metrics.marketdata.sampling.interval");  //$NON-NLS-1$
     /**
-     * Indicates if the feed is allowed to simulate market data if the normal source is not
-     * available.
+     * Indicates if the feed is allowed to simulate market data if the normal source is not available.
      *
      * @return a <code>boolean</code> value
      */
@@ -377,13 +376,12 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * Connects to the feed and supplies the given credentials.
      *
      * @param inCredentials a <code>C</code> value
-     * @return a <code>boolean<code> value indicating whether the login
+     * @return a <code>boolean</code> value indicating whether the login
      *   was successful or not
      */
     protected abstract boolean doLogin(C inCredentials);
     /**
      * Disconnect from the feed.
-     * @throws InterruptedException if the thread was interrupted during execution
     */
     protected abstract void doLogout();
     /**

@@ -10,9 +10,9 @@ import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataCacheElement;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.Messages;
-import org.marketcetera.marketdata.core.provider.MarketDataCacheElement;
 import org.marketcetera.module.AbstractDataReemitterModule;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowRequester;
@@ -40,6 +40,7 @@ import com.google.common.collect.Multimap;
  * <p>
  * Module Features
  * <table>
+ * <caption>MarketDataManagerModule Capabilites</caption>
  * <tr><th>Capabilities</th><td>Data Requester</td></tr>
  * <tr><th>Stops data flows</th><td>Yes</td></tr>
  * <tr><th>Start Operation</th><td>None</td></tr>
@@ -147,7 +148,7 @@ public class MarketDataManagerModule
     /**
      * Sets the subscriberTimeout value.
      *
-     * @param a <code>long</code> value
+     * @param inSubscriberTimeout a <code>long</code> value
      */
     public void setSubscriberTimeout(long inSubscriberTimeout)
     {

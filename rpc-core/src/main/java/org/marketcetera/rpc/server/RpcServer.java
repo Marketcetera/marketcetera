@@ -201,7 +201,7 @@ public class RpcServer
     /**
      * Get the serverServiceDefinitions value.
      *
-     * @return a <code>List<BindableService></code> value
+     * @return a <code>List&lt;BindableService&gt;</code> value
      */
     public List<BindableService> getServerServiceDefinitions()
     {
@@ -210,7 +210,7 @@ public class RpcServer
     /**
      * Sets the serverServiceDefinitions value.
      *
-     * @param inServerServiceDefinitions a <code>List<BindableService></code> value
+     * @param inServerServiceDefinitions a <code>List&lt;BindableService&gt;</code> value
      */
     public void setServerServiceDefinitions(List<BindableService> inServerServiceDefinitions)
     {

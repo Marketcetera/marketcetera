@@ -24,11 +24,11 @@ import java.util.Collections;
  *                    | start()
  *                    |
  *                    v
- *         ,------> {@link #STARTING}
+ *         ,------&gt; {@link #STARTING}
  *        /           |\   ^
  *        |           | \   \ start()
  *        |           |  v   \                 delete()
- *        |           |  {@link #START_FAILED}--------->.
+ *        |           |  {@link #START_FAILED}---------&gt;.
  *        |           |                                 |
  *        |           v                                 |
  *        |         {@link #STARTED}                    |
@@ -41,13 +41,13 @@ import java.util.Collections;
  *        |           |\   ^                            |
  *        |           | \   \ stop()                    |
  *        |           |  v   \                delete()  |
- *        |           |  {@link #STOP_FAILED}---------->|
+ *        |           |  {@link #STOP_FAILED}----------&gt;|
  *        |           |                                 |
  *        \           v                                 |
  *         '------- {@link #STOPPED}                    |
  *                    |                                 |
  *                    | delete()                        |
- *                    |<--------------------------------'
+ *                    |&lt;--------------------------------'
  *                    v
  *                    O
  *
@@ -57,8 +57,9 @@ import java.util.Collections;
  * various module framework operations can be invoked on a module. If
  * a module operation is invoked while it's not in one of the states for
  * that operation in the table below, the operation will fail.
- * <p>
- * <table border="1" cellspacing="0">
+ * </p>
+ * <table border="1">
+ * <caption>Module State Capabilities</caption>
  * <tr><th>Module Operation</th><th>Module State</th></tr>
  * <tr><td>delete</td><td>{@link #CREATED}, {@link #START_FAILED}, {@link #STOPPED}</td>
  * <tr><td>stop</td><td>{@link #STARTED}, {@link #STOP_FAILED}</td>

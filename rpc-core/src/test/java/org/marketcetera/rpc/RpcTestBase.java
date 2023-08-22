@@ -3,6 +3,7 @@ package org.marketcetera.rpc;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -53,7 +54,8 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
         authenticator = new MockAuthenticator();
         authenticator.getUserstore().put("test",
                                          "password");
-        int port = SocketUtils.findAvailableTcpPort();
+        int port = SocketUtils.findAvailableTcpPort(10000,
+                                                    20000);
         createService();
         startServer("127.0.0.1",
                     port,
@@ -268,15 +270,29 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return !multipleClients.isEmpty();
             }
         });
-        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return multipleClients.isEmpty();
-            }
-        });
-        assertTrue(exceptions.isEmpty());
+        try {
+            MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+                @Override
+                public Boolean call()
+                        throws Exception
+                {
+                    Iterator<RpcClientClazz> clientIterator = multipleClients.iterator();
+                    while(clientIterator.hasNext()) {
+                        RpcClientClazz nextClient = clientIterator.next();
+                        if(nextClient == null) {
+                            clientIterator.remove();
+                        }
+                    }
+                    return multipleClients.isEmpty();
+                }
+            });
+        } catch (AssertionError e) {
+            assertTrue("Expected no clients, got: " + multipleClients,
+                       multipleClients.isEmpty());
+            throw e;
+        }
+        assertTrue("Expected no exceptions, got: " + exceptions,
+                   exceptions.isEmpty());
     }
     /**
      * Create a service class instance.
@@ -287,7 +303,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     /**
      * Get a client factory instance.
      *
-     * @return a <code>RpcClientFactory&lt;RpcClientParametersClazz,RpcClientClazz&;gt;</code> value
+     * @return a <code>RpcClientFactory&lt;RpcClientParametersClazz,RpcClientClazz&gt;</code> value
      */
     protected abstract RpcClientFactory<RpcClientParametersClazz,RpcClientClazz> getRpcClientFactory();
     /**
@@ -323,7 +339,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
      * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
      * @param inUsername a <code>String</code> value
-     * @param inPassword a <code>String<code> value
+     * @param inPassword a <code>String</code> value
      * @return a <code>RpcClientClazz</code> value
      * @throws Exception if an unexpected error occurs
      */

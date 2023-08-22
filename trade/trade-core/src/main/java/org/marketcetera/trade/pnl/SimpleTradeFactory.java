@@ -3,6 +3,8 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,28 +14,29 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public class SimpleTradeFactory
-        implements org.marketcetera.trade.pnl.TradeFactory
+        implements TradeFactory
 {
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.SimpleTrade</code> instance.
+     * Create a new <code>SimpleTrade</code> instance.
      *
-     * @return a <code>org.marketcetera.trade.pnl.SimpleTrade</code> value
+     * @return a <code>SimpleTrade</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.SimpleTrade create()
+    public SimpleTrade create()
     {
-        return new org.marketcetera.trade.pnl.SimpleTrade();
+        return new SimpleTrade();
     }
     /**
-     * Create a new <code>org.marketcetera.trade.pnl.SimpleTrade</code> instance from the given object.
+     * Create a new <code>SimpleTrade</code> instance from the given object.
      *
-     * @param inObject a <code>org.marketcetera.trade.pnl.SimpleTrade</code> value
-     * @return a <code>org.marketcetera.trade.pnl.SimpleTrade</code> value
+     * @param inTrade a <code>Trade</code> value
+     * @return a <code>SimpleTrade</code> value
      */
     @Override
-    public org.marketcetera.trade.pnl.SimpleTrade create(org.marketcetera.trade.pnl.Trade inSimpleTrade)
+    public SimpleTrade create(Trade inTrade)
     {
-        return new org.marketcetera.trade.pnl.SimpleTrade(inSimpleTrade);
+        return new SimpleTrade(inTrade);
     }
 }

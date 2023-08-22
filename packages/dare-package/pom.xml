@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.marketcetera</groupId>
   <artifactId>dare-package</artifactId>
-  <version>4.1.0-SNAPSHOT</version>
+  <version>4.1.0</version>
   <packaging>jar</packaging>
   <name>DARE Package</name>
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>packages-parent</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0</version>
   </parent>
   <dependencies>
     <!-- local compile -->
@@ -35,6 +35,14 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-simple</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>strategy-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>strategy-rpc-server</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -72,6 +80,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>metrics-db</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-server</artifactId>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>io.springfox</groupId>
@@ -100,11 +112,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>dataflow-server</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-server</artifactId>
       <scope>runtime</scope>
     </dependency>
     <!-- spring runtime -->
@@ -176,7 +183,6 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -229,6 +235,7 @@
           <locations>
             <location>classpath:db/migration/${metc.flyway.vendor}</location>
           </locations>
+          <cleanDisabled>false</cleanDisabled>
         </configuration>
       </plugin>
       <plugin>

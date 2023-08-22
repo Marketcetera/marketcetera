@@ -4,7 +4,7 @@ import org.marketcetera.core.QueueProcessor;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.core.provider.MarketDataCacheElement;
+import org.marketcetera.marketdata.MarketDataCacheElement;
 import org.marketcetera.marketdata.service.MarketDataCacheManager;
 import org.marketcetera.marketdata.service.MarketDataCacheProvider;
 import org.marketcetera.module.AbstractDataReemitterModule;

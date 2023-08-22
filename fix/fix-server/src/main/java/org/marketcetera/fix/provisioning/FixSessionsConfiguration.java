@@ -27,7 +27,7 @@ public class FixSessionsConfiguration
     /**
      * Get the sessionDescriptors value.
      *
-     * @return a <code>List<FixSessionDescriptor></code> value
+     * @return a <code>List&lt;FixSessionDescriptor&gt;</code> value
      */
     public List<FixSessionDescriptor> getSessionDescriptors()
     {
@@ -36,7 +36,7 @@ public class FixSessionsConfiguration
     /**
      * Sets the sessionDescriptors value.
      *
-     * @param inSessionDescriptors a <code>List<FixSessionDescriptor></code> value
+     * @param inSessionDescriptors a <code>List&lt;FixSessionDescriptor&gt;</code> value
      */
     public void setSessionDescriptors(List<FixSessionDescriptor> inSessionDescriptors)
     {
@@ -75,7 +75,7 @@ public class FixSessionsConfiguration
         /**
          * Get the settings value.
          *
-         * @return a <code>Map<String,String></code> value
+         * @return a <code>Map&lt;String,String&gt;</code> value
          */
         public Map<String,String> getSettings()
         {
@@ -84,7 +84,7 @@ public class FixSessionsConfiguration
         /**
          * Sets the settings value.
          *
-         * @param inSettings a <code>Map<String,String></code> value
+         * @param inSettings a <code>Map&lt;String,String&gt;</code> value
          */
         public void setSettings(Map<String,String> inSettings)
         {
@@ -93,7 +93,7 @@ public class FixSessionsConfiguration
         /**
          * Get the sessions value.
          *
-         * @return a <code>List<Session></code> value
+         * @return a <code>List&lt;Session&gt;</code> value
          */
         public List<Session> getSessions()
         {
@@ -102,7 +102,7 @@ public class FixSessionsConfiguration
         /**
          * Sets the sessions value.
          *
-         * @param inSessions a <code>List<Session></code> value
+         * @param inSessions a <code>List&lt;Session&gt;</code> value
          */
         public void setSessions(List<Session> inSessions)
         {
@@ -268,7 +268,7 @@ public class FixSessionsConfiguration
         /**
          * Get the settings value.
          *
-         * @return a <code>Map<String,String></code> value
+         * @return a <code>Map&lt;String,String&gt;</code> value
          */
         public Map<String,String> getSettings()
         {
@@ -277,7 +277,7 @@ public class FixSessionsConfiguration
         /**
          * Sets the settings value.
          *
-         * @param inSettings a <code>Map<String,String></code> value
+         * @param inSettings a <code>Map&lt;String,String&gt;</code> value
          */
         public void setSettings(Map<String,String> inSettings)
         {

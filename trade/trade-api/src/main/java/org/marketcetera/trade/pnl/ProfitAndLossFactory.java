@@ -3,6 +3,9 @@
 //
 package org.marketcetera.trade.pnl;
 
+import org.marketcetera.core.Factory;
+import org.marketcetera.core.Preserve;
+
 /* $License$ */
 
 /**
@@ -12,8 +15,9 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public interface ProfitAndLossFactory
-        extends org.marketcetera.core.Factory<ProfitAndLoss>
+        extends Factory<ProfitAndLoss>
 {
     /**
      * Create a new <code>ProfitAndLoss</code> instance.
@@ -25,7 +29,7 @@ public interface ProfitAndLossFactory
     /**
      * Create a new <code>ProfitAndLoss</code> instance from the given object.
      *
-     * @param inObject a <code>ProfitAndLoss</code> value
+     * @param inProfitAndLoss a <code>ProfitAndLoss</code> value
      * @return a <code>ProfitAndLoss</code> value
      */
     @Override

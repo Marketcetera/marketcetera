@@ -108,6 +108,8 @@ public class XMLMessageProviderTest extends MessageProviderTestBase {
 
     /**
      * Constructor for MessageManagerTest.
+     *
+     * @param testName a <code>String</code> value
      */
     public XMLMessageProviderTest(String testName) {
         super(testName);

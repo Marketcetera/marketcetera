@@ -14,6 +14,7 @@ import org.marketcetera.module.ModuleURN;
  * <p>
  * Module Features
  * <table>
+ * <caption>MarketDataManagerModuleFactory Capabilities</caption>
  * <tr><th>Capabilities</th><td>Data Requester</td></tr>
  * <tr><th>Stops data flows</th><td>Yes</td></tr>
  * <tr><th>Start Operation</th><td>None</td></tr>

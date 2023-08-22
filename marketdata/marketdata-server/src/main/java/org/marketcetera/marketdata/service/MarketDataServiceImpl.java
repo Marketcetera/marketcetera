@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +23,7 @@ import org.marketcetera.marketdata.MarketDataStatusListener;
 import org.marketcetera.marketdata.event.CancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.GeneratedMarketDataEvent;
 import org.marketcetera.marketdata.event.MarketDataRequestEvent;
+import org.marketcetera.marketdata.event.MarketDataRequestRejectedEvent;
 import org.marketcetera.marketdata.event.SimpleCancelMarketDataRequestEvent;
 import org.marketcetera.marketdata.event.SimpleMarketDataRequestEvent;
 import org.marketcetera.persist.CollectionPageResponse;
@@ -29,6 +31,9 @@ import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.PageResponse;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.nocrala.tools.texttablefmt.BorderStyle;
+import org.nocrala.tools.texttablefmt.ShownBorders;
+import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,15 +87,19 @@ public class MarketDataServiceImpl
     @Override
     public void reportMarketDataStatus(MarketDataStatus inMarketDataStatus)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Reporting {}",
+                               inMarketDataStatus);
         cachedMarketDataStatus.put(inMarketDataStatus.getProvider(),
                                    inMarketDataStatus);
+        logProviderData();
         for(MarketDataStatusListener listener : marketDataStatusListeners) {
             try {
                 listener.receiveMarketDataStatus(inMarketDataStatus);
             } catch (Exception e) {
-                PlatformServices.handleException(this,
-                                                 "Reporting market data status",
-                                                 e);
+                SLF4JLoggerProxy.warn(this,
+                                      e);
+                removeMarketDataStatusListener(listener);
             }
         }
     }
@@ -110,7 +119,7 @@ public class MarketDataServiceImpl
                           MarketDataListener inMarketDataListener)
     {
         String provider = inRequest.getProvider();
-        String requestId = UUID.randomUUID().toString();
+        String requestId = inRequest.getRequestId();
         MarketDataRequestEvent requestEvent = new SimpleMarketDataRequestEvent(inRequest,
                                                                                requestId,
                                                                                provider,
@@ -123,6 +132,24 @@ public class MarketDataServiceImpl
                                requestEvent);
         eventBusService.post(requestEvent);
         return requestId;
+    }
+    /**
+     * Receive a market data request rejected event.
+     *
+     * @param inEvent a <code>MarketDataRequestRejectedEvent</code> value
+     */
+    @Subscribe
+    public void onMarketDataRequestRejectedEvent(MarketDataRequestRejectedEvent inEvent)
+    {
+        SLF4JLoggerProxy.warn(this,
+                              "Received {}",
+                              inEvent);
+        String requestId = inEvent.getMarketDataRequest().getRequestId();
+        RequestMetaData requestMetaData = requestsByRequestId.getIfPresent(requestId);
+        if(requestMetaData != null) {
+            MarketDataListener listener = requestMetaData.getMarketDataListener();
+            listener.onError(inEvent.getReason());
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.service.MarketDataService#cancel(java.lang.String)
@@ -240,6 +267,21 @@ public class MarketDataServiceImpl
             cacheProviders.forEach(value->value.clear());
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.service.MarketDataService#getProviders()
+     */
+    @Override
+    public Set<String> getProviders()
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Received getProviders request");
+        // develop a list of *potential* providers, may or may not be active
+        Set<String> providers = new TreeSet<>(cachedMarketDataStatus.asMap().keySet());
+        SLF4JLoggerProxy.trace(this,
+                               "Returning {}",
+                               providers);
+        return providers;
+    }
     /**
      * Receives generated market data events.
      *
@@ -281,6 +323,37 @@ public class MarketDataServiceImpl
         eventBusService.register(this);
     }
     /**
+     * Log market data provider status.
+     */
+    private void logProviderData()
+    {
+        Table table = new Table(2,
+                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                ShownBorders.ALL,
+                                false);
+        table.addCell("Market Data Providers",
+                      PlatformServices.cellStyle,
+                      2);
+        table.addCell("Provider",
+                      PlatformServices.cellStyle);
+        table.addCell("Status",
+                      PlatformServices.cellStyle);
+        for(Map.Entry<String,MarketDataStatus> providerEntry : cachedMarketDataStatus.asMap().entrySet()) {
+            table.addCell(providerEntry.getKey(),
+                          PlatformServices.cellStyle);
+            table.addCell(providerEntry.getValue().getFeedStatus().name(),
+                          PlatformServices.cellStyle);
+        }
+        String thisProviderLog = table.render();
+        if(!thisProviderLog.equals(lastProviderLog)) {
+            SLF4JLoggerProxy.info(this,
+                                  "{}{}",
+                                  System.lineSeparator(),
+                                  thisProviderLog);
+        }
+        lastProviderLog = thisProviderLog;
+    }
+    /**
      * Holds data about the market data request.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -299,6 +372,13 @@ public class MarketDataServiceImpl
             if(isActive()) {
                 marketDataListener.receiveMarketData((Event)inData);
             }
+        }
+        /**
+         * Get the market data listener for this request.
+         */
+        private  MarketDataListener getMarketDataListener()
+        {
+            return marketDataListener;
         }
         /**
          * Get the isActive value.
@@ -337,6 +417,10 @@ public class MarketDataServiceImpl
          */
         private final MarketDataListener marketDataListener;
     }
+    /**
+     * stores the last reported market data status to avoid reporting the same thing twice
+     */
+    private String lastProviderLog;
     /**
      * provides access to event bus services
      */

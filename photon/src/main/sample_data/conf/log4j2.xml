@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration shutdownHook="disable" monitorInterval="30">
+  <Appenders>
+    <RollingRandomAccessFile name="FILE" fileName="logs/photon.log" filePattern="logs/photon-%d{yyyy-MM-dd-HH}-%i.log.gz" append="true">
+      <PatternLayout pattern="%d{DATE} %5p [%t] %c{3} (%F:%L) - %m%n"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="1000"/>
+    </RollingRandomAccessFile>
+  </Appenders>
+  <Loggers>
+    <Root level="warn">
+      <AppenderRef ref="FILE"/>
+    </Root>
+    <logger name="org.marketcetera" level="info"/>
+    <logger name="com.marketcetera" level="info"/>
+  </Loggers>
+</Configuration>

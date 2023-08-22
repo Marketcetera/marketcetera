@@ -6,10 +6,10 @@ import org.marketcetera.fix.MessageIntercepted;
 import org.marketcetera.fix.ServerFixSession;
 import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Order;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionListener;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessagePublisher;
-
-import quickfix.Message;
 
 /* $License$ */
 
@@ -28,7 +28,6 @@ public interface TradeService
      *
      * @param inOrder an <code>Order</code> value
      * @return a <code>ServerFixSession</code> value
-     * @throws NoBrokerSelected if a session could not be determined
      */
     ServerFixSession selectServerFixSession(Order inOrder);
     /**
@@ -36,12 +35,10 @@ public interface TradeService
      *
      * @param inOrder an <code>Order</code> value
      * @param inServerFixSession a <code>ServerFixSession</code> value
-     * @return a <code>Message</code> value
-     * @throws BrokerUnavailable if the broker is unavailable or unknown
-     * @throws MessageIntercepted if the order should not be sent on in the data flow
+     * @return a <code>quickfix.Message</code> value
      */
-    Message convertOrder(Order inOrder,
-                         ServerFixSession inServerFixSession);
+    quickfix.Message convertOrder(Order inOrder,
+                                  ServerFixSession inServerFixSession);
     /**
      * Convert the given message from the given broker to a <code>TradeMessage</code>.
      *
@@ -61,4 +58,22 @@ public interface TradeService
      */
     void sendOrder(User inUser,
                    Order inOrder);
+    /**
+     * Add the given trade message listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    void addSuggestionListener(SuggestionListener inSuggestionListener);
+    /**
+     * Remove the given trade message listener.
+     *
+     * @param inSuggestionListener a <code>SuggestionListener</code> value
+     */
+    void removeSuggestionListener(SuggestionListener inSuggestionListener);
+    /**
+     * Report a suggestion to be broadcast.
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     */
+    void reportSuggestion(Suggestion inSuggestion);
 }

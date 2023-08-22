@@ -3,6 +3,14 @@
 //
 package org.marketcetera.trade.pnl;
 
+import java.util.Optional;
+
+import org.marketcetera.admin.UserFactory;
+import org.marketcetera.admin.rpc.AdminRpcUtil;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.rpc.base.BaseRpcUtil;
+import org.marketcetera.trading.rpc.TradeRpcUtil;
+
 /* $License$ */
 
 /**
@@ -12,266 +20,283 @@ package org.marketcetera.trade.pnl;
  * @version $Id$
  * @since $Release$
  */
+@Preserve
 public abstract class TradePnlRpcUtil
 {
     /**
      * Get the RPC object from the given value.
      *
-     * @param inPosition a <code>org.marketcetera.trade.pnl.Position</code> value
-     * @return a java.util.Optional<TradePnlTypesRpc.PnlPosition> value
+     * @param inPosition a <code>Position</code> value
+     * @return a <code>Optional&lt;TradePnlTypesRpc.PnlPosition&gt;</code> value
      */
-    public static java.util.Optional<TradePnlTypesRpc.PnlPosition> getRpcPnlPosition(org.marketcetera.trade.pnl.Position inPosition)
+    public static Optional<TradePnlTypesRpc.PnlPosition> getRpcPnlPosition(Position inPosition)
     {
         if(inPosition == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         TradePnlTypesRpc.PnlPosition.Builder builder = TradePnlTypesRpc.PnlPosition.newBuilder();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument(inPosition.getInstrument()).ifPresent(value->builder.setInstrument(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inPosition.getUser()).ifPresent(value->builder.setUser(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inPosition.getPosition()).ifPresent(value->builder.setPosition(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inPosition.getEffectiveDate()).ifPresent(value->builder.setEffectiveDate(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inPosition.getWeightedAverageCost()).ifPresent(value->builder.setWeightedAverageCost(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inPosition.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inPosition.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
-        return java.util.Optional.of(builder.build());
+        TradeRpcUtil.getRpcInstrument(inPosition.getInstrument()).ifPresent(value->builder.setInstrument(value));
+        AdminRpcUtil.getRpcUser(inPosition.getUser()).ifPresent(value->builder.setUser(value));
+        BaseRpcUtil.getRpcQty(inPosition.getPosition()).ifPresent(value->builder.setPosition(value));
+        BaseRpcUtil.getTimestampValue(inPosition.getEffectiveDate()).ifPresent(value->builder.setEffectiveDate(value));
+        BaseRpcUtil.getRpcQty(inPosition.getWeightedAverageCost()).ifPresent(value->builder.setWeightedAverageCost(value));
+        BaseRpcUtil.getRpcQty(inPosition.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
+        BaseRpcUtil.getRpcQty(inPosition.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC object from the given value.
      *
-     * @param inCurrentPosition a <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
-     * @return a java.util.Optional<TradePnlTypesRpc.CurrentPnlPosition> value
+     * @param inCurrentPosition a <code>CurrentPosition</code> value
+     * @return an <code>Optional&lt;TradePnlTypesRpc.CurrentPnlPosition&lt;</code> value
      */
-    public static java.util.Optional<TradePnlTypesRpc.CurrentPnlPosition> getRpcCurrentPnlPosition(org.marketcetera.trade.pnl.CurrentPosition inCurrentPosition)
+    public static Optional<TradePnlTypesRpc.CurrentPnlPosition> getRpcCurrentPnlPosition(CurrentPosition inCurrentPosition)
     {
         if(inCurrentPosition == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         TradePnlTypesRpc.CurrentPnlPosition.Builder builder = TradePnlTypesRpc.CurrentPnlPosition.newBuilder();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument(inCurrentPosition.getInstrument()).ifPresent(value->builder.setInstrument(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inCurrentPosition.getUser()).ifPresent(value->builder.setUser(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getPosition()).ifPresent(value->builder.setPosition(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getWeightedAverageCost()).ifPresent(value->builder.setWeightedAverageCost(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inCurrentPosition.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
-        return java.util.Optional.of(builder.build());
+        TradeRpcUtil.getRpcInstrument(inCurrentPosition.getInstrument()).ifPresent(value->builder.setInstrument(value));
+        AdminRpcUtil.getRpcUser(inCurrentPosition.getUser()).ifPresent(value->builder.setUser(value));
+        BaseRpcUtil.getRpcQty(inCurrentPosition.getPosition()).ifPresent(value->builder.setPosition(value));
+        BaseRpcUtil.getRpcQty(inCurrentPosition.getWeightedAverageCost()).ifPresent(value->builder.setWeightedAverageCost(value));
+        BaseRpcUtil.getRpcQty(inCurrentPosition.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
+        BaseRpcUtil.getRpcQty(inCurrentPosition.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC object from the given value.
      *
-     * @param inProfitAndLoss a <code>org.marketcetera.trade.pnl.ProfitAndLoss</code> value
-     * @return a java.util.Optional<TradePnlTypesRpc.ProfitAndLoss> value
+     * @param inProfitAndLoss a <code>ProfitAndLoss</code> value
+     * @return an <code>Optional&lt;TradePnlTypesRpc.ProfitAndLoss&gt;</code> value
      */
-    public static java.util.Optional<TradePnlTypesRpc.ProfitAndLoss> getRpcProfitAndLoss(org.marketcetera.trade.pnl.ProfitAndLoss inProfitAndLoss)
+    public static Optional<TradePnlTypesRpc.ProfitAndLoss> getRpcProfitAndLoss(ProfitAndLoss inProfitAndLoss)
     {
         if(inProfitAndLoss == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         TradePnlTypesRpc.ProfitAndLoss.Builder builder = TradePnlTypesRpc.ProfitAndLoss.newBuilder();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument(inProfitAndLoss.getInstrument()).ifPresent(value->builder.setInstrument(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inProfitAndLoss.getUser()).ifPresent(value->builder.setUser(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inProfitAndLoss.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inProfitAndLoss.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inProfitAndLoss.getBasisPrice()).ifPresent(value->builder.setBasisPrice(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inProfitAndLoss.getPosition()).ifPresent(value->builder.setPosition(value));
-        return java.util.Optional.of(builder.build());
+        TradeRpcUtil.getRpcInstrument(inProfitAndLoss.getInstrument()).ifPresent(value->builder.setInstrument(value));
+        AdminRpcUtil.getRpcUser(inProfitAndLoss.getUser()).ifPresent(value->builder.setUser(value));
+        BaseRpcUtil.getRpcQty(inProfitAndLoss.getRealizedGain()).ifPresent(value->builder.setRealizedGain(value));
+        BaseRpcUtil.getRpcQty(inProfitAndLoss.getUnrealizedGain()).ifPresent(value->builder.setUnrealizedGain(value));
+        BaseRpcUtil.getRpcQty(inProfitAndLoss.getBasisPrice()).ifPresent(value->builder.setBasisPrice(value));
+        BaseRpcUtil.getRpcQty(inProfitAndLoss.getPosition()).ifPresent(value->builder.setPosition(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC object from the given value.
      *
-     * @param inLot a <code>org.marketcetera.trade.pnl.Lot</code> value
-     * @return a java.util.Optional<TradePnlTypesRpc.Lot> value
+     * @param inLot a <code>Lot</code> value
+     * @return an <code>Optional&lt;TradePnlTypesRpc.Lot&gt;</code> value
      */
-    public static java.util.Optional<TradePnlTypesRpc.Lot> getRpcLot(org.marketcetera.trade.pnl.Lot inLot)
+    public static Optional<TradePnlTypesRpc.Lot> getRpcLot(Lot inLot)
     {
         if(inLot == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         TradePnlTypesRpc.Lot.Builder builder = TradePnlTypesRpc.Lot.newBuilder();
-        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inLot.getUser()).ifPresent(value->builder.setUser(value));
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getRpcTrade(inLot.getTrade()).ifPresent(value->builder.setTrade(value));
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getRpcPnlPosition(inLot.getPosition()).ifPresent(value->builder.setPosition(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inLot.getQuantity()).ifPresent(value->builder.setQuantity(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inLot.getAllocatedQuantity()).ifPresent(value->builder.setAllocatedQuantity(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inLot.getEffectiveDate()).ifPresent(value->builder.setEffectiveDate(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inLot.getBasisPrice()).ifPresent(value->builder.setBasisPrice(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inLot.getGain()).ifPresent(value->builder.setGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inLot.getTradePrice()).ifPresent(value->builder.setTradePrice(value));
-        return java.util.Optional.of(builder.build());
+        AdminRpcUtil.getRpcUser(inLot.getUser()).ifPresent(value->builder.setUser(value));
+        TradePnlRpcUtil.getRpcTrade(inLot.getTrade()).ifPresent(value->builder.setTrade(value));
+        TradePnlRpcUtil.getRpcPnlPosition(inLot.getPosition()).ifPresent(value->builder.setPosition(value));
+        BaseRpcUtil.getRpcQty(inLot.getQuantity()).ifPresent(value->builder.setQuantity(value));
+        BaseRpcUtil.getRpcQty(inLot.getAllocatedQuantity()).ifPresent(value->builder.setAllocatedQuantity(value));
+        BaseRpcUtil.getTimestampValue(inLot.getEffectiveDate()).ifPresent(value->builder.setEffectiveDate(value));
+        BaseRpcUtil.getRpcQty(inLot.getBasisPrice()).ifPresent(value->builder.setBasisPrice(value));
+        BaseRpcUtil.getRpcQty(inLot.getGain()).ifPresent(value->builder.setGain(value));
+        BaseRpcUtil.getRpcQty(inLot.getTradePrice()).ifPresent(value->builder.setTradePrice(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC object from the given value.
      *
-     * @param inTrade a <code>org.marketcetera.trade.pnl.Trade</code> value
-     * @return a java.util.Optional<TradePnlTypesRpc.Trade> value
+     * @param inTrade a <code>Trade</code> value
+     * @return an <code>Optional&lt;TradePnlTypesRpc.Trade&gt;</code> value
      */
-    public static java.util.Optional<TradePnlTypesRpc.Trade> getRpcTrade(org.marketcetera.trade.pnl.Trade inTrade)
+    public static Optional<TradePnlTypesRpc.Trade> getRpcTrade(Trade inTrade)
     {
         if(inTrade == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         TradePnlTypesRpc.Trade.Builder builder = TradePnlTypesRpc.Trade.newBuilder();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument(inTrade.getInstrument()).ifPresent(value->builder.setInstrument(value));
-        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcOrderId(inTrade.getExecutionId()).ifPresent(value->builder.setExecutionId(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inTrade.getPrice()).ifPresent(value->builder.setPrice(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty(inTrade.getQuantity()).ifPresent(value->builder.setQuantity(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue(inTrade.getTransactionTime()).ifPresent(value->builder.setTransactionTime(value));
-        return java.util.Optional.of(builder.build());
+        TradeRpcUtil.getRpcInstrument(inTrade.getInstrument()).ifPresent(value->builder.setInstrument(value));
+        TradeRpcUtil.getRpcOrderId(inTrade.getExecutionId()).ifPresent(value->builder.setExecutionId(value));
+        BaseRpcUtil.getRpcQty(inTrade.getPrice()).ifPresent(value->builder.setPrice(value));
+        BaseRpcUtil.getRpcQty(inTrade.getQuantity()).ifPresent(value->builder.setQuantity(value));
+        BaseRpcUtil.getTimestampValue(inTrade.getTransactionTime()).ifPresent(value->builder.setTransactionTime(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the RPC object from the given value.
      *
-     * @param inUserTrade a <code>org.marketcetera.trade.pnl.UserTrade</code> value
-     * @return a java.util.Optional<TradePnlTypesRpc.UserTrade> value
+     * @param inUserTrade a <code>UserTrade</code> value
+     * @return an <code>Optional&lt;TradePnlTypesRpc.UserTrade&gt;</code> value
      */
-    public static java.util.Optional<TradePnlTypesRpc.UserTrade> getRpcUserTrade(org.marketcetera.trade.pnl.UserTrade inUserTrade)
+    public static Optional<TradePnlTypesRpc.UserTrade> getRpcUserTrade(UserTrade inUserTrade)
     {
         if(inUserTrade == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
         TradePnlTypesRpc.UserTrade.Builder builder = TradePnlTypesRpc.UserTrade.newBuilder();
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getRpcTrade(inUserTrade.getTrade()).ifPresent(value->builder.setTrade(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser(inUserTrade.getUser()).ifPresent(value->builder.setUser(value));
-        builder.setSide(org.marketcetera.trading.rpc.TradeRpcUtil.getRpcSide(inUserTrade.getSide()));
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getRpcProfitAndLoss(inUserTrade.getProfitAndLoss()).ifPresent(value->builder.setProfitAndLoss(value));
-        org.marketcetera.trading.rpc.TradeRpcUtil.getRpcOrderId(inUserTrade.getOrderId()).ifPresent(value->builder.setOrderId(value));
-        return java.util.Optional.of(builder.build());
+        TradePnlRpcUtil.getRpcTrade(inUserTrade.getTrade()).ifPresent(value->builder.setTrade(value));
+        AdminRpcUtil.getRpcUser(inUserTrade.getUser()).ifPresent(value->builder.setUser(value));
+        builder.setSide(TradeRpcUtil.getRpcSide(inUserTrade.getSide()));
+        TradePnlRpcUtil.getRpcProfitAndLoss(inUserTrade.getProfitAndLoss()).ifPresent(value->builder.setProfitAndLoss(value));
+        TradeRpcUtil.getRpcOrderId(inUserTrade.getOrderId()).ifPresent(value->builder.setOrderId(value));
+        return Optional.of(builder.build());
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inPosition a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.PnlPosition</code> value
-     * @param inPositionFactory a <code>org.marketcetera.trade.pnl.PositionFactory</code> value
-     * @param inUserFactory a <code>org.marketcetera.admin.UserFactory</code> value
-     * @return a org.marketcetera.trade.pnl.Position value
+     * @param inPosition a <code>TradePnlTypesRpc.PnlPosition</code> value
+     * @param inPositionFactory a <code>PositionFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return an <code>Optional&lt;Position&lt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.trade.pnl.Position> getPnlPosition(org.marketcetera.trade.pnl.TradePnlTypesRpc.PnlPosition inPosition,org.marketcetera.trade.pnl.PositionFactory inPositionFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    public static Optional<Position> getPnlPosition(TradePnlTypesRpc.PnlPosition inPosition,
+                                                    PositionFactory inPositionFactory,
+                                                    UserFactory inUserFactory)
     {
         if(inPosition == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.trade.pnl.Position position = inPositionFactory.create();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument(inPosition.getInstrument()).ifPresent(value->position.setInstrument(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inPosition.getUser(),inUserFactory).ifPresent(value->position.setUser(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inPosition.getPosition()).ifPresent(value->position.setPosition(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inPosition.getEffectiveDate()).ifPresent(value->position.setEffectiveDate(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inPosition.getWeightedAverageCost()).ifPresent(value->position.setWeightedAverageCost(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inPosition.getRealizedGain()).ifPresent(value->position.setRealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inPosition.getUnrealizedGain()).ifPresent(value->position.setUnrealizedGain(value));
-        return java.util.Optional.of(position);
+        Position position = inPositionFactory.create();
+        TradeRpcUtil.getInstrument(inPosition.getInstrument()).ifPresent(value->position.setInstrument(value));
+        AdminRpcUtil.getUser(inPosition.getUser(),inUserFactory).ifPresent(value->position.setUser(value));
+        BaseRpcUtil.getScaledQuantity(inPosition.getPosition()).ifPresent(value->position.setPosition(value));
+        BaseRpcUtil.getDateValue(inPosition.getEffectiveDate()).ifPresent(value->position.setEffectiveDate(value));
+        BaseRpcUtil.getScaledQuantity(inPosition.getWeightedAverageCost()).ifPresent(value->position.setWeightedAverageCost(value));
+        BaseRpcUtil.getScaledQuantity(inPosition.getRealizedGain()).ifPresent(value->position.setRealizedGain(value));
+        BaseRpcUtil.getScaledQuantity(inPosition.getUnrealizedGain()).ifPresent(value->position.setUnrealizedGain(value));
+        return Optional.of(position);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inCurrentPosition a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.CurrentPnlPosition</code> value
-     * @param inCurrentPositionFactory a <code>org.marketcetera.trade.pnl.CurrentPositionFactory</code> value
-     * @param inUserFactory a <code>org.marketcetera.admin.UserFactory</code> value
-     * @return a org.marketcetera.trade.pnl.CurrentPosition value
+     * @param inCurrentPosition a <code>TradePnlTypesRpc.CurrentPnlPosition</code> value
+     * @param inCurrentPositionFactory a <code>CurrentPositionFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return an <code>Optional&lt;CurrentPosition&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.trade.pnl.CurrentPosition> getCurrentPnlPosition(org.marketcetera.trade.pnl.TradePnlTypesRpc.CurrentPnlPosition inCurrentPosition,org.marketcetera.trade.pnl.CurrentPositionFactory inCurrentPositionFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    public static Optional<CurrentPosition> getCurrentPnlPosition(TradePnlTypesRpc.CurrentPnlPosition inCurrentPosition,
+                                                                  CurrentPositionFactory inCurrentPositionFactory,
+                                                                  UserFactory inUserFactory)
     {
         if(inCurrentPosition == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.trade.pnl.CurrentPosition currentPosition = inCurrentPositionFactory.create();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument(inCurrentPosition.getInstrument()).ifPresent(value->currentPosition.setInstrument(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inCurrentPosition.getUser(),inUserFactory).ifPresent(value->currentPosition.setUser(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getPosition()).ifPresent(value->currentPosition.setPosition(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getWeightedAverageCost()).ifPresent(value->currentPosition.setWeightedAverageCost(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getRealizedGain()).ifPresent(value->currentPosition.setRealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inCurrentPosition.getUnrealizedGain()).ifPresent(value->currentPosition.setUnrealizedGain(value));
-        return java.util.Optional.of(currentPosition);
+        CurrentPosition currentPosition = inCurrentPositionFactory.create();
+        TradeRpcUtil.getInstrument(inCurrentPosition.getInstrument()).ifPresent(value->currentPosition.setInstrument(value));
+        AdminRpcUtil.getUser(inCurrentPosition.getUser(),inUserFactory).ifPresent(value->currentPosition.setUser(value));
+        BaseRpcUtil.getScaledQuantity(inCurrentPosition.getPosition()).ifPresent(value->currentPosition.setPosition(value));
+        BaseRpcUtil.getScaledQuantity(inCurrentPosition.getWeightedAverageCost()).ifPresent(value->currentPosition.setWeightedAverageCost(value));
+        BaseRpcUtil.getScaledQuantity(inCurrentPosition.getRealizedGain()).ifPresent(value->currentPosition.setRealizedGain(value));
+        BaseRpcUtil.getScaledQuantity(inCurrentPosition.getUnrealizedGain()).ifPresent(value->currentPosition.setUnrealizedGain(value));
+        return Optional.of(currentPosition);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inProfitAndLoss a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.ProfitAndLoss</code> value
-     * @param inProfitAndLossFactory a <code>org.marketcetera.trade.pnl.ProfitAndLossFactory</code> value
-     * @param inUserFactory a <code>org.marketcetera.admin.UserFactory</code> value
-     * @return a org.marketcetera.trade.pnl.ProfitAndLoss value
+     * @param inProfitAndLoss a <code>TradePnlTypesRpc.ProfitAndLoss</code> value
+     * @param inProfitAndLossFactory a <code>ProfitAndLossFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return an <code>Optional&lt;ProfitAndLoss&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.trade.pnl.ProfitAndLoss> getProfitAndLoss(org.marketcetera.trade.pnl.TradePnlTypesRpc.ProfitAndLoss inProfitAndLoss,org.marketcetera.trade.pnl.ProfitAndLossFactory inProfitAndLossFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    public static Optional<ProfitAndLoss> getProfitAndLoss(TradePnlTypesRpc.ProfitAndLoss inProfitAndLoss,
+                                                           ProfitAndLossFactory inProfitAndLossFactory,
+                                                           UserFactory inUserFactory)
     {
         if(inProfitAndLoss == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.trade.pnl.ProfitAndLoss profitAndLoss = inProfitAndLossFactory.create();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument(inProfitAndLoss.getInstrument()).ifPresent(value->profitAndLoss.setInstrument(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inProfitAndLoss.getUser(),inUserFactory).ifPresent(value->profitAndLoss.setUser(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getRealizedGain()).ifPresent(value->profitAndLoss.setRealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getUnrealizedGain()).ifPresent(value->profitAndLoss.setUnrealizedGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getBasisPrice()).ifPresent(value->profitAndLoss.setBasisPrice(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getPosition()).ifPresent(value->profitAndLoss.setPosition(value));
-        return java.util.Optional.of(profitAndLoss);
+        ProfitAndLoss profitAndLoss = inProfitAndLossFactory.create();
+        TradeRpcUtil.getInstrument(inProfitAndLoss.getInstrument()).ifPresent(value->profitAndLoss.setInstrument(value));
+        AdminRpcUtil.getUser(inProfitAndLoss.getUser(),inUserFactory).ifPresent(value->profitAndLoss.setUser(value));
+        BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getRealizedGain()).ifPresent(value->profitAndLoss.setRealizedGain(value));
+        BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getUnrealizedGain()).ifPresent(value->profitAndLoss.setUnrealizedGain(value));
+        BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getBasisPrice()).ifPresent(value->profitAndLoss.setBasisPrice(value));
+        BaseRpcUtil.getScaledQuantity(inProfitAndLoss.getPosition()).ifPresent(value->profitAndLoss.setPosition(value));
+        return Optional.of(profitAndLoss);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inLot a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.Lot</code> value
-     * @param inLotFactory a <code>org.marketcetera.trade.pnl.LotFactory</code> value
-     * @param inProfitAndLossFactory a <code>org.marketcetera.trade.pnl.ProfitAndLossFactory</code> value
-     * @param inTradeFactory a <code>org.marketcetera.trade.pnl.TradeFactory</code> value
-     * @param inUserFactory a <code>org.marketcetera.admin.UserFactory</code> value
-     * @param inPositionFactory a <code>org.marketcetera.trade.pnl.PositionFactory</code> value
-     * @return a org.marketcetera.trade.pnl.Lot value
+     * @param inLot a <code>TradePnlTypesRpc.Lot</code> value
+     * @param inLotFactory a <code>LotFactory</code> value
+     * @param inProfitAndLossFactory a <code>ProfitAndLossFactory</code> value
+     * @param inTradeFactory a <code>TradeFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @param inPositionFactory a <code>PositionFactory</code> value
+     * @return an <code>Optional&lt;Lot&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.trade.pnl.Lot> getLot(org.marketcetera.trade.pnl.TradePnlTypesRpc.Lot inLot,org.marketcetera.trade.pnl.LotFactory inLotFactory,org.marketcetera.trade.pnl.ProfitAndLossFactory inProfitAndLossFactory,org.marketcetera.trade.pnl.TradeFactory inTradeFactory,org.marketcetera.admin.UserFactory inUserFactory,org.marketcetera.trade.pnl.PositionFactory inPositionFactory)
+    public static Optional<Lot> getLot(TradePnlTypesRpc.Lot inLot,
+                                       LotFactory inLotFactory,
+                                       ProfitAndLossFactory inProfitAndLossFactory,
+                                       TradeFactory inTradeFactory,
+                                       UserFactory inUserFactory,
+                                       PositionFactory inPositionFactory)
     {
         if(inLot == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.trade.pnl.Lot lot = inLotFactory.create();
-        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inLot.getUser(),inUserFactory).ifPresent(value->lot.setUser(value));
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getTrade(inLot.getTrade(),inTradeFactory).ifPresent(value->lot.setTrade(value));
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getPnlPosition(inLot.getPosition(),inPositionFactory,inUserFactory).ifPresent(value->lot.setPosition(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inLot.getQuantity()).ifPresent(value->lot.setQuantity(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inLot.getAllocatedQuantity()).ifPresent(value->lot.setAllocatedQuantity(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inLot.getEffectiveDate()).ifPresent(value->lot.setEffectiveDate(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inLot.getBasisPrice()).ifPresent(value->lot.setBasisPrice(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inLot.getGain()).ifPresent(value->lot.setGain(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inLot.getTradePrice()).ifPresent(value->lot.setTradePrice(value));
-        return java.util.Optional.of(lot);
+        Lot lot = inLotFactory.create();
+        AdminRpcUtil.getUser(inLot.getUser(),inUserFactory).ifPresent(value->lot.setUser(value));
+        TradePnlRpcUtil.getTrade(inLot.getTrade(),inTradeFactory).ifPresent(value->lot.setTrade(value));
+        TradePnlRpcUtil.getPnlPosition(inLot.getPosition(),inPositionFactory,inUserFactory).ifPresent(value->lot.setPosition(value));
+        BaseRpcUtil.getScaledQuantity(inLot.getQuantity()).ifPresent(value->lot.setQuantity(value));
+        BaseRpcUtil.getScaledQuantity(inLot.getAllocatedQuantity()).ifPresent(value->lot.setAllocatedQuantity(value));
+        BaseRpcUtil.getDateValue(inLot.getEffectiveDate()).ifPresent(value->lot.setEffectiveDate(value));
+        BaseRpcUtil.getScaledQuantity(inLot.getBasisPrice()).ifPresent(value->lot.setBasisPrice(value));
+        BaseRpcUtil.getScaledQuantity(inLot.getGain()).ifPresent(value->lot.setGain(value));
+        BaseRpcUtil.getScaledQuantity(inLot.getTradePrice()).ifPresent(value->lot.setTradePrice(value));
+        return Optional.of(lot);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inTrade a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.Trade</code> value
-     * @param inTradeFactory a <code>org.marketcetera.trade.pnl.TradeFactory</code> value
-     * @return a org.marketcetera.trade.pnl.Trade value
+     * @param inTrade a <code>TradePnlTypesRpc.Trade</code> value
+     * @param inTradeFactory a <code>TradeFactory</code> value
+     * @return an <code>Optional&lt;Trade&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.trade.pnl.Trade> getTrade(org.marketcetera.trade.pnl.TradePnlTypesRpc.Trade inTrade,org.marketcetera.trade.pnl.TradeFactory inTradeFactory)
+    public static Optional<Trade> getTrade(TradePnlTypesRpc.Trade inTrade,
+                                           TradeFactory inTradeFactory)
     {
         if(inTrade == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.trade.pnl.Trade trade = inTradeFactory.create();
-        org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument(inTrade.getInstrument()).ifPresent(value->trade.setInstrument(value));
-        org.marketcetera.trading.rpc.TradeRpcUtil.getOrderId(inTrade.getExecutionId()).ifPresent(value->trade.setExecutionId(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inTrade.getPrice()).ifPresent(value->trade.setPrice(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity(inTrade.getQuantity()).ifPresent(value->trade.setQuantity(value));
-        org.marketcetera.rpc.base.BaseRpcUtil.getDateValue(inTrade.getTransactionTime()).ifPresent(value->trade.setTransactionTime(value));
-        return java.util.Optional.of(trade);
+        Trade trade = inTradeFactory.create();
+        TradeRpcUtil.getInstrument(inTrade.getInstrument()).ifPresent(value->trade.setInstrument(value));
+        TradeRpcUtil.getOrderId(inTrade.getExecutionId()).ifPresent(value->trade.setExecutionId(value));
+        BaseRpcUtil.getScaledQuantity(inTrade.getPrice()).ifPresent(value->trade.setPrice(value));
+        BaseRpcUtil.getScaledQuantity(inTrade.getQuantity()).ifPresent(value->trade.setQuantity(value));
+        BaseRpcUtil.getDateValue(inTrade.getTransactionTime()).ifPresent(value->trade.setTransactionTime(value));
+        return Optional.of(trade);
     }
     /**
      * Get the object from the given RPC value.
      *
-     * @param inUserTrade a <code>org.marketcetera.trade.pnl.TradePnlTypesRpc.UserTrade</code> value
-     * @param inUserTradeFactory a <code>org.marketcetera.trade.pnl.UserTradeFactory</code> value
-     * @param inTradeFactory a <code>org.marketcetera.trade.pnl.TradeFactory</code> value
-     * @param inProfitAndLossFactory a <code>org.marketcetera.trade.pnl.ProfitAndLossFactory</code> value
-     * @param inUserFactory a <code>org.marketcetera.admin.UserFactory</code> value
-     * @return a org.marketcetera.trade.pnl.UserTrade value
+     * @param inUserTrade a <code>TradePnlTypesRpc.UserTrade</code> value
+     * @param inUserTradeFactory a <code>UserTradeFactory</code> value
+     * @param inTradeFactory a <code>TradeFactory</code> value
+     * @param inProfitAndLossFactory a <code>ProfitAndLossFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
+     * @return an <code>Optional&lt;UserTrade&gt;</code> value
      */
-    public static java.util.Optional<org.marketcetera.trade.pnl.UserTrade> getUserTrade(org.marketcetera.trade.pnl.TradePnlTypesRpc.UserTrade inUserTrade,org.marketcetera.trade.pnl.UserTradeFactory inUserTradeFactory,org.marketcetera.trade.pnl.TradeFactory inTradeFactory,org.marketcetera.trade.pnl.ProfitAndLossFactory inProfitAndLossFactory,org.marketcetera.admin.UserFactory inUserFactory)
+    public static Optional<UserTrade> getUserTrade(TradePnlTypesRpc.UserTrade inUserTrade,
+                                                   UserTradeFactory inUserTradeFactory,
+                                                   TradeFactory inTradeFactory,
+                                                   ProfitAndLossFactory inProfitAndLossFactory,
+                                                   UserFactory inUserFactory)
     {
         if(inUserTrade == null) {
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
-        org.marketcetera.trade.pnl.UserTrade userTrade = inUserTradeFactory.create();
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getTrade(inUserTrade.getTrade(),inTradeFactory).ifPresent(value->userTrade.setTrade(value));
-        org.marketcetera.admin.rpc.AdminRpcUtil.getUser(inUserTrade.getUser(),inUserFactory).ifPresent(value->userTrade.setUser(value));
-        userTrade.setSide(org.marketcetera.trading.rpc.TradeRpcUtil.getSide(inUserTrade.getSide()));
-        org.marketcetera.trade.pnl.TradePnlRpcUtil.getProfitAndLoss(inUserTrade.getProfitAndLoss(),inProfitAndLossFactory,inUserFactory).ifPresent(value->userTrade.setProfitAndLoss(value));
-        org.marketcetera.trading.rpc.TradeRpcUtil.getOrderId(inUserTrade.getOrderId()).ifPresent(value->userTrade.setOrderId(value));
-        return java.util.Optional.of(userTrade);
+        UserTrade userTrade = inUserTradeFactory.create();
+        TradePnlRpcUtil.getTrade(inUserTrade.getTrade(),inTradeFactory).ifPresent(value->userTrade.setTrade(value));
+        AdminRpcUtil.getUser(inUserTrade.getUser(),inUserFactory).ifPresent(value->userTrade.setUser(value));
+        userTrade.setSide(TradeRpcUtil.getSide(inUserTrade.getSide()));
+        TradePnlRpcUtil.getProfitAndLoss(inUserTrade.getProfitAndLoss(),inProfitAndLossFactory,inUserFactory).ifPresent(value->userTrade.setProfitAndLoss(value));
+        TradeRpcUtil.getOrderId(inUserTrade.getOrderId()).ifPresent(value->userTrade.setOrderId(value));
+        return Optional.of(userTrade);
     }
 }

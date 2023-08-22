@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>cep</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0</version>
   </parent>
   <artifactId>cep-system</artifactId>
   <packaging>jar</packaging>
@@ -38,16 +38,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <!-- Configure Eclipse IDE metadata. -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
-        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -7,7 +7,6 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /* $License$ */
 
@@ -96,20 +95,12 @@ public interface UserService
     /**
      * Change the password of the given user to the given value.
      * 
-     * <p>Password values must be pre-hashed.
-     *
      * @param inUser a <code>User</code> value
-     * @param inOldPassword a <code>String</code> value
-     * @param inNewPassword a <code>String</code> value
+     * @param inOldRawPassword a <code>String</code> value
+     * @param inNewRawPassword a <code>String</code> value
      * @return a <code>User</code> value
      */
     User changeUserPassword(User inUser,
-                            String inOldPassword,
-                            String inNewPassword);
-    /**
-     * Get the password encoder to use.
-     *
-     * @return a <code>PasswordEncoder</code> value
-     */
-    PasswordEncoder getPasswordEncoder();
+                            String inOldRawPassword,
+                            String inNewRawPassword);
 }

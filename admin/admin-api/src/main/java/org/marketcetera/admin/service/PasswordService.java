@@ -14,15 +14,17 @@ public interface PasswordService
     /**
      * Get the hash of the given value.
      *
-     * @param inValue a <code>String</code> value
+     * @param inRawPassword a <code>String</code> value
      * @return a <code>String</code> value
      */
-    String getHash(String inValue);
+    String getHash(String inRawPassword);
     /**
-     * Get the hash of the given value.
+     * Indicates if the given raw password is equivalent to the given hashed value.
      *
-     * @param inValue a <code>char[][]</code> value
-     * @return a <code>String</code> value
+     * @param inRawPassword a <code>String</code> value
+     * @param inHashedPassword a <code>String</code> value
+     * @return a <code>boolean</code> value
      */
-    String getHash(char[]...inValues);
+    boolean matches(String inRawPassword,
+                    String inHashedPassword);
 }

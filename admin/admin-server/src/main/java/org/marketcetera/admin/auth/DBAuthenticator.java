@@ -1,13 +1,17 @@
 package org.marketcetera.admin.auth;
 
+import static org.marketcetera.admin.Messages.INVALID_PASSWORD;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.admin.Messages;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.IncompatibleComponentsException;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.persist.ValidationException;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -65,7 +69,7 @@ public class DBAuthenticator
     @Override
     public boolean shouldAllow(StatelessClientContext inContext,
                                String inUsername,
-                               char[] inPassword)
+                               char[] inRawPassword)
             throws I18NException
     {
         VersionInfo serverVersion = ApplicationVersion.getVersion();
@@ -95,7 +99,10 @@ public class DBAuthenticator
                                           inUsername);
             return false;
         }
-        u.validatePassword(inPassword);
+        if(!passwordService.matches(new String(inRawPassword),
+                                    u.getHashedPassword())) {
+            throw new ValidationException(INVALID_PASSWORD);
+        }
         return true;
     }
     /**
@@ -143,4 +150,9 @@ public class DBAuthenticator
      * indicates whether to enforce version compatibility or not
      */
     private boolean enforceVersionCompatibility = false;
+    /**
+     * provides access to password services
+     */
+    @Autowired
+    private PasswordService passwordService;
 }

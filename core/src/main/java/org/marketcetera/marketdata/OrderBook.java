@@ -214,6 +214,15 @@ public class OrderBook
                 mAskBook.clear();
             }
         } else {
+            if(lastChangeComplete && inEvent.getEventType().isSnapshot()) {
+                synchronized(mBidBook) {
+                    mBidBook.clear();
+                }
+                synchronized(mAskBook) {
+                    mAskBook.clear();
+                }
+            }
+            lastChangeComplete = inEvent.getEventType().isComplete();
             switch(inEvent.getAction()) {
                 case ADD :
                     eventToReturn = addEvent(inEvent);
@@ -641,6 +650,10 @@ public class OrderBook
             }
         }
     }
+    /**
+     * indicates if the last event received indicated that the change it was describing was complete (i.e. SNAPSHOT_FINAL or UPDATE_FINAL)
+     */
+    private boolean lastChangeComplete = true;
     /**
      * the instrument for this book
      */

@@ -623,6 +623,7 @@ public class FixAdminRpcService<SessionClazz>
                     instanceDataBuilder.setHostname(acceptorSessionAttributes.getHost());
                 }
                 instanceDataBuilder.setPort(acceptorSessionAttributes.getPort());
+                responseBuilder.setInstanceData(instanceDataBuilder.build());
                 FixAdminRpc.InstanceDataResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(FixAdminRpcService.this,
                                        "Returning {}",

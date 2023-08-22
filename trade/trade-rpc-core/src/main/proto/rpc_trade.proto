@@ -87,6 +87,23 @@ message RemoveTradeMessageListenerRequest {
 message RemoveTradeMessageListenerResponse {
 }
 
+message AddSuggestionListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message SuggestionListenerResponse {
+    Suggestion suggestion = 1;
+}
+
+message RemoveSuggestionListenerRequest {
+    string sessionId = 1;
+    string listenerId = 2;
+}
+
+message RemoveSuggestionListenerResponse {
+}
+
 message ResolveSymbolRequest {
     string sessionId = 1;
     string symbol = 2;
@@ -160,6 +177,14 @@ message ReadAvailableFixInitiatorSessionsResponse {
     repeated ActiveFixSession fixSession = 1;
 }
 
+message SendSuggestionRequest {
+    string sessionId = 1;
+    repeated Suggestion suggestion = 2;
+}
+
+message SendSuggestionResponse {
+}
+
 service TradeRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -180,4 +205,7 @@ service TradeRpcService {
     rpc getReports(GetReportsRequest) returns (GetReportsResponse);
     rpc getFills(GetFillsRequest) returns (GetFillsResponse);
     rpc getAverageFillPrices(GetAverageFillPricesRequest) returns (GetAverageFillPricesResponse);
+    rpc addSuggestionListener(AddSuggestionListenerRequest) returns (stream SuggestionListenerResponse);
+    rpc removeSuggestionListener(RemoveSuggestionListenerRequest) returns (RemoveSuggestionListenerResponse);
+    rpc sendSuggestion(SendSuggestionRequest) returns (SendSuggestionResponse);
 }

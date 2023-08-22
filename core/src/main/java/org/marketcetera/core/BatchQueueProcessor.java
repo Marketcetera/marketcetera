@@ -38,7 +38,7 @@ public abstract class BatchQueueProcessor<Clazz>
     /**
      * Create a new BatchQueueProcessor instance.
      *
-     * @param inThreadDescription a <code>String</code> value
+     * @param inThreadDescriptor a <code>String</code> value
      * @param inQueue a <code>BlockingQueue&lt;Clazz&gt;</code> value
      */
     public BatchQueueProcessor(String inThreadDescriptor,

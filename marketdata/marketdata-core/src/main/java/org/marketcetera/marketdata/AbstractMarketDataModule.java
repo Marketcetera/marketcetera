@@ -23,6 +23,7 @@ import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.AutowiredModule;
 import org.marketcetera.module.DataEmitter;
@@ -55,6 +56,7 @@ import com.google.common.collect.Maps;
  * <p>
  * Module Features
  * <table>
+ * <caption>Indicates the module features</caption>
  * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
  * <tr><th>Stops data flows</th><td>No</td></tr>
  * <tr><th>Start Operation</th><td>Starts the feed, logs into it.</td></tr>
@@ -350,7 +352,7 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
     /**
      * Get the feed value.
      *
-     * @return a <code>MarketDataFeed<T,C></code> value
+     * @return a <code>MarketDataFeed&lt;T,C&gt;</code> value
      */
     protected MarketDataFeed<T,C> getFeed()
     {
@@ -387,7 +389,13 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         for(MarketDataStatusBroadcaster marketDataStatusPublisher : marketDataStatusBroadcasters) {
             marketDataStatusPublisher.reportMarketDataStatus(status);
         }
+        marketDataService.reportMarketDataStatus(status);
     }
+    /**
+     * provides access to market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * optional market data status publishers
      */

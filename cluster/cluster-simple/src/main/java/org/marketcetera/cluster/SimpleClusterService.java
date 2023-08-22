@@ -21,6 +21,7 @@ import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.PlatformServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -39,6 +40,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class SimpleClusterService
         extends AbstractClusterService
         implements ClusterService

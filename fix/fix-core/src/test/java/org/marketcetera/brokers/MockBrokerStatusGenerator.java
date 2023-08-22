@@ -14,7 +14,7 @@ import org.marketcetera.trade.BrokerID;
 /* $License$ */
 
 /**
- * Generates test {@link BrokerStatus} values.
+ * Generates test {@link ActiveFixSession} values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

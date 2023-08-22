@@ -10,7 +10,7 @@ import static org.junit.Assert.fail;
  * <PRE>
  *  (new ExpectedTestFailure(OrderParsingException.class) {
  *    protected void execute() throws OrderParsingException {
- *       <... Code throwing exception goes here ... >
+ *       &lt;... Code throwing exception goes here ... &gt;
  *  }}).run();
  * </PRE>
  *
@@ -35,11 +35,15 @@ public abstract class ExpectedTestFailure
 
     /** Subclasses must override this method with an implementation that
      * throws their expected error
-     * @throws Throwable
+     * @throws Throwable if an error occurs
      */
     protected abstract void execute() throws Throwable;
 
-    /** Executes the code that was implemented in @link {execute()} method */
+    /** 
+     * Executes the code that was implemented in @link {execute()} method.
+     *
+     * @return a <code>Throwable</code> value
+     */
     public Throwable run()
     {
         try {

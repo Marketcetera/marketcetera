@@ -1,10 +1,15 @@
 package org.marketcetera.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -21,8 +26,6 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
@@ -49,6 +52,38 @@ public class PlatformServices
         SLF4JLoggerProxy.info(this,
                               "Starting {}",
                               getServiceName(getClass()));
+    }
+    public static String getFileChecksum(File inFile)
+            throws NoSuchAlgorithmException, IOException
+    {
+        return getFileChecksum(MessageDigest.getInstance("SHA-256"),
+                               inFile);
+    }
+    public static String getFileChecksum(MessageDigest inDigest,
+                                         File inFile)
+            throws IOException
+    {
+        //Get file input stream for reading the file content
+        FileInputStream fis = new FileInputStream(inFile);
+        //Create byte array to read data in chunks
+        byte[] byteArray = new byte[1024];
+        int bytesCount = 0; 
+        //Read file data and update in message digest
+        while ((bytesCount = fis.read(byteArray)) != -1) {
+            inDigest.update(byteArray, 0, bytesCount);
+        };
+        //close the stream; We don't need it now.
+        fis.close();
+        //Get the hash's bytes
+        byte[] bytes = inDigest.digest();
+        //This bytes[] has bytes in decimal format;
+        //Convert it to hexadecimal format
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i< bytes.length ;i++) {
+            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        //return complete hash
+        return sb.toString();
     }
     /**
      * Split the given value into its components where each component starts with a capital letter.
@@ -180,25 +215,6 @@ public class PlatformServices
                                inTarget);
     }
     /**
-     * Set the password encoder to use.
-     *
-     * @param inPasswordEncoder a <code>PasswordEncoder</code> value
-     */
-    public static void setPasswordEncoder(PasswordEncoder inPasswordEncoder)
-    {
-        Validate.notNull(inPasswordEncoder);
-        passwordEncoder = inPasswordEncoder;
-    }
-    /**
-     * Get the password encoder to use.
-     *
-     * @return a <code>PasswordEncoder</code> value
-     */
-    public static PasswordEncoder getPasswordEncoder()
-    {
-        return passwordEncoder;
-    }
-    /**
      * Get the hostname value.
      *
      * @return a <code>String</code> value
@@ -265,11 +281,10 @@ public class PlatformServices
      */
     public static final BigDecimal ONE_PENNY = new BigDecimal("0.01");
     /**
-     * password encoder to use for the platform
-     */
-    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    /**
      * hostname value
      */
     private static String hostname;
+    public static final CellStyle cellStyleRightAlign = new CellStyle(HorizontalAlign.right);
+    public static final CellStyle cellStyleLeftAlign = new CellStyle(HorizontalAlign.left);
+    public static final CellStyle cellStyleCenterAlign = new CellStyle(HorizontalAlign.center);
 }

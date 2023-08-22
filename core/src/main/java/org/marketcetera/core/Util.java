@@ -420,7 +420,7 @@ public class Util
             if(inSkip < 0) {
                 return 0;
             }
-            pos += inSkip;
+            pos += (int)inSkip;
             return inSkip;
         }
         /* (non-Javadoc)

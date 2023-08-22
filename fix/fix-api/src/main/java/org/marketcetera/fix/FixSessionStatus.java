@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.StringUtils;
+
 /* $License$ */
 
 /**
@@ -96,11 +98,36 @@ public enum FixSessionStatus
      */
     public String getHumanReadable()
     {
+        return humanReadableName;
+    }
+    /**
+     * Generate a human readable version of the value.
+     *
+     * @return a <code>String</code> value
+     */
+    private String generateHumanReadable()
+    {
         String name = name();
         name = name.toLowerCase();
         name = name.replaceAll("_"," ");
+        StringBuilder output = new StringBuilder();
+        for(String component : name.split(" ")) {
+            output.append(StringUtils.capitalize(component)).append(" ");
+        }
+        name = StringUtils.trim(output.toString());
         return name;
     }
+    /**
+     * Create a new FixSessionStatus instance.
+     */
+    private FixSessionStatus()
+    {
+        humanReadableName = generateHumanReadable();
+    }
+    /**
+     * stored human-readable version of the status
+     */
+    private final String humanReadableName;
     /**
      * contains the statuses that indicate if a session is started or not
      */

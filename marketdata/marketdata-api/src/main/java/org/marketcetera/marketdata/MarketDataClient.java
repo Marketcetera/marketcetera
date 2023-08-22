@@ -53,7 +53,7 @@ public interface MarketDataClient
     /**
      * Gets a subset of the most recent snapshot available of the given market data.
      *
-     * <p>Market data must be pre-requested via {@link #request(ClientContext, MarketDataRequest, boolean)}.
+     * <p>Market data must be pre-requested via {@link #request(MarketDataRequest, MarketDataListener)}.</p>
      *
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
@@ -87,4 +87,13 @@ public interface MarketDataClient
      * @return a <code>Set&lt;Capability&gt;</code> value
      */
     Set<Capability> getAvailableCapability();
+    /**
+     * Gets the active providers.
+     * 
+     * <p>Providers may or may not be connected at this time, these are the providers known
+     * to the system.</p>
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    Set<String> getProviders();
 }

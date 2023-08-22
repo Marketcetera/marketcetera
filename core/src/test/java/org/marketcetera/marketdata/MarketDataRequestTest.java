@@ -922,7 +922,7 @@ public class MarketDataRequestTest
     }
     /**
      * Tests {@link MarketDataRequestBuilder#withContent(String)}, {@link MarketDataRequestBuilder#withContent(String...)}, 
-     * {@link MarketDataRequestBuilder#withContent(Content...), and {@link MarketDataRequestBuilder#withContent(Collection)}.
+     * {@link MarketDataRequestBuilder#withContent(Content...)}, and {@link MarketDataRequestBuilder#withContent(Collection)}.
      *
      * @throws Exception if an unexpected error occurs
      */

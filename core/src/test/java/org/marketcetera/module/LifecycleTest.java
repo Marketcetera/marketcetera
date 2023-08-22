@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /* $License$ */
 /**
- * Tests Module provider and module lifecycle & information reporting.
+ * Tests Module provider and module lifecycle &amp; information reporting.
  *
  * @author anshul@marketcetera.com
  */

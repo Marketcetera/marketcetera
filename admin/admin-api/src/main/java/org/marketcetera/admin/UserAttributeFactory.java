@@ -16,7 +16,7 @@ public interface UserAttributeFactory
      *
      * @param inUser a <code>User</code> value
      * @param inType a <code>UserAttributeType</code> value
-     * @param inAttribute a <code>String<code> value
+     * @param inAttribute a <code>String</code> value
      * @return a <code>UserAttribute</code> value
      */
     UserAttribute create(User inUser,

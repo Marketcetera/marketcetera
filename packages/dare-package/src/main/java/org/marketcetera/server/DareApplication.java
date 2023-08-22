@@ -1,12 +1,12 @@
 package org.marketcetera.server;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ServerSession;
 
-import org.assertj.core.util.Lists;
 import org.marketcetera.admin.PermissionFactory;
 import org.marketcetera.admin.RoleFactory;
 import org.marketcetera.admin.UserAttributeFactory;
@@ -15,7 +15,10 @@ import org.marketcetera.admin.auth.DBAuthenticator;
 import org.marketcetera.admin.dao.PersistentPermissionFactory;
 import org.marketcetera.admin.dao.PersistentRoleFactory;
 import org.marketcetera.admin.dao.PersistentUserAttributeFactory;
+import org.marketcetera.admin.provisioning.ProvisioningAgent;
 import org.marketcetera.admin.rpc.AdminRpcService;
+import org.marketcetera.admin.service.BCryptPasswordService;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserAttributeService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.service.impl.UserAttributeServiceImpl;
@@ -23,12 +26,9 @@ import org.marketcetera.admin.service.impl.UserServiceImpl;
 import org.marketcetera.admin.user.PersistentUserFactory;
 import org.marketcetera.brokers.BrokerSelector;
 import org.marketcetera.brokers.service.FixSessionProvider;
-import org.marketcetera.client.rpc.server.TradeRpcService;
 import org.marketcetera.cluster.ClusterDataFactory;
 import org.marketcetera.cluster.SimpleClusterDataFactory;
-import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.rpc.ClusterRpcService;
-import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.XmlService;
 import org.marketcetera.dataflow.server.rpc.DataFlowRpcService;
 import org.marketcetera.eventbus.server.EsperEngine;
@@ -43,23 +43,32 @@ import org.marketcetera.fix.impl.SimpleServerFixSessionFactory;
 import org.marketcetera.fix.rpc.FixAdminRpcService;
 import org.marketcetera.fix.store.HibernateMessageStoreConfiguration;
 import org.marketcetera.marketdata.rpc.server.MarketDataRpcService;
+import org.marketcetera.marketdata.service.DirectMarketDataClient;
 import org.marketcetera.metrics.MetricServiceDbReporter;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.quickfix.QuickFIXSenderImpl;
 import org.marketcetera.rpc.server.RpcServer;
+import org.marketcetera.strategy.DirectStrategyClientFactory;
+import org.marketcetera.strategy.StrategyRpcServer;
+import org.marketcetera.strategy.StrategyService;
+import org.marketcetera.strategy.StrategyServiceImpl;
+import org.marketcetera.strategy.dao.PersistentStrategyInstanceFactory;
+import org.marketcetera.strategy.dao.PersistentStrategyMessageFactory;
 import org.marketcetera.symbol.IterativeSymbolResolver;
 import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BasicSelector;
 import org.marketcetera.trade.SimpleAverageFillPriceFactory;
+import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessagePersistenceConnector;
 import org.marketcetera.trade.event.connector.OrderConverterConnector;
 import org.marketcetera.trade.event.connector.OutgoingMessageCachingConnector;
 import org.marketcetera.trade.event.connector.OutgoingMessagePersistenceConnector;
+import org.marketcetera.trade.rpc.server.TradeRpcService;
 import org.marketcetera.trade.service.MessageOwnerService;
 import org.marketcetera.trade.service.impl.MessageOwnerServiceImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -76,6 +85,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.google.common.collect.Lists;
 
 import io.grpc.BindableService;
 import springfox.documentation.builders.PathSelectors;
@@ -127,6 +138,39 @@ public class DareApplication
                               org.marketcetera.core.Version.build_path);
     }
     /**
+     * Get the password service value.
+     *
+     * @return a <code>PasswordService</code> value
+     */
+    @Bean
+    public PasswordService getPasswordService()
+    {
+        return new BCryptPasswordService();
+    }
+    /**
+     * Get the strategy service bean.
+     *
+     * @return a <code>StrategyService</code> value
+     */
+    @Bean
+    public StrategyService getStrategyService()
+    {
+        // some bizarre something is making this be explicitly declared here even though it's a Component
+        return new StrategyServiceImpl();
+    }
+    /**
+     * Get the provisioning agent bean.
+     *
+     * @return a <code>ProvisioningAgent</code> value
+     */
+    @Bean
+    public ProvisioningAgent getProvisioningAgent()
+    {
+        ProvisioningAgent provisioningAgent = new ProvisioningAgent();
+        provisioningAgent.setProvisioningDirectory(provisioningDirectory);
+        return provisioningAgent;
+    }
+    /**
      * Get the XmlService value.
      *
      * @return an <code>XmlService</code> value
@@ -145,6 +189,57 @@ public class DareApplication
                               "Using the");
         xmlService.setContextPath(contextPathClassEntries);
         return xmlService;
+    }
+    /**
+     * Get the strategy client factory value.
+     *
+     * @return a <code>DirectStrategyClientFactory</code> value
+     */
+    @Bean
+    public DirectStrategyClientFactory getStrategyClientFactory()
+    {
+        DirectStrategyClientFactory strategyClientFactory = new DirectStrategyClientFactory();
+        return strategyClientFactory;
+    }
+    /**
+     * Get the market data client value.
+     *
+     * @return a <code>DirectMarketDataClient</code> value
+     */
+    @Bean
+    public DirectMarketDataClient getMarketDataClient()
+    {
+        return new DirectMarketDataClient();
+    }
+    /**
+     * Get the trade client value.
+     *
+     * @return a <code>DirectTradeClient</code> value
+     */
+    @Bean
+    public DirectTradeClient getTradeClient()
+    {
+        return new DirectTradeClient();
+    }
+    /**
+     * Get the strategy message factory value.
+     *
+     * @return a <code>PersistentStrategyMessageFactory</code> value
+     */
+    @Bean
+    public PersistentStrategyMessageFactory getStrategyMessageFactory()
+    {
+        return new PersistentStrategyMessageFactory();
+    }
+    /**
+     * Get the strategy instance factory value.
+     *
+     * @return a <code>StrategyInstanceFactory</code> value
+     */
+    @Bean
+    public PersistentStrategyInstanceFactory getStrategyInstanceFactory()
+    {
+        return new PersistentStrategyInstanceFactory();
     }
     /**
      * Get the average fill price factory value.
@@ -195,16 +290,6 @@ public class DareApplication
     public quickfix.MessageFactory getMessageFactory()
     {
         return new quickfix.DefaultMessageFactory();
-    }
-    /**
-     * Get the cluster service bean.
-     *
-     * @return a <code>ClusterService</code> value
-     */
-    @Bean
-    public ClusterService getClusterService()
-    {
-        return new SimpleClusterService();
     }
     /**
      * Get the cluster data factory bean.
@@ -320,6 +405,13 @@ public class DareApplication
         RpcServer rpcServer = new RpcServer();
         rpcServer.setHostname(serverHostname);
         rpcServer.setPort(rpcPort);
+        rpcServer.setUseSsl(useSsl);
+        if(useSsl) {
+            File publicKey = new File(publicKeyPath);
+            File privateKey = new File(privateKeyPath);
+            rpcServer.setPublicKey(publicKey);
+            rpcServer.setPrivateKey(privateKey);
+        }
         if(inServiceSpecs != null) {
             for(BindableService service : inServiceSpecs) {
                 rpcServer.getServerServiceDefinitions().add(service);
@@ -331,7 +423,7 @@ public class DareApplication
      * Get the admin RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return an <code>AdminRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -347,7 +439,7 @@ public class DareApplication
      * Get the Trade RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>TradeRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -360,10 +452,26 @@ public class DareApplication
         return tradeRpcService;
     }
     /**
+     * Get the Strategy RPC service.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     * @param inSessionManager a <code>SessionbManager&lt;ServerSession&gt;</code> value
+     * @return a <code>TradeRpcService&lt;ServerSession&gt;</code> value
+     */
+    @Bean
+    public StrategyRpcServer<ServerSession> getStrategyRpcService(@Autowired Authenticator inAuthenticator,
+                                                                  @Autowired SessionManager<ServerSession> inSessionManager)
+    {
+        StrategyRpcServer<ServerSession> strategyRpcServer = new StrategyRpcServer<>();
+        strategyRpcServer.setAuthenticator(inAuthenticator);
+        strategyRpcServer.setSessionManager(inSessionManager);
+        return strategyRpcServer;
+    }
+    /**
      * Get the Fix Admin RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>FixAdminRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -379,7 +487,7 @@ public class DareApplication
      * Get the Data Flow RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>DataFlowRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -395,7 +503,7 @@ public class DareApplication
      * Get the Market Data RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>MarketDataRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -411,7 +519,7 @@ public class DareApplication
      * Get the Cluster RPC service.
      *
      * @param inAuthenticator an <code>Authenticator</code> value
-     * @param inSessionManager&lt;ServerSession&gt;</code> value
+     * @param inSessionManager a <code>SessionManager&lt;ServerSession&gt;</code> value
      * @return a <code>ClusterRpcService&lt;ServerSession&gt;</code> value
      */
     @Bean
@@ -633,6 +741,21 @@ public class DareApplication
           Collections.emptyList());
     }
     /**
+     * indicates whether to use SSL or not
+     */
+    @Value("${metc.security.use.ssl:false}")
+    private boolean useSsl;
+    /**
+     * public key path for SSL cert
+     */
+    @Value("${metc.security.ssl.public.key.path:#{null}}")
+    private String publicKeyPath;
+    /**
+     * private key path for SSL cert
+     */
+    @Value("${metc.security.ssl.private.key.path:#{null}}")
+    private String privateKeyPath;
+    /**
      * web services port
      */
     @Value("${server.port}")
@@ -657,4 +780,9 @@ public class DareApplication
      */
     @Value("${metc.xml.context.path.classes}")
     private List<String> contextPathClasses;
+    /**
+     * provisioning directory base
+     */
+    @Value("${metc.provisioning.directory:./instances/provisioning}")
+    private String provisioningDirectory;
 }

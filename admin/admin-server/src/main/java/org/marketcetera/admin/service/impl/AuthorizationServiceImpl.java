@@ -29,6 +29,7 @@ import org.marketcetera.admin.dao.QPersistentRole;
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.provisioning.AdminConfiguration;
 import org.marketcetera.admin.service.AuthorizationService;
+import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.core.Pair;
@@ -362,7 +363,7 @@ public class AuthorizationServiceImpl
                     user.setActive(userDescriptor.getIsActive());
                     user.setDescription(userDescriptor.getDescription());
                     user.setName(userDescriptor.getName());
-                    user.setPassword(userDescriptor.getPassword().toCharArray());
+                    user.setHashedPassword(passwordService.getHash(userDescriptor.getPassword()));
                     user.setSuperuser(false);
                     userService.save(user);
                 } else {
@@ -875,6 +876,11 @@ public class AuthorizationServiceImpl
      */
     @Autowired(required=false)
     private AdminConfiguration adminConfiguration;
+    /**
+     * provides access to password services
+     */
+    @Autowired
+    private PasswordService passwordService;
     /**
      * length of time to cache user permissions in milliseconds
      */

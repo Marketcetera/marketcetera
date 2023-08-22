@@ -67,6 +67,14 @@ message RemoveMarketDataStatusListenerRequest {
 message RemoveMarketDataStatusListenerResponse {
 }
 
+message GetMarketDataProvidersRequest {
+    string sessionId = 1;
+}
+
+message GetMarketDataProvidersResponse {
+    repeated string provider = 1;
+}
+
 service MarketDataRpcService {
     rpc login(LoginRequest) returns (LoginResponse);
     rpc logout(LogoutRequest) returns (LogoutResponse);
@@ -77,4 +85,5 @@ service MarketDataRpcService {
     rpc getAvailableCapability(AvailableCapabilityRequest) returns (AvailableCapabilityResponse);
     rpc addMarketDataStatusListener(AddMarketDataStatusListenerRequest) returns (stream MarketDataStatusListenerResponse);
     rpc removeMarketDataStatusListener(RemoveMarketDataStatusListenerRequest) returns (RemoveMarketDataStatusListenerResponse);
+    rpc getMarketDataProviders(GetMarketDataProvidersRequest) returns (GetMarketDataProvidersResponse);
 }

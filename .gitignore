@@ -30,6 +30,7 @@ hs_err_pid*
 
 # Maven files
 target
+target-ide
 
 # Eclipse files
 .classpath
@@ -56,3 +57,6 @@ node_modules
 pnpmfile.js
 webpack.config.js
 webpack.generated.js
+
+# Mac OS Artifacts
+.DS_Store

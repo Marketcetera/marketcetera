@@ -20,7 +20,7 @@ public class LoggerStartupTest extends TestCase {
 
     /** This is a dummy test, mostly for visual checking of whether or not
      * the logger is initialized correctly.
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     public void testLogSomething() throws Exception {
         new ApplicationBase();

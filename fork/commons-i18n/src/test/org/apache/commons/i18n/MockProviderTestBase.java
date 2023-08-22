@@ -46,6 +46,8 @@ public abstract class MockProviderTestBase extends TestCase {
 
     /**
      * Add mock provider to <code>MessageManager</code>.
+     *
+     * @param providerId a <code>String</code> value
      */
     protected void addMockProvider(final String providerId) {
          //  Mock message provider that returns a string made up of the arguments passed to it.

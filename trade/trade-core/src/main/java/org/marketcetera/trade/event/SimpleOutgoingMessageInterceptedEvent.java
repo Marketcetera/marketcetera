@@ -3,7 +3,7 @@ package org.marketcetera.trade.event;
 /* $License$ */
 
 /**
- * Provides a POJO {@link OutgoingMessageIntercetedEvent}.
+ * Provides a POJO {@link OutgoingMessageInterceptedEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

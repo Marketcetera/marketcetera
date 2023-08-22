@@ -254,7 +254,7 @@ public class FIXMessageFactory {
     /**
      * Create an MDEntry group.
      *
-     * @param inMessageFactory a <code>FIXMessageFactory</code> value
+     * @param inMsgType a <code>String</code> value
      * @param inMdEntryType a <code>char</code> value
      * @return a <code>Group</code> value
      */
@@ -270,7 +270,7 @@ public class FIXMessageFactory {
      * Get the MDEntry groups from the given message.
      *
      * @param inMessage a <code>Message</code> value
-     * @return a <code>List&lt:Group&gt;</code> value
+     * @return a <code>List&lt;Group&gt;</code> value
      * @throws FieldNotFound if the groups could not be extracted
      */
     public List<Group> getMdEntriesFromMessage(Message inMessage)

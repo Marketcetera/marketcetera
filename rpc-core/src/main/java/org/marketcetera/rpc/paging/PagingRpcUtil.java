@@ -95,7 +95,7 @@ public abstract class PagingRpcUtil
     /**
      * Set the page response values on the given page response from the given RPC page response.
      *
-     * @param inPageRequest a ,code>PagingRpc.PageRequest</code> value
+     * @param inPageRequest a <code>PagingRpc.PageRequest</code> value
      * @param inPageResponse a <code>PagingRpc.PageResponse</code> value
      * @param inResults a <code>CollectionPageResponse&lt;Clazz&gt;</code> value
      */

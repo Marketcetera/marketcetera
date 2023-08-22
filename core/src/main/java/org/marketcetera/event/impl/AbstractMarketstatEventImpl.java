@@ -308,7 +308,7 @@ public abstract class AbstractMarketstatEventImpl
     /**
      * Create a new AbstractMarketstatEventImpl instance.
      *
-     * @param inMarketstatBean a <code>MarketstatBean</code> value
+     * @param inMarketstat a <code>MarketstatBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>

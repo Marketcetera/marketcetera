@@ -145,7 +145,7 @@ public abstract class DepthOfBookEventBuilder
     /**
      * Get the bids value.
      *
-     * @return a <code>List<BidEvent></code> value
+     * @return a <code>List&lt;BidEvent&gt;</code> value
      */
     protected final List<BidEvent> getBids()
     {
@@ -154,7 +154,7 @@ public abstract class DepthOfBookEventBuilder
     /**
      * Get the asks value.
      *
-     * @return a <code>List<AskEvent></code> value
+     * @return a <code>List&lt;AskEvent&gt;</code> value
      */
     protected final List<AskEvent> getAsks()
     {

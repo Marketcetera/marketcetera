@@ -58,7 +58,7 @@ public class EsperModuleTest extends CEPTestBase {
 
     /**
      * We have the following data flow:
-     * CopierModule --> CEP --> Sink
+     * CopierModule --&gt; CEP --&gt; Sink
      * Feed 3 events into copier (which just re-emits it), and then test that it goes through to the Sink via Esper
      *
      * @throws Exception if there were unexpected errors.

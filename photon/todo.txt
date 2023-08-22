@@ -1,0 +1,79 @@
+* New Features *
+================
+- positions view
+- suggestions view
+- work on blockchains MDA for market data views
+- fix sessions target/sender seq num not updating
+- order suggestions in order ticket
+- need add help menu
+- need about menu with attributions and copyright
+- add cluster view
+- add view metrics module (with rpc, etc)
+- reports needs add report action
+- configurable way to set number of decimals to display for all types
+- remove style service as a bad idea
+- convert fix session panes to use inner classes
+- traderAdmin should have view fix sessions permission
+- expand FIX wizard to allow specification of multiple host/port combinations for failover?
+-- either that or need to do something that allows freeform settings to be added instead of just the normal ones
+- enforce patterns on fix session attributes in fix session wizard
+- add new permission for activate/deactivate users and use them in UserView context menu
+- create common dialog/confirmation pattern for context menus in PhotonServices and use for all relevant context menu items
+- add ActivateUser to AdminClient and use in UserView context menu
+- window onClose not fired on app shutdown so nothing gets saved - can't rely on onClose to save important view info
+- probably need to handle DELETE events in market data list view
+- add chart to market data detail view
+
+- if md client goes offline, mark all views as disabled
+- md client comes back online, resubmit md requests
+
+* Bugs *
+========
+- market data client returns no available capabilities
+- broker algos in order ticket
+- custom fields in order ticket
+- transfer text to order in order ticket
+- peg to midpoint in order ticket
+- order ticket not formatted with last know values
+- replace order ticket values not filled out
+- menus are not fully recursive: only go to top level
+- incorporate session id validator in fix session wizard session identity page
+- failed fix session actions return "UNKNOWN" instead of a useful error message
+- defining a FIX session w/o a heartbeatint causes all kinds of havoc on client and server
+- update fix session adds new session instead of updating old one
+- add fix session shows empty session name in the update message
+- check permissions for add FIX session
+- can't delete user with supervisor permissions
+- can't delete user with roles
+- need to sort out password hashing/sending/authenticating between client and server
+- adminClient requires old password when changing password, but that requires keeping it around, which is a security issue. remove the old password parameter from the call.
+- PhotonServices.successStyle needs to match initial style, instead adds a light boundary
+- deactive user causes stale row error
+- add check to add/update user to see if the username is already in use
+- need to add permissions to roles add or update
+- changing permissions doesn't work in adding/updating permissions
+- add admin views
+-- supervisor permissions
+
+*****************
+* strategy view *
+*****************
+- reverify strategy before starting
+- how to identify the strategy instance for events emitted through the strategy client? maybe create a special kind of client that knows the strategy instance? otherwise, we run the risk of a strategy impersonating another strategy.
+- cancel big uploads
+- run on different cluster members? report strategy status on all cluster members
+- compare meta data on activate or discard?
+- run multiple versions of an uploaded stratergy w/o having to upload it again (duplicate from strategy context menu?)
+- nonce should not be in the strategy instance - pass it as a parameter to the new strategy instance and it can be stored adjacently
+- combine upload progress bar and status, perhaps using a VBox as the cell type
+- hash should not be returned to the client as this is a security risk. someone could calculate a hash-collision for a jar and push that one up instead?
+- remove hash from FileUploadMetaData
+- add type to FileUploadMetaData and remove hardcoded type in StrategyRpcServer
+- move verification from StrategyRPCServer to StrategyServiceImpl
+- add attribute to strategy instance:
+-- auto start
+
+x merge 1102 to 4.1.x
+- update build instructions
+x make 4.1.x the main branch
+

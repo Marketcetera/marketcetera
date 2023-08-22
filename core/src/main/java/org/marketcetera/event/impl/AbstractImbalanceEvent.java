@@ -262,7 +262,7 @@ public abstract class AbstractImbalanceEvent
     /**
      * Create a new AbstractImbalanceEventImpl instance.
      *
-     * @param inImbalanceBean a <code>ImbalanceBean</code> value
+     * @param inImbalance an <code>ImbalanceBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>

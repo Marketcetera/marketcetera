@@ -1,1 +1,0 @@
-alter table fix_sessions add column mapped_broker_id character varying(255);

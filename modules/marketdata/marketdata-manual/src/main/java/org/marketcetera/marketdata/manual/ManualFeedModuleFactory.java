@@ -1,8 +1,15 @@
 package org.marketcetera.marketdata.manual;
 
+import javax.annotation.PostConstruct;
+
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.MarketDataStatus;
+import org.marketcetera.marketdata.service.MarketDataService;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /* $License$ */
 
@@ -11,6 +18,7 @@ import org.marketcetera.module.ModuleURN;
  * <p>
  * The factory has the following characteristics.
  * <table>
+ * <caption>Manual Feed Module Capabilities</caption>
  * <tr><th>Provider URN:</th><td><code>metc:mdata:manual</code></td></tr>
  * <tr><th>Cardinality:</th><td>Singleton</td></tr>
  * <tr><th>Instance URN:</th><td><code>metc:mdata:manual:single</code></td></tr>
@@ -24,6 +32,7 @@ import org.marketcetera.module.ModuleURN;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class ManualFeedModuleFactory
         extends ModuleFactory
 {
@@ -46,6 +55,30 @@ public class ManualFeedModuleFactory
     {
         return new ManualFeedModule(INSTANCE_URN);
     }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        marketDataService.reportMarketDataStatus(new MarketDataStatus() {
+            @Override
+            public FeedStatus getFeedStatus()
+            {
+                return FeedStatus.OFFLINE;
+            }
+            @Override
+            public String getProvider()
+            {
+                return IDENTIFIER;
+            }}
+        );
+    }
+    /**
+     * providers market data services
+     */
+    @Autowired
+    private MarketDataService marketDataService;
     /**
      * market data provider identifier
      */

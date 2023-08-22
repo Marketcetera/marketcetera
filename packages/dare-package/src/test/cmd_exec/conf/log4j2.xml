@@ -63,6 +63,12 @@
       <AppenderRef ref="RESTORE"/>
       <AppenderRef ref="FILE"/>
     </logger>
+    <logger name="quickfixj.msg.incoming" level="info" additivity="false">
+      <AppenderRef ref="FIX-INCOMING"/>
+    </logger>
+    <logger name="quickfixj.msg.outgoing" level="info" additivity="false">
+      <AppenderRef ref="FIX-OUTGOING"/>
+    </logger>
     <logger name="metc.brokers" level="info" additivity="false">
       <AppenderRef ref="BROKERS"/>
       <AppenderRef ref="FILE"/>
@@ -84,46 +90,8 @@
     </logger>
     <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine.HEARTBEATS" level="error"/>
     <logger name="org.marketcetera.dare.DeployAnywhereRoutingEngine.TEST_REQUESTS" level="error"/>
-    <logger name="org.marketcetera.ors.info" level="error"/>
-    <!-- Active MQ -->
-    <logger name="org.marketcetera.ors.info" level="error"/>
-    <logger name="org.apache.activemq.transport" level="error"/>
-    <logger name="org.apache.activemq.broker.jmx.ManagementContext" level="INFO"/>
     <!-- provides a nicely printed log of the messages if set to debug-->
     <logger name="fix.prettyprint" level="debug"/>
     <logger name="quickfixj.event" level="info"/>
-    <logger name="display.quickfix.mina.initiator.IoSessionInitiator" level="info"/>
-    <logger name="quickfixj.msg.incoming" level="info" additivity="false">
-      <AppenderRef ref="FIX-INCOMING"/>
-    </logger>
-    <logger name="quickfixj.msg.outgoing" level="info" additivity="false">
-      <AppenderRef ref="FIX-OUTGOING"/>
-    </logger>
-    <!--Hibernate.-->
-    <logger name="org.hibernate" level="ERROR"/>
-    <!--SQL DDL Statements.-->
-    <logger name="org.hibernate.tool.hbm2dll" level="ERROR"/>
-    <!--SQL DML statements.-->
-    <logger name="org.hibernate.SQL" level="ERROR"/>
-    <!--JDBC parameters.-->
-    <logger name="org.hibernate.type" level="ERROR"/>
-    <!--Entities (max 20) associated with session at flush time.-->
-    <logger name="org.hibernate.pretty" level="ERROR"/>
-    <!--JDBC resource acquisition.-->
-    <logger name="org.hibernate.jdbc" level="ERROR"/>
-    <!--Transaction related activity.-->
-    <logger name="org.hibernate.transaction" level="ERROR"/>
-    <!--Cache related activity.-->
-    <logger name="org.hibernate.cache" level="ERROR"/>
-    <!--Spring.-->
-    <logger name="org.springframework" level="WARN"/>
-    <!--Spring-JMS.-->
-    <logger name="org.springframework.jms.listener" level="WARN"/>
-    <!--c3p0 Connection Pool.-->
-    <logger name="com.mchange" level="ERROR"/>
-    <!--CXF.-->
-    <logger name="org.apache.cxf" level="ERROR"/>
-    <!--Jetty.-->
-    <logger name="org.mortbay" level="ERROR"/>
   </Loggers>
 </Configuration>

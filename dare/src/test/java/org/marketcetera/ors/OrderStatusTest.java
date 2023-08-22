@@ -69,7 +69,7 @@ public class OrderStatusTest
         order1.setPrice(order1Price);
         order1.setQuantity(order1Qty);
         order1.setSide(Side.Buy);
-        client.sendOrder(order1);
+        tradeClient.sendOrder(order1);
         quickfix.Message receivedOrder1 = waitForAndVerifySenderMessage(sender1,
                                                                         quickfix.field.MsgType.ORDER_SINGLE);
         // send a pending new
@@ -104,7 +104,7 @@ public class OrderStatusTest
                           OrderStatus.New);
         // replace this order
         OrderReplace replace1 = Factory.getInstance().createOrderReplace((ExecutionReport)waitForClientReport());
-        client.sendOrder(replace1);
+        tradeClient.sendOrder(replace1);
         quickfix.Message receivedReplace1 = waitForAndVerifySenderMessage(sender1,
                                                                           quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST);
         verifyOpenOrders(Sets.newHashSet(order1.getOrderID()));
@@ -141,7 +141,7 @@ public class OrderStatusTest
                            OrderStatus.Replaced);
          // replace again
          OrderReplace replace2 = Factory.getInstance().createOrderReplace((ExecutionReport)waitForClientReport());
-         client.sendOrder(replace2);
+         tradeClient.sendOrder(replace2);
          quickfix.Message receivedReplace2 = waitForAndVerifySenderMessage(sender1,
                                                                            quickfix.field.MsgType.ORDER_CANCEL_REPLACE_REQUEST);
          verifyOpenOrders(Sets.newHashSet(replace1.getOrderID()));
@@ -208,7 +208,7 @@ public class OrderStatusTest
          order2.setPrice(order2Price);
          order2.setQuantity(order2Qty);
          order2.setSide(Side.Buy);
-         client.sendOrder(order2);
+         tradeClient.sendOrder(order2);
          quickfix.Message receivedOrder2 = waitForAndVerifySenderMessage(sender1,
                                                                          quickfix.field.MsgType.ORDER_SINGLE);
          // send a pending new

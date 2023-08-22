@@ -2,7 +2,6 @@ package org.marketcetera.client.utils;
 
 import java.util.Date;
 
-import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.utils.OrderHistoryManager;
@@ -18,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * to look for order history.
  * 
  * <p>This class will receive new reports on its own - it is not necessary nor is it permitted to manually
- * {@link #add(ReportBase) add reports}.
+ * {@link #add(TradeMessage) add reports}.
  * 
  * <p>Note that there are significant performance and resource implications when using this class.
  * Depending on historical order volume, this class may be required to process thousands or millions

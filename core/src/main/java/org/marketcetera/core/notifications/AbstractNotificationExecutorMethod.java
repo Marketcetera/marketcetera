@@ -42,7 +42,7 @@ public abstract class AbstractNotificationExecutorMethod
     /**
      * Sets the maximumThreshold value.
      *
-     * @param an <code>INotification.Severity</code> value
+     * @param inMaximumThreshold an <code>INotification.Severity</code> value
      */
     public void setMaximumThreshold(INotification.Severity inMaximumThreshold)
     {
@@ -60,7 +60,7 @@ public abstract class AbstractNotificationExecutorMethod
     /**
      * Sets the minimum threshold value.
      *
-     * @param an <code>INotification.Severity</code> value
+     * @param inMinimumThreshold an <code>INotification.Severity</code> value
      */
     public void setMinimumThreshold(INotification.Severity inMinimumThreshold)
     {
