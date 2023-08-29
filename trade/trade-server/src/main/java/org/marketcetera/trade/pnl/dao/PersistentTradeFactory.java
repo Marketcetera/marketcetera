@@ -3,10 +3,6 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
-import org.marketcetera.core.Preserve;
-import org.marketcetera.trade.pnl.Trade;
-import org.marketcetera.trade.pnl.TradeFactory;
-
 /* $License$ */
 
 /**
@@ -16,29 +12,28 @@ import org.marketcetera.trade.pnl.TradeFactory;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public class PersistentTradeFactory
-        implements TradeFactory
+        implements org.marketcetera.trade.pnl.TradeFactory
 {
     /**
-     * Create a new <code>PersistentTrade</code> instance.
+     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentTrade</code> instance.
      *
-     * @return a <code>PersistentTrade</code> value
+     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentTrade</code> value
      */
     @Override
-    public PersistentTrade create()
+    public org.marketcetera.trade.pnl.dao.PersistentTrade create()
     {
-        return new PersistentTrade();
+        return new org.marketcetera.trade.pnl.dao.PersistentTrade();
     }
     /**
-     * Create a new <code>PersistentTrade</code> instance from the given object.
+     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentTrade</code> instance from the given object.
      *
-     * @param inTrade a <code>Trade</code> value
-     * @return a <code>PersistentTrade</code> value
+     * @param inTrade an <code>org.marketcetera.trade.pnl.dao.PersistentTrade</code> value
+     * @return an <code>org.marketcetera.trade.pnl.dao.PersistentTrade</code> value
      */
     @Override
-    public PersistentTrade create(Trade inTrade)
+    public org.marketcetera.trade.pnl.dao.PersistentTrade create(org.marketcetera.trade.pnl.Trade inPersistentTrade)
     {
-        return new PersistentTrade(inTrade);
+        return new org.marketcetera.trade.pnl.dao.PersistentTrade(inPersistentTrade);
     }
 }

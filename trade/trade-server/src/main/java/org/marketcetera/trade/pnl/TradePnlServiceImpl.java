@@ -3,32 +3,6 @@
 //
 package org.marketcetera.trade.pnl;
 
-import javax.annotation.PostConstruct;
-
-import org.marketcetera.admin.service.UserService;
-import org.marketcetera.admin.user.PersistentUser;
-import org.marketcetera.core.PlatformServices;
-import org.marketcetera.core.Preserve;
-import org.marketcetera.eventbus.EventBusService;
-import org.marketcetera.persist.CollectionPageResponse;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.UserID;
-import org.marketcetera.trade.pnl.dao.CurrentPositionDao;
-import org.marketcetera.trade.pnl.dao.ProfitAndLossDao;
-import org.marketcetera.trade.pnl.dao.QPersistentCurrentPosition;
-import org.marketcetera.trade.pnl.event.PositionChangedEvent;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.eventbus.Subscribe;
-
 /* $License$ */
 
 /**
@@ -38,91 +12,57 @@ import com.google.common.eventbus.Subscribe;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
-@Component
+@org.springframework.stereotype.Component
 public class TradePnlServiceImpl
-        implements TradePnlService
+        implements org.marketcetera.trade.pnl.TradePnlService
 {
     /**
      * Requests positions for a user.
      *
-     * @param inUserID a <code>UserID</code> value
-     * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;CurrentPosition&gt;</code> value
+     * @param inUserId an <code>org.marketcetera.trade.UserID</code> value
+     * @param innull an <code>org.marketcetera.persist.PageRequest</code> value
+     * @returns an <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
      */
     @Override
-    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-    public CollectionPageResponse<CurrentPosition> getCurrentPositions(UserID inUserID,
-                                                                       org.marketcetera.persist.PageRequest inPageRequest)
+    @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
+    public org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.CurrentPosition> getCurrentPositions(org.marketcetera.trade.UserID inUserId,org.marketcetera.persist.PageRequest innull)
     {
-        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                           QPersistentCurrentPosition.persistentCurrentPosition.symbol.getMetadata().getName()));
-        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
-                                              inPageRequest.getPageSize(),
-                                              sort);
-        PersistentUser user = (PersistentUser)userService.findByUserId(inUserID);
-        if(user == null) {
-            throw new IllegalArgumentException("No user for user id '" + inUserID + "'");
-        }
-        Page<CurrentPosition> pageResponse = currentPositionDao.findByUser(user,
-                                                                           pageRequest);
-        return new CollectionPageResponse<>(pageResponse);
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Requests profit and loss for a user and an instrument.
      *
-     * @param inUserID a <code>UserID</code> value
-     * @param inInstrument a <code>Instrument</code> value
-     * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;ProfitAndLoss&gt;</code> value
+     * @param inUserId an <code>org.marketcetera.trade.UserID</code> value
+     * @param inInstrument an <code>org.marketcetera.trade.Instrument</code> value
+     * @param innull an <code>org.marketcetera.persist.PageRequest</code> value
+     * @returns an <code>org.marketcetera.trade.pnl.ProfitAndLoss</code> value
      */
     @Override
-    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-    public CollectionPageResponse<ProfitAndLoss> getProfitAndLoss(UserID inUserID,
-                                                                  Instrument inInstrument,
-                                                                  org.marketcetera.persist.PageRequest inPageRequest)
+    @org.springframework.transaction.annotation.Transactional(readOnly=true,propagation=org.springframework.transaction.annotation.Propagation.REQUIRED)
+    public org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.ProfitAndLoss> getProfitAndLoss(org.marketcetera.trade.UserID inUserId,org.marketcetera.trade.Instrument inInstrument,org.marketcetera.persist.PageRequest innull)
     {
         throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Accept incoming PositionChangedEvent values.
-     *
-     * @param inPositionChangedEvent a <code>PositionChangedEvent</code> value
      */
-    @Subscribe
-    public void accept(PositionChangedEvent inPositionChangedEvent)
+    @com.google.common.eventbus.Subscribe
+    public void accept(org.marketcetera.trade.pnl.event.PositionChangedEvent inPositionChangedEvent)
     {
         throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Validate and start the object.
      */
-    @PostConstruct
+    @javax.annotation.PostConstruct
     public void start()
     {
-        SLF4JLoggerProxy.info(this,
-                              "Starting {}",
-                              PlatformServices.getServiceName(getClass()));
+        org.marketcetera.util.log.SLF4JLoggerProxy.info(this,"Starting {}",org.marketcetera.core.PlatformServices.getServiceName(getClass()));
         eventBusService.register(this);
     }
     /**
      * provides access to event services
      */
-    @Autowired
-    private EventBusService eventBusService;
-    /**
-     * provides access to user services
-     */
-    @Autowired
-    private UserService userService;
-    /**
-     * provides data store access to current positions
-     */
-    @Autowired
-    private CurrentPositionDao currentPositionDao;
-    /**
-     * provides data store access to profit and loss values
-     */
-    @Autowired
-    private ProfitAndLossDao profitAndLossDao;
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.marketcetera.eventbus.EventBusService eventBusService;
 }

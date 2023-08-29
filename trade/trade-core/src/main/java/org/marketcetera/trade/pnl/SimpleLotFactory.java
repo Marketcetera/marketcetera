@@ -3,8 +3,6 @@
 //
 package org.marketcetera.trade.pnl;
 
-import org.marketcetera.core.Preserve;
-
 /* $License$ */
 
 /**
@@ -14,29 +12,28 @@ import org.marketcetera.core.Preserve;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public class SimpleLotFactory
-        implements LotFactory
+        implements org.marketcetera.trade.pnl.LotFactory
 {
     /**
-     * Create a new <code>SimpleLot</code> instance.
+     * Create a new <code>org.marketcetera.trade.pnl.SimpleLot</code> instance.
      *
-     * @return a <code>SimpleLot</code> value
+     * @return a <code>org.marketcetera.trade.pnl.SimpleLot</code> value
      */
     @Override
-    public SimpleLot create()
+    public org.marketcetera.trade.pnl.SimpleLot create()
     {
-        return new SimpleLot();
+        return new org.marketcetera.trade.pnl.SimpleLot();
     }
     /**
-     * Create a new <code>SimpleLot</code> instance from the given object.
+     * Create a new <code>org.marketcetera.trade.pnl.SimpleLot</code> instance from the given object.
      *
-     * @param inLot a <code>SimpleLot</code> value
-     * @return a <code>SimpleLot</code> value
+     * @param inLot an <code>org.marketcetera.trade.pnl.SimpleLot</code> value
+     * @return an <code>org.marketcetera.trade.pnl.SimpleLot</code> value
      */
     @Override
-    public SimpleLot create(Lot inLot)
+    public org.marketcetera.trade.pnl.SimpleLot create(org.marketcetera.trade.pnl.Lot inSimpleLot)
     {
-        return new SimpleLot(inLot);
+        return new org.marketcetera.trade.pnl.SimpleLot(inSimpleLot);
     }
 }

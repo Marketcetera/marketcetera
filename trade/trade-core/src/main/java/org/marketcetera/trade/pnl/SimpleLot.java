@@ -39,7 +39,7 @@ public class SimpleLot
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -49,7 +49,7 @@ public class SimpleLot
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)

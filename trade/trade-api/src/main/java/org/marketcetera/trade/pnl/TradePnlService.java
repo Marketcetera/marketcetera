@@ -3,12 +3,6 @@
 //
 package org.marketcetera.trade.pnl;
 
-import org.marketcetera.core.Preserve;
-import org.marketcetera.persist.CollectionPageResponse;
-import org.marketcetera.persist.PageRequest;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.UserID;
-
 /* $License$ */
 
 /**
@@ -18,27 +12,23 @@ import org.marketcetera.trade.UserID;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public interface TradePnlService
 {
     /**
      * Requests positions for a user.
      *
-     * @param inUserID a <code>UserID</code> value
-     * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;CurrentPosition&gt;</code> value
+     * @param inUserId an <code>org.marketcetera.trade.UserID</code> value
+     * @param innull an <code>org.marketcetera.persist.PageRequest</code> value
+     * @returns an <code>org.marketcetera.trade.pnl.CurrentPosition</code> value
      */
-    CollectionPageResponse<CurrentPosition> getCurrentPositions(UserID inUserID,
-                                                                PageRequest inPageRequest);
+    org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.CurrentPosition> getCurrentPositions(org.marketcetera.trade.UserID inUserId,org.marketcetera.persist.PageRequest innull);
     /**
      * Requests profit and loss for a user and an instrument.
      *
-     * @param inUserID a <code>UserID</code> value
-     * @param inInstrument a <code>Instrument</code> value
-     * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>CollectionPageResponse&lt;ProfitAndLoss&gt;</code> value
+     * @param inUserId an <code>org.marketcetera.trade.UserID</code> value
+     * @param inInstrument an <code>org.marketcetera.trade.Instrument</code> value
+     * @param innull an <code>org.marketcetera.persist.PageRequest</code> value
+     * @returns an <code>org.marketcetera.trade.pnl.ProfitAndLoss</code> value
      */
-    CollectionPageResponse<ProfitAndLoss> getProfitAndLoss(UserID inUserID,
-                                                           Instrument inInstrument,
-                                                           PageRequest inPageRequest);
+    org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.ProfitAndLoss> getProfitAndLoss(org.marketcetera.trade.UserID inUserId,org.marketcetera.trade.Instrument inInstrument,org.marketcetera.persist.PageRequest innull);
 }

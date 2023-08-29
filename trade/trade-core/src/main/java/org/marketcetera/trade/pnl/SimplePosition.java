@@ -37,7 +37,7 @@ public class SimplePosition
     /**
      * Get the instrument value.
      *
-     * @return a <code>org.marketcetera.trade.Instrument</code> value
+     * @return an <code>org.marketcetera.trade.Instrument</code> value
      */
     @Override
     public org.marketcetera.trade.Instrument getInstrument()
@@ -47,7 +47,7 @@ public class SimplePosition
     /**
      * Set the instrument value.
      *
-     * @param inInstrument a <code>org.marketcetera.trade.Instrument</code> value
+     * @param inInstrument an <code>org.marketcetera.trade.Instrument</code> value
      */
     @Override
     public void setInstrument(org.marketcetera.trade.Instrument inInstrument)
@@ -57,7 +57,7 @@ public class SimplePosition
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -67,7 +67,7 @@ public class SimplePosition
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)

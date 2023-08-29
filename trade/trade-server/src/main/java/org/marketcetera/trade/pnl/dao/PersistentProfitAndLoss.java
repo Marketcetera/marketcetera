@@ -13,10 +13,10 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="ProfitAndLoss")
-@javax.persistence.Table(name="metc_profit_and_loss")
+@javax.persistence.Table(name="profit_and_loss")
 public class PersistentProfitAndLoss
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.ProfitAndLoss
+        implements org.marketcetera.trade.pnl.ProfitAndLoss,org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser
 {
     /**
      * Create a new PersistentProfitAndLoss instance.
@@ -73,7 +73,7 @@ public class PersistentProfitAndLoss
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -83,7 +83,7 @@ public class PersistentProfitAndLoss
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
@@ -228,27 +228,27 @@ public class PersistentProfitAndLoss
      * user which owns lot
      */
     @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="user_id",nullable=false)
+    @javax.persistence.JoinColumn(name="user_id",nullable=true)
     private org.marketcetera.admin.user.PersistentUser user;
     /**
      * realized gain value
      */
-    @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal realizedGain = java.math.BigDecimal.ZERO;
     /**
      * unrealized gain value
      */
-    @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
     /**
      * basis price value
      */
-    @javax.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @javax.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal basisPrice = java.math.BigDecimal.ZERO;
     /**
      * position as a result of this transaction
      */
-    @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = -527699615L;
 }

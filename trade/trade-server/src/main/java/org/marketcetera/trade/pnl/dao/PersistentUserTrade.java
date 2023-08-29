@@ -6,17 +6,17 @@ package org.marketcetera.trade.pnl.dao;
 /* $License$ */
 
 /**
- * Provides a user-centric view of a {@link org.marketcetera.trade.pnl.UserTrade}.
+ * Provides a user-centric view of a {@link Trade}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @javax.persistence.Entity(name="UserTrade")
-@javax.persistence.Table(name="metc_user_trades")
+@javax.persistence.Table(name="user_trades")
 public class PersistentUserTrade
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.UserTrade
+        implements org.marketcetera.trade.pnl.UserTrade,org.marketcetera.trade.pnl.HasTrade,org.marketcetera.trade.pnl.HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser
 {
     /**
      * Create a new PersistentUserTrade instance.
@@ -58,7 +58,7 @@ public class PersistentUserTrade
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -68,7 +68,7 @@ public class PersistentUserTrade
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
@@ -78,7 +78,7 @@ public class PersistentUserTrade
     /**
      * Get the side value.
      *
-     * @return a <code>org.marketcetera.trade.Side</code> value
+     * @return an <code>org.marketcetera.trade.Side</code> value
      */
     @Override
     public org.marketcetera.trade.Side getSide()
@@ -88,7 +88,7 @@ public class PersistentUserTrade
     /**
      * Set the side value.
      *
-     * @param inSide a <code>org.marketcetera.trade.Side</code> value
+     * @param inSide an <code>org.marketcetera.trade.Side</code> value
      */
     @Override
     public void setSide(org.marketcetera.trade.Side inSide)
@@ -118,7 +118,7 @@ public class PersistentUserTrade
     /**
      * Get the orderId value.
      *
-     * @return a <code>org.marketcetera.trade.OrderID</code> value
+     * @return an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public org.marketcetera.trade.OrderID getOrderId()
@@ -128,7 +128,7 @@ public class PersistentUserTrade
     /**
      * Set the orderId value.
      *
-     * @param inOrderId a <code>org.marketcetera.trade.OrderID</code> value
+     * @param inOrderId an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public void setOrderId(org.marketcetera.trade.OrderID inOrderId)
@@ -154,29 +154,29 @@ public class PersistentUserTrade
      * underlying trade value
      */
     @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="trade_id",nullable=false)
+    @javax.persistence.JoinColumn(name="trade_id",nullable=true)
     private PersistentTrade trade;
     /**
      * user which owns lot
      */
     @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="user_id",nullable=false)
+    @javax.persistence.JoinColumn(name="user_id",nullable=true)
     private org.marketcetera.admin.user.PersistentUser user;
     /**
      * side of this trade
      */
-    @javax.persistence.Column(name="side",nullable=false)
+    @javax.persistence.Column(name="side",nullable=false,unique=false)
     private org.marketcetera.trade.Side side;
     /**
      * profit and loss data for this trade
      */
     @javax.persistence.OneToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="pnl_id",nullable=false)
+    @javax.persistence.JoinColumn(name="pnl_id",nullable=true)
     private PersistentProfitAndLoss profitAndLoss;
     /**
      * order ID for this trade
      */
-    @javax.persistence.Column(name="order_id",nullable=false)
+    @javax.persistence.Column(name="order_id",nullable=false,unique=false)
     private org.marketcetera.trade.OrderID orderId;
     private static final long serialVersionUID = 2006431268L;
 }

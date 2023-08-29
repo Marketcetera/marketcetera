@@ -18,13 +18,13 @@ public interface Trade
     /**
      * Get the executionId value.
      *
-     * @return a <code>org.marketcetera.trade.OrderID</code> value
+     * @return an <code>org.marketcetera.trade.OrderID</code> value
      */
     org.marketcetera.trade.OrderID getExecutionId();
     /**
      * Set the executionId value.
      *
-     * @param inExecutionId a <code>org.marketcetera.trade.OrderID</code> value
+     * @param inExecutionId an <code>org.marketcetera.trade.OrderID</code> value
      */
     void setExecutionId(org.marketcetera.trade.OrderID inExecutionId);
     /**

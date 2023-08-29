@@ -3,12 +3,6 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
-import org.marketcetera.admin.user.PersistentUser;
-import org.marketcetera.core.Preserve;
-import org.marketcetera.trade.pnl.CurrentPosition;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 /* $License$ */
 
 /**
@@ -18,17 +12,7 @@ import org.springframework.data.domain.Pageable;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public interface CurrentPositionDao
         extends org.springframework.data.jpa.repository.JpaRepository<PersistentCurrentPosition,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentCurrentPosition>
 {
-    /**
-     * Find all current positions for a given user.
-     *
-     * @param inUser a <code>PersistentUser</code> value
-     * @param inPageRequest a <code>Pageable</code> value
-     * @return a <code>Page&lt;CurrentPosition&gt;</code> value
-     */
-    Page<CurrentPosition> findByUser(PersistentUser inUser,
-                                     Pageable inPageRequest);
 }

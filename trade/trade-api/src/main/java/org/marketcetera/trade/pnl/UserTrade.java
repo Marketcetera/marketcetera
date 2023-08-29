@@ -13,18 +13,18 @@ package org.marketcetera.trade.pnl;
  * @since $Release$
  */
 public interface UserTrade
-        extends HasTrade,HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser
+        extends org.marketcetera.trade.pnl.HasTrade,org.marketcetera.trade.pnl.HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser
 {
     /**
      * Get the side value.
      *
-     * @return a <code>org.marketcetera.trade.Side</code> value
+     * @return an <code>org.marketcetera.trade.Side</code> value
      */
     org.marketcetera.trade.Side getSide();
     /**
      * Set the side value.
      *
-     * @param inSide a <code>org.marketcetera.trade.Side</code> value
+     * @param inSide an <code>org.marketcetera.trade.Side</code> value
      */
     void setSide(org.marketcetera.trade.Side inSide);
 }

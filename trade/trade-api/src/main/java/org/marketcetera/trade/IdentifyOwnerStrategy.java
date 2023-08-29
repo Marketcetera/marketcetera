@@ -1,8 +1,5 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.UserID;
-
 import quickfix.Message;
 import quickfix.SessionID;
 

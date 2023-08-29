@@ -13,10 +13,10 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="Lot")
-@javax.persistence.Table(name="metc_pnl_lots")
+@javax.persistence.Table(name="metc_lots")
 public class PersistentLot
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.Lot
+        implements org.marketcetera.trade.pnl.Lot,org.marketcetera.trade.pnl.HasPosition,org.marketcetera.trade.pnl.HasTrade,org.marketcetera.admin.HasUser
 {
     /**
      * Create a new PersistentLot instance.
@@ -42,7 +42,7 @@ public class PersistentLot
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -52,7 +52,7 @@ public class PersistentLot
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
@@ -259,32 +259,32 @@ public class PersistentLot
     /**
      * size of lot
      */
-    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
     /**
      * quantity of this lot that has been allocated to account for a sell trade
      */
-    @javax.persistence.Column(name="allocated_quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="allocated_quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal allocatedQuantity = java.math.BigDecimal.ZERO;
     /**
      * date lot was created
      */
-    @javax.persistence.Column(name="effective_date",nullable=false)
+    @javax.persistence.Column(name="effective_date",nullable=false,unique=false)
     private java.util.Date effectiveDate;
     /**
      * basis price value
      */
-    @javax.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal basisPrice = java.math.BigDecimal.ZERO;
     /**
      * realized gain from this lot
      */
-    @javax.persistence.Column(name="gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal gain = java.math.BigDecimal.ZERO;
     /**
      * trade price value of this lot
      */
-    @javax.persistence.Column(name="trade_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="trade_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal tradePrice = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = 682666976L;
 }

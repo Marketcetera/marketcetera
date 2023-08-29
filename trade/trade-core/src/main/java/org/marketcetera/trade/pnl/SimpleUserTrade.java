@@ -55,7 +55,7 @@ public class SimpleUserTrade
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -65,7 +65,7 @@ public class SimpleUserTrade
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
@@ -75,7 +75,7 @@ public class SimpleUserTrade
     /**
      * Get the side value.
      *
-     * @return a <code>org.marketcetera.trade.Side</code> value
+     * @return an <code>org.marketcetera.trade.Side</code> value
      */
     @Override
     public org.marketcetera.trade.Side getSide()
@@ -85,7 +85,7 @@ public class SimpleUserTrade
     /**
      * Set the side value.
      *
-     * @param inSide a <code>org.marketcetera.trade.Side</code> value
+     * @param inSide an <code>org.marketcetera.trade.Side</code> value
      */
     @Override
     public void setSide(org.marketcetera.trade.Side inSide)
@@ -115,7 +115,7 @@ public class SimpleUserTrade
     /**
      * Get the orderId value.
      *
-     * @return a <code>org.marketcetera.trade.OrderID</code> value
+     * @return an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public org.marketcetera.trade.OrderID getOrderId()
@@ -125,7 +125,7 @@ public class SimpleUserTrade
     /**
      * Set the orderId value.
      *
-     * @param inOrderId a <code>org.marketcetera.trade.OrderID</code> value
+     * @param inOrderId an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public void setOrderId(org.marketcetera.trade.OrderID inOrderId)

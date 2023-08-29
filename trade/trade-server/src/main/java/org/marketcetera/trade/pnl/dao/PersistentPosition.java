@@ -13,10 +13,10 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="Position")
-@javax.persistence.Table(name="metc_pnl_positions")
+@javax.persistence.Table(name="metc_positions")
 public class PersistentPosition
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.Position
+        implements org.marketcetera.trade.pnl.Position,org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser
 {
     /**
      * Create a new PersistentPosition instance.
@@ -74,7 +74,7 @@ public class PersistentPosition
     /**
      * Get the user value.
      *
-     * @return a <code>org.marketcetera.admin.User</code> value
+     * @return an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public org.marketcetera.admin.User getUser()
@@ -84,7 +84,7 @@ public class PersistentPosition
     /**
      * Set the user value.
      *
-     * @param inUser a <code>org.marketcetera.admin.User</code> value
+     * @param inUser an <code>org.marketcetera.admin.User</code> value
      */
     @Override
     public void setUser(org.marketcetera.admin.User inUser)
@@ -255,27 +255,27 @@ public class PersistentPosition
     /**
      * position value
      */
-    @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
     /**
      * date as of which position is effective
      */
-    @javax.persistence.Column(name="effective_date",nullable=false)
+    @javax.persistence.Column(name="effective_date",nullable=false,unique=false)
     private java.util.Date effectiveDate;
     /**
      * weighted average cost to attain this position
      */
-    @javax.persistence.Column(name="weighted_average_cost",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="weighted_average_cost",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal weightedAverageCost = java.math.BigDecimal.ZERO;
     /**
      * realized gain value
      */
-    @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal realizedGain = java.math.BigDecimal.ZERO;
     /**
      * unrealized gain value
      */
-    @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = 1028526536L;
 }

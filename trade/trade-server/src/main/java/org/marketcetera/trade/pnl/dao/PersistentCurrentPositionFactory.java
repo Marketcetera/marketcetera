@@ -3,10 +3,6 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
-import org.marketcetera.core.Preserve;
-import org.marketcetera.trade.pnl.CurrentPosition;
-import org.marketcetera.trade.pnl.CurrentPositionFactory;
-
 /* $License$ */
 
 /**
@@ -16,29 +12,28 @@ import org.marketcetera.trade.pnl.CurrentPositionFactory;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public class PersistentCurrentPositionFactory
-        implements CurrentPositionFactory
+        implements org.marketcetera.trade.pnl.CurrentPositionFactory
 {
     /**
-     * Create a new <code>PersistentCurrentPosition</code> instance.
+     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> instance.
      *
-     * @return a <code>PersistentCurrentPosition</code> value
+     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> value
      */
     @Override
-    public PersistentCurrentPosition create()
+    public org.marketcetera.trade.pnl.dao.PersistentCurrentPosition create()
     {
-        return new PersistentCurrentPosition();
+        return new org.marketcetera.trade.pnl.dao.PersistentCurrentPosition();
     }
     /**
-     * Create a new <code>PersistentCurrentPosition</code> instance from the given object.
+     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> instance from the given object.
      *
-     * @param inCurrentPosition a <code>CurrentPosition</code> value
-     * @return a <code>PersistentCurrentPosition</code> value
+     * @param inCurrentPosition an <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> value
+     * @return an <code>org.marketcetera.trade.pnl.dao.PersistentCurrentPosition</code> value
      */
     @Override
-    public PersistentCurrentPosition create(CurrentPosition inCurrentPosition)
+    public org.marketcetera.trade.pnl.dao.PersistentCurrentPosition create(org.marketcetera.trade.pnl.CurrentPosition inPersistentCurrentPosition)
     {
-        return new PersistentCurrentPosition(inCurrentPosition);
+        return new org.marketcetera.trade.pnl.dao.PersistentCurrentPosition(inPersistentCurrentPosition);
     }
 }

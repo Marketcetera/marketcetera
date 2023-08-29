@@ -86,9 +86,9 @@ public class TradePnlRpcServer<SessionClazz>
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inCurrentPositionsRequest.getSessionId());
                 authzService.authorize(sessionHolder.getUser(),TradePnlPermissions.ReadCurrentPositions.name());
                 org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.Builder responseBuilder = org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse.newBuilder();
-                org.marketcetera.trade.UserID userID = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inCurrentPositionsRequest.getUserId()).orElse(null);
+                org.marketcetera.trade.UserID userId = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inCurrentPositionsRequest.getUserId()).orElse(null);
                 org.marketcetera.persist.PageRequest pageRequest = inCurrentPositionsRequest.hasPageRequest()?org.marketcetera.rpc.paging.PagingRpcUtil.getPageRequest(inCurrentPositionsRequest.getPageRequest()):org.marketcetera.persist.PageRequest.ALL;
-                org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.CurrentPosition> serviceData = tradePnlService.getCurrentPositions(userID,pageRequest);
+                org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.CurrentPosition> serviceData = tradePnlService.getCurrentPositions(userId,null);
                 responseBuilder.setPageResponse(org.marketcetera.rpc.paging.PagingRpcUtil.getPageResponse(pageRequest,serviceData));
                 org.marketcetera.trade.pnl.TradePnlRpc.CurrentPositionsResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(TradePnlRpcServer.this,"Responding {}",response);
@@ -108,10 +108,10 @@ public class TradePnlRpcServer<SessionClazz>
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(TradePnlRpcServer.this,"Received {}",inProfitAndLossRequest);
                 org.marketcetera.util.ws.stateful.SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inProfitAndLossRequest.getSessionId());
                 org.marketcetera.trade.pnl.TradePnlRpc.ProfitAndLossResponse.Builder responseBuilder = org.marketcetera.trade.pnl.TradePnlRpc.ProfitAndLossResponse.newBuilder();
-                org.marketcetera.trade.UserID userID = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inProfitAndLossRequest.getUserId()).orElse(null);
+                org.marketcetera.trade.UserID userId = org.marketcetera.admin.rpc.AdminRpcUtil.getUserId(inProfitAndLossRequest.getUserId()).orElse(null);
                 org.marketcetera.trade.Instrument instrument = org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument(inProfitAndLossRequest.getInstrument()).orElse(null);
                 org.marketcetera.persist.PageRequest pageRequest = inProfitAndLossRequest.hasPageRequest()?org.marketcetera.rpc.paging.PagingRpcUtil.getPageRequest(inProfitAndLossRequest.getPageRequest()):org.marketcetera.persist.PageRequest.ALL;
-                org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.ProfitAndLoss> serviceData = tradePnlService.getProfitAndLoss(userID,instrument,pageRequest);
+                org.marketcetera.persist.CollectionPageResponse<org.marketcetera.trade.pnl.ProfitAndLoss> serviceData = tradePnlService.getProfitAndLoss(userId,instrument,null);
                 responseBuilder.setPageResponse(org.marketcetera.rpc.paging.PagingRpcUtil.getPageResponse(pageRequest,serviceData));
                 org.marketcetera.trade.pnl.TradePnlRpc.ProfitAndLossResponse response = responseBuilder.build();
                 org.marketcetera.util.log.SLF4JLoggerProxy.trace(TradePnlRpcServer.this,"Responding {}",response);

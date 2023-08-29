@@ -3,9 +3,6 @@
 //
 package org.marketcetera.trade.pnl;
 
-import org.marketcetera.core.Factory;
-import org.marketcetera.core.Preserve;
-
 /* $License$ */
 
 /**
@@ -15,9 +12,8 @@ import org.marketcetera.core.Preserve;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public interface PositionFactory
-        extends Factory<Position>
+        extends org.marketcetera.core.Factory<Position>
 {
     /**
      * Create a new <code>Position</code> instance.

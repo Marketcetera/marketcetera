@@ -35,7 +35,7 @@ public class SimpleTrade
     /**
      * Get the instrument value.
      *
-     * @return a <code>org.marketcetera.trade.Instrument</code> value
+     * @return an <code>org.marketcetera.trade.Instrument</code> value
      */
     @Override
     public org.marketcetera.trade.Instrument getInstrument()
@@ -45,7 +45,7 @@ public class SimpleTrade
     /**
      * Set the instrument value.
      *
-     * @param inInstrument a <code>org.marketcetera.trade.Instrument</code> value
+     * @param inInstrument an <code>org.marketcetera.trade.Instrument</code> value
      */
     @Override
     public void setInstrument(org.marketcetera.trade.Instrument inInstrument)
@@ -55,7 +55,7 @@ public class SimpleTrade
     /**
      * Get the executionId value.
      *
-     * @return a <code>org.marketcetera.trade.OrderID</code> value
+     * @return an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public org.marketcetera.trade.OrderID getExecutionId()
@@ -65,7 +65,7 @@ public class SimpleTrade
     /**
      * Set the executionId value.
      *
-     * @param inExecutionId a <code>org.marketcetera.trade.OrderID</code> value
+     * @param inExecutionId an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public void setExecutionId(org.marketcetera.trade.OrderID inExecutionId)

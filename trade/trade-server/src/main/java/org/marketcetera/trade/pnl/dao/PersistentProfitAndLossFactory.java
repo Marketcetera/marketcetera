@@ -3,10 +3,6 @@
 //
 package org.marketcetera.trade.pnl.dao;
 
-import org.marketcetera.core.Preserve;
-import org.marketcetera.trade.pnl.ProfitAndLoss;
-import org.marketcetera.trade.pnl.ProfitAndLossFactory;
-
 /* $License$ */
 
 /**
@@ -16,29 +12,28 @@ import org.marketcetera.trade.pnl.ProfitAndLossFactory;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public class PersistentProfitAndLossFactory
-        implements ProfitAndLossFactory
+        implements org.marketcetera.trade.pnl.ProfitAndLossFactory
 {
     /**
-     * Create a new <code>PersistentProfitAndLoss</code> instance.
+     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> instance.
      *
-     * @return a <code>PersistentProfitAndLoss</code> value
+     * @return a <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> value
      */
     @Override
-    public PersistentProfitAndLoss create()
+    public org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss create()
     {
-        return new PersistentProfitAndLoss();
+        return new org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss();
     }
     /**
-     * Create a new <code>PersistentProfitAndLoss</code> instance from the given object.
+     * Create a new <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> instance from the given object.
      *
-     * @param inProfitAndLoss a <code>ProfitAndLoss</code> value
-     * @return a <code>PersistentProfitAndLoss</code> value
+     * @param inProfitAndLoss an <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> value
+     * @return an <code>org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss</code> value
      */
     @Override
-    public PersistentProfitAndLoss create(ProfitAndLoss inProfitAndLoss)
+    public org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss create(org.marketcetera.trade.pnl.ProfitAndLoss inPersistentProfitAndLoss)
     {
-        return new PersistentProfitAndLoss(inProfitAndLoss);
+        return new org.marketcetera.trade.pnl.dao.PersistentProfitAndLoss(inPersistentProfitAndLoss);
     }
 }

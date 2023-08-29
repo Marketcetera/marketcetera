@@ -3,8 +3,6 @@
 //
 package org.marketcetera.trade.pnl;
 
-import org.marketcetera.core.Preserve;
-
 /* $License$ */
 
 /**
@@ -14,29 +12,28 @@ import org.marketcetera.core.Preserve;
  * @version $Id$
  * @since $Release$
  */
-@Preserve
 public class SimpleProfitAndLossFactory
-        implements ProfitAndLossFactory
+        implements org.marketcetera.trade.pnl.ProfitAndLossFactory
 {
     /**
-     * Create a new <code>SimpleProfitAndLoss</code> instance.
+     * Create a new <code>org.marketcetera.trade.pnl.SimpleProfitAndLoss</code> instance.
      *
-     * @return a <code>SimpleProfitAndLoss</code> value
+     * @return a <code>org.marketcetera.trade.pnl.SimpleProfitAndLoss</code> value
      */
     @Override
-    public SimpleProfitAndLoss create()
+    public org.marketcetera.trade.pnl.SimpleProfitAndLoss create()
     {
-        return new SimpleProfitAndLoss();
+        return new org.marketcetera.trade.pnl.SimpleProfitAndLoss();
     }
     /**
-     * Create a new <code>SimpleProfitAndLoss</code> instance from the given object.
+     * Create a new <code>org.marketcetera.trade.pnl.SimpleProfitAndLoss</code> instance from the given object.
      *
-     * @param inProfitAndLoss a <code>ProfitAndLoss</code> value
-     * @return a <code>SimpleProfitAndLoss</code> value
+     * @param inProfitAndLoss an <code>org.marketcetera.trade.pnl.SimpleProfitAndLoss</code> value
+     * @return an <code>org.marketcetera.trade.pnl.SimpleProfitAndLoss</code> value
      */
     @Override
-    public SimpleProfitAndLoss create(ProfitAndLoss inProfitAndLoss)
+    public org.marketcetera.trade.pnl.SimpleProfitAndLoss create(org.marketcetera.trade.pnl.ProfitAndLoss inSimpleProfitAndLoss)
     {
-        return new SimpleProfitAndLoss(inProfitAndLoss);
+        return new org.marketcetera.trade.pnl.SimpleProfitAndLoss(inSimpleProfitAndLoss);
     }
 }

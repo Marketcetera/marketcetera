@@ -1,8 +1,5 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.TradeMessage;
-
 import quickfix.Message;
 
 /* $License$ */

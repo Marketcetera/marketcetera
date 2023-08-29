@@ -17,7 +17,13 @@ public interface PositionChangedEvent
     /**
      * Get the position value.
      *
-     * @return a <code>org.marketcetera.trade.pnl.Position</code> value
+     * @return an <code>org.marketcetera.trade.pnl.Position</code> value
      */
     org.marketcetera.trade.pnl.Position getPosition();
+    /**
+     * Set the position value.
+     *
+     * @param inPosition an <code>org.marketcetera.trade.pnl.SimplePosition</code> value
+     */
+    void setPosition(org.marketcetera.trade.pnl.Position inPosition);
 }

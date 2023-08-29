@@ -13,10 +13,10 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="Trade")
-@javax.persistence.Table(name="metc_trades")
+@javax.persistence.Table(name="trades")
 public class PersistentTrade
         extends org.marketcetera.persist.EntityBase
-        implements org.marketcetera.trade.pnl.Trade
+        implements org.marketcetera.trade.pnl.Trade,org.marketcetera.trade.HasInstrument
 {
     /**
      * Create a new PersistentTrade instance.
@@ -72,7 +72,7 @@ public class PersistentTrade
     /**
      * Get the executionId value.
      *
-     * @return a <code>org.marketcetera.trade.OrderID</code> value
+     * @return an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public org.marketcetera.trade.OrderID getExecutionId()
@@ -82,7 +82,7 @@ public class PersistentTrade
     /**
      * Set the executionId value.
      *
-     * @param inExecutionId a <code>org.marketcetera.trade.OrderID</code> value
+     * @param inExecutionId an <code>org.marketcetera.trade.OrderID</code> value
      */
     @Override
     public void setExecutionId(org.marketcetera.trade.OrderID inExecutionId)
@@ -205,22 +205,22 @@ public class PersistentTrade
     /**
      * exchange execution id that uniquely identifies this trade
      */
-    @javax.persistence.Column(name="execution_id",nullable=true)
+    @javax.persistence.Column(name="execution_id",nullable=true,unique=false)
     private org.marketcetera.trade.OrderID executionId;
     /**
      * price at which trade occurred
      */
-    @javax.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @javax.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal price = java.math.BigDecimal.ZERO;
     /**
      * size of trade
      */
-    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
     /**
      * transaction date
      */
-    @javax.persistence.Column(name="transaction_time",nullable=true)
+    @javax.persistence.Column(name="transaction_time",nullable=true,unique=false)
     private java.util.Date transactionTime;
     private static final long serialVersionUID = -1169854614L;
 }

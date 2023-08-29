@@ -12,7 +12,7 @@
   </modelEvents>
   <modelEntities>
     <modelEntity name="Lot" description="Identifies a lot used to calculate profit and loss" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="HasPosition,HasTrade,org.marketcetera.admin.HasUser" sqlName="pnl_lots">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.pnl.HasPosition,org.marketcetera.trade.pnl.HasTrade,org.marketcetera.admin.HasUser" sqlName="metc_lots">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
@@ -29,7 +29,7 @@
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="Position" description="Describes position of a given instrument owned by a given user at a given point in time" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlName="pnl_positions">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlName="metc_positions">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
@@ -44,7 +44,7 @@
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="CurrentPosition" description="Describes the current position of a given instrument owned by a given user" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlName="pnl_current_positions">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser" sqlName="metc_current_positions">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>
@@ -71,7 +71,7 @@
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="UserTrade" description="Provides a user-centric view of a {@link Trade}" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
-                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="HasTrade,HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser">
+                 packageName="org.marketcetera.trade.pnl" hasInterfaceProject="trade/trade-api" apiExtends="org.marketcetera.trade.pnl.HasTrade,org.marketcetera.trade.pnl.HasProfitAndLoss,org.marketcetera.trade.HasOrderId,org.marketcetera.admin.HasUser">
       <authors>
         <author>&lt;a href="mailto:colin@marketcetera.com"&gt;Colin DuPlantis&lt;/a&gt;</author>
       </authors>

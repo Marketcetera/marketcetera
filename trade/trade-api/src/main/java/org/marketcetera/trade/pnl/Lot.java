@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl;
  * @since $Release$
  */
 public interface Lot
-        extends HasPosition,HasTrade,org.marketcetera.admin.HasUser
+        extends org.marketcetera.trade.pnl.HasPosition,org.marketcetera.trade.pnl.HasTrade,org.marketcetera.admin.HasUser
 {
     /**
      * Get the quantity value.
