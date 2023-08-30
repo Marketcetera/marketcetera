@@ -63,16 +63,4 @@ public interface Position
      * @param inRealizedGain a <code>java.math.BigDecimal</code> value
      */
     void setRealizedGain(java.math.BigDecimal inRealizedGain);
-    /**
-     * Get the unrealizedGain value.
-     *
-     * @return a <code>java.math.BigDecimal</code> value
-     */
-    java.math.BigDecimal getUnrealizedGain();
-    /**
-     * Set the unrealizedGain value.
-     *
-     * @param inUnrealizedGain a <code>java.math.BigDecimal</code> value
-     */
-    void setUnrealizedGain(java.math.BigDecimal inUnrealizedGain);
 }

@@ -40,7 +40,6 @@
         <modelEntityAttribute name="effectiveDate" description="date as of which position is effective" type="java.util.Date" useGetters="true" useSetters="true" isNullable="false"/>
         <modelEntityAttribute name="weightedAverageCost" description="weighted average cost to attain this position" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
         <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="CurrentPosition" description="Describes the current position of a given instrument owned by a given user" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
@@ -54,7 +53,6 @@
         <modelEntityAttribute name="position" description="position value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isNullable="false"/>
         <modelEntityAttribute name="weightedAverageCost" description="weighted average cost to attain this position" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
         <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
-        <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true" isNullable="false"/>
       </modelEntityAttributes>
     </modelEntity>
     <modelEntity name="Trade" description="Indicates a trade that took place at a particular point in time for a particular amount and price" pojoProject="trade/trade-core" apiProject="trade/trade-api" persistentProject="trade/trade-server" 
@@ -92,7 +90,6 @@
         <modelEntityAttribute name="instrument" description="position instrument value" type="org.marketcetera.trade.Instrument" useGetters="true" useSetters="true" interfaceProvided="true"/>
         <modelEntityAttribute name="user" description="user which owns lot" type="org.marketcetera.admin.User" useGetters="true" useSetters="true" interfaceProvided="true" cardinality="@javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)" joinColumn="user_id" persistentType="org.marketcetera.admin.user.PersistentUser"/>
         <modelEntityAttribute name="realizedGain" description="realized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
-        <modelEntityAttribute name="unrealizedGain" description="unrealized gain value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
         <modelEntityAttribute name="basisPrice" description="basis price value" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO" isCurrency="true"/>
         <modelEntityAttribute name="position" description="position as a result of this transaction" type="java.math.BigDecimal" useGetters="true" useSetters="true" defaultValue="java.math.BigDecimal.ZERO"/>
       </modelEntityAttributes>
@@ -119,7 +116,6 @@
             <rpcMessageAttribute name="effectiveDate" type="google.protobuf.Timestamp" description="effective date of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getTimestampValue" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getDateValue"/>
             <rpcMessageAttribute name="weightedAverageCost" type="Qty" description="total cost of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="realizedGain" type="Qty" description="realized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
-            <rpcMessageAttribute name="unrealizedGain" type="Qty" description="unrealized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="CurrentPnlPosition" description="describes the position of a user of an instrument" javaType="org.marketcetera.trade.pnl.CurrentPosition"
@@ -130,7 +126,6 @@
             <rpcMessageAttribute name="position" type="Qty" description="quantity of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="weightedAverageCost" type="Qty" description="total cost of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="realizedGain" type="Qty" description="realized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
-            <rpcMessageAttribute name="unrealizedGain" type="Qty" description="unrealized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
           </rpcMessageAttributes>
         </rpcMessage>
         <rpcMessage name="ProfitAndLoss" description="describes the PnL of a user of an instrument" javaType="org.marketcetera.trade.pnl.ProfitAndLoss"
@@ -139,7 +134,6 @@
             <rpcMessageAttribute name="instrument" type="Instrument" description="instrument for which pnl is calculated" rpcConverter="org.marketcetera.trading.rpc.TradeRpcUtil.getRpcInstrument" javaConverter="org.marketcetera.trading.rpc.TradeRpcUtil.getInstrument"/>
             <rpcMessageAttribute name="user" type="User" description="user that owns the position" factories="org.marketcetera.admin.UserFactory" rpcConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getRpcUser" javaConverter="org.marketcetera.admin.rpc.AdminRpcUtil.getUser"/>
             <rpcMessageAttribute name="realizedGain" type="Qty" description="realized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
-            <rpcMessageAttribute name="unrealizedGain" type="Qty" description="unrealized gain of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="basisPrice" type="Qty" description="basis price of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
             <rpcMessageAttribute name="position" type="Qty" description="size of the position" rpcConverter="org.marketcetera.rpc.base.BaseRpcUtil.getRpcQty" javaConverter="org.marketcetera.rpc.base.BaseRpcUtil.getScaledQuantity"/>
           </rpcMessageAttributes>

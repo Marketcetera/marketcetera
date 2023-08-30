@@ -35,7 +35,6 @@ public class PersistentPosition
         setEffectiveDate(inPosition.getEffectiveDate());
         setWeightedAverageCost(inPosition.getWeightedAverageCost());
         setRealizedGain(inPosition.getRealizedGain());
-        setUnrealizedGain(inPosition.getUnrealizedGain());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasInstrument#getInstrument()
@@ -171,26 +170,6 @@ public class PersistentPosition
     {
         realizedGain = inRealizedGain == null ? java.math.BigDecimal.ZERO : inRealizedGain;
     }
-    /**
-     * Get the unrealizedGain value.
-     *
-     * @return a <code>java.math.BigDecimal</code> value
-     */
-    @Override
-    public java.math.BigDecimal getUnrealizedGain()
-    {
-        return unrealizedGain;
-    }
-    /**
-     * Set the unrealizedGain value.
-     *
-     * @param inUnrealizedGain a <code>java.math.BigDecimal</code> value
-     */
-    @Override
-    public void setUnrealizedGain(java.math.BigDecimal inUnrealizedGain)
-    {
-        unrealizedGain = inUnrealizedGain == null ? java.math.BigDecimal.ZERO : inUnrealizedGain;
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -204,8 +183,7 @@ public class PersistentPosition
             .append(", position=").append(org.marketcetera.core.BigDecimalUtil.render(position))
             .append(", effectiveDate=").append(effectiveDate)
             .append(", weightedAverageCost=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(weightedAverageCost))
-            .append(", realizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(realizedGain))
-            .append(", unrealizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(unrealizedGain)).append("]");
+            .append(", realizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(realizedGain)).append("]");
         return builder.toString();
     }
     /**
@@ -272,10 +250,5 @@ public class PersistentPosition
      */
     @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
     private java.math.BigDecimal realizedGain = java.math.BigDecimal.ZERO;
-    /**
-     * unrealized gain value
-     */
-    @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false,unique=false)
-    private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
-    private static final long serialVersionUID = 1028526536L;
+    private static final long serialVersionUID = -2121405833L;
 }

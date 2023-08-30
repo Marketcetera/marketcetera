@@ -18,7 +18,6 @@ message PnlPosition {
     google.protobuf.Timestamp effectiveDate = 4; // effective date of the position
     Qty weightedAverageCost = 5; // total cost of the position
     Qty realizedGain = 6; // realized gain of the position
-    Qty unrealizedGain = 7; // unrealized gain of the position
 }
 
 // describes the position of a user of an instrument
@@ -28,7 +27,6 @@ message CurrentPnlPosition {
     Qty position = 3; // quantity of the position
     Qty weightedAverageCost = 4; // total cost of the position
     Qty realizedGain = 5; // realized gain of the position
-    Qty unrealizedGain = 6; // unrealized gain of the position
 }
 
 // describes the PnL of a user of an instrument
@@ -36,9 +34,8 @@ message ProfitAndLoss {
     Instrument instrument = 1; // instrument for which pnl is calculated
     User user = 2; // user that owns the position
     Qty realizedGain = 3; // realized gain of the position
-    Qty unrealizedGain = 4; // unrealized gain of the position
-    Qty basisPrice = 5; // basis price of the position
-    Qty position = 6; // size of the position
+    Qty basisPrice = 4; // basis price of the position
+    Qty position = 5; // size of the position
 }
 
 // Identifies a lot used to calculate profit and loss

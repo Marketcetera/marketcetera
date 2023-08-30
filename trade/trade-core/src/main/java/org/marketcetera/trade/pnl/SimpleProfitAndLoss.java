@@ -29,7 +29,6 @@ public class SimpleProfitAndLoss
         setInstrument(inProfitAndLoss.getInstrument());
         setUser(inProfitAndLoss.getUser());
         setRealizedGain(inProfitAndLoss.getRealizedGain());
-        setUnrealizedGain(inProfitAndLoss.getUnrealizedGain());
         setBasisPrice(inProfitAndLoss.getBasisPrice());
         setPosition(inProfitAndLoss.getPosition());
     }
@@ -94,26 +93,6 @@ public class SimpleProfitAndLoss
         realizedGain = inRealizedGain == null ? java.math.BigDecimal.ZERO : inRealizedGain;
     }
     /**
-     * Get the unrealizedGain value.
-     *
-     * @return a <code>java.math.BigDecimal</code> value
-     */
-    @Override
-    public java.math.BigDecimal getUnrealizedGain()
-    {
-        return unrealizedGain;
-    }
-    /**
-     * Set the unrealizedGain value.
-     *
-     * @param inUnrealizedGain a <code>java.math.BigDecimal</code> value
-     */
-    @Override
-    public void setUnrealizedGain(java.math.BigDecimal inUnrealizedGain)
-    {
-        unrealizedGain = inUnrealizedGain == null ? java.math.BigDecimal.ZERO : inUnrealizedGain;
-    }
-    /**
      * Get the basisPrice value.
      *
      * @return a <code>java.math.BigDecimal</code> value
@@ -164,7 +143,6 @@ public class SimpleProfitAndLoss
             .append("instrument=").append(instrument)
             .append(", user=").append(user)
             .append(", realizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(realizedGain))
-            .append(", unrealizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(unrealizedGain))
             .append(", basisPrice=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(basisPrice))
             .append(", position=").append(org.marketcetera.core.BigDecimalUtil.render(position)).append("]");
         return builder.toString();
@@ -181,10 +159,6 @@ public class SimpleProfitAndLoss
      * realized gain value
      */
     private java.math.BigDecimal realizedGain = java.math.BigDecimal.ZERO;
-    /**
-     * unrealized gain value
-     */
-    private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
     /**
      * basis price value
      */
