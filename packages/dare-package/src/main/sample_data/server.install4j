@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.5" transformSequenceNumber="10">
-  <directoryPresets config="./bin/stopServerComponents.sh" />
+  <directoryPresets config="../../../target/dare-package-4.1.0-SNAPSHOT.jar" />
   <application name="Marketcetera-Server-${compiler:sys.version}" applicationId="8655-7418-0245-0302" mediaDir="../../../target/install4j" compression="9" shortName="Marketcetera" publisher="Marketcetera, Inc." publisherWeb="https://www.marketcetera.com" version="${compiler:majorVersion}.${compiler:minorVersion}.${compiler:patchVersion}" allPathsRelative="true" backupOnSave="true" autoSave="true" macVolumeId="371f08086a64d74b">
     <variables>
       <variable name="majorVersion" value="4" />
@@ -22,7 +22,7 @@
     <entries>
       <dirEntry mountPoint="58" file="conf" subDirectory="conf" />
       <dirEntry mountPoint="59" file="../../../target/output" subDirectory="output" />
-      <fileEntry mountPoint="59" file="../../../target/dare-package-4.1.0-SNAPSHOT.jar" />
+      <fileEntry mountPoint="59" file="../../../target/dare-package-4.1.0.jar" />
       <fileEntry mountPoint="61" file="bin/dare.sh" fileMode="744" overrideFileMode="true" />
       <dirEntry mountPoint="62" file="contrib" />
       <fileEntry mountPoint="63" file="bin/setEnv.sh" fileMode="744" overrideFileMode="true" />
