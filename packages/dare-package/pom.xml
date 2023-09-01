@@ -219,8 +219,8 @@
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
             -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
             -Dmetc.instance=1
-            -Dserver.port=9000
-            -Dmetc.rpc.port=9010
+            -Dmetc.rpc.port=9000
+            -Dserver.port=9020
           </jvmArguments>
         </configuration>
       </plugin>
@@ -379,20 +379,16 @@
                   <value>false</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>metc.instanceport.server.port</key>
+                  <key>metc.port.metc.rpc.port</key>
                   <value>9000</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>metc.port.metc.rpc.port</key>
+                  <key>metc.port.metc.sa.rpc.port</key>
                   <value>9010</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>metc.port.metc.sa.rpc.port</key>
+                  <key>metc.instanceport.server.port</key>
                   <value>9020</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.port.metc.sa.ws.port</key>
-                  <value>9030</value>
                 </systemProperty>
                 <systemProperty>
                   <key>metc.port.metc.cluster.port</key>
