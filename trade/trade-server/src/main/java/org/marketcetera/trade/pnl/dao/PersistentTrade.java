@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="Trade")
-@javax.persistence.Table(name="trades")
+@javax.persistence.Table(name="metc_pnl_trades")
 public class PersistentTrade
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.Trade,org.marketcetera.trade.HasInstrument

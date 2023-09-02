@@ -31,6 +31,7 @@ public class SimpleProfitAndLoss
         setRealizedGain(inProfitAndLoss.getRealizedGain());
         setBasisPrice(inProfitAndLoss.getBasisPrice());
         setPosition(inProfitAndLoss.getPosition());
+        setEffectiveDate(inProfitAndLoss.getEffectiveDate());
     }
     /**
      * Get the instrument value.
@@ -132,6 +133,26 @@ public class SimpleProfitAndLoss
     {
         position = inPosition == null ? java.math.BigDecimal.ZERO : inPosition;
     }
+    /**
+     * Get the effectiveDate value.
+     *
+     * @return a <code>java.util.Date</code> value
+     */
+    @Override
+    public java.util.Date getEffectiveDate()
+    {
+        return effectiveDate;
+    }
+    /**
+     * Set the effectiveDate value.
+     *
+     * @param inEffectiveDate a <code>java.util.Date</code> value
+     */
+    @Override
+    public void setEffectiveDate(java.util.Date inEffectiveDate)
+    {
+        effectiveDate = inEffectiveDate;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -144,7 +165,8 @@ public class SimpleProfitAndLoss
             .append(", user=").append(user)
             .append(", realizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(realizedGain))
             .append(", basisPrice=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(basisPrice))
-            .append(", position=").append(org.marketcetera.core.BigDecimalUtil.render(position)).append("]");
+            .append(", position=").append(org.marketcetera.core.BigDecimalUtil.render(position))
+            .append(", effectiveDate=").append(effectiveDate).append("]");
         return builder.toString();
     }
     /**
@@ -167,4 +189,8 @@ public class SimpleProfitAndLoss
      * position as a result of this transaction
      */
     private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
+    /**
+     * date as of which profit and loss is effective
+     */
+    private java.util.Date effectiveDate;
 }

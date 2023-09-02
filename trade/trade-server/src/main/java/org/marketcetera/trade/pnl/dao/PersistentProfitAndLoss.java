@@ -13,7 +13,7 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 @javax.persistence.Entity(name="ProfitAndLoss")
-@javax.persistence.Table(name="profit_and_loss")
+@javax.persistence.Table(name="metc_pnl_profit_and_loss")
 public class PersistentProfitAndLoss
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.ProfitAndLoss,org.marketcetera.trade.HasInstrument,org.marketcetera.admin.HasUser
@@ -34,6 +34,7 @@ public class PersistentProfitAndLoss
         setRealizedGain(inProfitAndLoss.getRealizedGain());
         setBasisPrice(inProfitAndLoss.getBasisPrice());
         setPosition(inProfitAndLoss.getPosition());
+        setEffectiveDate(inProfitAndLoss.getEffectiveDate());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasInstrument#getInstrument()
@@ -149,6 +150,26 @@ public class PersistentProfitAndLoss
     {
         position = inPosition == null ? java.math.BigDecimal.ZERO : inPosition;
     }
+    /**
+     * Get the effectiveDate value.
+     *
+     * @return a <code>java.util.Date</code> value
+     */
+    @Override
+    public java.util.Date getEffectiveDate()
+    {
+        return effectiveDate;
+    }
+    /**
+     * Set the effectiveDate value.
+     *
+     * @param inEffectiveDate a <code>java.util.Date</code> value
+     */
+    @Override
+    public void setEffectiveDate(java.util.Date inEffectiveDate)
+    {
+        effectiveDate = inEffectiveDate;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -161,7 +182,8 @@ public class PersistentProfitAndLoss
             .append(", user=").append(user)
             .append(", realizedGain=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(realizedGain))
             .append(", basisPrice=").append(org.marketcetera.core.BigDecimalUtil.renderCurrency(basisPrice))
-            .append(", position=").append(org.marketcetera.core.BigDecimalUtil.render(position)).append("]");
+            .append(", position=").append(org.marketcetera.core.BigDecimalUtil.render(position))
+            .append(", effectiveDate=").append(effectiveDate).append("]");
         return builder.toString();
     }
     /**
@@ -223,5 +245,10 @@ public class PersistentProfitAndLoss
      */
     @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true,unique=false)
     private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
-    private static final long serialVersionUID = 1215348920L;
+    /**
+     * date as of which profit and loss is effective
+     */
+    @javax.persistence.Column(name="effective_date",nullable=false,unique=false)
+    private java.util.Date effectiveDate;
+    private static final long serialVersionUID = 1661229519L;
 }

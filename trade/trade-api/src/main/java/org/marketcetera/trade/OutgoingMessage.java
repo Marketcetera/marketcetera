@@ -2,7 +2,6 @@ package org.marketcetera.trade;
 
 import org.marketcetera.admin.User;
 
-import quickfix.Message;
 import quickfix.SessionID;
 
 /* $License$ */
@@ -45,7 +44,7 @@ public interface OutgoingMessage
      *
      * @return a <code>Message</code> value
      */
-    Message getMessage();
+    quickfix.Message getMessage();
     /**
      * Gets the session id value.
      *

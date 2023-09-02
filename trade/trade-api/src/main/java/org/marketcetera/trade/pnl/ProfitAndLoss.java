@@ -51,4 +51,16 @@ public interface ProfitAndLoss
      * @param inPosition a <code>java.math.BigDecimal</code> value
      */
     void setPosition(java.math.BigDecimal inPosition);
+    /**
+     * Get the effectiveDate value.
+     *
+     * @return a <code>java.util.Date</code> value
+     */
+    java.util.Date getEffectiveDate();
+    /**
+     * Set the effectiveDate value.
+     *
+     * @param inEffectiveDate a <code>java.util.Date</code> value
+     */
+    void setEffectiveDate(java.util.Date inEffectiveDate);
 }
