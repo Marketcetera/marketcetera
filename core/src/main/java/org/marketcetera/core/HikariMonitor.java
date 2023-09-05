@@ -141,7 +141,7 @@ public class HikariMonitor
                               totalConnections,
                               maxConnections);
         double inUse = activeConnections / totalConnections;
-        if(inUse > idleThreshold && notifyOnThreshold) {
+        if(inUse > idleThreshold && notifyOnThreshold && notificationExecutor != null) {
             StringBuilder message = new StringBuilder();
             message.append("Warning: ").append(activeConnections).append(" active connections of ").append(totalConnections).append(" total usage ")
                 .append(inUse*100).append("% exceeds the threshold of ").append(idleThreshold*100).append("%");
