@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationExecutor;
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 
@@ -57,6 +61,23 @@ public class HikariMonitor
         SLF4JLoggerProxy.info(this,
                               "Stopping {}",
                               getClass().getSimpleName());
+        if(activePoolConnectionHistogramName != null) {
+            try {
+                metricService.getMetrics().remove(activePoolConnectionHistogramName);
+            } catch(Exception ignored) {
+            } finally {
+                activePoolConnectionHistogramName = null;
+                activePoolConnectionHistogram = null;
+            }
+        }
+        if(activePoolConnectionGaugeName != null) {
+            try {
+                metricService.getMetrics().remove(activePoolConnectionGaugeName);
+            } catch(Exception ignored) {
+            } finally {
+                activePoolConnectionGaugeName = null;
+            }
+        }
         if(poolMonitorToken != null) {
             try {
                 poolMonitorToken.cancel(true);
@@ -71,8 +92,26 @@ public class HikariMonitor
     private void setupMonitor()
     {
         if(dataSource == null || new DirectFieldAccessor(dataSource).getPropertyValue("pool") == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to retrieve the data source");
             return;
         }
+        hikariPool = (HikariPool)new DirectFieldAccessor(dataSource).getPropertyValue("pool");
+        if(hikariPool == null) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Unable to retrieve Hikari Pool from the data source");
+            return;
+        }
+        activePoolConnectionGaugeName = MetricRegistry.name(getClass().getSimpleName(),"activePoolConnectionsGauge");
+        metricService.getMetrics().register(activePoolConnectionGaugeName,
+                                            new Gauge<Integer>() {
+                                                @Override
+                                                public Integer getValue() {
+                                                    return hikariPool.getActiveConnections();
+                                                }
+                                            });
+        activePoolConnectionHistogramName = MetricRegistry.name(getClass().getSimpleName(),"activePoolConnectionsHistogram");
+        activePoolConnectionHistogram = metricService.getMetrics().histogram(activePoolConnectionHistogramName);
         poolMonitorToken = poolMonitor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run()
@@ -90,16 +129,16 @@ public class HikariMonitor
      */
     private void doMonitor()
     {
-        HikariPool hikariPool = (HikariPool)new DirectFieldAccessor(dataSource).getPropertyValue("pool");
         int activeConnections = hikariPool.getActiveConnections();
         int totalConnections = hikariPool.getTotalConnections();
         int idleConnections = hikariPool.getIdleConnections();
+        activePoolConnectionHistogram.update(activeConnections);
         Integer maxConnections = new HikariDataSourcePoolMetadata((HikariDataSource) dataSource).getMax();
         SLF4JLoggerProxy.info(this,
                               "HikariPool: active: {} idle: {} total: {} max: {}",
                               activeConnections,
-                              totalConnections,
                               idleConnections,
+                              totalConnections,
                               maxConnections);
         double inUse = activeConnections / totalConnections;
         if(inUse > idleThreshold && notifyOnThreshold && notificationExecutor != null) {
@@ -111,6 +150,27 @@ public class HikariMonitor
                                                           getClass().getSimpleName()));
         }
     }
+    /**
+     * name of the active pool gauge metric
+     */
+    private String activePoolConnectionGaugeName;
+    /**
+     * name of the active pool histogram metric
+     */
+    private String activePoolConnectionHistogramName;
+    /**
+     * active pool histogram metric
+     */
+    private Histogram activePoolConnectionHistogram;
+    /**
+     * hikari pool object
+     */
+    private HikariPool hikariPool;
+    /**
+     * provides access to metric services
+     */
+    @Autowired
+    private MetricService metricService;
     /**
      * monitors the db pool at scheduled intervals
      */
