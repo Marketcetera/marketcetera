@@ -738,7 +738,7 @@ return console.askYesNo(message, true);
     <windows name="Windows x64" id="32" architecture="64" />
     <unixInstaller name="Linux amd64" id="33" mediaFileName="${compiler:sys.shortName}_linux_amd64_${compiler:sys.version}" customInstallBaseDir="/opt/Marketcetera" />
   </mediaSets>
-  <buildIds>
+  <buildIds buildAll="false">
     <mediaSet refId="27" />
   </buildIds>
 </install4j>

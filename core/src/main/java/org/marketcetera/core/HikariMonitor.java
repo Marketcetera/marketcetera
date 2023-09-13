@@ -197,7 +197,7 @@ public class HikariMonitor
     /**
      * datasource to monitor
      */
-    @Autowired
+    @Autowired(required=false)
     private DataSource dataSource;
     /**
      * provides access to notification execution services
