@@ -1,6 +1,14 @@
 package org.marketcetera.ui.service.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.ui.service.ServerConnectionService;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
@@ -34,11 +42,47 @@ public class ServerConnectionServiceImpl
      */
     @Override
     public void setConnectionData(ServerConnectionData inServerConnectionData)
+            throws IOException
     {
         hostname = inServerConnectionData.getHostname();
         port = inServerConnectionData.getPort();
         useSsl = inServerConnectionData.useSsl();
-        // TODO update config file
+        updateConfigFile();
+    }
+    /**
+     * Update the config file with the new settings.
+     *
+     * @throws IOException if the config file could not be updated
+     */
+    private void updateConfigFile()
+            throws IOException
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Updating config file with: {}:{} SSL: {}",
+                              hostname,
+                              port,
+                              useSsl);
+        File configFile = new File("conf/application.properties");
+        StringBuilder newConfigFileContents = new StringBuilder();
+        try(BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
+            String line = reader.readLine();
+            while(line != null) {
+                String lineToRead = StringUtils.trim(line);
+                if(lineToRead.startsWith("host.name=")) {
+                    newConfigFileContents.append("host.name=").append(hostname).append(System.lineSeparator());
+                } else if(lineToRead.startsWith("host.port=")) {
+                    newConfigFileContents.append("host.port=").append(port).append(System.lineSeparator());
+                } else if(lineToRead.startsWith("metc.security.use.ssl=")) {
+                    newConfigFileContents.append("metc.security.use.ssl=").append(useSsl).append(System.lineSeparator());
+                } else {
+                    newConfigFileContents.append(line).append(System.lineSeparator());
+                }
+                line = reader.readLine();
+            }
+        }
+        try (FileWriter writer = new FileWriter(configFile)) {
+            writer.write(newConfigFileContents.toString());
+        }
     }
     /**
      * Provides a {@link ServerConnectionData} implementation.

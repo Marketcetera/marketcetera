@@ -1,5 +1,7 @@
 package org.marketcetera.ui.service;
 
+import java.io.IOException;
+
 /* $License$ */
 
 /**
@@ -21,8 +23,10 @@ public interface ServerConnectionService
      * Set the server connection data value.
      *
      * @param inServerConnectionData a <code>ServerConnectionData</code> value
+     * @throws IOException if the connection data could not be set properly
      */
-    void setConnectionData(ServerConnectionData inServerConnectionData);
+    void setConnectionData(ServerConnectionData inServerConnectionData)
+            throws IOException;
     /**
      * Provides the connection data.
      *
