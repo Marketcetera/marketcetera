@@ -72,6 +72,7 @@ import org.marketcetera.fix.event.FixSessionStoppedEvent;
 import org.marketcetera.fix.event.SimpleFixSessionAvailableEvent;
 import org.marketcetera.fix.event.SimpleFixSessionUnavailableEvent;
 import org.marketcetera.fix.provisioning.FixSessionRestoreExecutor;
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.ors.Messages;
 import org.marketcetera.ors.PrioritizedMessageSessionRestorePayload;
 import org.marketcetera.ors.filters.MessageFilter;
@@ -105,6 +106,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -918,6 +921,10 @@ public class DeployAnywhereRoutingEngine
         Validate.notNull(reportService);
         Validate.notNull(brokerService);
         CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryName()));
+        orderQueuesInUseMeterName = getClass().getSimpleName() + "-orderQueuesInUseMeter";
+        orderQueuesInUseHistogramName = getClass().getSimpleName() + "-orderQueuesInUseHistogram";
+        orderQueuesInUseMeter = metricService.getMetrics().meter(orderQueuesInUseMeterName);
+        orderQueuesInUseHistogram = metricService.getMetrics().histogram(orderQueuesInUseHistogramName);
         createdSessions.clear();
         loggedOnSessions.clear();
         clusterData = clusterService.getInstanceData();
@@ -1052,6 +1059,12 @@ public class DeployAnywhereRoutingEngine
 //                    sessionQueue.stop();
 //                } catch (Exception ignored) {}
 //            }
+            try {
+                metricService.getMetrics().remove(orderQueuesInUseHistogramName);
+            } catch (Exception ignored) {}
+            try {
+                metricService.getMetrics().remove(orderQueuesInUseMeterName);
+            } catch (Exception ignored) {}
         } finally {
 //            if(notificationExecutor != null) {
 //                notificationExecutor.notify(Notification.low("DARE Stopped",
@@ -2045,7 +2058,6 @@ public class DeployAnywhereRoutingEngine
                                                       key);
                 MessageKey messageKey = inMessagePackage.key;
                 OrderMessageProcessingQueue orderQueue = null;
-                // TODO add metrics for order queues
                 boolean warned = false;
                 long delayStarted = 0;
                 while(orderQueue == null) {
@@ -2055,6 +2067,8 @@ public class DeployAnywhereRoutingEngine
                             // no order queue for this order yet
                             // TODO size might be expensive?
                             int size = orderQueues.size();
+                            orderQueuesInUseHistogram.update(size);
+                            orderQueuesInUseMeter.mark(size);
                             if(size >= maxExecutionPools) {
                                 // already at max order queues, have to wait for a slot to become available
                                 if(!warned) {
@@ -2515,6 +2529,27 @@ public class DeployAnywhereRoutingEngine
      * holds processing queues for root order id
      */
     private final Map<MessageKey,OrderMessageProcessingQueue> orderQueues = new HashMap<>();
+    /**
+     * name of the order-queues-in-use meter
+     */
+    private String orderQueuesInUseMeterName;
+    /**
+     * order-queues-in-use meter
+     */
+    private Meter orderQueuesInUseMeter;
+    /**
+     * name of the order-queues-in-use histogram
+     */
+    private String orderQueuesInUseHistogramName;
+    /**
+     * order-queues-in-use histogram
+     */
+    private Histogram orderQueuesInUseHistogram;
+    /**
+     * provides access to metrics services
+     */
+    @Autowired
+    private MetricService metricService;
     /**
      * active initiators by session id
      */
