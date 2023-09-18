@@ -37,6 +37,7 @@ import org.marketcetera.admin.AdminRpc.ReadUserAttributeRequest;
 import org.marketcetera.admin.AdminRpc.ReadUserAttributeResponse;
 import org.marketcetera.admin.AdminRpc.ReadUsersRequest;
 import org.marketcetera.admin.AdminRpc.ReadUsersResponse;
+import org.marketcetera.admin.AdminRpc.ResetUserPasswordRequest;
 import org.marketcetera.admin.AdminRpc.UpdatePermissionRequest;
 import org.marketcetera.admin.AdminRpc.UpdatePermissionResponse;
 import org.marketcetera.admin.AdminRpc.UpdateRoleRequest;
@@ -440,6 +441,39 @@ public class AdminRpcService<SessionClazz>
                                                inRequest.getOldPassword(),
                                                inRequest.getNewPassword());
                 AdminRpc.ChangeUserPasswordResponse response = responseBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Returning {}",
+                                       response);
+                inResponseObserver.onNext(response);
+                inResponseObserver.onCompleted();
+            } catch (Exception e) {
+                StatusRuntimeException sre = new StatusRuntimeException(Status.INVALID_ARGUMENT.withCause(e).withDescription(ExceptionUtils.getRootCauseMessage(e)));
+                inResponseObserver.onError(sre);
+                throw sre;
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceImplBase#resetUserPassword(org.marketcetera.admin.AdminRpc.ResetUserPasswordRequest, io.grpc.stub.StreamObserver)
+         */
+        @Override
+        public void resetUserPassword(ResetUserPasswordRequest inRequest,
+                                      StreamObserver<AdminRpc.ResetUserPasswordResponse> inResponseObserver)
+        {
+            try {
+                SessionHolder<SessionClazz> sessionHolder = validateAndReturnSession(inRequest.getSessionId());
+                SLF4JLoggerProxy.trace(AdminRpcService.this,
+                                       "Received reset user password request {} from {}",
+                                       inRequest,
+                                       sessionHolder);
+                AdminRpc.ResetUserPasswordResponse.Builder responseBuilder = AdminRpc.ResetUserPasswordResponse.newBuilder();
+                authzService.authorize(sessionHolder.getUser(),
+                                       AdminPermissions.ResetUserPasswordAction.name());
+                User existingUser = userService.findByName(inRequest.getUsername());
+                Validate.isTrue(existingUser != null,
+                                "Unknown user: " + inRequest.getUsername());
+                userService.resetUserPassword(existingUser,
+                                              inRequest.getNewPassword());
+                AdminRpc.ResetUserPasswordResponse response = responseBuilder.build();
                 SLF4JLoggerProxy.trace(AdminRpcService.this,
                                        "Returning {}",
                                        response);

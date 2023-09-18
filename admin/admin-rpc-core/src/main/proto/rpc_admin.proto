@@ -84,6 +84,15 @@ message ChangeUserPasswordRequest {
 message ChangeUserPasswordResponse {
 }
 
+message ResetUserPasswordRequest {
+    string sessionId = 1;
+    string username = 2;
+    string newPassword = 3;
+}
+
+message ResetUserPasswordResponse {
+}
+
 message Permission {
     string name = 1;
     string description = 2;
@@ -218,6 +227,7 @@ service AdminRpcService {
     rpc deleteUser(DeleteUserRequest) returns (DeleteUserResponse);
     rpc deactivateUser(DeactivateUserRequest) returns (DeactivateUserResponse);
     rpc changeUserPassword(ChangeUserPasswordRequest) returns (ChangeUserPasswordResponse);
+    rpc resetUserPassword(ResetUserPasswordRequest) returns (ResetUserPasswordResponse);
     rpc createPermission(CreatePermissionRequest) returns (CreatePermissionResponse);
     rpc readPermissions(ReadPermissionsRequest) returns (ReadPermissionsResponse);
     rpc updatePermission(UpdatePermissionRequest) returns (UpdatePermissionResponse);

@@ -277,13 +277,13 @@ public class UserView
             doAddOrUpdateUser(selectedUser,
                               false);
         });
-        changePasswordMenuItem = new MenuItem("Change Password");
-        changePasswordMenuItem.setOnAction(event -> {
+        resetPasswordMenuItem = new MenuItem("Reset Password");
+        resetPasswordMenuItem.setOnAction(event -> {
             SimpleUser selectedUser = usersTable.getSelectionModel().getSelectedItem();
             if(selectedUser == null) {
                 return;
             }
-            doChangePassword(selectedUser);
+            doResetPassword(selectedUser);
         });
         boolean atLeastOneGroupOneMenuItem = false;
         boolean separatorOneAdded = false;
@@ -291,8 +291,8 @@ public class UserView
             usersTableContextMenu.getItems().add(updateUserMenuItem);
             atLeastOneGroupOneMenuItem = true;
         }
-        if(authzHelperService.hasPermission(AdminPermissions.ChangeUserPasswordAction)) {
-            usersTableContextMenu.getItems().add(changePasswordMenuItem);
+        if(authzHelperService.hasPermission(AdminPermissions.ResetUserPasswordAction)) {
+            usersTableContextMenu.getItems().add(resetPasswordMenuItem);
             atLeastOneGroupOneMenuItem = true;
         }
         if(authzHelperService.hasPermission(AdminPermissions.DeleteUserAction)) {
@@ -319,14 +319,14 @@ public class UserView
         usersTable.setContextMenu(usersTableContextMenu);
     }
     /**
-     * Changes the password of the given user.
+     * Reset the password of the given user.
      *
      * @param inSelectedUser a <code>SimpleUser</code> value
      */
-    private void doChangePassword(SimpleUser inSelectedUser)
+    private void doResetPassword(SimpleUser inSelectedUser)
     {
-        Dialog<String> changePasswordDialog = new Dialog<>();
-        changePasswordDialog.setTitle("Change Password");
+        Dialog<String> resetPasswordDialog = new Dialog<>();
+        resetPasswordDialog.setTitle("Reset Password");
         GridPane passwordDialogGrid = new GridPane();
         passwordDialogGrid.setHgap(10);
         passwordDialogGrid.setVgap(10);
@@ -336,8 +336,8 @@ public class UserView
         Label adviceLabel = new Label();
         ButtonType okButtonType = new ButtonType("OK",
                                                  ButtonData.OK_DONE);
-        changePasswordDialog.getDialogPane().getButtonTypes().addAll(okButtonType,
-                                                                     ButtonType.CANCEL);
+        resetPasswordDialog.getDialogPane().getButtonTypes().addAll(okButtonType,
+                                                                    ButtonType.CANCEL);
         password2Field.textProperty().addListener((observable,oldValue,newValue) -> {
             String password1Value = StringUtils.trimToNull(password1Field.getText());
             String password2Value = StringUtils.trimToNull(password2Field.getText());
@@ -345,55 +345,53 @@ public class UserView
                 adviceLabel.setText("Password required");
                 password1Field.setStyle(PhotonServices.errorStyle);
                 adviceLabel.setStyle(PhotonServices.errorMessage);
-                changePasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
+                resetPasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
             } else if(password1Value.equals(password2Value)) {
                 adviceLabel.setText("");
                 adviceLabel.setStyle(PhotonServices.successMessage);
                 password1Field.setStyle(PhotonServices.successStyle);
                 password2Field.setStyle(PhotonServices.successStyle);
-                changePasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(false);
+                resetPasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(false);
             } else {
                 adviceLabel.setText("Passwords do not match");
                 password1Field.setStyle(PhotonServices.errorStyle);
                 password2Field.setStyle(PhotonServices.errorStyle);
                 adviceLabel.setStyle(PhotonServices.errorMessage);
-                changePasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
+                resetPasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
             }
         });
-        passwordDialogGrid.add(new Label("Change " + inSelectedUser.getName() + " Password"),0,0,2,1);
+        passwordDialogGrid.add(new Label("Reset " + inSelectedUser.getName() + " Password"),0,0,2,1);
         passwordDialogGrid.add(new Label("New Password"),0,1);
         passwordDialogGrid.add(password1Field,1,1);
         passwordDialogGrid.add(new Label("Verify Password"),0,2);
         passwordDialogGrid.add(password2Field,1,2);
         passwordDialogGrid.add(adviceLabel,0,3,2,1);
-        changePasswordDialog.getDialogPane().setContent(passwordDialogGrid);
-        changePasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
-        changePasswordDialog.setResultConverter(dialogButton -> {
+        resetPasswordDialog.getDialogPane().setContent(passwordDialogGrid);
+        resetPasswordDialog.getDialogPane().lookupButton(okButtonType).setDisable(true);
+        resetPasswordDialog.setResultConverter(dialogButton -> {
             if(dialogButton == okButtonType) {
                 return password1Field.getText();
             }
             return null;
         });
-        PhotonServices.style(changePasswordDialog.getDialogPane().getScene());
-        Optional<String> newPasswordOption = changePasswordDialog.showAndWait();
+        PhotonServices.style(resetPasswordDialog.getDialogPane().getScene());
+        Optional<String> newPasswordOption = resetPasswordDialog.showAndWait();
         if(newPasswordOption.isPresent()) {
             try {
-                // TODO this isn't right - the current API requires the old password, which we don't have
-                adminClientService.changeUserPassword(inSelectedUser.getName(),
-                                                      newPasswordOption.get(),
-                                                      newPasswordOption.get());
-                uiMessageService.post(new NotificationEvent("Change Password",
-                                                             "Password for '" + inSelectedUser.getName() + "' changed",
+                adminClientService.resetUserPassword(inSelectedUser.getName(),
+                                                     newPasswordOption.get());
+                uiMessageService.post(new NotificationEvent("Reset Password",
+                                                             "Password for '" + inSelectedUser.getName() + "' reset",
                                                              AlertType.INFORMATION));
             } catch (Exception e) {
                 String message = PlatformServices.getMessage(e);
                 SLF4JLoggerProxy.warn(UserView.this,
                                       e,
-                                      "Unable to change password for {}: {}",
+                                      "Unable to reset password for {}: {}",
                                       inSelectedUser,
                                       message);
-                uiMessageService.post(new NotificationEvent("Change Password",
-                                                             "Change Password for '" + inSelectedUser.getName() + "' failed: " + message,
+                uiMessageService.post(new NotificationEvent("Reset Password",
+                                                             "Reset Password for '" + inSelectedUser.getName() + "' failed: " + message,
                                                              AlertType.ERROR));
             }
         }
@@ -596,7 +594,7 @@ public class UserView
     /**
      * user password change context menu item
      */
-    private MenuItem changePasswordMenuItem;
+    private MenuItem resetPasswordMenuItem;
     /**
      * name of the user
      */
