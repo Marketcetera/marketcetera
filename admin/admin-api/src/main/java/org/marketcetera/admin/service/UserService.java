@@ -103,4 +103,13 @@ public interface UserService
     User changeUserPassword(User inUser,
                             String inOldRawPassword,
                             String inNewRawPassword);
+    /**
+     * Reset the password of the given user to the given value.
+     *
+     * @param inExistingUser a <code>User</code> value
+     * @param inNewPassword a <code>String</code> value
+     * @return a <code>User</code> value
+     */
+    User resetUserPassword(User inExistingUser,
+                           String inNewPassword);
 }

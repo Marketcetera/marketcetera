@@ -64,6 +64,8 @@ public interface AdminClient
                     User inUpdatedUser);
     /**
      * Change the password of the given user.
+     * 
+     * <p>Requires permissions to change the password of the current user.</p>
      *
      * @param inUsername a <code>String</code> value
      * @param inOldPassword a <code>String</code> value
@@ -72,6 +74,16 @@ public interface AdminClient
     void changeUserPassword(String inUsername,
                             String inOldPassword,
                             String inNewPassword);
+    /**
+     * Resets the password of the given user to the given value.
+     * 
+     * <p>Requires admin reset password permissions.</p>
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inNewPassword a <code>String</code> value
+     */
+    void resetPassword(String inUsername,
+                       String inNewPassword);
     /**
      * Delete the given user.
      *
