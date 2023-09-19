@@ -637,7 +637,7 @@ public class FixSessionView
                     testConnectionLabel.setVisible(!networkInvalid.get());
                     if(inIsNew) {
                         hostnameTextField.setText("exchange.marketcetera.com");
-                        portTextField.setText("7004");
+                        portTextField.setText("7001");
                     } else {
                         hostnameTextField.setText(inFixSession.sourceProperty().get().getFixSession().getHost());
                         portTextField.setText(String.valueOf(inFixSession.sourceProperty().get().getFixSession().getPort()));
@@ -721,7 +721,7 @@ public class FixSessionView
                                               inFixSession);
                         fixAdminClient.createFixSession(inFixSession.sourceProperty().get().getFixSession());
                         uiMessageService.post(new NotificationEvent("Create FIX Session",
-                                                                     "Create FIX Session '" + inFixSession.nameProperty().get() + "' succeeded",
+                                                                     "Create FIX Session '" + inFixSession.sourceProperty().get().getFixSession().getName() + "' succeeded",
                                                                      AlertType.INFORMATION));
                     } else {
                         SLF4JLoggerProxy.info(this,
@@ -732,7 +732,7 @@ public class FixSessionView
                         fixAdminClient.updateFixSession(incomingFixSessionName,
                                                         inFixSession.sourceProperty().get().getFixSession());
                         uiMessageService.post(new NotificationEvent("Update FIX Session",
-                                                                     "Update FIX Session '" + inFixSession.nameProperty().get() + "' succeeded",
+                                                                     "Update FIX Session '" + inFixSession.sourceProperty().get().getFixSession().getName() + "' succeeded",
                                                                      AlertType.INFORMATION));
                     }
                 } catch (Exception e) {
@@ -743,7 +743,7 @@ public class FixSessionView
                                           inFixSession,
                                           message);
                     uiMessageService.post(new NotificationEvent("Create or Update FIX Session",
-                                                                 "Create or update FIX sesssion '" + inFixSession.nameProperty().get() + " 'failed: " + message,
+                                                                 "Create or update FIX sesssion '" + inFixSession.sourceProperty().get().getFixSession().getName() + " 'failed: " + message,
                                                                  AlertType.ERROR));
                 }
             }
@@ -796,7 +796,7 @@ public class FixSessionView
         sessionDescriptionTextField = new ValidatingTextField(inValue -> {
             String computedValue = StringUtils.trimToNull(inValue);
             if(computedValue == null) {
-                return false;
+                return true;
             }
             if(computedValue.length() > 255) {
                 inAdviceLabel.setText("Description may contain up to 255 characters");
@@ -845,7 +845,7 @@ public class FixSessionView
                 return false;
             }
             if(computedValue.length() > 255) {
-                inAdviceLabel.setText("Broker Id may contain up to 255 characters");
+                inAdviceLabel.setText("Sender Comp Id may contain up to 255 characters");
                 return false;
             }
             return true;
@@ -859,7 +859,7 @@ public class FixSessionView
                 return false;
             }
             if(computedValue.length() > 255) {
-                inAdviceLabel.setText("Broker Id may contain up to 255 characters");
+                inAdviceLabel.setText("Target Comp Id may contain up to 255 characters");
                 return false;
             }
             return true;
