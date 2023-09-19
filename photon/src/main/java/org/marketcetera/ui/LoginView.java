@@ -1,5 +1,7 @@
 package org.marketcetera.ui;
 
+import java.io.IOException;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
@@ -184,7 +186,13 @@ public class LoginView
     {
         if(serverConnectionDataChanged) {
             serverConnectionDataChanged = false;
-            serverConnectionService.setConnectionData(serverConnectionData);
+            try {
+                serverConnectionService.setConnectionData(serverConnectionData);
+            } catch (IOException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to update config with changes");
+            }
         }
         adviceLabel.setText("");
         adviceLabel.setVisible(false);

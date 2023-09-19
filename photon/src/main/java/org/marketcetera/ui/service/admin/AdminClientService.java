@@ -183,12 +183,24 @@ public class AdminClientService
      * @param inNewPassword a <code>String</code> value
      */
     public void changeUserPassword(String inUsername,
-                            String inOldPassword,
-                            String inNewPassword)
+                                   String inOldPassword,
+                                   String inNewPassword)
     {
         adminClient.changeUserPassword(inUsername,
                                        inOldPassword,
                                        inNewPassword);
+    }
+    /**
+     * Reset the password of the given user.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inNewPassword a <code>String</code> value
+     */
+    public void resetUserPassword(String inUsername,
+                                  String inNewPassword)
+    {
+        adminClient.resetPassword(inUsername,
+                                  inNewPassword);
     }
     /**
      * Create the given user.

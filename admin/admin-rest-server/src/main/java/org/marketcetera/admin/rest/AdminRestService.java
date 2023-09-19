@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiResponses;
 /* $License$ */
 
 /**
- *
+ * Provides a REST implementation of {@link AdminService}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

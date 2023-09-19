@@ -184,6 +184,24 @@ public class UserServiceImpl
         return result;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.service.UserService#resetUserPassword(org.marketcetera.admin.User, java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public User resetUserPassword(User inUser,
+                                  String inNewPassword)
+    {
+        PersistentUser result = userDao.findByName(inUser.getName());
+        if(result == null) {
+            throw new IllegalArgumentException("Unknown user: " + inUser.getName());
+        }
+        result.setHashedPassword(passwordService.getHash(inNewPassword));
+        result = userDao.save(result);
+        usersByUserId.invalidate(inUser.getUserID());
+        usersByUsername.invalidate(inUser.getName());
+        return result;
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.UserService#findOne(long)
      */
     @Override

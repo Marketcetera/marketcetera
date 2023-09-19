@@ -1,5 +1,6 @@
 package org.marketcetera.ui.admin.view;
 
+import org.marketcetera.core.Pair;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.service.UiMessageService;
 import org.marketcetera.ui.view.AbstractContentViewFactory;
@@ -71,6 +72,14 @@ public abstract class AbstractAdminViewFactory
         public String getWindowTitle()
         {
             return AbstractAdminViewFactory.this.getViewName();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.ui.events.NewWindowEvent#getWindowSize()
+         */
+        @Override
+        public Pair<Double,Double> getWindowSize()
+        {
+            return Pair.create(500.0,300.0);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.web.events.NewWindowEvent#getViewFactoryType()

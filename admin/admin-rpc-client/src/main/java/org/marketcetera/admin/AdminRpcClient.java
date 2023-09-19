@@ -162,6 +162,45 @@ public class AdminRpcClient
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.admin.AdminClient#resetPassword(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void resetPassword(String inUsername,
+                              String inNewPassword)
+    {
+        executeCall(new Callable<Void>() {
+            @Override
+            public Void call()
+                    throws Exception
+            {
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} resetting password for {}",
+                                       getSessionId(),
+                                       inUsername);
+                AdminRpc.ResetUserPasswordRequest.Builder requestBuilder = AdminRpc.ResetUserPasswordRequest.newBuilder();
+                requestBuilder.setSessionId(getSessionId().getValue());
+                String value = StringUtils.trimToNull(inUsername);
+                if(value != null) {
+                    requestBuilder.setUsername(value);
+                }
+                value = StringUtils.trimToNull(inNewPassword);
+                if(value != null) {
+                    requestBuilder.setNewPassword(inNewPassword);
+                }
+                AdminRpc.ResetUserPasswordRequest request = requestBuilder.build();
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} sending request",
+                                       getSessionId());
+                AdminRpc.ResetUserPasswordResponse response = getBlockingStub().resetUserPassword(request);
+                SLF4JLoggerProxy.trace(AdminRpcClient.this,
+                                       "{} received {}",
+                                       getSessionId(),
+                                       response);
+                return null;
+            }
+        });
+    }
+    /* (non-Javadoc)
      * @see com.marketcetera.admin.AdminClient#createUser(com.marketcetera.admin.User, java.lang.String)
      */
     @Override
