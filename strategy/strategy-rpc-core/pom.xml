@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>strategy-parent</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>strategy-rpc-core</artifactId>
-  <version>4.1.0</version>
+  <version>4.1.1</version>
   <name>Strategy Client RPC Core</name>
   <url>http://maven.apache.org</url>
   <properties>
