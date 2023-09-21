@@ -6,13 +6,13 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>public-parent</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
   </parent>
   <artifactId>packages-parent</artifactId>
   <packaging>pom</packaging>
   <name>Packages Parent</name>
   <modules>
     <module>dare-package</module>
-    <module>docker-package</module>
+    <!--module>docker-package</module-->
   </modules>
 </project>
