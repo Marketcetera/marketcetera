@@ -13,6 +13,6 @@
   <name>Packages Parent</name>
   <modules>
     <module>dare-package</module>
-    <module>docker-package</module>
+    <!--module>docker-package</module-->
   </modules>
 </project>
