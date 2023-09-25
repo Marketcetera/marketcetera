@@ -275,6 +275,8 @@ public class FixSessionView
         nameTableColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         brokerIdTableColumn = new TableColumn<>("Broker Id");
         brokerIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
+        sessionIdTableColumn = new TableColumn<>("Session Id");
+        sessionIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("sessionId"));
         hostIdTableColumn = new TableColumn<>("Host Id");
         hostIdTableColumn.setCellValueFactory(new PropertyValueFactory<>("hostId"));
         statusTableColumn = new TableColumn<>("Status");
@@ -286,6 +288,7 @@ public class FixSessionView
         targetSequenceNumberTableColumn.setCellValueFactory(new PropertyValueFactory<>("targetSeqNum"));
         fixSessionsTable.getColumns().add(nameTableColumn);
         fixSessionsTable.getColumns().add(brokerIdTableColumn);
+        fixSessionsTable.getColumns().add(sessionIdTableColumn);
         fixSessionsTable.getColumns().add(hostIdTableColumn);
         fixSessionsTable.getColumns().add(statusTableColumn);
         fixSessionsTable.getColumns().add(senderSequenceNumberTableColumn);
@@ -1729,22 +1732,77 @@ public class FixSessionView
         private final StringProperty value;
         private static final long serialVersionUID = 142085523837757672L;
     }
+    /**
+     * enable session context menu item
+     */
     private MenuItem enableSessionContextMenuItem;
+    /**
+     * start session context menu item
+     */
     private MenuItem startSessionContextMenuItem;
+    /**
+     * stop session context menu item
+     */
     private MenuItem stopSessionContextMenuItem;
+    /**
+     * edit session context menu item
+     */
     private MenuItem editSessionContextMenuItem;
+    /**
+     * delete session context menu item
+     */
     private MenuItem deleteSessionContextMenuItem;
+    /**
+     * change sequence number context menu item
+     */
     private MenuItem sequenceSessionContextMenuItem;
+    /**
+     * disable session context menu item
+     */
     private MenuItem disableSessionContextMenuItem;
+    /**
+     * FIX session table context menu
+     */
     private ContextMenu fixSessionsContextMenu;
+    /**
+     * FIX session name column
+     */
     private TableColumn<DisplayFixSession,String> nameTableColumn;
+    /**
+     * broker id column
+     */
     private TableColumn<DisplayFixSession,String> brokerIdTableColumn;
+    /**
+     * session id column
+     */
+    private TableColumn<DisplayFixSession,String> sessionIdTableColumn;
+    /**
+     * host id column
+     */
     private TableColumn<DisplayFixSession,String> hostIdTableColumn;
+    /**
+     * session status column
+     */
     private TableColumn<DisplayFixSession,FixSessionStatus> statusTableColumn;
+    /**
+     * sender sequence number column
+     */
     private TableColumn<DisplayFixSession,Integer> senderSequenceNumberTableColumn;
+    /**
+     * target sequence number column
+     */
     private TableColumn<DisplayFixSession,Integer> targetSequenceNumberTableColumn;
+    /**
+     * provides access to FIX admin services
+     */
     private AdminClientService fixAdminClient;
+    /**
+     * root layout of the view
+     */
     private VBox rootLayout;
+    /**
+     * displays FIX sessions in a table
+     */
     private TableView<DisplayFixSession> fixSessionsTable;
     /**
      * button layout for action buttons
