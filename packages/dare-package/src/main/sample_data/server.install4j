@@ -230,7 +230,7 @@ switch((int)context.getVariable("databaseSource")) {
         }
         context.setVariable("flywayVendor","hsqldb");
         break;
-    case 1: // postgressql
+    case 1: // postgresql
         context.setVariable("jdbcDriver","org.postgresql.Driver");
         context.setVariable("jdbcUrl","jdbc:postgresql://localhost/metc");
         context.setVariable("flywayVendor","psql");
