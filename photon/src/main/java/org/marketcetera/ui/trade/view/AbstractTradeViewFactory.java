@@ -111,6 +111,12 @@ public abstract class AbstractTradeViewFactory
             return getMenuIcon();
         }
     }
+    /**
+     * Get the <code>Image</code> to view in the menu.
+     *
+     * @param inName a <code>String</code> value
+     * @return an <code>Image</code> value
+     */
     protected Image getIcon(String inName)
     {
         if(icon == null) {
@@ -118,31 +124,34 @@ public abstract class AbstractTradeViewFactory
         }
         return icon;
     }
+    /**
+     * holds the image to show for this trade view
+     */
     private Image icon;
-    /**
-     * weight of open orders menu item
-     */
-    protected static final int openOrdersWeight = 100;
-    /**
-     * weight of average price menu item
-     */
-    protected static final int averagePriceWeight = 200;
-    /**
-     * weight of fills menu item
-     */
-    protected static final int fillsWeight = 300;
-    /**
-     * weight of fix messages menu item
-     */
-    protected static final int fixMessagesWeight = 400;
     /**
      * weight of order ticket menu item
      */
-    protected static final int orderTicketWeight = 500;
+    protected static final int orderTicketWeight = 100;
     /**
      * weight of trade suggestions menu item
      */
-    protected static final int tradeSuggestionsWeight = 600;
+    protected static final int tradeSuggestionsWeight = 200;
+    /**
+     * weight of open orders menu item
+     */
+    protected static final int openOrdersWeight = 300;
+    /**
+     * weight of average price menu item
+     */
+    protected static final int averagePriceWeight = 400;
+    /**
+     * weight of fills menu item
+     */
+    protected static final int fillsWeight = 500;
+    /**
+     * weight of fix messages menu item
+     */
+    protected static final int fixMessagesWeight = 600;
     /**
      * provides access to web message services
      */
