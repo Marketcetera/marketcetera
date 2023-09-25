@@ -33,7 +33,7 @@ public class OrderTicketViewFactory
     @Override
     public String getMenuCaption()
     {
-        return "Order Ticket";
+        return "Place Order";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.web.view.MenuContent#getWeight()
