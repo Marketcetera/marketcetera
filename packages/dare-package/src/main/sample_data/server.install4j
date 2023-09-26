@@ -199,7 +199,7 @@ Choose the database type that your Marketcetera server will use.</property>
                   <property name="labelText" type="string">Database Type</property>
                   <property name="listEntries" type="array" elementType="string" length="6">
                     <element index="0">HSQLDB</element>
-                    <element index="1">PostgresSQL</element>
+                    <element index="1">PostgreSQL</element>
                     <element index="2">MySQL*</element>
                     <element index="3">Oracle*</element>
                     <element index="4">SQLServer*</element>
@@ -230,7 +230,7 @@ switch((int)context.getVariable("databaseSource")) {
         }
         context.setVariable("flywayVendor","hsqldb");
         break;
-    case 1: // postgressql
+    case 1: // postgresql
         context.setVariable("jdbcDriver","org.postgresql.Driver");
         context.setVariable("jdbcUrl","jdbc:postgresql://localhost/metc");
         context.setVariable("flywayVendor","psql");
