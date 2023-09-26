@@ -94,9 +94,9 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         initializeColumns(reportsTableView);
         initializeContextMenu(reportsTableView);
         pagination = new Pagination();
-        pagination.setPageCount(0);
+        pagination.setPageCount(1);
         pagination.setCurrentPageIndex(1);
-        pagination.setMaxPageIndicatorCount(0);
+        pagination.setMaxPageIndicatorCount(1);
         pagination.currentPageIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> inObservable,
@@ -709,8 +709,14 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             @Override
             public void run()
             {
-                pagination.setPageCount(response.getTotalPages());
-                pagination.setCurrentPageIndex(currentPage);
+                if(response.getTotalSize() == 0) {
+                    pagination.setPageCount(1);
+                    pagination.setCurrentPageIndex(1);
+                    pagination.setMaxPageIndicatorCount(1);
+                } else {
+                    pagination.setPageCount(response.getTotalPages());
+                    pagination.setCurrentPageIndex(currentPage);
+                }
                 reportsTableView.getItems().clear();
                 for(ClientClazz report : response.getElements()) {
                     reportsTableView.getItems().add(createFixDisplayObject(report));
