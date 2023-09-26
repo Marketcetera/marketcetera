@@ -5,7 +5,7 @@ import javafx.scene.control.Alert.AlertType;
 /* $License$ */
 
 /**
- *
+ * Provides a notification event for Photon.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

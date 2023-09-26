@@ -1,5 +1,7 @@
 package org.marketcetera.ui.service;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -15,6 +17,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.eventbus.Subscribe;
 
 import javafx.application.Platform;
@@ -23,7 +27,7 @@ import javafx.util.Duration;
 /* $License$ */
 
 /**
- *
+ * Provides notification services for the Photon platform.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -43,6 +47,7 @@ public class PhotonNotificationService
         SLF4JLoggerProxy.info(this,
                               "Starting {}",
                               PlatformServices.getServiceName(getClass()));
+        notificationCache = CacheBuilder.newBuilder().expireAfterAccess(duplicateNotificationCacheTtl,TimeUnit.SECONDS).build();
         webMessageService.register(this);
     }
     /**
@@ -67,50 +72,79 @@ public class PhotonNotificationService
         SLF4JLoggerProxy.debug(this,
                                "Received: {}",
                                inEvent);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run()
-            {
-                Notifications notification = Notifications.create()
-                        .darkStyle()
-                        .title(inEvent.getTitle())
-                        .text(inEvent.getMessage())
-                        .owner(PhotonApp.getWorkspace())
-                        .hideAfter(Duration.seconds(notificationDelay));
-                notification.threshold(notificationThreshold,
-                                       notification);
-                switch(inEvent.getAlertType()) {
-                    case CONFIRMATION:
-                        notification.showConfirm();
-                        break;
-                    case ERROR:
-                        notification.showError();
-                        break;
-                    case INFORMATION:
-                        notification.showInformation();
-                        break;
-                    case NONE:
-                        notification.show();
-                        break;
-                    case WARNING:
-                        notification.showWarning();
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            }}
-        );
+        String notificationHash = getNotificationHash(inEvent);
+        try {
+            if(notificationCache.getIfPresent(notificationHash) == null) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        Notifications notification = Notifications.create()
+                                .darkStyle()
+                                .title(inEvent.getTitle())
+                                .text(inEvent.getMessage())
+                                .owner(PhotonApp.getWorkspace())
+                                .hideAfter(Duration.seconds(notificationDelay));
+                        notification.threshold(notificationThreshold,
+                                               notification);
+                        switch(inEvent.getAlertType()) {
+                            case CONFIRMATION:
+                                notification.showConfirm();
+                                break;
+                            case ERROR:
+                                notification.showError();
+                                break;
+                            case INFORMATION:
+                                notification.showInformation();
+                                break;
+                            case NONE:
+                                notification.show();
+                                break;
+                            case WARNING:
+                                notification.showWarning();
+                                break;
+                            default:
+                                throw new UnsupportedOperationException();
+                        }
+                    }}
+                );
+            }
+        } finally {
+            notificationCache.put(notificationHash,
+                                  inEvent);
+        }
     }
+    /**
+     * Creates a notification hash from the given notification.
+     *
+     * @param inEvent a <code>NotificationEvent</code> value
+     * @return a <code>String</code> value
+     */
+    private String getNotificationHash(NotificationEvent inEvent)
+    {
+        StringBuilder rawValue = new StringBuilder();
+        rawValue.append(inEvent.getAlertType().name()).append("-").append(inEvent.getTitle()).append("-").append(inEvent.getMessage());
+        return rawValue.toString();
+    }
+    /**
+     * caches notifications to make sure that duplicate tray events don't overwhelm the screen
+     */
+    private Cache<String,NotificationEvent> notificationCache;
     /**
      * notifications delay in seconds
      */
     @Value("${metc.notifications.delay.seconds:3}")
     private int notificationDelay;
     /**
-     * notifications delay in seconds
+     * notifications threshold for alerts
      */
     @Value("${metc.notifications.threshold:10}")
     private int notificationThreshold;
+    /**
+     * indicates how long to retain notifications in cache to prevent re-notification if no change, in seconds
+     */
+    @Value("${metc.duplicate.notification.cache.ttl:10}")
+    private int duplicateNotificationCacheTtl;
     /**
      * web message service value
      */
