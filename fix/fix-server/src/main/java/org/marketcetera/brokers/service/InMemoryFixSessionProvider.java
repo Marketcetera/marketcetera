@@ -142,11 +142,18 @@ public class InMemoryFixSessionProvider
         return result;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.service.FixSessionProvider#save(org.marketcetera.fix.FixSession)
+     * @see org.marketcetera.brokers.service.FixSessionProvider#save(java.lang.String, org.marketcetera.fix.FixSession)
      */
     @Override
-    public FixSession save(FixSession inFixSession)
+    public FixSession save(String inFixSessionName,
+                           FixSession inFixSession)
     {
+        FixSession existingFixSession = fixSessionsByName.getIfPresent(inFixSessionName);
+        if(existingFixSession != null) {
+            fixSessionsByName.invalidate(inFixSessionName);
+            fixSessionsBySessionId.invalidate(new quickfix.SessionID(existingFixSession.getSessionId()));
+            fixSessionsByBrokerId.invalidate(new BrokerID(existingFixSession.getBrokerId()));
+        }
         fixSessionsByName.put(inFixSession.getName(),
                               inFixSession);
         fixSessionsBySessionId.put(new SessionID(inFixSession.getSessionId()),
@@ -154,6 +161,15 @@ public class InMemoryFixSessionProvider
         fixSessionsByBrokerId.put(new BrokerID(inFixSession.getBrokerId()),
                                   inFixSession);
         return inFixSession;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.FixSessionProvider#save(org.marketcetera.fix.FixSession)
+     */
+    @Override
+    public FixSession save(FixSession inFixSession)
+    {
+        return save(inFixSession.getName(),
+                    inFixSession);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#delete(quickfix.SessionID)
