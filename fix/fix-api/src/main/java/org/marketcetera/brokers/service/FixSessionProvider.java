@@ -102,6 +102,15 @@ public interface FixSessionProvider
      */
     FixSession save(FixSession inFixSession);
     /**
+     * Saves the given fix session with the given original name.
+     *
+     * @param inFixSessionName a <code>String</code> value
+     * @param inFixSession a <code>FixSession</code> value
+     * @return a <code>FixSession</code> value
+     */
+    FixSession save(String inFixSessionName,
+                    FixSession inFixSession);
+    /**
      * Deletes the given fix session.
      *
      * @param inFixSessionId a <code>SessionID</code> value

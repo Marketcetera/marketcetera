@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -24,9 +24,12 @@ import org.marketcetera.tensorflow.model.TensorFlowRunner;
 import org.marketcetera.tensorflow.service.TensorFlowService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.collect.Lists;
 
@@ -39,8 +42,11 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:/test.xml"})
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes=TensorFlowTestConfiguration.class)
+@ComponentScan(basePackages={"org.marketcetera"})
+@EntityScan(basePackages={"org.marketcetera"})
+@EnableJpaRepositories(basePackages={"org.marketcetera"})
 public class TensorFlowTestBase
 {
     /**

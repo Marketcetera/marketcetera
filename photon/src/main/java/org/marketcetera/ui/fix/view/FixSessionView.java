@@ -721,7 +721,7 @@ public class FixSessionView
                         SLF4JLoggerProxy.info(this,
                                               "{} creating {}",
                                               SessionUser.getCurrent(),
-                                              inFixSession);
+                                              inFixSession.sourceProperty().get().getFixSession());
                         fixAdminClient.createFixSession(inFixSession.sourceProperty().get().getFixSession());
                         uiMessageService.post(new NotificationEvent("Create FIX Session",
                                                                      "Create FIX Session '" + inFixSession.sourceProperty().get().getFixSession().getName() + "' succeeded",
@@ -731,7 +731,7 @@ public class FixSessionView
                                               "{} updating {} -> {}",
                                               SessionUser.getCurrent(),
                                               incomingFixSessionName,
-                                              inFixSession);
+                                              inFixSession.sourceProperty().get().getFixSession());
                         fixAdminClient.updateFixSession(incomingFixSessionName,
                                                         inFixSession.sourceProperty().get().getFixSession());
                         uiMessageService.post(new NotificationEvent("Update FIX Session",
@@ -743,7 +743,7 @@ public class FixSessionView
                     SLF4JLoggerProxy.warn(FixSessionView.this,
                                           e,
                                           "Unable to create or update FIX session {}: {}",
-                                          inFixSession,
+                                          inFixSession.sourceProperty().get().getFixSession(),
                                           message);
                     uiMessageService.post(new NotificationEvent("Create or Update FIX Session",
                                                                  "Create or update FIX sesssion '" + inFixSession.sourceProperty().get().getFixSession().getName() + " 'failed: " + message,
@@ -752,6 +752,14 @@ public class FixSessionView
             }
         });
     }
+    /**
+     * Initialize the session identity pane.
+     *
+     * @param inFixSession a <code>DisplayFixSession</code> value
+     * @param inIsNew a <code>boolean</code> flag indicating if this is for a new or edit session
+     * @param inAdviceLabel a <code>Label</code> value containing the advice to set in case of error
+     * @return a <code>WizardPane</code> value
+     */
     private WizardPane initializeSessionIdentityPane(DisplayFixSession inFixSession,
                                                      boolean inIsNew,
                                                      Label inAdviceLabel)
@@ -1632,7 +1640,11 @@ public class FixSessionView
             Collection<FixSessionAttributeDescriptor> attributeDescriptors = fixAdminClient.getFixSessionAttributeDescriptors();
             for(FixSessionAttributeDescriptor descriptor : attributeDescriptors) {
                 DecoratedDescriptor newItem = new DecoratedDescriptor(descriptor);
-                newItem.value.set(sessionSettings.get(newItem.getName()));
+                if(isNew) {
+                    newItem.value.set(newItem.getDefaultValue());
+                } else {
+                    newItem.value.set(sessionSettings.get(newItem.getName()));
+                }
                 descriptorGrid.getItems().add(newItem);
             }
             descriptorGrid.setPrefWidth(1024);

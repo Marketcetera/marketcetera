@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.concurrent.GuardedBy;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.marketcetera.core.CloseableLock;
@@ -74,7 +75,8 @@ public class PersistentGraphContainer
     /**
      * persistence graph data value
      */
-    @Column(name="graph_data")
+    @Lob
+    @Column(name="graph_data",length=1024)
     private byte[] graphData;
     private static final long serialVersionUID = 5408021483861544411L;
 }

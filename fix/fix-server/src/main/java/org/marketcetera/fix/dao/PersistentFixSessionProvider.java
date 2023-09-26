@@ -276,10 +276,11 @@ public class PersistentFixSessionProvider
         return sessionsToReturn;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.brokers.service.FixSessionProvider#save(org.marketcetera.fix.FixSession)
+     * @see org.marketcetera.brokers.service.FixSessionProvider#save(java.lang.String, org.marketcetera.fix.FixSession)
      */
     @Override
-    public FixSession save(FixSession inFixSession)
+    public FixSession save(String inFixSessionName,
+                           FixSession inFixSession)
     {
         // need a manual transaction to allow the session to be flushed to the db before reporting status
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -290,11 +291,12 @@ public class PersistentFixSessionProvider
         PersistentFixSession existingSession;
         try {
             SLF4JLoggerProxy.debug(this,
-                                   "Saving {}",
+                                   "Saving {} -> {}",
+                                   inFixSessionName,
                                    inFixSession);
             BooleanBuilder where = new BooleanBuilder();
             where = where.and(QPersistentFixSession.persistentFixSession.isDeleted.isFalse());
-            where = where.and(QPersistentFixSession.persistentFixSession.sessionId.eq(inFixSession.getSessionId()));
+            where = where.and(QPersistentFixSession.persistentFixSession.name.eq(inFixSessionName));
             Optional<PersistentFixSession> existingSessionOption = fixSessionDao.findOne(where);
             if(!existingSessionOption.isPresent()) {
                 // these checks need to be done manually instead of relying on database integrity because of the "deleted" feature for sessions
@@ -336,6 +338,15 @@ public class PersistentFixSessionProvider
                                                                              FixSessionStatus.DISABLED);
         clusterService.execute(reportStatusTask);
         return existingSession;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.brokers.service.FixSessionProvider#save(org.marketcetera.fix.FixSession)
+     */
+    @Override
+    public FixSession save(FixSession inFixSession)
+    {
+        return save(inFixSession.getName(),
+                    inFixSession);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.brokers.service.FixSessionProvider#delete(quickfix.SessionID)

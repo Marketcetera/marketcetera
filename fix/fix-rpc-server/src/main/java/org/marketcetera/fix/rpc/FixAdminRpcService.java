@@ -272,7 +272,8 @@ public class FixAdminRpcService<SessionClazz>
                     mutableFixSession.setSessionId(rpcFixSession.getSessionId());
                     mutableFixSession.getSessionSettings().clear();
                     mutableFixSession.getSessionSettings().putAll(BaseRpcUtil.getMap(rpcFixSession.getSessionSettings()));
-                    existingFixSession = fixSessionProvider.save(mutableFixSession);
+                    existingFixSession = fixSessionProvider.save(inRequest.getName(),
+                                                                 mutableFixSession);
                 } else {
                     throw new IllegalStateException("Broker service returned a non-mutable FIX session - check configuration");
                 }
