@@ -128,7 +128,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                 SLF4JLoggerProxy.warn(AbstractFixMessageView.this,
                                                       e);
                             }
-                        }},1000,TimeUnit.MILLISECONDS);
+                        }},tradeHighlightDuration,TimeUnit.MILLISECONDS);
                 } else {
                     setStyle("");
                 }
