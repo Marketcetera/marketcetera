@@ -26,4 +26,10 @@ public interface FixMessageDisplayType
      * @return a <code>BooleanProperty</code> value indicating if the display message is a recent fill
      */
     BooleanProperty isFillProperty();
+    /**
+     * Determine if the display message is a recent cancel.
+     *
+     * @return a <code>BooleanProperty</code> value indicating if the display message is a recent cancel
+     */
+    BooleanProperty isCancelProperty();
 }

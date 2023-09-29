@@ -39,7 +39,6 @@ public class DisplayOrderSummary
     {
         return fixMessage;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.trade.HasOrderId#getOrderId()
      */
@@ -208,6 +207,14 @@ public class DisplayOrderSummary
     {
         return fillProperty;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isCancelProperty()
+     */
+    @Override
+    public BooleanProperty isCancelProperty()
+    {
+        return cancelProperty;
+    }
     /**
      * Get the trader name value.
      *
@@ -270,6 +277,10 @@ public class DisplayOrderSummary
             throw new RuntimeException(e);
         }
     }
+    /**
+     * tracks whether this report was just canceled
+     */
+    private final BooleanProperty cancelProperty = new SimpleBooleanProperty(false);
     /**
      * tracks whether this report was just filled
      */

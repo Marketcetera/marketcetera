@@ -129,6 +129,25 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                                       e);
                             }
                         }},tradeHighlightDuration,TimeUnit.MILLISECONDS);
+                } else if(inItem.isCancelProperty().get()) {
+                    setStyle(cancelHightlightCss);
+                    styleUpdateTimerService.schedule(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            try {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run()
+                                    {
+                                        setStyle("");
+                                    }
+                                });
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.warn(AbstractFixMessageView.this,
+                                                      e);
+                            }
+                        }},cancelHighlightDuration,TimeUnit.MILLISECONDS);
                 } else {
                     setStyle("");
                 }
@@ -771,11 +790,20 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 for(ClientClazz report : response.getElements()) {
                     FixClazz newReport = createFixDisplayObject(report);
                     newReport.isFillProperty().set(false);
+                    newReport.isCancelProperty().set(false);
                     if(shouldHighlightTrades && includeOrderIdColumn()) {
                         if(inTradeMessage != null && inTradeMessage instanceof ExecutionReport) {
                             ExecutionReport executionReport = (ExecutionReport)inTradeMessage;
                             if(newReport.getOrderId().equals(executionReport.getOrderID()) && executionReport.getExecutionType().isFill()) {
                                 newReport.isFillProperty().set(true);
+                            }
+                        }
+                    }
+                    if(shouldHighlightCancels && includeOrderIdColumn()) {
+                        if(inTradeMessage != null && inTradeMessage instanceof ExecutionReport) {
+                            ExecutionReport executionReport = (ExecutionReport)inTradeMessage;
+                            if(newReport.getOrderId().equals(executionReport.getOrderID()) && executionReport.getExecutionType().isCancel()) {
+                                newReport.isCancelProperty().set(true);
                             }
                         }
                     }
@@ -969,4 +997,19 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      */
     @Value("${metc.trade.highlight.css:-fx-background-color: RED;}")
     private String tradeHightlightCss;
+    /**
+     * how long in ms to highlight a FIX message view row on cancel
+     */
+    @Value("${metc.cancel.highlight.duration:1000}")
+    private long cancelHighlightDuration;
+    /**
+     * indicate if FIX message view rows should by highlighted on cancel
+     */
+    @Value("${metc.cancel.should.highlight:true}")
+    private boolean shouldHighlightCancels;
+    /**
+     * CSS value to apply to a table row in a FIX message view on cancel
+     */
+    @Value("${metc.cancel.highlight.css:-fx-background-color: ORANGE;}")
+    private String cancelHightlightCss;
 }

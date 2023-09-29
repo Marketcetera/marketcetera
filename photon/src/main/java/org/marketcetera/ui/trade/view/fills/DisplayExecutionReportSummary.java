@@ -428,6 +428,14 @@ public class DisplayExecutionReportSummary
         return fillProperty;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isCancelProperty()
+     */
+    @Override
+    public BooleanProperty isCancelProperty()
+    {
+        return cancelProperty;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -464,6 +472,10 @@ public class DisplayExecutionReportSummary
             throw new RuntimeException(e);
         }
     }
+    /**
+     * tracks whether this report was just canceled
+     */
+    private final BooleanProperty cancelProperty = new SimpleBooleanProperty(false);
     /**
      * tracks whether this report was just filled
      */
