@@ -73,6 +73,14 @@ public class DisplayReport
     {
         return fillProperty;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isCancelProperty()
+     */
+    @Override
+    public BooleanProperty isCancelProperty()
+    {
+        return cancelProperty;
+    }
     /**
      * Get the trader name value.
      *
@@ -398,6 +406,10 @@ public class DisplayReport
             throw new RuntimeException(e);
         }
     }
+    /**
+     * tracks whether this report was just canceled
+     */
+    private final BooleanProperty cancelProperty = new SimpleBooleanProperty(false);
     /**
      * tracks whether this report was just filled
      */

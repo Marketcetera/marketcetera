@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.6" transformSequenceNumber="10">
-  <directoryPresets config="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target/photon-4.1.0.jar" />
+  <directoryPresets config="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data" />
   <application name="Marketcetera Client-${compiler:sys.version}" applicationId="8493-4718-6568-1000" mediaDir="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target" shortName="Photon" publisher="Marketcetera, INC" publisherWeb="https://www.marketcetera.com" version="4.1.1" macVolumeId="371f08086a64d74b">
     <jreBundles jdkProviderId="Zulu" release="17/latest">
       <modules>
@@ -13,11 +13,13 @@
       <mountPoint id="29" location="conf" />
       <mountPoint id="30" location="lib" />
       <mountPoint id="44" location="logs" />
+      <mountPoint id="52" location="sounds" />
     </mountPoints>
     <entries>
       <dirEntry mountPoint="29" file="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data/conf" subDirectory="conf" />
       <dirEntry mountPoint="30" file="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target/output" subDirectory="output" />
       <fileEntry mountPoint="30" file="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/target/photon-4.1.1.jar" />
+      <dirEntry mountPoint="52" file="/Users/colin/marketcetera/workspaces/trunk4/code/marketcetera/photon/src/main/sample_data/sounds" subDirectory="sounds" />
     </entries>
   </files>
   <launchers>
