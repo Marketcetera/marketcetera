@@ -10,6 +10,7 @@ import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.trade.view.AbstractDeletableFixMessageView;
 import org.marketcetera.ui.view.ContentView;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ import javafx.scene.layout.Region;
  * @since $Release$
  */
 @Component
+@EnableAutoConfiguration
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ReportsView
         extends AbstractDeletableFixMessageView<DisplayReport,Report>

@@ -6,6 +6,9 @@ import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.SimpleAverageFillPrice;
 import org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 /* $License$ */
 
 /**
@@ -63,5 +66,16 @@ public class DisplayAverageFillPrice
     {
         throw new UnsupportedOperationException();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isFillProperty()
+     */
+    @Override
+    public BooleanProperty isFillProperty()
+    {
+        return fillProperty;
+    }
+    /**
+     * tracks whether this report was just filled
+     */
+    private final BooleanProperty fillProperty = new SimpleBooleanProperty(false);
 }

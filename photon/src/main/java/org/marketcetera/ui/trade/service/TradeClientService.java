@@ -1,4 +1,4 @@
-package org.marketcetera.ui.service.trade;
+package org.marketcetera.ui.trade.service;
 
 import java.io.IOException;
 import java.util.List;

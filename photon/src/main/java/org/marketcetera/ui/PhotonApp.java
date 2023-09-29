@@ -10,6 +10,7 @@ import org.marketcetera.ui.service.PhotonNotificationService;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
 import org.marketcetera.ui.service.UiMessageService;
+import org.marketcetera.ui.trade.service.TradeSoundService;
 import org.marketcetera.ui.view.ApplicationMenu;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
@@ -151,6 +152,7 @@ public class PhotonApp
         notificationService = applicationContext.getBean(PhotonNotificationService.class);
         clientStatusUpdater = applicationContext.getBean(ClientStatusUpdater.class,
                                                          clientStatusImageView);
+        applicationContext.getBean(TradeSoundService.class);
     }
     /**
      * Receive logout events.
@@ -290,6 +292,9 @@ public class PhotonApp
      * holds main stage object
      */
     private static Stage primaryStage;
+    /**
+     * provides access to the primary scene object
+     */
     private static Scene scene;
     /**
      * indicates if the app is shutting down now

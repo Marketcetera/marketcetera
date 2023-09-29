@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -30,13 +33,14 @@ import org.marketcetera.trade.client.SendOrderResponse;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
-import org.marketcetera.ui.service.trade.TradeClientService;
 import org.marketcetera.ui.trade.event.FixMessageDetailsViewEvent;
 import org.marketcetera.ui.trade.event.ReplaceOrderEvent;
 import org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType;
+import org.marketcetera.ui.trade.service.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
 
@@ -53,6 +57,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -93,6 +98,42 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         selectionModel.setSelectionMode(getTableSelectionMode());
         initializeColumns(reportsTableView);
         initializeContextMenu(reportsTableView);
+        reportsTableView.setRowFactory(tableView -> new TableRow<FixClazz>() {
+            /* (non-Javadoc)
+             * @see javafx.scene.control.Cell#updateItem(java.lang.Object, boolean)
+             */
+            @Override
+            protected void updateItem(FixClazz inItem,
+                                      boolean inEmpty)
+            {
+                super.updateItem(inItem,
+                                 inEmpty);
+                if(inItem == null) {
+                    setStyle("");
+                } else if(inItem.isFillProperty().get()) {
+                    setStyle(tradeHightlightCss);
+                    styleUpdateTimerService.schedule(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            try {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run()
+                                    {
+                                        setStyle("");
+                                    }
+                                });
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.warn(AbstractFixMessageView.this,
+                                                      e);
+                            }
+                        }},1000,TimeUnit.MILLISECONDS);
+                } else {
+                    setStyle("");
+                }
+            }
+        });
         pagination = new Pagination();
         pagination.setPageCount(1);
         pagination.setCurrentPageIndex(1);
@@ -177,7 +218,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                                        "{} received {}",
                                        viewName,
                                        inTradeMessage);
-                updateReports();
+                updateReports(inTradeMessage);
             }
         };
         tradeClientService.addTradeMessageListener(tradeMessageListener);
@@ -702,6 +743,15 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      */
     protected void updateReports()
     {
+        updateReports(null);
+    }
+    /**
+     * Update the reports table view with the set of reports dictated by the view controls with an optional <code>TradeMessage</code> that forced the update.
+     *
+     * @param inTradeMessage a <code>TradeMessage</code> value or <code>null</code>
+     */
+    protected void updateReports(TradeMessage inTradeMessage)
+    {
         CollectionPageResponse<ClientClazz> response = getClientReports(new PageRequest(currentPage,
                                                                                         pageSize));
         // TODO figure out if the contents have changed?
@@ -719,7 +769,17 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 }
                 reportsTableView.getItems().clear();
                 for(ClientClazz report : response.getElements()) {
-                    reportsTableView.getItems().add(createFixDisplayObject(report));
+                    FixClazz newReport = createFixDisplayObject(report);
+                    newReport.isFillProperty().set(false);
+                    if(shouldHighlightTrades && includeOrderIdColumn()) {
+                        if(inTradeMessage != null && inTradeMessage instanceof ExecutionReport) {
+                            ExecutionReport executionReport = (ExecutionReport)inTradeMessage;
+                            if(newReport.getOrderId().equals(executionReport.getOrderID()) && executionReport.getExecutionType().isFill()) {
+                                newReport.isFillProperty().set(true);
+                            }
+                        }
+                    }
+                    reportsTableView.getItems().add(newReport);
                 }
             }}
         );
@@ -815,7 +875,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      */
     protected TableColumn<FixClazz,OrderStatus> orderStatusColumn;
     /**
-     * mesage side table column
+     * message side table column
      */
     protected TableColumn<FixClazz,Side> sideColumn;
     /**
@@ -890,4 +950,23 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      * optional layout used for above-the-table
      */
     private FlowPane aboveTableLayout;
+    /**
+     * used to restore table styles to default values
+     */
+    private ScheduledExecutorService styleUpdateTimerService = Executors.newSingleThreadScheduledExecutor();
+    /**
+     * how long in ms to highlight a FIX message view row on trade
+     */
+    @Value("${metc.trade.highlight.duration:1000}")
+    private long tradeHighlightDuration;
+    /**
+     * indicate if FIX message view rows should by highlighted on trade
+     */
+    @Value("${metc.trade.should.highlight:true}")
+    private boolean shouldHighlightTrades;
+    /**
+     * CSS value to apply to a table row in a FIX message view on trade
+     */
+    @Value("${metc.trade.highlight.css:-fx-background-color: RED;}")
+    private String tradeHightlightCss;
 }
