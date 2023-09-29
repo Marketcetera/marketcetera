@@ -343,8 +343,14 @@ public class StrategyView
             @Override
             public void run()
             {
-                eventTablePagination.setPageCount(response.getTotalPages());
-                eventTablePagination.setCurrentPageIndex(eventTableCurrentPage);
+                if(response.getTotalSize() == 0) {
+                    eventTablePagination.setPageCount(1);
+                    eventTablePagination.setCurrentPageIndex(1);
+                    eventTablePagination.setMaxPageIndicatorCount(1);
+                } else {
+                    eventTablePagination.setPageCount(response.getTotalPages());
+                    eventTablePagination.setCurrentPageIndex(eventTableCurrentPage);
+                }
                 eventTable.getItems().clear();
                 for(StrategyMessage strategyMessage : response.getElements()) {
                     eventTable.getItems().add(new DisplayStrategyMessage(strategyMessage));
