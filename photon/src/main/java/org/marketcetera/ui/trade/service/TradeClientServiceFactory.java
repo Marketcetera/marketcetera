@@ -1,4 +1,4 @@
-package org.marketcetera.ui.service.trade;
+package org.marketcetera.ui.trade.service;
 
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.ui.service.ConnectableServiceFactory;

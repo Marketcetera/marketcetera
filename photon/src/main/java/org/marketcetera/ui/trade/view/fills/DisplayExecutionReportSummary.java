@@ -27,6 +27,9 @@ import org.marketcetera.trade.UserID;
 import org.marketcetera.ui.trade.view.DeletableFixMessageDisplayType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 /* $License$ */
 
 /**
@@ -415,7 +418,14 @@ public class DisplayExecutionReportSummary
     public void setInstrument(Instrument inInstrument)
     {
         throw new UnsupportedOperationException();
-        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isFillProperty()
+     */
+    @Override
+    public BooleanProperty isFillProperty()
+    {
+        return fillProperty;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -454,6 +464,10 @@ public class DisplayExecutionReportSummary
             throw new RuntimeException(e);
         }
     }
+    /**
+     * tracks whether this report was just filled
+     */
+    private final BooleanProperty fillProperty = new SimpleBooleanProperty(false);
     /**
      * instrument value, if available, otherwise will be <code>null</code>
      */

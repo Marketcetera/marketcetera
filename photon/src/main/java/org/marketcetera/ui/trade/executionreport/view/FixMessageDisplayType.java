@@ -6,6 +6,8 @@ import org.marketcetera.trade.HasOrderId;
 import org.marketcetera.trade.HasOrderStatus;
 import org.marketcetera.trade.Report;
 
+import javafx.beans.property.BooleanProperty;
+
 /* $License$ */
 
 /**
@@ -18,4 +20,10 @@ import org.marketcetera.trade.Report;
 public interface FixMessageDisplayType
         extends HasFIXMessage,HasOrderId,HasOrderStatus
 {
+    /**
+     * Determine if the display message is a recent fill.
+     *
+     * @return a <code>BooleanProperty</code> value indicating if the display message is a recent fill
+     */
+    BooleanProperty isFillProperty();
 }

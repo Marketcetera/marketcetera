@@ -19,6 +19,8 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.ui.trade.view.DeletableFixMessageDisplayType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
 
@@ -62,6 +64,14 @@ public class DisplayReport
     public void setOrderId(OrderID inOrderId)
     {
         throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isFillProperty()
+     */
+    @Override
+    public BooleanProperty isFillProperty()
+    {
+        return fillProperty;
     }
     /**
      * Get the trader name value.
@@ -388,6 +398,10 @@ public class DisplayReport
             throw new RuntimeException(e);
         }
     }
+    /**
+     * tracks whether this report was just filled
+     */
+    private final BooleanProperty fillProperty = new SimpleBooleanProperty(false);
     /**
      * original order id value, may be <code>null</code>
      */

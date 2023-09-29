@@ -46,7 +46,7 @@ import org.marketcetera.ui.service.ServiceManager;
 import org.marketcetera.ui.service.SessionUser;
 import org.marketcetera.ui.service.StyleService;
 import org.marketcetera.ui.service.admin.AdminClientService;
-import org.marketcetera.ui.service.trade.TradeClientService;
+import org.marketcetera.ui.trade.service.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.ui.view.ValidatingTextField;
