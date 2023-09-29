@@ -63,13 +63,16 @@ public class TradeSoundService
      */
     private void receive(TradeMessage inTradeMessage)
     {
-        if(!playTradeSound) {
-            return;
-        }
         if(inTradeMessage instanceof ExecutionReport) {
             ExecutionReport executionReport = (ExecutionReport)inTradeMessage;
             if(executionReport.getExecutionType().isFill()) {
-                photonSoundService.playSound(tradeSoundFilename);
+                if(playTradeSound) {
+                    photonSoundService.playSound(tradeSoundFilename);
+                }
+            } else if(executionReport.getExecutionType().isCancel()) {
+                if(playCancelSound) {
+                    photonSoundService.playSound(cancelSoundFilename);
+                }
             }
         }
     }
@@ -83,6 +86,16 @@ public class TradeSoundService
      */
     @Value("${metc.trade.sound:sounds/ui_chime_tone_simple_003.mp3}")
     private String tradeSoundFilename;
+    /**
+     * indicates whether to play a sound on a fill or not
+     */
+    @Value("${metc.cancel.play.sound:true}")
+    private boolean playCancelSound;
+    /**
+     * file containing sound to play on trade
+     */
+    @Value("${metc.cancel.sound:sounds/ui_prompt_complete_or_soft_error_003.mp3}")
+    private String cancelSoundFilename;
     /**
      * provides access to trade services
      */

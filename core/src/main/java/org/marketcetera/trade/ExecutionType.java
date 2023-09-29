@@ -94,6 +94,15 @@ public enum ExecutionType {
         return FILLS.contains(this);
     }
     /**
+     * Indicates if this execution type is related to a cancel.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isCancel()
+    {
+        return CANCELS.contains(this);
+    }
+    /**
      * Creates an instance.
      *
      * @param inFIXValue the FIX char value for this instance.
@@ -105,6 +114,10 @@ public enum ExecutionType {
      * underlying FIX value
      */
     private final char mFIXValue;
+    /**
+     * values that indicate the execution is related to a trade cancel
+     */
+    public static final Set<ExecutionType> CANCELS = EnumSet.of(Canceled,TradeCancel);
     /**
      * values that indicate the execution is related to a trade fill
      */
