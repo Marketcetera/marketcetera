@@ -216,6 +216,114 @@ public class DisplayOrderSummary
         return cancelProperty;
     }
     /**
+     * Get the order id value.
+     *
+     * @return an <code>OrderID</code> value
+     */
+    public OrderID getOrdId()
+    {
+        return getOrderId();
+    }
+    /**
+     * Get the root order id value.
+     *
+     * @return an <code>OrderID</code> value
+     */
+    public OrderID getRootOrdId()
+    {
+        return getRootOrderId();
+    }
+    /**
+     * Get the original order id value.
+     *
+     * @return an <code>OrderID</code> value
+     */
+    public OrderID getOrigOrdId()
+    {
+        return getOriginalOrderId();
+    }
+    /**
+     * Get the order status value.
+     *
+     * @return an <code>OrderStatus</code> value
+     */
+    public OrderStatus getOrdStatus()
+    {
+        return getOrderStatus();
+    }
+    /**
+     * Get the instrument symbol value.
+     *
+     * @return a <code>String<code> value
+     */
+    public String getSymbol()
+    {
+        return getInstrument() == null ? "" : getInstrument().getFullSymbol();
+    }
+    /**
+     * Get the orderQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getOrdQty()
+    {
+        return getOrderQuantity();
+    }
+    /**
+     * Get the cumulativeQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getCumQty()
+    {
+        return getCumulativeQuantity();
+    }
+    /**
+     * Get the leavesQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getLeavesQty()
+    {
+        return getLeavesQuantity();
+    }
+    /**
+     * Get the orderPrice value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getOrderPx()
+    {
+        return getOrderPrice();
+    }
+    /**
+     * Get the lastQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getLastQty()
+    {
+        return getLastQuantity();
+    }
+    /**
+     * Get the lastPrice value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getLastPx()
+    {
+        return getLastPrice();
+    }
+    /**
+     * Get the averagePrice value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getAvgPx()
+    {
+        return getAveragePrice();
+    }
+    /**
      * Get the trader name value.
      *
      * @return a <code>String</code> value

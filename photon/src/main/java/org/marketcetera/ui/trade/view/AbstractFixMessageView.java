@@ -1,5 +1,7 @@
 package org.marketcetera.ui.trade.view;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,8 +18,6 @@ import org.marketcetera.core.PlatformServices;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
@@ -39,7 +39,6 @@ import org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType;
 import org.marketcetera.ui.trade.service.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.quickfix.AnalyzedMessage;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
@@ -341,26 +340,43 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         viewFixMessageDetailsMenuItem = new MenuItem("View FIX Message Details");
         copyOrderMenuItem = new MenuItem("Copy");
         copyOrderMenuItem.setOnAction(event -> {
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            ClipboardContent clipboardContent = new ClipboardContent();
-            Collection<FixClazz> selectedItems = getSelectedItems();
-            StringBuilder output = new StringBuilder();
-            for(FixClazz report : selectedItems) {
-                quickfix.Message fixMessage = report.getMessage();
-                try {
-                    output.append(new AnalyzedMessage(FIXMessageUtil.getDataDictionary(FIXVersion.getFIXVersion(fixMessage)),
-                                                      fixMessage).toString());
-                    output.append(StringUtils.LF);
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(getClass(),
-                                          e,
-                                          "Unable to generate pretty string for {}",
-                                          fixMessage);
-                    output.append(FIXMessageUtil.toHumanDelimitedString(fixMessage)).append(StringUtils.LF);
+            try {
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent clipboardContent = new ClipboardContent();
+                Collection<FixClazz> selectedItems = getSelectedItems();
+                StringBuilder output = new StringBuilder();
+                boolean commaNeeded = false;
+                for(TableColumn<FixClazz,?> column : reportsTableView.getColumns()) {
+                    if(commaNeeded) {
+                        output.append(',');
+                    }
+                    output.append(column.getText());
+                    commaNeeded = true;
                 }
+                output.append(StringUtils.LF);
+                // need to be able to retrieve the field from the column header name
+                for(FixClazz report : selectedItems) {
+                    commaNeeded = false;
+                    for(TableColumn<FixClazz,?> column : reportsTableView.getColumns()) {
+                        if(commaNeeded) {
+                            output.append(',');
+                        }
+                        try {
+                            output.append(getFieldValue(report,column.getText()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        commaNeeded = true;
+                    }
+                    output.append(StringUtils.LF);
+                }
+                clipboardContent.putString(output.toString());
+                clipboard.setContent(clipboardContent);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            clipboardContent.putString(output.toString());
-            clipboard.setContent(clipboardContent);
         });
         viewFixMessageDetailsMenuItem.setOnAction(event -> {
             Collection<FixClazz> selectedItems = getSelectedItems();
@@ -374,6 +390,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 uiMessageService.post(viewFixMessageDetailsEvent);
             }
         });
+        viewFixMessageDetailsMenuItem.disableProperty().set(!allowViewFixMessageDetailsContextMenuAction());
         // TODO need Add Report Action
         if(authzHelperService.hasPermission(TradePermissions.SendOrderAction)) { 
             reportsTableContextMenu.getItems().addAll(cancelOrderMenuItem,
@@ -390,6 +407,45 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         inTableView.setContextMenu(reportsTableContextMenu);
     }
     /**
+     * Indicates if the <code>View Fix Message Details</code> action should be enabled by default.
+     *
+     * @return a <code>boolean</code> value
+     */
+    protected boolean allowViewFixMessageDetailsContextMenuAction()
+    {
+        return true;
+    }
+    /**
+     * Get the string value of the given field from the given item.
+     *
+     * @param inItem a <code>FixClazz</code> value
+     * @param inColumnHeader a <code>String</code> value
+     * @return a <code>String</code> value
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     */
+    protected String getFieldValue(FixClazz inItem,
+                                   String inColumnHeader)
+            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    {
+        String methodName = "get" + StringUtils.capitalize(inColumnHeader);
+        Method getterMethod = inItem.getClass().getMethod(methodName);
+        Object value = getterMethod.invoke(inItem);
+        if(value == null) {
+            return "";
+        }
+        if(value instanceof BigDecimal) {
+            return ((BigDecimal)value).toPlainString();
+        }
+        if(value instanceof Date) {
+            return TimeFactoryImpl.FULL_MILLISECONDS.print(((Date)value).getTime());
+        }
+        return String.valueOf(value);
+    }
+    /**
      * Enable or disable context menu items based on the given selected row item.
      *
      * @param inSelectedItems a <code>Collection&lt;FixClazz&gt;</code> value
@@ -403,17 +459,21 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             copyOrderMenuItem.setDisable(true);
             return;
         }
-        // any report can be viewed or copied
-        viewFixMessageDetailsMenuItem.setDisable(false);
+        // any report can be viewed or copied unless forbidden by the subclass
+        viewFixMessageDetailsMenuItem.setDisable(!allowViewFixMessageDetailsContextMenuAction());
         copyOrderMenuItem.setDisable(false);
         // enable the cancel and replace options only if all the reports in the selection are cancellable
         boolean disable = false;
-        for(FixClazz report : inSelectedItems) {
-            OrderStatus orderStatus = report.getOrderStatus();
-            if(!orderStatus.isCancellable()) {
-                disable = true;
-                break;
+        if(includeOrderStatusColumn()) {
+            for(FixClazz report : inSelectedItems) {
+                OrderStatus orderStatus = report.getOrderStatus();
+                if(!orderStatus.isCancellable()) {
+                    disable = true;
+                    break;
+                }
             }
+        } else {
+            disable = true;
         }
         cancelOrderMenuItem.setDisable(disable);
         replaceOrderMenuItem.setDisable(disable);
@@ -665,93 +725,93 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
     protected void initializeColumns(TableView<FixClazz> inTableView)
     {
         transactTimeColumn = new TableColumn<>("TransactTime"); 
-        sendingTimeColumn = new TableColumn<>("SendingTime"); 
-        orderIdColumn = new TableColumn<>("OrdId"); 
-        origOrderIdColumn = new TableColumn<>("OrigOrdId"); 
-        orderStatusColumn = new TableColumn<>("OrdStatus"); 
-        sideColumn = new TableColumn<>("Side"); 
-        sideColumn.setCellValueFactory(new PropertyValueFactory<>("side"));
-        symbolColumn = new TableColumn<>("Symbol"); 
-        symbolColumn.setCellValueFactory(new PropertyValueFactory<>("instrument"));
-        symbolColumn.setCellFactory(tableColumn -> renderInstrumentCell(tableColumn));
-        ordQtyColumn = new TableColumn<>("OrdQty"); 
-        cumQtyColumn = new TableColumn<>("CumQty"); 
-        cumQtyColumn.setCellValueFactory(new PropertyValueFactory<>("cumulativeQuantity"));
-        cumQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        leavesQtyColumn = new TableColumn<>("LeavesQty"); 
-        orderPriceColumn = new TableColumn<>("OrderPx"); 
-        averagePriceColumn = new TableColumn<>("AvgPx"); 
-        averagePriceColumn.setCellValueFactory(new PropertyValueFactory<>("averagePrice"));
-        averagePriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
-        accountColumn = new TableColumn<>("Account"); 
-        lastQtyColumn = new TableColumn<>("LastQty"); 
-        lastPriceColumn = new TableColumn<>("LastPx"); 
-        exchangeColumn = new TableColumn<>("Exchange"); 
-        brokerIdColumn = new TableColumn<>("BrokerId"); 
-        traderColumn = new TableColumn<>("Trader"); 
         if(includeTransactTimeColumn()) {
             transactTimeColumn.setCellValueFactory(new PropertyValueFactory<>("transactTime"));
             transactTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
             inTableView.getColumns().add(transactTimeColumn);
         }
+        sendingTimeColumn = new TableColumn<>("SendingTime"); 
         if(includeSendingTimeColumn()) {
             sendingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("sendingTime"));
             sendingTimeColumn.setCellFactory(tableColumn -> renderDateCell(tableColumn));
             inTableView.getColumns().add(sendingTimeColumn);
         }
+        orderIdColumn = new TableColumn<>("OrdId"); 
         if(includeOrderIdColumn()) {
-            orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
+            orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("ordId"));
             inTableView.getColumns().add(orderIdColumn);
         }
+        origOrderIdColumn = new TableColumn<>("OrigOrdId"); 
         if(includeOriginalOrderIdColumn()) {
-            origOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("originalOrderId"));
+            origOrderIdColumn.setCellValueFactory(new PropertyValueFactory<>("origOrdId"));
             inTableView.getColumns().add(origOrderIdColumn);
         }
+        orderStatusColumn = new TableColumn<>("OrdStatus"); 
         if(includeOrderStatusColumn()) {
-            orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+            orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("ordStatus"));
             inTableView.getColumns().add(orderStatusColumn);
         }
+        sideColumn = new TableColumn<>("Side"); 
+        sideColumn.setCellValueFactory(new PropertyValueFactory<>("side"));
         inTableView.getColumns().add(sideColumn);
+        symbolColumn = new TableColumn<>("Symbol"); 
+        symbolColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
+//        symbolColumn.setCellFactory(tableColumn -> renderInstrumentCell(tableColumn));
         inTableView.getColumns().add(symbolColumn);
+        ordQtyColumn = new TableColumn<>("OrdQty"); 
         if(includeOrderQuantityColumn()) {
-            ordQtyColumn.setCellValueFactory(new PropertyValueFactory<>("orderQuantity"));
+            ordQtyColumn.setCellValueFactory(new PropertyValueFactory<>("ordQty"));
             ordQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
             inTableView.getColumns().add(ordQtyColumn);
         }
+        cumQtyColumn = new TableColumn<>("CumQty"); 
+        cumQtyColumn.setCellValueFactory(new PropertyValueFactory<>("cumQty"));
+        cumQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
         inTableView.getColumns().add(cumQtyColumn);
+        leavesQtyColumn = new TableColumn<>("LeavesQty"); 
         if(includeLeavesQuantityColumn()) {
-            leavesQtyColumn.setCellValueFactory(new PropertyValueFactory<>("leavesQuantity"));
+            leavesQtyColumn.setCellValueFactory(new PropertyValueFactory<>("leavesQty"));
             leavesQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
             inTableView.getColumns().add(leavesQtyColumn);
         }
+        orderPriceColumn = new TableColumn<>("OrderPx"); 
         if(includeOrderPriceColumn()) {
-            orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPrice"));
+            orderPriceColumn.setCellValueFactory(new PropertyValueFactory<>("orderPx"));
             orderPriceColumn.setCellFactory(tableColumn -> renderOrderPriceCell(tableColumn));
             inTableView.getColumns().add(orderPriceColumn);
         }
-        inTableView.getColumns().add(averagePriceColumn);
+        averagePriceColumn = new TableColumn<>("AvgPx"); 
+        averagePriceColumn.setCellValueFactory(new PropertyValueFactory<>("avgPx"));
+        averagePriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+        accountColumn = new TableColumn<>("Account"); 
         if(includeAccountColumn()) {
             accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
             inTableView.getColumns().add(accountColumn);
         }
+        lastQtyColumn = new TableColumn<>("LastQty"); 
         if(includeLastQuantityColumn()) {
-            lastQtyColumn.setCellValueFactory(new PropertyValueFactory<>("lastQuantity"));
+            lastQtyColumn.setCellValueFactory(new PropertyValueFactory<>("lastQty"));
             lastQtyColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
             inTableView.getColumns().add(lastQtyColumn);
         }
+        lastPriceColumn = new TableColumn<>("LastPx"); 
         if(includeLastPriceColumn()) {
-            lastPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPrice"));
+            lastPriceColumn.setCellValueFactory(new PropertyValueFactory<>("lastPx"));
             lastPriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
             inTableView.getColumns().add(lastPriceColumn);
         }
+        exchangeColumn = new TableColumn<>("Exchange"); 
         if(includeExchangeColumn()) {
             exchangeColumn.setCellValueFactory(new PropertyValueFactory<>("exchange"));
             inTableView.getColumns().add(exchangeColumn);
         }
+        brokerIdColumn = new TableColumn<>("BrokerId"); 
         if(includeBrokerIdColumn()) {
             brokerIdColumn.setCellValueFactory(new PropertyValueFactory<>("brokerId"));
             inTableView.getColumns().add(brokerIdColumn);
         }
+        traderColumn = new TableColumn<>("Trader"); 
+        inTableView.getColumns().add(averagePriceColumn);
         if(includeTraderColumn()) {
             traderColumn.setCellValueFactory(new PropertyValueFactory<>("trader"));
             inTableView.getColumns().add(traderColumn);

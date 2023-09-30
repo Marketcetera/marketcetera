@@ -473,6 +473,78 @@ public class DisplayExecutionReportSummary
         }
     }
     /**
+     * Get the order id value.
+     *
+     * @return an <code>OrderID</code> value
+     */
+    public OrderID getOrdId()
+    {
+        return getOrderId();
+    }
+    /**
+     * Get the order status value.
+     *
+     * @return an <code>OrderStatus</code> value
+     */
+    public OrderStatus getOrdStatus()
+    {
+        return getOrderStatus();
+    }
+    /**
+     * Get the orderQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getOrdQty()
+    {
+        return getOrderQuantity();
+    }
+    /**
+     * Get the cumulativeQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getCumQty()
+    {
+        return getCumulativeQuantity();
+    }
+    /**
+     * Get the leavesQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getLeavesQty()
+    {
+        return getLeavesQuantity();
+    }
+    /**
+     * Get the lastQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getLastQty()
+    {
+        return getLastQuantity();
+    }
+    /**
+     * Get the lastPrice value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getLastPx()
+    {
+        return getLastPrice();
+    }
+    /**
+     * Get the averagePrice value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getAvgPx()
+    {
+        return getAveragePrice();
+    }
+    /**
      * tracks whether this report was just canceled
      */
     private final BooleanProperty cancelProperty = new SimpleBooleanProperty(false);
