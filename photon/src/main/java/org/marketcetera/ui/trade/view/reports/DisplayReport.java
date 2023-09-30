@@ -44,7 +44,7 @@ public class DisplayReport
      *
      * @return an <code>OrderID</code> value
      */
-    public OrderID getOrderID()
+    public OrderID getOrdId()
     {
         return report.getOrderID();
     }
@@ -53,7 +53,7 @@ public class DisplayReport
      *
      * @return an <code>OrderID</code> value
      */
-    public OrderID getOriginalOrderId()
+    public OrderID getOrigOrdId()
     {
         return originalOrderId;
     }
@@ -195,6 +195,15 @@ public class DisplayReport
     {
         return report.getOrderID();
     }
+    /**
+     * Get the order status value.
+     *
+     * @return an <code>OrderStatus</code> value
+     */
+    public OrderStatus getOrdStatus()
+    {
+        return getOrderStatus();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.HasOrderStatus#getOrderStatus()
      */
@@ -213,6 +222,15 @@ public class DisplayReport
         return side;
     }
     /**
+     * Get the instrument symbol value.
+     *
+     * @return a <code>String<code> value
+     */
+    public String getSymbol()
+    {
+        return getInstrument() == null ? "" : getInstrument().getFullSymbol();
+    }
+    /**
      * Get the instrument value.
      *
      * @return an <code>Instrument</code> value
@@ -226,7 +244,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getOrderQuantity()
+    public BigDecimal getOrdQty()
     {
         return orderQuantity;
     }
@@ -235,7 +253,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getCumulativeQuantity()
+    public BigDecimal getCumQty()
     {
         return cumulativeQuantity;
     }
@@ -244,7 +262,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getLeavesQuantity()
+    public BigDecimal getLeavesQty()
     {
         return leavesQuantity;
     }
@@ -253,7 +271,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getOrderPrice()
+    public BigDecimal getOrderPx()
     {
         return orderPrice;
     }
@@ -262,7 +280,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getAveragePrice()
+    public BigDecimal getAvgPx()
     {
         return averagePrice;
     }
@@ -280,7 +298,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getLastQuantity()
+    public BigDecimal getLastQty()
     {
         return lastQuantity;
     }
@@ -289,7 +307,7 @@ public class DisplayReport
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getLastPrice()
+    public BigDecimal getLastPx()
     {
         return lastPrice;
     }

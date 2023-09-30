@@ -1,5 +1,7 @@
 package org.marketcetera.ui.trade.view.averageprice;
 
+import java.math.BigDecimal;
+
 import org.marketcetera.trade.AverageFillPrice;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
@@ -65,6 +67,33 @@ public class DisplayAverageFillPrice
     public OrderStatus getOrderStatus()
     {
         throw new UnsupportedOperationException();
+    }
+    /**
+     * Get the instrument symbol value.
+     *
+     * @return a <code>String<code> value
+     */
+    public String getSymbol()
+    {
+        return getInstrument() == null ? "" : getInstrument().getFullSymbol();
+    }
+    /**
+     * Get the cumulativeQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getCumQty()
+    {
+        return getCumulativeQuantity();
+    }
+    /**
+     * Get the averagePrice value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getAvgPx()
+    {
+        return getAveragePrice();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.trade.executionreport.view.FixMessageDisplayType#isFillProperty()

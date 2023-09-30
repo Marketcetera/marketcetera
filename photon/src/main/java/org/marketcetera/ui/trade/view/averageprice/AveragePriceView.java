@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.Region;
 
 /* $License$ */
@@ -51,6 +52,22 @@ public class AveragePriceView
     public String getViewName()
     {
         return NAME;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#allowViewFixMessageDetailsContextMenuAction()
+     */
+    @Override
+    protected boolean allowViewFixMessageDetailsContextMenuAction()
+    {
+        return false;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#getTableSelectionMode()
+     */
+    @Override
+    protected SelectionMode getTableSelectionMode()
+    {
+        return SelectionMode.MULTIPLE;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ui.trade.view.AbstractFixMessageView#getClientReports(org.marketcetera.persist.PageRequest)
