@@ -32,6 +32,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.Suggestion;
@@ -709,7 +710,11 @@ public class OrderTicketView
                                         adviceSeparator,
                                         adviceLabel);
         serviceManager.getService(AdminClientService.class).addClientStatusListener(this);
-        fillFromExecutionReport(replaceExecutionReportOption);
+        if(replaceExecutionReportOption.isPresent()) {
+            fillFromExecutionReport(replaceExecutionReportOption.get());
+        } else if(suggestionOption.isPresent()) {
+            fillFromSuggestion(suggestionOption.get());
+        }
     }
     /**
      * Create a new OrderTicketView instance.
@@ -805,46 +810,78 @@ public class OrderTicketView
         }
     }
     /**
-     * Format the order ticket from the given report option, if present.
+     * Format the order ticket from the given suggestion.
      *
-     * @param inReportOption an <code>Optional&lt;ExecutionReport&gt;</code> value
+     * @param inSuggestion a <code>Suggestion</code> value
      */
-    private void fillFromExecutionReport(Optional<ExecutionReport> inReportOption)
+    private void fillFromSuggestion(Suggestion inSuggestion)
     {
-        if(inReportOption.isEmpty()) {
-            return;
+        if(inSuggestion instanceof OrderSingleSuggestion) {
+            OrderSingleSuggestion orderSingleSuggestion = (OrderSingleSuggestion)inSuggestion;
+            OrderSingle suggestedOrder = orderSingleSuggestion.getOrder();
+            if(suggestedOrder.getSide() != null) {
+                sideComboBox.valueProperty().set(suggestedOrder.getSide());
+            }
+            if(suggestedOrder.getQuantity() != null) {
+                quantityTextField.setText(suggestedOrder.getQuantity().toPlainString());
+            }
+            if(suggestedOrder.getInstrument() != null) {
+                symbolTextField.setText(suggestedOrder.getInstrument().getFullSymbol());
+            }
+            if(suggestedOrder.getOrderType() != null) {
+                orderTypeComboBox.setValue(suggestedOrder.getOrderType());
+            }
+            if(suggestedOrder.getPrice() != null) {
+                priceTextField.setText(suggestedOrder.getPrice().toPlainString());
+            }
+            if(suggestedOrder.getTimeInForce() != null) {
+                timeInForceComboBox.setValue(suggestedOrder.getTimeInForce());
+            }
+            if(suggestedOrder.getText() != null) {
+                textTextField.setText(suggestedOrder.getText());
+            }
+            if(suggestedOrder.getAccount() != null) {
+                accountTextField.setText(suggestedOrder.getAccount());
+            }
         }
-        ExecutionReport report = inReportOption.get();
-        if(report.getBrokerId() != null) {
-            brokerComboBox.valueProperty().set(report.getBrokerId());
+    }
+    /**
+     * Format the order ticket from the given report.
+     *
+     * @param inExecutionReport an <code>ExecutionReport</code> value
+     */
+    private void fillFromExecutionReport(ExecutionReport inExecutionReport)
+    {
+        if(inExecutionReport.getBrokerId() != null) {
+            brokerComboBox.valueProperty().set(inExecutionReport.getBrokerId());
         }
-        if(report.getSide() != null) {
-            sideComboBox.valueProperty().set(report.getSide());
+        if(inExecutionReport.getSide() != null) {
+            sideComboBox.valueProperty().set(inExecutionReport.getSide());
         }
-        if(report.getLeavesQuantity() != null) {
-            quantityTextField.setText(report.getLeavesQuantity().toPlainString());
+        if(inExecutionReport.getLeavesQuantity() != null) {
+            quantityTextField.setText(inExecutionReport.getLeavesQuantity().toPlainString());
         }
-        if(report.getInstrument() != null) {
-            symbolTextField.setText(report.getInstrument().getSymbol());
+        if(inExecutionReport.getInstrument() != null) {
+            symbolTextField.setText(inExecutionReport.getInstrument().getSymbol());
         }
-        if(report.getOrderType() != null) {
-            orderTypeComboBox.setValue(report.getOrderType());
+        if(inExecutionReport.getOrderType() != null) {
+            orderTypeComboBox.setValue(inExecutionReport.getOrderType());
         }
-        if(report.getPrice() != null) {
-            priceTextField.setText(report.getPrice().toPlainString());
+        if(inExecutionReport.getPrice() != null) {
+            priceTextField.setText(inExecutionReport.getPrice().toPlainString());
         }
-        if(report.getTimeInForce() != null) {
-            timeInForceComboBox.setValue(report.getTimeInForce());
+        if(inExecutionReport.getTimeInForce() != null) {
+            timeInForceComboBox.setValue(inExecutionReport.getTimeInForce());
         }
-        if(report.getText() != null) {
-            textTextField.setText(report.getText());
+        if(inExecutionReport.getText() != null) {
+            textTextField.setText(inExecutionReport.getText());
         }
-        if(report.getAccount() != null) {
-            accountTextField.setText(report.getAccount());
+        if(inExecutionReport.getAccount() != null) {
+            accountTextField.setText(inExecutionReport.getAccount());
         }
-        if(report.getLastMarket() != null) {
+        if(inExecutionReport.getLastMarket() != null) {
             // TODO this might not be correct
-            exDestinationTextField.setText(report.getLastMarket());
+            exDestinationTextField.setText(inExecutionReport.getLastMarket());
         }
     }
     /**
