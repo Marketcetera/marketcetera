@@ -421,11 +421,11 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
      * @param inItem a <code>FixClazz</code> value
      * @param inColumnHeader a <code>String</code> value
      * @return a <code>String</code> value
-     * @throws SecurityException 
-     * @throws NoSuchMethodException 
-     * @throws InvocationTargetException 
-     * @throws IllegalArgumentException 
-     * @throws IllegalAccessException 
+     * @throws SecurityException if the method for the column cannot be accessed
+     * @throws NoSuchMethodException if the method for the column does not exist
+     * @throws InvocationTargetException if the method for the column cannot be executed
+     * @throws IllegalArgumentException if the method for the column cannot be executed 
+     * @throws IllegalAccessException if the method for the column cannot be executed
      */
     protected String getFieldValue(FixClazz inItem,
                                    String inColumnHeader)
@@ -508,30 +508,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                 this.setGraphic(null);
                 if(!isEmpty){
                     this.setText(isoDateFormatter.print(new DateTime(inItem)));
-                }
-            }
-        };
-        return tableCell;
-    }
-    /**
-     * Render the given column as an Instrument cell.
-     *
-     * @param inTableColumn a <code>TableColumn&lt;FixClazz,Instrument&gt;</code> value
-     * @return a <code>TableCell&lt;FixClazz,Instrument&gt;</code> value
-     */
-    protected TableCell<FixClazz,Instrument> renderInstrumentCell(TableColumn<FixClazz,Instrument> inTableColumn)
-    {
-        TableCell<FixClazz,Instrument> tableCell = new TableCell<>() {
-            @Override
-            protected void updateItem(Instrument inItem,
-                                      boolean isEmpty)
-            {
-                super.updateItem(inItem,
-                                 isEmpty);
-                this.setText(null);
-                this.setGraphic(null);
-                if(!isEmpty && inItem != null){
-                    this.setText(inItem.getFullSymbol());
                 }
             }
         };
@@ -756,7 +732,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         inTableView.getColumns().add(sideColumn);
         symbolColumn = new TableColumn<>("Symbol"); 
         symbolColumn.setCellValueFactory(new PropertyValueFactory<>("symbol"));
-//        symbolColumn.setCellFactory(tableColumn -> renderInstrumentCell(tableColumn));
         inTableView.getColumns().add(symbolColumn);
         ordQtyColumn = new TableColumn<>("OrdQty"); 
         if(includeOrderQuantityColumn()) {
