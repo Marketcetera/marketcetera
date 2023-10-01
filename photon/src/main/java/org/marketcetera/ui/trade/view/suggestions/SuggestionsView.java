@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 
-import org.marketcetera.core.BigDecimalUtil;
-import org.marketcetera.core.PlatformServices;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
@@ -19,9 +18,6 @@ import org.marketcetera.ui.trade.event.SuggestionEvent;
 import org.marketcetera.ui.trade.service.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.nocrala.tools.texttablefmt.BorderStyle;
-import org.nocrala.tools.texttablefmt.ShownBorders;
-import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -336,56 +332,73 @@ public class SuggestionsView
      *
      * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
      */
-    private void doCopy(Collection<DisplaySuggestion> inSuggestions)
+    private void doCopy(Collection<DisplaySuggestion> selectedItems)
     {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putString(renderSuggestions(inSuggestions));
+        StringBuilder output = new StringBuilder();
+        boolean commaNeeded = false;
+        for(TableColumn<DisplaySuggestion,?> column : suggestionTable.getColumns()) {
+            if(commaNeeded) {
+                output.append(',');
+            }
+            output.append(column.getText());
+            commaNeeded = true;
+        }
+        output.append(StringUtils.LF);
+        // need to be able to retrieve the field from the column header name
+        for(DisplaySuggestion suggestion : selectedItems) {
+            commaNeeded = false;
+            for(TableColumn<DisplaySuggestion,?> column : suggestionTable.getColumns()) {
+                if(commaNeeded) {
+                    output.append(',');
+                }
+                try {
+                    output.append(PhotonServices.getFieldValue(suggestion,column.getText()));
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
+                }
+                commaNeeded = true;
+            }
+            output.append(StringUtils.LF);
+        }
+        clipboardContent.putString(output.toString());
         clipboard.setContent(clipboardContent);
     }
-    /**
-     * Create a human-readable representation of the given suggestions.
-     *
-     * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
-     * @return a <code>String</code> value
-     */
-    private String renderSuggestions(Collection<DisplaySuggestion> inSuggestions)
-    {
-        Table table = new Table(8,
-                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
-                                ShownBorders.ALL,
-                                false);
-        table.addCell("Trade Suggestions",
-                      PlatformServices.cellStyle,
-                      8);
-        table.addCell("Identifier",
-                      PlatformServices.cellStyle);
-        table.addCell("Score",
-                      PlatformServices.cellStyle);
-        table.addCell("Side",
-                      PlatformServices.cellStyle);
-        table.addCell("Instrument",
-                      PlatformServices.cellStyle);
-        table.addCell("Quantity",
-                      PlatformServices.cellStyle);
-        table.addCell("Price",
-                      PlatformServices.cellStyle);
-        table.addCell("Order Type",
-                      PlatformServices.cellStyle);
-        table.addCell("Timestamp",
-                      PlatformServices.cellStyle);
-        for(DisplaySuggestion suggestion : inSuggestions) {
-            table.addCell(suggestion.identifierProperty().get());
-            table.addCell(BigDecimalUtil.renderDecimal(suggestion.scoreProperty().get(),4,4));
-            table.addCell(suggestion.sideProperty().get().name());
-            table.addCell(suggestion.instrumentProperty().get().getFullSymbol());
-            table.addCell(BigDecimalUtil.render(suggestion.quantityProperty().get()));
-            table.addCell(BigDecimalUtil.renderCurrency(suggestion.priceProperty().get()));
-            table.addCell(suggestion.orderTypeProperty().get().name());
-            table.addCell(String.valueOf(suggestion.timestampProperty().get()));
-        }
-        return table.render();
-    }
+//    /**
+//     * Get the string value of the given field from the given item.
+//     *
+//     * @param inItem a <code>FixClazz</code> value
+//     * @param inColumnHeader a <code>String</code> value
+//     * @return a <code>String</code> value
+//     * @throws SecurityException if the method for the column cannot be accessed
+//     * @throws NoSuchMethodException if the method for the column does not exist
+//     * @throws InvocationTargetException if the method for the column cannot be executed
+//     * @throws IllegalArgumentException if the method for the column cannot be executed 
+//     * @throws IllegalAccessException if the method for the column cannot be executed
+//     */
+//    protected String getFieldValue(DisplaySuggestion inItem,
+//                                   String inColumnHeader)
+//            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+//    {
+//        String methodName = ("get" + StringUtils.capitalize(inColumnHeader)).replaceAll(" ","");
+//        Method getterMethod = inItem.getClass().getMethod(methodName);
+//        Object value = getterMethod.invoke(inItem);
+//        if(value == null) {
+//            return "";
+//        }
+//        if(value instanceof BigDecimal) {
+//            return ((BigDecimal)value).toPlainString();
+//        }
+//        if(value instanceof Date) {
+//            return TimeFactoryImpl.FULL_MILLISECONDS.print(((Date)value).getTime());
+//        }
+//        if(value instanceof Instrument) {
+//            return inItem.getInstrument().getFullSymbol();
+//        }
+//        return String.valueOf(value);
+//    }
     /**
      * provides access to the application context
      */

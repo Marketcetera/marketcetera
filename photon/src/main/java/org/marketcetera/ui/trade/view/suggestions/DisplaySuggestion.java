@@ -68,6 +68,15 @@ public class DisplaySuggestion
         instrumentProperty.set(inInstrument);
     }
     /**
+     * Get the identifier value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getIdentifier()
+    {
+        return identifierProperty().get();
+    }
+    /**
      * Get the identifierProperty value.
      *
      * @return a <code>ReadOnlyStringProperty</code> value
@@ -75,6 +84,15 @@ public class DisplaySuggestion
     public ReadOnlyStringProperty identifierProperty()
     {
         return identifierProperty;
+    }
+    /**
+     * Get the score property.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getScore()
+    {
+        return scoreProperty().get();
     }
     /**
      * Get the scoreProperty value.
@@ -86,6 +104,15 @@ public class DisplaySuggestion
         return scoreProperty;
     }
     /**
+     * Get the side property.
+     *
+     * @return a <code>Side</code> value
+     */
+    public Side getSide()
+    {
+        return sideProperty().get();
+    }
+    /**
      * Get the sideProperty value.
      *
      * @return a <code>ReadOnlyObjectProperty&lt;Side&gt;</code> value
@@ -95,6 +122,15 @@ public class DisplaySuggestion
         return sideProperty;
     }
     /**
+     * Get the quantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getQuantity()
+    {
+        return quantityProperty().get();
+    }
+    /**
      * Get the quantityProperty value.
      *
      * @return a <code>ReadOnlyObjectProperty&lt;BigDecimal&gt;</code> value
@@ -102,6 +138,15 @@ public class DisplaySuggestion
     public ReadOnlyObjectProperty<BigDecimal> quantityProperty()
     {
         return quantityProperty;
+    }
+    /**
+     * Get the price value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getPrice()
+    {
+        return priceProperty().get();
     }
     /**
      * Get the priceProperty value.
@@ -122,6 +167,15 @@ public class DisplaySuggestion
         return instrumentProperty;
     }
     /**
+     * Get the order type value.
+     *
+     * @return an <code>OrderType</code> value
+     */
+    public OrderType getOrderType()
+    {
+        return orderTypeProperty().get();
+    }
+    /**
      * Get the orderTypeProperty value.
      *
      * @return a <code>ReadOnlyObjectProperty&lt;OrderType&gt;</code> value
@@ -129,6 +183,15 @@ public class DisplaySuggestion
     public ReadOnlyObjectProperty<OrderType> orderTypeProperty()
     {
         return orderTypeProperty;
+    }
+    /**
+     * Get the timestamp value.
+     *
+     * @return a <code>Date</code> value
+     */
+    public Date getTimestamp()
+    {
+        return timestampProperty().get();
     }
     /**
      * Get the timestampProperty value.
