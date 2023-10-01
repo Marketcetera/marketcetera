@@ -62,11 +62,10 @@ public class TestStrategy
         strategyClient.emitMessage(Severity.INFO,
                                    "Starting test strategy");
         MarketDataRequestBuilder marketDataRequestBuilder = MarketDataRequestBuilder.newRequest();
-        marketDataRequestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK)
-            .withSymbols("AAPL,METC");
+        marketDataRequestBuilder.withContent(Content.TOP_OF_BOOK,Content.LATEST_TICK).withSymbols("AAPL,METC");
         MarketDataRequest request = marketDataRequestBuilder.create();
         marketDataRequestId = marketDataClient.request(request,
-                                 new MarketDataListener() {
+                                                       new MarketDataListener() {
             /* (non-Javadoc)
              * @see org.marketcetera.marketdata.MarketDataListener#receiveMarketData(org.marketcetera.event.Event)
              */
@@ -136,16 +135,41 @@ public class TestStrategy
         if(quote == null) {
             return;
         }
+        issueSuggestion(quote.getInstrument(),
+                        side,
+                        OrderType.Limit,
+                        quote.getPrice(),
+                        new BigDecimal(10*(random.nextInt(10)+1)));
+    }
+    /**
+     * Create an order suggestion using the cached market data.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inOrderType an <code>OrderType</code> value
+     * @param inPrice a <code>BigDecimal</code> value or <code>null</code>
+     * @param inQuantity a <code>BigDecimal</code> value
+     */
+    private void issueSuggestion(Instrument inInstrument,
+                                 Side inSide,
+                                 OrderType inOrderType,
+                                 BigDecimal inPrice,
+                                 BigDecimal inQuantity)
+    {
+        if(!createSuggestions) {
+            return;
+        }
         OrderSingleSuggestion orderSingleSuggestion = Factory.getInstance().createOrderSingleSuggestion();
         orderSingleSuggestion.setIdentifier("Test Strategy");
         orderSingleSuggestion.setScore(new BigDecimal(random.nextDouble()));
         OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
-        orderSingle.setInstrument(quote.getInstrument());
-        orderSingle.setOrderType(OrderType.Limit);
-        orderSingle.setPegToMidpoint(true);
-        orderSingle.setQuantity(new BigDecimal(10*(random.nextInt(10)+1)));
-        orderSingle.setPrice(quote.getPrice());
-        orderSingle.setSide(side);
+        orderSingle.setInstrument(inInstrument);
+        orderSingle.setOrderType(inOrderType);
+        orderSingle.setQuantity(inQuantity);
+        if(inPrice != null) {
+            orderSingle.setPrice(inPrice);
+        }
+        orderSingle.setSide(inSide);
         orderSingleSuggestion.setOrder(orderSingle);
         tradeClient.sendOrderSuggestion(orderSingleSuggestion);
     }

@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 
-import org.marketcetera.core.BigDecimalUtil;
-import org.marketcetera.core.PlatformServices;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
@@ -19,9 +18,6 @@ import org.marketcetera.ui.trade.event.SuggestionEvent;
 import org.marketcetera.ui.trade.service.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.nocrala.tools.texttablefmt.BorderStyle;
-import org.nocrala.tools.texttablefmt.ShownBorders;
-import org.nocrala.tools.texttablefmt.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -336,55 +332,39 @@ public class SuggestionsView
      *
      * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
      */
-    private void doCopy(Collection<DisplaySuggestion> inSuggestions)
+    private void doCopy(Collection<DisplaySuggestion> selectedItems)
     {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putString(renderSuggestions(inSuggestions));
-        clipboard.setContent(clipboardContent);
-    }
-    /**
-     * Create a human-readable representation of the given suggestions.
-     *
-     * @param inSuggestions a <code>Collection&lt;DisplaySuggestion&gt;</code> value
-     * @return a <code>String</code> value
-     */
-    private String renderSuggestions(Collection<DisplaySuggestion> inSuggestions)
-    {
-        Table table = new Table(8,
-                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
-                                ShownBorders.ALL,
-                                false);
-        table.addCell("Trade Suggestions",
-                      PlatformServices.cellStyle,
-                      8);
-        table.addCell("Identifier",
-                      PlatformServices.cellStyle);
-        table.addCell("Score",
-                      PlatformServices.cellStyle);
-        table.addCell("Side",
-                      PlatformServices.cellStyle);
-        table.addCell("Instrument",
-                      PlatformServices.cellStyle);
-        table.addCell("Quantity",
-                      PlatformServices.cellStyle);
-        table.addCell("Price",
-                      PlatformServices.cellStyle);
-        table.addCell("Order Type",
-                      PlatformServices.cellStyle);
-        table.addCell("Timestamp",
-                      PlatformServices.cellStyle);
-        for(DisplaySuggestion suggestion : inSuggestions) {
-            table.addCell(suggestion.identifierProperty().get());
-            table.addCell(BigDecimalUtil.renderDecimal(suggestion.scoreProperty().get(),4,4));
-            table.addCell(suggestion.sideProperty().get().name());
-            table.addCell(suggestion.instrumentProperty().get().getFullSymbol());
-            table.addCell(BigDecimalUtil.render(suggestion.quantityProperty().get()));
-            table.addCell(BigDecimalUtil.renderCurrency(suggestion.priceProperty().get()));
-            table.addCell(suggestion.orderTypeProperty().get().name());
-            table.addCell(String.valueOf(suggestion.timestampProperty().get()));
+        StringBuilder output = new StringBuilder();
+        boolean commaNeeded = false;
+        for(TableColumn<DisplaySuggestion,?> column : suggestionTable.getColumns()) {
+            if(commaNeeded) {
+                output.append(',');
+            }
+            output.append(column.getText());
+            commaNeeded = true;
         }
-        return table.render();
+        output.append(StringUtils.LF);
+        // need to be able to retrieve the field from the column header name
+        for(DisplaySuggestion suggestion : selectedItems) {
+            commaNeeded = false;
+            for(TableColumn<DisplaySuggestion,?> column : suggestionTable.getColumns()) {
+                if(commaNeeded) {
+                    output.append(',');
+                }
+                try {
+                    output.append(PhotonServices.getFieldValue(suggestion,column.getText()));
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
+                }
+                commaNeeded = true;
+            }
+            output.append(StringUtils.LF);
+        }
+        clipboardContent.putString(output.toString());
+        clipboard.setContent(clipboardContent);
     }
     /**
      * provides access to the application context

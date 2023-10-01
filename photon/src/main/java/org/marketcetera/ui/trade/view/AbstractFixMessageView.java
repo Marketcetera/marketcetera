@@ -1,7 +1,5 @@
 package org.marketcetera.ui.trade.view;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +28,7 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.TradeMessageListener;
 import org.marketcetera.trade.TradePermissions;
 import org.marketcetera.trade.client.SendOrderResponse;
+import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.events.NotificationEvent;
 import org.marketcetera.ui.service.SessionUser;
@@ -362,9 +361,10 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                             output.append(',');
                         }
                         try {
-                            output.append(getFieldValue(report,column.getText()));
+                            output.append(PhotonServices.getFieldValue(report,column.getText()));
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            SLF4JLoggerProxy.warn(AbstractFixMessageView.this,
+                                                  e);
                         }
                         commaNeeded = true;
                     }
@@ -414,36 +414,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
     protected boolean allowViewFixMessageDetailsContextMenuAction()
     {
         return true;
-    }
-    /**
-     * Get the string value of the given field from the given item.
-     *
-     * @param inItem a <code>FixClazz</code> value
-     * @param inColumnHeader a <code>String</code> value
-     * @return a <code>String</code> value
-     * @throws SecurityException if the method for the column cannot be accessed
-     * @throws NoSuchMethodException if the method for the column does not exist
-     * @throws InvocationTargetException if the method for the column cannot be executed
-     * @throws IllegalArgumentException if the method for the column cannot be executed 
-     * @throws IllegalAccessException if the method for the column cannot be executed
-     */
-    protected String getFieldValue(FixClazz inItem,
-                                   String inColumnHeader)
-            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
-    {
-        String methodName = "get" + StringUtils.capitalize(inColumnHeader);
-        Method getterMethod = inItem.getClass().getMethod(methodName);
-        Object value = getterMethod.invoke(inItem);
-        if(value == null) {
-            return "";
-        }
-        if(value instanceof BigDecimal) {
-            return ((BigDecimal)value).toPlainString();
-        }
-        if(value instanceof Date) {
-            return TimeFactoryImpl.FULL_MILLISECONDS.print(((Date)value).getTime());
-        }
-        return String.valueOf(value);
     }
     /**
      * Enable or disable context menu items based on the given selected row item.
