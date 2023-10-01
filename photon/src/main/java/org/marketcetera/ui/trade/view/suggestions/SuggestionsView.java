@@ -366,39 +366,6 @@ public class SuggestionsView
         clipboardContent.putString(output.toString());
         clipboard.setContent(clipboardContent);
     }
-//    /**
-//     * Get the string value of the given field from the given item.
-//     *
-//     * @param inItem a <code>FixClazz</code> value
-//     * @param inColumnHeader a <code>String</code> value
-//     * @return a <code>String</code> value
-//     * @throws SecurityException if the method for the column cannot be accessed
-//     * @throws NoSuchMethodException if the method for the column does not exist
-//     * @throws InvocationTargetException if the method for the column cannot be executed
-//     * @throws IllegalArgumentException if the method for the column cannot be executed 
-//     * @throws IllegalAccessException if the method for the column cannot be executed
-//     */
-//    protected String getFieldValue(DisplaySuggestion inItem,
-//                                   String inColumnHeader)
-//            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
-//    {
-//        String methodName = ("get" + StringUtils.capitalize(inColumnHeader)).replaceAll(" ","");
-//        Method getterMethod = inItem.getClass().getMethod(methodName);
-//        Object value = getterMethod.invoke(inItem);
-//        if(value == null) {
-//            return "";
-//        }
-//        if(value instanceof BigDecimal) {
-//            return ((BigDecimal)value).toPlainString();
-//        }
-//        if(value instanceof Date) {
-//            return TimeFactoryImpl.FULL_MILLISECONDS.print(((Date)value).getTime());
-//        }
-//        if(value instanceof Instrument) {
-//            return inItem.getInstrument().getFullSymbol();
-//        }
-//        return String.valueOf(value);
-//    }
     /**
      * provides access to the application context
      */
