@@ -2,6 +2,8 @@ package org.marketcetera.trade;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.admin.User;
+
 /* $License$ */
 
 /**
@@ -11,20 +13,20 @@ import java.math.BigDecimal;
  * @version $Id$
  * @since $Release$
  */
-public class OrderCancelSuggestionImpl
+public class SimpleOrderCancelSuggestion
         extends AbstractSuggestion
         implements OrderCancelSuggestion
 {
     /**
      * Create a new OrderCancelSuggestionImpl instance.
      */
-    public OrderCancelSuggestionImpl() {}
+    public SimpleOrderCancelSuggestion() {}
     /**
      * Create a new OrderCancelSuggestionImpl instance.
      *
      * @param inOrderCancel an <code>OrderCancel</code> value
      */
-    public OrderCancelSuggestionImpl(OrderCancel inOrderCancel)
+    public SimpleOrderCancelSuggestion(OrderCancel inOrderCancel)
     {
         setOrderCancel(inOrderCancel);
     }
@@ -33,14 +35,17 @@ public class OrderCancelSuggestionImpl
      *
      * @param inIdentifier a <code>String</code> value
      * @param inScore a <code>BigDecimal</code> value
+     * @param inUser a <code>User</code> value
      * @param inOrderCancel an <code>OrderCancel</code> value
      */
-    public OrderCancelSuggestionImpl(String inIdentifier,
-                                      BigDecimal inScore,
-                                      OrderCancel inOrderCancel)
+    public SimpleOrderCancelSuggestion(String inIdentifier,
+                                       BigDecimal inScore,
+                                       User inUser,
+                                       OrderCancel inOrderCancel)
     {
         super(inIdentifier,
-              inScore);
+              inScore,
+              inUser);
         setOrderCancel(inOrderCancel);
     }
     /* (non-Javadoc)
@@ -66,7 +71,7 @@ public class OrderCancelSuggestionImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("OrderCancelSuggestionImpl [identifier=").append(getIdentifier()).append(", score=")
+        builder.append("OrderCancelSuggestionImpl [user=").append(getUser()).append(", identifier=").append(getIdentifier()).append(", score=")
                 .append(getScore()).append(", orderCancel=").append(orderCancel).append("]");
         return builder.toString();
     }

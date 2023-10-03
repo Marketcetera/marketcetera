@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.User;
+import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.brokers.service.BrokerService;
@@ -347,14 +348,16 @@ public class TradeRpcService<SessionClazz>
                 TradeRpc.SendSuggestionResponse.Builder responseBuilder = TradeRpc.SendSuggestionResponse.newBuilder();
                 for(TradeTypesRpc.Suggestion rpcSuggestion : inRequest.getSuggestionList()) {
                     try {
-                        Suggestion matpSuggestion = TradeRpcUtil.getSuggestion(rpcSuggestion);
-//                        User user = userService.findByName(sessionHolder.getUser());
-                        // TODO need to attach a user to a suggestion
+                        Suggestion matpSuggestion = TradeRpcUtil.getSuggestion(rpcSuggestion,
+                                                                               userFactory);
+                        // override the user that might (or might not) be set in the suggestion and set the owner to the caller
+                        User user = userService.findByName(sessionHolder.getUser());
+                        matpSuggestion.setUser(user);
                         tradeService.reportSuggestion(matpSuggestion);
                     } catch (Exception e) {
                         SLF4JLoggerProxy.warn(TradeRpcService.this,
                                               e,
-                                              "Unable to submit order {}",
+                                              "Unable to submit suggestion {}",
                                               rpcSuggestion);
                     }
                 }
@@ -1000,6 +1003,11 @@ public class TradeRpcService<SessionClazz>
      */
     @Autowired
     private UserService userService;
+    /**
+     * creates {@link User} objects
+     */
+    @Autowired
+    private UserFactory userFactory;
     /**
      * provides access to trade services
      */

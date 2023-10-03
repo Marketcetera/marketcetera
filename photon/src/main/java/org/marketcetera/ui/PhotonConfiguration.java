@@ -39,6 +39,8 @@ import org.marketcetera.trade.SimpleAverageFillPriceFactory;
 import org.marketcetera.trade.SimpleExecutionReportSummaryFactory;
 import org.marketcetera.trade.SimpleOrderSummaryFactory;
 import org.marketcetera.trade.SimpleReportFactory;
+import org.marketcetera.trade.SimpleSuggestionFactory;
+import org.marketcetera.trade.SuggestionFactory;
 import org.marketcetera.trade.TradeContextClassProvider;
 import org.marketcetera.trading.rpc.TradeRpcClientFactory;
 import org.marketcetera.ui.service.ServiceManager;
@@ -279,6 +281,16 @@ public class PhotonConfiguration
     public ClusterDataFactory getClusterDataFactory()
     {
         return new SimpleClusterDataFactory();
+    }
+    /**
+     * Get the suggestion factory value.
+     *
+     * @return a <code>SuggestionFactory</code> value
+     */
+    @Bean
+    public SuggestionFactory getSuggestionFactory()
+    {
+        return new SimpleSuggestionFactory();
     }
     /**
      * Get the authenticator for the web application.

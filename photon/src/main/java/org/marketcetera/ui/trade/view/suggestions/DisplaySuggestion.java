@@ -3,6 +3,8 @@ package org.marketcetera.ui.trade.view.suggestions;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.admin.HasUser;
+import org.marketcetera.admin.User;
 import org.marketcetera.trade.HasInstrument;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderSingleSuggestion;
@@ -27,7 +29,7 @@ import javafx.beans.property.StringProperty;
  * @since $Release$
  */
 public class DisplaySuggestion
-        implements HasInstrument
+        implements HasInstrument,HasUser
 {
     /**
      * Create a new DisplaySuggestion instance.
@@ -39,6 +41,7 @@ public class DisplaySuggestion
         sourceProperty.set(inSuggestion);
         identifierProperty.set(inSuggestion.getIdentifier());
         scoreProperty.set(inSuggestion.getScore());
+        userProperty.set(inSuggestion.getUser());
         if(inSuggestion instanceof OrderSingleSuggestion) {
             OrderSingleSuggestion orderSingleSuggestion = (OrderSingleSuggestion)inSuggestion;
             instrumentProperty.set(orderSingleSuggestion.getOrder().getInstrument());
@@ -66,6 +69,31 @@ public class DisplaySuggestion
     public void setInstrument(Instrument inInstrument)
     {
         instrumentProperty.set(inInstrument);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#getUser()
+     */
+    @Override
+    public User getUser()
+    {
+        return userProperty.get();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#setUser(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setUser(User inUser)
+    {
+        userProperty.set(inUser);
+    }
+    /**
+     * Get the user property value.
+     *
+     * @return a <code>ReadOnlyObjectProperty&lt;User&gt;</code> value
+     */
+    public ReadOnlyObjectProperty<User> userProperty()
+    {
+        return userProperty;
     }
     /**
      * Get the identifier value.
@@ -255,4 +283,8 @@ public class DisplaySuggestion
      * original source suggestion property value
      */
     private final ObjectProperty<Suggestion> sourceProperty = new SimpleObjectProperty<>();
+    /**
+     * holds the user value
+     */
+    private final ObjectProperty<User> userProperty = new SimpleObjectProperty<>();
 }

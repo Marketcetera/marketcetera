@@ -1,12 +1,14 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -17,29 +19,31 @@ import java.util.HashMap;
  * @since 1.0.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class OrderSingleSuggestionTest extends TypesTestBase {
+public class OrderSingleSuggestionTest
+        extends SuggestionTestBase
+{
     /**
      * Verifies default attributes of objects returned via
-     * {@link org.marketcetera.trade.Factory#createOrderSingleSuggestion()}
+     * {@link org.marketcetera.trade.SuggestionFactory#createOrderSingleSuggestion()}
      */
     @Test
     public void pojoDefaults() {
-        OrderSingleSuggestion suggest = sFactory.createOrderSingleSuggestion();
+        OrderSingleSuggestion suggest = suggestionFactory.createOrderSingleSuggestion();
         assertSuggestionValues(suggest, null, null);
         assertNull(suggest.getOrder());
         //Verify toString() doesn't fail.
         suggest.toString();
 
-        assertNotSame(suggest, sFactory.createOrderSingleSuggestion());
+        assertNotSame(suggest, suggestionFactory.createOrderSingleSuggestion());
     }
 
     /**
      * Verifies setters of objects returned via
-     * {@link org.marketcetera.trade.Factory#createOrderSingleSuggestion()}
+     * {@link org.marketcetera.trade.SuggestionFactory#createOrderSingleSuggestion()}
      */
     @Test
     public void pojoSetters() {
-        OrderSingleSuggestion suggest = sFactory.createOrderSingleSuggestion();
+        OrderSingleSuggestion suggest = suggestionFactory.createOrderSingleSuggestion();
         checkSetters(suggest);
     }
 

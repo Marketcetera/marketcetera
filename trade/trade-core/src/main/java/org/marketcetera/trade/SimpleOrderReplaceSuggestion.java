@@ -2,6 +2,8 @@ package org.marketcetera.trade;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.admin.User;
+
 /* $License$ */
 
 /**
@@ -11,20 +13,20 @@ import java.math.BigDecimal;
  * @version $Id$
  * @since $Release$
  */
-public class OrderReplaceSuggestionImpl
+public class SimpleOrderReplaceSuggestion
         extends AbstractSuggestion
         implements OrderReplaceSuggestion
 {
     /**
      * Create a new OrderReplaceSuggestionImpl instance.
      */
-    public OrderReplaceSuggestionImpl() {}
+    public SimpleOrderReplaceSuggestion() {}
     /**
      * Create a new OrderReplaceSuggestionImpl instance.
      *
      * @param inOrderReplace an <code>OrderReplace</code> value
      */
-    public OrderReplaceSuggestionImpl(OrderReplace inOrderReplace)
+    public SimpleOrderReplaceSuggestion(OrderReplace inOrderReplace)
     {
         setOrderReplace(inOrderReplace);
     }
@@ -33,14 +35,17 @@ public class OrderReplaceSuggestionImpl
      *
      * @param inIdentifier a <code>String</code> value
      * @param inScore a <code>BigDecimal</code> value
+     * @param inUser a <code>User</code> value
      * @param inOrderReplace an <code>OrderReplace</code> value
      */
-    public OrderReplaceSuggestionImpl(String inIdentifier,
-                                      BigDecimal inScore,
-                                      OrderReplace inOrderReplace)
+    public SimpleOrderReplaceSuggestion(String inIdentifier,
+                                        BigDecimal inScore,
+                                        User inUser,
+                                        OrderReplace inOrderReplace)
     {
         super(inIdentifier,
-              inScore);
+              inScore,
+              inUser);
         setOrderReplace(inOrderReplace);
     }
     /* (non-Javadoc)
@@ -66,7 +71,7 @@ public class OrderReplaceSuggestionImpl
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("OrderReplaceSuggestionImpl [identifier=").append(getIdentifier()).append(", score=")
+        builder.append("OrderReplaceSuggestionImpl [user=").append(getUser()).append(", identifier=").append(getIdentifier()).append(", score=")
                 .append(getScore()).append(", orderReplace=").append(orderReplace).append("]");
         return builder.toString();
     }

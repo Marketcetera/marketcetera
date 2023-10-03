@@ -118,18 +118,6 @@ public class TypesTestBase {
         if (checkForNull(inOrder1, inOrder2)) return;
         assertRelatedOrderEquals(inOrder1, inOrder2, inIgnoreOrderID);
     }
-    public static void assertOrderSuggestionEquals(OrderSingleSuggestion inSuggest1,
-                                                   OrderSingleSuggestion inSuggest2) {
-        assertOrderSuggestionEquals(inSuggest1, inSuggest2, false);
-    }
-    public static void assertOrderSuggestionEquals(OrderSingleSuggestion inSuggest1,
-                                                   OrderSingleSuggestion inSuggest2,
-                                                   boolean inIgnoreOrderID) {
-        if (checkForNull(inSuggest1, inSuggest2)) return;
-        assertSuggestionEquals(inSuggest1,  inSuggest2);
-        assertOrderSingleEquals(inSuggest1.getOrder(),
-                inSuggest2.getOrder(), inIgnoreOrderID);
-    }
 
     public static void assertExecReportEquals(ExecutionReport inReport1,
                                               ExecutionReport inReport2) {
@@ -185,12 +173,6 @@ public class TypesTestBase {
         HasFIXMessage fix1 = (HasFIXMessage) inReport1;
         HasFIXMessage fix2 = (HasFIXMessage) inReport2;
         assertEquals(fix1.getMessage().toString(), fix2.getMessage().toString());
-    }
-
-    protected static void assertSuggestionEquals(Suggestion inSuggest1,
-                                                 Suggestion inSuggest2) {
-        assertEquals(inSuggest1.getIdentifier(), inSuggest2.getIdentifier());
-        assertEquals(inSuggest1.getScore(), inSuggest2.getScore());
     }
 
     protected static void assertOrderEquals(Order inOrder1, Order inOrder2) {
@@ -379,24 +361,6 @@ public class TypesTestBase {
         assertEquals(null, inOrder.getPositionEffect());
     }
 
-    protected static void checkSuggestionSetters(Suggestion inSuggestion) {
-        inSuggestion.setIdentifier(null);
-        assertEquals(null, inSuggestion.getIdentifier());
-        String ident = "what?";
-        inSuggestion.setIdentifier(ident);
-        assertEquals(ident, inSuggestion.getIdentifier());
-        inSuggestion.setIdentifier(null);
-        assertEquals(null, inSuggestion.getIdentifier());
-
-        inSuggestion.setScore(null);
-        assertEquals(null, inSuggestion.getScore());
-        BigDecimal score = new BigDecimal("3435.34");
-        inSuggestion.setScore(score);
-        assertEquals(score, inSuggestion.getScore());
-        inSuggestion.setScore(null);
-        assertEquals(null, inSuggestion.getScore());
-    }
-
     protected static void assertOrderBaseValues(OrderBase inOrder,
                                                 //Supply NOT_NULL value to test if it's not null
                                                 OrderID inOrderID,
@@ -570,13 +534,6 @@ public class TypesTestBase {
         assertEquals(inTransactTime, inReport.getTransactTime());
     }
 
-    protected static void assertSuggestionValues(Suggestion inSuggestion,
-                                                 Object inIdentifier,
-                                                 Object inScore) {
-        assertEquals(inIdentifier, inSuggestion.getIdentifier());
-        assertEquals(inScore, inSuggestion.getScore());
-    }
-
     public static Message createEmptyExecReport() {
         return getSystemMessageFactory().
                 getUnderlyingMessageFactory().create(
@@ -584,7 +541,7 @@ public class TypesTestBase {
                 MsgType.EXECUTION_REPORT);
     }
 
-    private static boolean checkForNull(Object inObj1, Object inObj2) {
+    protected static boolean checkForNull(Object inObj1, Object inObj2) {
         if(inObj1 == null ^ inObj2 == null) {
             fail(new StringBuilder().append("expected<").append(inObj1).
                     append(">, actual<").append(inObj2).append(">").toString());

@@ -40,27 +40,6 @@ class FactoryImpl
         assignOrderID(order);
         return order;
     }
-
-    @Override
-    public OrderSingleSuggestion createOrderSingleSuggestion() {
-        return new OrderSingleSuggestionImpl();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.Factory#createOrderCancelSuggestion()
-     */
-    @Override
-    public OrderCancelSuggestion createOrderCancelSuggestion()
-    {
-        return new OrderCancelSuggestionImpl();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.Factory#createOrderReplaceSuggestion()
-     */
-    @Override
-    public OrderReplaceSuggestion createOrderReplaceSuggestion()
-    {
-        return new OrderReplaceSuggestionImpl();
-    }
     @Override
     public OrderCancel createOrderCancel(ExecutionReport inLatestReport) {
         OrderCancelImpl order = new OrderCancelImpl();

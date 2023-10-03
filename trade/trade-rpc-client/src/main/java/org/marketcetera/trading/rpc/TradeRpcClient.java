@@ -1052,7 +1052,7 @@ public class TradeRpcClient
      * @param inListener an <code>Object</code> value
      * @return an <code>AbstractListenerProxy&lt;?,?,?&gt;</code> value
      */
-    private static AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
+    private AbstractClientListenerProxy<?,?,?> getListenerFor(Object inListener)
     {
         if(inListener instanceof TradeMessageListener) {
             return new TradeMessageListenerProxy((TradeMessageListener)inListener);
@@ -1106,7 +1106,7 @@ public class TradeRpcClient
      * @version $Id$
      * @since $Release$
      */
-    private static class SuggestionListenerProxy
+    private class SuggestionListenerProxy
             extends BaseRpcUtil.AbstractClientListenerProxy<TradeRpc.SuggestionListenerResponse,Suggestion,SuggestionListener>
     {
         /* (non-Javadoc)
@@ -1115,7 +1115,8 @@ public class TradeRpcClient
         @Override
         protected Suggestion translateMessage(SuggestionListenerResponse inResponse)
         {
-            return TradeRpcUtil.getSuggestion(inResponse);
+            return TradeRpcUtil.getSuggestion(inResponse,
+                                              userFactory);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.trade.rpc.TradeRpcClient.AbstractListenerProxy#sendMessage(java.lang.Object, java.lang.Object)
