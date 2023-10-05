@@ -22,7 +22,7 @@ public class SimpleOrderSingleSuggestion
     @Override
     public OrderSingle getOrder()
     {
-        return orderSingle;
+        return orderSingle == null ? null : orderSingle.clone();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.OrderSingleSuggestion#setOrder(org.marketcetera.trade.OrderSingle)
@@ -30,7 +30,7 @@ public class SimpleOrderSingleSuggestion
     @Override
     public void setOrder(OrderSingle inOrder)
     {
-        orderSingle = inOrder;
+        orderSingle = (inOrder == null ? null : inOrder.clone());
     }
     /**
      * Create a new SimpleOrderSingleSuggestion instance.

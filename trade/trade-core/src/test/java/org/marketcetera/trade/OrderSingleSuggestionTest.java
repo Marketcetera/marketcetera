@@ -33,23 +33,29 @@ public class OrderSingleSuggestionTest
         assertNull(suggest.getOrder());
         //Verify toString() doesn't fail.
         suggest.toString();
-
-        assertNotSame(suggest, suggestionFactory.createOrderSingleSuggestion());
+        assertNotSame(suggest,
+                      suggestionFactory.createOrderSingleSuggestion());
     }
-
     /**
-     * Verifies setters of objects returned via
-     * {@link org.marketcetera.trade.SuggestionFactory#createOrderSingleSuggestion()}
+     * Verifies setters of objects returned via {@link org.marketcetera.trade.SuggestionFactory#createOrderSingleSuggestion()}.
+     *
+     * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void pojoSetters() {
+    public void pojoSettersTest()
+            throws Exception
+    {
         OrderSingleSuggestion suggest = suggestionFactory.createOrderSingleSuggestion();
         checkSetters(suggest);
     }
-
-    private void checkSetters(OrderSingleSuggestion inSuggest) {
+    /**
+     * Checks the setter functions of the given suggestion.
+     *
+     * @param inSuggest an <code>OrderSinglSuggestion</code> value
+     */
+    private void checkSetters(OrderSingleSuggestion inSuggest)
+    {
         checkSuggestionSetters(inSuggest);
-
         inSuggest.setOrder(null);
         assertNull(inSuggest.getOrder());
         final OrderSingle order = sFactory.createOrderSingle();
@@ -70,17 +76,20 @@ public class OrderSingleSuggestionTest
         order.setTimeInForce(TimeInForce.AtTheClose);
         OrderSingle clone = order.clone();
         inSuggest.setOrder(order);
-        assertNotSame(order, inSuggest.getOrder());
-        assertOrderSingleEquals(order, inSuggest.getOrder());
+        assertNotSame(order,
+                      inSuggest.getOrder());
+        assertOrderSingleEquals(order,
+                                inSuggest.getOrder());
         //Verify toString() doesn't fail
         inSuggest.toString();
-        
         //Verify updating the order that was set doesn't change suggestion's copy
         OrderSingleTest.check(order);
-        assertOrderSingleEquals(clone, inSuggest.getOrder());
+        assertOrderSingleEquals(clone,
+                                inSuggest.getOrder());
         //Verify updating returned order doesn't change suggestion's copy
         OrderSingleTest.check(inSuggest.getOrder());
-        assertOrderSingleEquals(clone, inSuggest.getOrder());
+        assertOrderSingleEquals(clone,
+                                inSuggest.getOrder());
         inSuggest.setOrder(null);
         assertNull(inSuggest.getOrder());
     }
