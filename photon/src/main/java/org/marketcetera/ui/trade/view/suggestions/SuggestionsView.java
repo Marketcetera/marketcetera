@@ -159,7 +159,7 @@ public class SuggestionsView
         tradeClient.addSuggestionListener(suggestionListener);
     }
     /**
-     * Update the strategies table.
+     * Update the suggestions table.
      */
     private void updateSuggestions()
     {
@@ -283,6 +283,7 @@ public class SuggestionsView
                 return;
             }
             doExecute(selectedItems);
+            doDelete(selectedItems);
         });
         deleteMenuItem = new MenuItem("Delete");
         deleteMenuItem.setOnAction(event -> {
