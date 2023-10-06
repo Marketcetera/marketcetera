@@ -1,7 +1,8 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.Message;
 
 /* $License$ */
@@ -47,28 +48,6 @@ public abstract class Factory {
             Message inMessage,
             BrokerID inBrokerID)
             throws MessageCreationException;
-
-    /**
-     * Creates a suggestion for a new order to trade a security.
-     *
-     * @return a suggestion for a new order.
-     */
-    public abstract OrderSingleSuggestion createOrderSingleSuggestion();
-
-    /**
-     * Creates a suggestion for a cancel order.
-     *
-     * @return an <code>OrderCancelSuggestion</code> value
-     */
-    public abstract OrderCancelSuggestion createOrderCancelSuggestion();
-
-    /**
-     * Creates a suggestion for a replace order.
-     *
-     * @return an <code>OrderReplaceSuggestion</code> value
-     */
-    public abstract OrderReplaceSuggestion createOrderReplaceSuggestion();
-    
     /**
      * Creates an order to cancel a previously placed order as
      * identified by the supplied execution report. The execution

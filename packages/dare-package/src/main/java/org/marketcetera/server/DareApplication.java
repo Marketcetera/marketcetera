@@ -61,6 +61,8 @@ import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.AverageFillPriceFactory;
 import org.marketcetera.trade.BasicSelector;
 import org.marketcetera.trade.SimpleAverageFillPriceFactory;
+import org.marketcetera.trade.SimpleSuggestionFactory;
+import org.marketcetera.trade.SuggestionFactory;
 import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageBroadcastConnector;
 import org.marketcetera.trade.event.connector.IncomingTradeMessageConverterConnector;
@@ -146,6 +148,17 @@ public class DareApplication
     public PasswordService getPasswordService()
     {
         return new BCryptPasswordService();
+    }
+    /**
+     * Get the suggestion factory value.
+     *
+     * @return a <code>SuggestionFactory</code> value
+     */
+    @Bean
+    public SuggestionFactory getSuggestionFactory()
+    {
+        // TODO when MATP-1159 is implemented, this should become PersistentSuggestionFactory
+        return new SimpleSuggestionFactory();
     }
     /**
      * Get the strategy service bean.

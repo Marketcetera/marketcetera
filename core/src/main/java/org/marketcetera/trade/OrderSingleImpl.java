@@ -1,8 +1,8 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -27,7 +27,9 @@ public class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingl
             throw new IllegalStateException(e);
     }
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
         return Messages.ORDER_SINGLE_TO_STRING.getText(
@@ -51,7 +53,6 @@ public class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingl
                 String.valueOf(getExecutionDestination())
         );
     }
-
     /**
      * Creates an uninitialized instance. This constructor is meant to be
      * used by JAXB.

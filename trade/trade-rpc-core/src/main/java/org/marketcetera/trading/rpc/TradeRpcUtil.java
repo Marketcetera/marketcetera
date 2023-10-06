@@ -56,15 +56,12 @@ import org.marketcetera.trade.OrderBase;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderCancelSuggestion;
-import org.marketcetera.trade.OrderCancelSuggestionImpl;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderReplace;
 import org.marketcetera.trade.OrderReplaceSuggestion;
-import org.marketcetera.trade.OrderReplaceSuggestionImpl;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
-import org.marketcetera.trade.OrderSingleSuggestionImpl;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.OrderSummary;
 import org.marketcetera.trade.OrderType;
@@ -77,6 +74,9 @@ import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.SimpleOrderCancelSuggestion;
+import org.marketcetera.trade.SimpleOrderReplaceSuggestion;
+import org.marketcetera.trade.SimpleOrderSingleSuggestion;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.TradeMessage;
@@ -1589,34 +1589,43 @@ public abstract class TradeRpcUtil
      * Get the suggestion value from the given RPC message.
      *
      * @param inResponse a <code>TradeRpc.SuggestionListenerResponse</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
      * @return a <code>Suggestion</code> value
      */
-    public static Suggestion getSuggestion(TradeRpc.SuggestionListenerResponse inResponse)
+    public static Suggestion getSuggestion(TradeRpc.SuggestionListenerResponse inResponse,
+                                           UserFactory inUserFactory)
     {
         if(!inResponse.hasSuggestion()) {
             throw new UnsupportedOperationException();
         }
-        return getSuggestion(inResponse.getSuggestion());
+        return getSuggestion(inResponse.getSuggestion(),
+                             inUserFactory);
     }
     /**
      * Get the suggestion value from the given RPC value.
      *
      * @param inRpcSuggestion a <code>TradeTypesRpc.Suggestion</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
      * @return a <code>Suggestion</code> value
      */
-    public static Suggestion getSuggestion(TradeTypesRpc.Suggestion inRpcSuggestion)
+    public static Suggestion getSuggestion(TradeTypesRpc.Suggestion inRpcSuggestion,
+                                           UserFactory inUserFactory)
     {
         Order order = getOrder(inRpcSuggestion.getOrder());
         Suggestion suggestion;
         if(order instanceof OrderSingle) {
-            suggestion = new OrderSingleSuggestionImpl();
-            ((OrderSingleSuggestionImpl)suggestion).setOrder((OrderSingle)order);
+            suggestion = new SimpleOrderSingleSuggestion();
+            ((SimpleOrderSingleSuggestion)suggestion).setOrder((OrderSingle)order);
         } else if(order instanceof OrderReplace) {
-            suggestion = new OrderReplaceSuggestionImpl((OrderReplace)order);
+            suggestion = new SimpleOrderReplaceSuggestion((OrderReplace)order);
         } else if(order instanceof OrderCancel) {
-            suggestion = new OrderCancelSuggestionImpl((OrderCancel)order);
+            suggestion = new SimpleOrderCancelSuggestion((OrderCancel)order);
         } else {
             throw new UnsupportedOperationException("Unexpected RPC order type: " + inRpcSuggestion.getOrder().getMatpOrderTypeValue());
+        }
+        if(inRpcSuggestion.hasUser()) {
+            AdminRpcUtil.getUser(inRpcSuggestion.getUser(),
+                                 inUserFactory).ifPresent(user->suggestion.setUser(user));
         }
         suggestion.setIdentifier(inRpcSuggestion.getIdentifier());
         BaseRpcUtil.getScaledQuantity(inRpcSuggestion.getScore()).ifPresent(qty -> suggestion.setScore(qty));
@@ -1647,6 +1656,7 @@ public abstract class TradeRpcUtil
         TradeTypesRpc.Suggestion.Builder builder = TradeTypesRpc.Suggestion.newBuilder();
         builder.setIdentifier(inSuggestion.getIdentifier());
         BaseRpcUtil.getRpcQty(inSuggestion.getScore()).ifPresent(rpcQty -> builder.setScore(rpcQty));
+        AdminRpcUtil.getRpcUser(inSuggestion.getUser()).ifPresent(user -> builder.setUser(user));
         if(inSuggestion instanceof OrderSingleSuggestion) {
             OrderSingleSuggestion suggestion = (OrderSingleSuggestion)inSuggestion;
             getOrder(suggestion.getOrder()).ifPresent(rpcOrder -> builder.setOrder(rpcOrder));

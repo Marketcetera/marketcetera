@@ -354,6 +354,31 @@ public abstract class PhotonServices
         };
         return tableCell;
     }
+    /**
+     * Get a <code>TableCell</code> that can render <code>User</code> objects.
+     *
+     * @param T a <code>TableView</code> type
+     * @param inTableColumn a <code>TableColumn&lt;T,User&gt;</code> value
+     * @return a <code>TableCell&lt;T,User&gt;</code> value
+     */
+    public static <T> TableCell<T,User> renderUserCell(TableColumn<T,User> inTableColumn)
+    {
+        TableCell<T,User> tableCell = new TableCell<>() {
+            @Override
+            protected void updateItem(User inItem,
+                                      boolean isEmpty)
+            {
+                super.updateItem(inItem,
+                                 isEmpty);
+                this.setText(null);
+                this.setGraphic(null);
+                if(!isEmpty && inItem != null) {
+                    this.setText(inItem.getName());
+                }
+            }
+        };
+        return tableCell;
+    }
     public static <T> TableCell<T,Date> renderDateCell(TableColumn<T,Date> inTableColumn)
     {
         TableCell<T,Date> tableCell = new TableCell<>() {

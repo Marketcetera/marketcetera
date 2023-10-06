@@ -23,6 +23,7 @@ import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.SimpleSuggestionFactory;
 import org.marketcetera.trade.Suggestion;
 
 /**
@@ -92,7 +93,7 @@ public class ExternalTimeTest extends ModuleTestBase {
         assertTrue("accessor doesn't return right value", esperBean.isUseExternalTime());
         sManager.start(TEST_URN);
 
-        Suggestion sug1 = Factory.getInstance().createOrderSingleSuggestion();
+        Suggestion sug1 = new SimpleSuggestionFactory().createOrderSingleSuggestion();
         sug1.setIdentifier("acura");
 
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {

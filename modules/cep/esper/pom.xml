@@ -39,6 +39,16 @@
     <!-- Testing -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>trade-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>trade-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cep-system</artifactId>
       <type>test-jar</type>
     </dependency>
