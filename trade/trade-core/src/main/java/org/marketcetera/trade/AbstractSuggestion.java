@@ -2,6 +2,8 @@ package org.marketcetera.trade;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.admin.User;
+
 /* $License$ */
 
 /**
@@ -46,6 +48,22 @@ public abstract class AbstractSuggestion
     {
         score = inScore;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#getUser()
+     */
+    @Override
+    public User getUser()
+    {
+        return user;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.admin.HasUser#setUser(org.marketcetera.admin.User)
+     */
+    @Override
+    public void setUser(User inUser)
+    {
+        user = inUser;
+    }
     /**
      * Create a new AbstractSuggestion instance.
      */
@@ -55,12 +73,15 @@ public abstract class AbstractSuggestion
      *
      * @param inIdentifier a <code>String</code> value
      * @param inScore a <code>BigDecimal</code> value
+     * @param inUser a <code>User</code> value
      */
     protected AbstractSuggestion(String inIdentifier,
-                                 BigDecimal inScore)
+                                 BigDecimal inScore,
+                                 User inUser)
     {
         setIdentifier(inIdentifier);
         setScore(inScore);
+        setUser(inUser);
     }
     /**
      * identifier value
@@ -70,5 +91,9 @@ public abstract class AbstractSuggestion
      * score value
      */
     private BigDecimal score;
+    /**
+     * user that created this suggestion
+     */
+    private User user;
     private static final long serialVersionUID = 7713915144622410613L;
 }

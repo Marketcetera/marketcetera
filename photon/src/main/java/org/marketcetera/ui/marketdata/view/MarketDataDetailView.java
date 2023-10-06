@@ -21,6 +21,7 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.SuggestionFactory;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
 import org.marketcetera.ui.marketdata.event.MarketDataDetailEvent;
@@ -30,6 +31,7 @@ import org.marketcetera.ui.trade.service.TradeClientService;
 import org.marketcetera.ui.view.AbstractContentView;
 import org.marketcetera.ui.view.ContentView;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -308,7 +310,8 @@ public class MarketDataDetailView
         orderSingle.setOrderType(OrderType.Limit);
         orderSingle.setPrice(inPrice);
         orderSingle.setSide(inSide);
-        OrderSingleSuggestion suggestion = Factory.getInstance().createOrderSingleSuggestion();
+        OrderSingleSuggestion suggestion = suggestionFactory.createOrderSingleSuggestion();
+        PhotonServices.getCurrentUser().ifPresent(user -> suggestion.setUser(user));
         suggestion.setIdentifier("Market Data List View Action");
         suggestion.setScore(BigDecimal.ONE);
         suggestion.setOrder(orderSingle);
@@ -598,6 +601,11 @@ public class MarketDataDetailView
      * ask exchange column
      */
     private TableColumn<MarketDataQuoteItem,String> askExchangeColumn;
+    /**
+     * creates new {@link Suggestion} objects
+     */
+    @Autowired
+    private SuggestionFactory suggestionFactory;
     /**
      * global name of this view
      */

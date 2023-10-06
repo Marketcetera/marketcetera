@@ -205,6 +205,8 @@ public class DirectTradeClient
     @Override
     public void sendOrderSuggestion(Suggestion inSuggestion)
     {
+        validateUser();
+        inSuggestion.setUser(user);
         tradeService.reportSuggestion(inSuggestion);
     }
     /* (non-Javadoc)

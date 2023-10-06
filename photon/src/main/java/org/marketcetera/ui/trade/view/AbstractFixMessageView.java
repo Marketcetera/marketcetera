@@ -728,6 +728,7 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
         averagePriceColumn = new TableColumn<>("AvgPx"); 
         averagePriceColumn.setCellValueFactory(new PropertyValueFactory<>("avgPx"));
         averagePriceColumn.setCellFactory(tableColumn -> renderNumberCell(tableColumn));
+        inTableView.getColumns().add(averagePriceColumn);
         accountColumn = new TableColumn<>("Account"); 
         if(includeAccountColumn()) {
             accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
@@ -756,7 +757,6 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
             inTableView.getColumns().add(brokerIdColumn);
         }
         traderColumn = new TableColumn<>("Trader"); 
-        inTableView.getColumns().add(averagePriceColumn);
         if(includeTraderColumn()) {
             traderColumn.setCellValueFactory(new PropertyValueFactory<>("trader"));
             inTableView.getColumns().add(traderColumn);
@@ -814,8 +814,8 @@ public abstract class AbstractFixMessageView<FixClazz extends FixMessageDisplayT
                     }
                     reportsTableView.getItems().add(newReport);
                 }
-            }}
-        );
+            }
+        });
     }
     /**
      * Get a page of items to display in the FIX table.

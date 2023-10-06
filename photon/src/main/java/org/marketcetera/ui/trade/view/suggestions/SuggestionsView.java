@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.marketcetera.admin.User;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
@@ -206,6 +207,9 @@ public class SuggestionsView
      */
     private void initializeSuggestionTableColumns()
     {
+        userColumn = new TableColumn<>("User"); 
+        userColumn.setCellValueFactory(new PropertyValueFactory<>("user"));
+        userColumn.setCellFactory(tableColumn -> PhotonServices.renderUserCell(tableColumn));
         identifierColumn = new TableColumn<>("Identifier"); 
         identifierColumn.setCellValueFactory(new PropertyValueFactory<>("identifier"));
         scoreColumn = new TableColumn<>("Score"); 
@@ -232,6 +236,7 @@ public class SuggestionsView
         timestampColumn = new TableColumn<>("Timestamp"); 
         timestampColumn.setCellValueFactory(new PropertyValueFactory<>("timestamp"));
         timestampColumn.setCellFactory(tableColumn -> PhotonServices.renderDateCell(tableColumn));
+        suggestionTable.getColumns().add(userColumn);
         suggestionTable.getColumns().add(identifierColumn);
         suggestionTable.getColumns().add(scoreColumn);
         suggestionTable.getColumns().add(sideColumn);
@@ -404,8 +409,11 @@ public class SuggestionsView
      * timestamp column
      */
     private TableColumn<DisplaySuggestion,Date> timestampColumn;
+    /**
+     * suggestion owner table column
+     */
+    private TableColumn<DisplaySuggestion,User> userColumn;
     // TODO suggestion type column?
-    // TODO suggestion owner column?
     /**
      * context menu for the suggestion table
      */

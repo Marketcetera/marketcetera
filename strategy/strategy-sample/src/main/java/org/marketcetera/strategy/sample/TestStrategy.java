@@ -25,6 +25,8 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
+import org.marketcetera.trade.SuggestionFactory;
 import org.marketcetera.trade.client.TradeClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -159,7 +161,7 @@ public class TestStrategy
         if(!createSuggestions) {
             return;
         }
-        OrderSingleSuggestion orderSingleSuggestion = Factory.getInstance().createOrderSingleSuggestion();
+        OrderSingleSuggestion orderSingleSuggestion = suggestionFactory.createOrderSingleSuggestion();
         orderSingleSuggestion.setIdentifier("Test Strategy");
         orderSingleSuggestion.setScore(new BigDecimal(random.nextDouble()));
         OrderSingle orderSingle = Factory.getInstance().createOrderSingle();
@@ -212,4 +214,9 @@ public class TestStrategy
      */
     @Autowired
     private TradeClient tradeClient;
+    /**
+     * creates new {@link Suggestion} objects
+     */
+    @Autowired
+    private SuggestionFactory suggestionFactory;
 }

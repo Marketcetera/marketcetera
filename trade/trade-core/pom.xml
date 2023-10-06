@@ -25,5 +25,14 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>trade-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
 </project>
