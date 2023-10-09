@@ -21,6 +21,7 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.trade.SuggestionFactory;
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.events.NewWindowEvent;
@@ -411,20 +412,34 @@ public class MarketDataDetailView
         // TODO need to handle quote actions: ADD vs DEL vs CHANGE
         if(inEvent instanceof QuoteEvent) {
             QuoteEvent quoteEvent = (QuoteEvent)inEvent;
-            MarketDataQuoteItem quoteItem = new MarketDataQuoteItem(quoteEvent);
-            if(quoteEvent instanceof BidEvent) {
-                // TODO need to handle action
-                bids.put(quoteEvent.getLevel(),
-                         quoteItem);
-            } else if(quoteEvent instanceof AskEvent) {
-                // TODO need to handle action
-                asks.put(quoteEvent.getLevel(),
-                         quoteItem);
+            System.out.println("COCO: empty event: " + quoteEvent.isEmpty());
+            if(quoteEvent.isEmpty()) {
+                if(quoteEvent instanceof BidEvent) {
+                    bids.remove(quoteEvent.getLevel());
+                } else if(quoteEvent instanceof AskEvent) {
+                    asks.remove(quoteEvent.getLevel());
+                } else {
+                    SLF4JLoggerProxy.warn(this,
+                                          "Discarding unexpected event: {}",
+                                          inEvent);
+                    return;
+                }
             } else {
-                SLF4JLoggerProxy.warn(this,
-                                      "Discarding unexpected event: {}",
-                                      inEvent);
-                return;
+                MarketDataQuoteItem quoteItem = new MarketDataQuoteItem(quoteEvent);
+                if(quoteEvent instanceof BidEvent) {
+                    // TODO need to handle action
+                    bids.put(quoteEvent.getLevel(),
+                             quoteItem);
+                } else if(quoteEvent instanceof AskEvent) {
+                    // TODO need to handle action
+                    asks.put(quoteEvent.getLevel(),
+                             quoteItem);
+                } else {
+                    SLF4JLoggerProxy.warn(this,
+                                          "Discarding unexpected event: {}",
+                                          inEvent);
+                    return;
+                }
             }
         } else if(inEvent instanceof AggregateEvent) {
             AggregateEvent aggregateEvent = (AggregateEvent)inEvent;

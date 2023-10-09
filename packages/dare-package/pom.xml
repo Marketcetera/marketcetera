@@ -347,6 +347,14 @@
                   <value>classpath:db/migration/${metc.flyway.vendor}/</value>
                 </systemProperty>
                 <systemProperty>
+                  <key>metc.instance.metc.exsim.sendercompid</key>
+                  <value>${metc.exsim.sendercompid}</value>
+                </systemProperty>
+                <systemProperty>
+                  <key>metc.instance.metc.marketdata.exsim.sendercompid</key>
+                  <value>${metc.marketdata.exsim.sendercompid}</value>
+                </systemProperty>
+                <systemProperty>
                   <key>metc.instance</key>
                   <value>0</value>
                 </systemProperty>

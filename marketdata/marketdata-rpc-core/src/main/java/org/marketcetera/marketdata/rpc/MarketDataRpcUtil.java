@@ -885,6 +885,7 @@ public class MarketDataRpcUtil
             setOptionAttributes(inEvent.getMarketDataEvent().getOptionAttributes(),
                                 builder);
         }
+        builder.isEmpty(inEvent.getIsEmpty());
         return Optional.of(builder.create());
     }
     /**
