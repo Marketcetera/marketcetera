@@ -3,6 +3,7 @@ package org.marketcetera.ui.marketdata.view;
 import java.math.BigDecimal;
 
 import org.joda.time.DateTime;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.Event;
@@ -271,34 +272,44 @@ public class MarketDataItem
         providerProperty.set(inEvent.getProvider());
         if(inEvent instanceof TradeEvent) {
             TradeEvent tradeEvent = (TradeEvent)inEvent;
-            lastPriceProperty.set(tradeEvent.getPrice());
-            lastQuantityProperty.set(tradeEvent.getSize());
+            lastPriceProperty.set(renderZeroAsNull(tradeEvent.getPrice()));
+            lastQuantityProperty.set(renderZeroAsNull(tradeEvent.getSize()));
             tradeExchangeProperty.set(tradeEvent.getExchange());
             tradeTimestampProperty.set(new DateTime(tradeEvent.getExchangeTimestamp()));
         }
         if(inEvent instanceof BidEvent) {
             BidEvent bidEvent = (BidEvent)inEvent;
-            bidPriceProperty.set(bidEvent.getPrice());
-            bidQuantityProperty.set(bidEvent.getSize());
+            bidPriceProperty.set(renderZeroAsNull(bidEvent.getPrice()));
+            bidQuantityProperty.set(renderZeroAsNull(bidEvent.getSize()));
             bidExchangeProperty.set(bidEvent.getExchange());
             bidTimestampProperty.set(new DateTime(bidEvent.getQuoteDate()));
         }
         if(inEvent instanceof AskEvent) {
             AskEvent askEvent = (AskEvent)inEvent;
-            askPriceProperty.set(askEvent.getPrice());
-            askQuantityProperty.set(askEvent.getSize());
+            askPriceProperty.set(renderZeroAsNull(askEvent.getPrice()));
+            askQuantityProperty.set(renderZeroAsNull(askEvent.getSize()));
             askExchangeProperty.set(askEvent.getExchange());
             askTimestampProperty.set(new DateTime(askEvent.getQuoteDate()));
         }
         if(inEvent instanceof MarketstatEvent) {
             MarketstatEvent marketstatEvent = (MarketstatEvent)inEvent;
-            previousClosePriceProperty.set(marketstatEvent.getPreviousClose());
-            openPriceProperty.set(marketstatEvent.getOpen());
-            highPriceProperty.set(marketstatEvent.getHigh());
-            lowPriceProperty.set(marketstatEvent.getLow());
-            closePriceProperty.set(marketstatEvent.getClose());
-            tradeVolumeProperty.set(marketstatEvent.getVolume());
+            previousClosePriceProperty.set(renderZeroAsNull(marketstatEvent.getPreviousClose()));
+            openPriceProperty.set(renderZeroAsNull(marketstatEvent.getOpen()));
+            highPriceProperty.set(renderZeroAsNull(marketstatEvent.getHigh()));
+            lowPriceProperty.set(renderZeroAsNull(marketstatEvent.getLow()));
+            closePriceProperty.set(renderZeroAsNull(marketstatEvent.getClose()));
+            tradeVolumeProperty.set(renderZeroAsNull(marketstatEvent.getVolume()));
         }
+    }
+    /**
+     * Render a zero value as null.
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    private BigDecimal renderZeroAsNull(BigDecimal inValue)
+    {
+        return BigDecimalUtil.isNullOrZero(inValue) ? null : inValue;
     }
     /**
      * underlying instrument value

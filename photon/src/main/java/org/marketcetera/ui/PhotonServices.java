@@ -335,6 +335,13 @@ public abstract class PhotonServices
         };
         return tableCell;
     }
+    /**
+     * Create a <code>TableCell</code> that renders a <code>BigDecimal</code> value as a currency.
+     *
+     * @param <T> the underlying data object
+     * @param inTableColumn a <code>TableColumn&lt;T,BigDecimal&gt;</code> value
+     * @return a <code>TableCell&lt;T,BigDecimal&gt;</code> value
+     */
     public static <T> TableCell<T,BigDecimal> renderCurrencyCell(TableColumn<T,BigDecimal> inTableColumn)
     {
         TableCell<T,BigDecimal> tableCell = new TableCell<>() {
