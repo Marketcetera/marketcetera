@@ -259,10 +259,6 @@ public class MarketDataItem
     {
         return providerProperty;
     }
-    private BigDecimal renderZeroAsNull(BigDecimal inValue)
-    {
-        return BigDecimalUtil.isNullOrZero(inValue) ? null : inValue;
-    }
     /**
      * Update the item with the given event.
      *
@@ -270,7 +266,7 @@ public class MarketDataItem
      */
     public void update(Event inEvent)
     {
-        SLF4JLoggerProxy.warn(this,
+        SLF4JLoggerProxy.trace(this,
                                "Received {}",
                                inEvent);
         providerProperty.set(inEvent.getProvider());
@@ -304,6 +300,16 @@ public class MarketDataItem
             closePriceProperty.set(renderZeroAsNull(marketstatEvent.getClose()));
             tradeVolumeProperty.set(renderZeroAsNull(marketstatEvent.getVolume()));
         }
+    }
+    /**
+     * Render a zero value as null.
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    private BigDecimal renderZeroAsNull(BigDecimal inValue)
+    {
+        return BigDecimalUtil.isNullOrZero(inValue) ? null : inValue;
     }
     /**
      * underlying instrument value
