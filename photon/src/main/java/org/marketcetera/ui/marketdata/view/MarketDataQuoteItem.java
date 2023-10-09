@@ -3,6 +3,7 @@ package org.marketcetera.ui.marketdata.view;
 import java.math.BigDecimal;
 
 import org.joda.time.DateTime;
+import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.QuoteAction;
@@ -52,8 +53,8 @@ public class MarketDataQuoteItem
         this(inQuoteEvent.getInstrument());
         eventTypeProperty.set(inQuoteEvent.getEventType());
         exchangeProperty.set(inQuoteEvent.getExchange());
-        priceProperty.set(inQuoteEvent.getPrice());
-        quantityProperty.set(inQuoteEvent.getSize());
+        priceProperty.set(renderZeroAsNull(inQuoteEvent.getPrice()));
+        quantityProperty.set(renderZeroAsNull(inQuoteEvent.getSize()));
         quoteActionProperty.set(inQuoteEvent.getAction());
         quoteCountProperty.set(inQuoteEvent.getCount());
         quoteLevelProperty.set(inQuoteEvent.getLevel());
@@ -152,15 +153,34 @@ public class MarketDataQuoteItem
                                inEvent);
         if(inEvent instanceof QuoteEvent) {
             QuoteEvent quoteEvent = (QuoteEvent)inEvent;
-            priceProperty.set(quoteEvent.getPrice());
-            quantityProperty.set(quoteEvent.getSize());
-            exchangeProperty.set(quoteEvent.getExchange());
-            timestampProperty.set(new DateTime(quoteEvent.getQuoteDate()));
-            eventTypeProperty.set(quoteEvent.getEventType());
-            quoteActionProperty.set(quoteEvent.getAction());
-            quoteLevelProperty.set(quoteEvent.getLevel());
-            quoteCountProperty.set(quoteEvent.getCount());
+            if(quoteEvent.isEmpty()) {
+                priceProperty.set(null);
+                quantityProperty.set(null);
+                exchangeProperty.set(null);
+                timestampProperty.set(null);
+                eventTypeProperty.set(null);
+                quoteActionProperty.set(null);
+            } else {
+                priceProperty.set(quoteEvent.getPrice());
+                quantityProperty.set(quoteEvent.getSize());
+                exchangeProperty.set(quoteEvent.getExchange());
+                timestampProperty.set(new DateTime(quoteEvent.getQuoteDate()));
+                eventTypeProperty.set(quoteEvent.getEventType());
+                quoteActionProperty.set(quoteEvent.getAction());
+                quoteLevelProperty.set(quoteEvent.getLevel());
+                quoteCountProperty.set(quoteEvent.getCount());
+            }
         }
+    }
+    /**
+     * Render a zero value as null.
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    private BigDecimal renderZeroAsNull(BigDecimal inValue)
+    {
+        return BigDecimalUtil.isNullOrZero(inValue) ? null : inValue;
     }
     /**
      * quote action property value
