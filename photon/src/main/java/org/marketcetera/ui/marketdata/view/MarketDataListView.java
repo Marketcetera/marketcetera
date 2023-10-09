@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.event.Event;
@@ -206,6 +207,7 @@ public class MarketDataListView
      */
     private void doMarketDataRequest(String inSymbol)
     {
+        inSymbol = StringUtils.trimToNull(inSymbol);
         if(inSymbol == null) {
             return;
         }
