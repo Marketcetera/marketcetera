@@ -23,8 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateTime;
-import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -78,22 +76,6 @@ public class MultiInstanceApplicationContainer
         }
     }
     /**
-     * Generate a filename for a jstack trace.
-     *
-     * @param inTimestamp a <code>DateTime</code> value
-     * @param inProcessCounter an <code>int</code> value
-     * @return a <code>String</code> value
-     */
-    private static String generateStackTraceFilename(DateTime inTimestamp,
-                                                     int inProcessCounter)
-    {
-        StringBuilder output = new StringBuilder();
-        output.append("stack-");
-        output.append(TimeFactoryImpl.FULL_MILLISECONDS_CONDENSED.print(inTimestamp)).append("-");
-        output.append(inProcessCounter).append(".txt");
-        return output.toString();
-    }
-    /**
      * Generate a stack trace for the given running process.
      *
      * @param inProcess a <code>Process</code> value
@@ -130,7 +112,6 @@ public class MultiInstanceApplicationContainer
     private static void killProcesses()
             throws InterruptedException
     {
-        shutdownTime = DateTime.now();
         int processCounter = 1;
         synchronized(spawnProcessMutex) {
             if(SystemUtils.IS_OS_WINDOWS) {
@@ -810,12 +791,7 @@ public class MultiInstanceApplicationContainer
                 if(!logDir.exists()) {
                     FileUtils.forceMkdir(logDir);
                 }
-                String logName = isStackProcess ? generateStackTraceFilename(shutdownTime,inInstanceNumber) : (getLogName()+inInstanceNumber+".log");
-                if(isStackProcess) {
-                    SLF4JLoggerProxy.warn(MultiInstanceApplicationContainer.class,
-                                          "COCO: capturing jstack output to {}",
-                                          logName);
-                }
+                String logName = getLogName()+inInstanceNumber+".log";
                 File stdout = new File(logDir,
                                        logName);
                 stdoutStream = new FileOutputStream(stdout);
@@ -851,10 +827,6 @@ public class MultiInstanceApplicationContainer
          */
         private FileOutputStream stdoutStream;
     }
-    /**
-     * indicates the time the main process was shut down
-     */
-    private static DateTime shutdownTime;
     /**
      * manages jobs to capture instance output
      */
