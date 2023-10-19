@@ -585,8 +585,7 @@ public class MultiInstanceApplicationContainer
                 jnr.process.Process spawnedProcess = pb.start();
                 newPid = spawnedProcess.getPid();
                 captureOutput(spawnedProcess,
-                              inInstanceNumber,
-                              isStackProcess);
+                              inInstanceNumber);
                 SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
                                        "New PID: {}",
                                        newPid);
@@ -738,25 +737,14 @@ public class MultiInstanceApplicationContainer
      *
      * @param inProcess a <code>jnr.process.Process</code> value
      * @param inInstance an <code>int</code> value
-     * @param isStackProcess a <code>boolean</code> value
      * @throws IOException if the output capture cannot be established
      */
     private static void captureOutput(jnr.process.Process inProcess,
-                                      int inInstance,
-                                      boolean isStackProcess)
+                                      int inInstance)
             throws IOException
     {
-        InputStreamConsumer errout;
-        errout = new InputStreamConsumer(inProcess.getErrorStream(),
-                                         inInstance,
-                                         isStackProcess);
         InputStreamConsumer stdout = new InputStreamConsumer(inProcess.getInputStream(),
-                                                             inInstance,
-                                                             isStackProcess);
-        if(!isStackProcess) {
-            outputCapturingService.execute(errout);
-        }
-        outputCapturingService.execute(errout);
+                                                             inInstance);
         outputCapturingService.execute(stdout);
     }
     /**
@@ -774,12 +762,10 @@ public class MultiInstanceApplicationContainer
          *
          * @param inInputStream an <code>InputStream</code> value
          * @param inInstanceNumber an <code>int</code> value
-         * @param isStackProcess a <code>boolean</code> value
          * @throws IOException if the input stream cannot be established
          */
         private InputStreamConsumer(InputStream inInputStream,
-                                    int inInstanceNumber,
-                                    boolean isStackProcess)
+                                    int inInstanceNumber)
                 throws IOException
         {
             inputStream = inInputStream;
