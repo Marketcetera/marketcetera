@@ -76,6 +76,35 @@ public class MultiInstanceApplicationContainer
         }
     }
     /**
+     * Generate a stack trace for the given running process.
+     *
+     * @param inProcess a <code>Process</code> value
+     * @param inProcessCounter an <code>int</code> value
+     */
+    private static void generateStackTrace(Process inProcess,
+                                           int inProcessCounter)
+    {
+        SLF4JLoggerProxy.warn(MultiInstanceApplicationContainer.class,
+                              "Unable to generate stack trace on Windows");
+    }
+    /**
+     * Generate a stack trace for the given running process.
+     *
+     * @param inProcess a <code>jnr.process.Process</code> value
+     * @param inProcessCounter an <code>int</code> value
+     * @throws IOException if the stack trace could not be generated
+     */
+    private static void generateStackTrace(jnr.process.Process inProcess,
+                                           int inProcessCounter)
+            throws IOException
+    {
+        long pid = inProcess.getPid();
+        String[] arguments = new String[] { "kill","-3",String.valueOf(pid) };
+        spawnInstance(arguments,
+                      inProcessCounter,
+                      true);
+    }
+    /**
      * Kills all launched processes.
      *
      * @throws InterruptedException if the method is interrupted while waiting for the processes to end
@@ -83,9 +112,19 @@ public class MultiInstanceApplicationContainer
     private static void killProcesses()
             throws InterruptedException
     {
+        int processCounter = 1;
         synchronized(spawnProcessMutex) {
             if(SystemUtils.IS_OS_WINDOWS) {
                 for(Process process : windowsProcessInstances.values()) {
+                    try {
+                        generateStackTrace(process,
+                                           processCounter++);
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(MultiInstanceApplicationContainer.class,
+                                              e,
+                                              "Unable to generate stack trace for {}",
+                                              process);
+                    }
                     try {
                         process.destroy();
                     } catch (Exception ignored) {}
@@ -96,6 +135,15 @@ public class MultiInstanceApplicationContainer
                 windowsProcessInstances.clear();
             } else {
                 for(jnr.process.Process process : unixProcessInstances.values()) {
+                    try {
+                        generateStackTrace(process,
+                                           processCounter++);
+                    } catch (Exception e) {
+                        SLF4JLoggerProxy.warn(MultiInstanceApplicationContainer.class,
+                                              e,
+                                              "Unable to generate stack trace for {}",
+                                              process);
+                    }
                     try {
                         process.kill(jnr.constants.platform.Signal.SIGTERM);
                     } catch (Exception ignored) {}
@@ -504,20 +552,22 @@ public class MultiInstanceApplicationContainer
     /**
      * Spawns the instance described by the given arguments.
      *
-     * @param inProcBuilder a <code>ProcessBuilder</code> value
+     * @param inArguments a <code>String[]</code> value
      * @param inInstanceNumber an <code>int</code> value
+     * @param isStackProcess a <code>boolean</code> value
      * @return a <code>long</code> value containing the spawned PID
      * @throws IOException if the instance could not be spawned
      */
-    private static long spawnInstance(String[] arguments,
-                                      int inInstanceNumber)
+    private static long spawnInstance(String[] inArguments,
+                                      int inInstanceNumber,
+                                      boolean isStackProcess)
             throws IOException
     {
         long newPid = -1;
         synchronized (spawnProcessMutex) {
             if(SystemUtils.IS_OS_WINDOWS) {
                 String logName = getLogName();
-                ProcessBuilder pb = new ProcessBuilder(arguments);
+                ProcessBuilder pb = new ProcessBuilder(inArguments);
                 pb.redirectErrorStream(true);
                 if(logName != null) {
                     File log = new File(getLogDir(),
@@ -526,10 +576,12 @@ public class MultiInstanceApplicationContainer
                 }
                 newPid = System.nanoTime();
                 Process spawnedProcess = pb.start();
-                windowsProcessInstances.put(newPid,
-                                            spawnedProcess);
+                if(!isStackProcess) {
+                    windowsProcessInstances.put(newPid,
+                                                spawnedProcess);
+                }
             } else {
-                jnr.process.ProcessBuilder pb = new jnr.process.ProcessBuilder(arguments);
+                jnr.process.ProcessBuilder pb = new jnr.process.ProcessBuilder(inArguments);
                 jnr.process.Process spawnedProcess = pb.start();
                 newPid = spawnedProcess.getPid();
                 captureOutput(spawnedProcess,
@@ -537,11 +589,29 @@ public class MultiInstanceApplicationContainer
                 SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
                                        "New PID: {}",
                                        newPid);
-                unixProcessInstances.put(newPid,
-                                         spawnedProcess);
+                if(!isStackProcess) {
+                    unixProcessInstances.put(newPid,
+                                             spawnedProcess);
+                }
             }
             return newPid;
         }
+    }
+    /**
+     * Spawns the instance described by the given arguments.
+     *
+     * @param inArguments a <code>String[]</code> value
+     * @param inInstanceNumber an <code>int</code> value
+     * @return a <code>long</code> value containing the spawned PID
+     * @throws IOException if the instance could not be spawned
+     */
+    private static long spawnInstance(String[] inArguments,
+                                      int inInstanceNumber)
+            throws IOException
+    {
+        return spawnInstance(inArguments,
+                             inInstanceNumber,
+                             false);
     }
     /**
      * Builds the process argument list.
@@ -711,8 +781,9 @@ public class MultiInstanceApplicationContainer
                 if(!logDir.exists()) {
                     FileUtils.forceMkdir(logDir);
                 }
+                String logName = getLogName()+inInstanceNumber+".log";
                 File stdout = new File(logDir,
-                                       getLogName()+inInstanceNumber+".log");
+                                       logName);
                 stdoutStream = new FileOutputStream(stdout);
             }
         }
