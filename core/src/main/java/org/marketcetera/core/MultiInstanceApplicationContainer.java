@@ -743,8 +743,12 @@ public class MultiInstanceApplicationContainer
                                       int inInstance)
             throws IOException
     {
+        InputStreamConsumer errout;
+        errout = new InputStreamConsumer(inProcess.getErrorStream(),
+                                         inInstance);
         InputStreamConsumer stdout = new InputStreamConsumer(inProcess.getInputStream(),
                                                              inInstance);
+        outputCapturingService.execute(errout);
         outputCapturingService.execute(stdout);
     }
     /**
