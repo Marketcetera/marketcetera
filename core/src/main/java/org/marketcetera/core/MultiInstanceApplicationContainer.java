@@ -23,8 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateTime;
-import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -78,22 +76,6 @@ public class MultiInstanceApplicationContainer
         }
     }
     /**
-     * Generate a filename for a jstack trace.
-     *
-     * @param inTimestamp a <code>DateTime</code> value
-     * @param inProcessCounter an <code>int</code> value
-     * @return a <code>String</code> value
-     */
-    private static String generateStackTraceFilename(DateTime inTimestamp,
-                                                     int inProcessCounter)
-    {
-        StringBuilder output = new StringBuilder();
-        output.append("stack-");
-        output.append(TimeFactoryImpl.FULL_MILLISECONDS_CONDENSED.print(inTimestamp)).append("-");
-        output.append(inProcessCounter).append(".txt");
-        return output.toString();
-    }
-    /**
      * Generate a stack trace for the given running process.
      *
      * @param inProcess a <code>Process</code> value
@@ -117,13 +99,7 @@ public class MultiInstanceApplicationContainer
             throws IOException
     {
         long pid = inProcess.getPid();
-        String jstackPath = getJstackLocation();
-        if(jstackPath == null) {
-            SLF4JLoggerProxy.info(MultiInstanceApplicationContainer.class,
-                                  "No jstack location defined, not generating stack traces");
-            return;
-        }
-        String[] arguments = new String[] { jstackPath,"-l",String.valueOf(pid) };
+        String[] arguments = new String[] { "kill","-3",String.valueOf(pid) };
         spawnInstance(arguments,
                       inProcessCounter,
                       true);
@@ -136,7 +112,6 @@ public class MultiInstanceApplicationContainer
     private static void killProcesses()
             throws InterruptedException
     {
-        shutdownTime = DateTime.now();
         int processCounter = 1;
         synchronized(spawnProcessMutex) {
             if(SystemUtils.IS_OS_WINDOWS) {
@@ -300,20 +275,6 @@ public class MultiInstanceApplicationContainer
     {
         File logConfigFile = new File(getAndValidateSystemProperty(PARAM_LOG_CONFIGURATION_FILE));
         return logConfigFile.getAbsolutePath();
-    }
-    /**
-     * Get the JStack location specified by params, if any.
-     *
-     * @return a <code>String</code> value
-     */
-    private static String getJstackLocation()
-    {
-        String jstackLocation = getSystemProperty(PARAM_METC_JSTACK_LOCATION);
-        if(jstackLocation == null) {
-            return null;
-        }
-        File jstack = new File(jstackLocation);
-        return jstack.getAbsolutePath();
     }
     /**
      * Gets the output log directory.
@@ -619,8 +580,7 @@ public class MultiInstanceApplicationContainer
                 jnr.process.Process spawnedProcess = pb.start();
                 newPid = spawnedProcess.getPid();
                 captureOutput(spawnedProcess,
-                              inInstanceNumber,
-                              isStackProcess);
+                              inInstanceNumber);
                 SLF4JLoggerProxy.debug(MultiInstanceApplicationContainer.class,
                                        "New PID: {}",
                                        newPid);
@@ -772,24 +732,18 @@ public class MultiInstanceApplicationContainer
      *
      * @param inProcess a <code>jnr.process.Process</code> value
      * @param inInstance an <code>int</code> value
-     * @param isStackProcess a <code>boolean</code> value
      * @throws IOException if the output capture cannot be established
      */
     private static void captureOutput(jnr.process.Process inProcess,
-                                      int inInstance,
-                                      boolean isStackProcess)
+                                      int inInstance)
             throws IOException
     {
         InputStreamConsumer errout;
         errout = new InputStreamConsumer(inProcess.getErrorStream(),
-                                         inInstance,
-                                         isStackProcess);
+                                         inInstance);
         InputStreamConsumer stdout = new InputStreamConsumer(inProcess.getInputStream(),
-                                                             inInstance,
-                                                             isStackProcess);
-        if(!isStackProcess) {
-            outputCapturingService.execute(errout);
-        }
+                                                             inInstance);
+        outputCapturingService.execute(errout);
         outputCapturingService.execute(stdout);
     }
     /**
@@ -807,12 +761,10 @@ public class MultiInstanceApplicationContainer
          *
          * @param inInputStream an <code>InputStream</code> value
          * @param inInstanceNumber an <code>int</code> value
-         * @param isStackProcess a <code>boolean</code> value
          * @throws IOException if the input stream cannot be established
          */
         private InputStreamConsumer(InputStream inInputStream,
-                                    int inInstanceNumber,
-                                    boolean isStackProcess)
+                                    int inInstanceNumber)
                 throws IOException
         {
             inputStream = inInputStream;
@@ -824,7 +776,7 @@ public class MultiInstanceApplicationContainer
                 if(!logDir.exists()) {
                     FileUtils.forceMkdir(logDir);
                 }
-                String logName = isStackProcess ? generateStackTraceFilename(shutdownTime,inInstanceNumber) : (getLogName()+inInstanceNumber+".log");
+                String logName = getLogName()+inInstanceNumber+".log";
                 File stdout = new File(logDir,
                                        logName);
                 stdoutStream = new FileOutputStream(stdout);
@@ -860,10 +812,6 @@ public class MultiInstanceApplicationContainer
          */
         private FileOutputStream stdoutStream;
     }
-    /**
-     * indicates the time the main process was shut down
-     */
-    private static DateTime shutdownTime;
     /**
      * manages jobs to capture instance output
      */
@@ -976,10 +924,6 @@ public class MultiInstanceApplicationContainer
      * metc-specific instance start delay param
      */
     public static final String PARAM_METC_INSTANCE_START_DELAY = "metc.start.delay";
-    /**
-     * metc-specific jstack location
-     */
-    public static final String PARAM_METC_JSTACK_LOCATION = "metc.jstack.location";
     /**
      * guards access to process-specific stats
      */
