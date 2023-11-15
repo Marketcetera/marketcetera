@@ -2,7 +2,6 @@ package org.marketcetera.trade.impl;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.NonUniqueResultException;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.RootOrderIdFactory;
@@ -63,9 +62,6 @@ public class BasicRootOrderIdFactory
                                        rootId);
             }
             return rootId;
-        } catch (NonUniqueResultException e) {
-            // TODO the data is horked a little, pick the root from the most recent result
-            throw new RuntimeException(e);
         } catch (quickfix.FieldNotFound e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
