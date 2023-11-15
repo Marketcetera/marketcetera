@@ -26,14 +26,6 @@ public interface ExecutionReportDao
         extends PagingAndSortingRepository<PersistentExecutionReport,Long>,QuerydslPredicateExecutor<PersistentExecutionReport>
 {
     /**
-     * Finds the root orderID for the given order ID.
-     *
-     * @param inOrderID an <code>OrderID</code> value
-     * @return an <code>OrderID</code> value or <code>null</code>
-     */
-    @Query("select distinct rootOrderId from PersistentExecutionReport where orderId=?1")
-    OrderID findRootIDForOrderID(OrderID inOrderID);
-    /**
      * Finds the report summary with the given report id.
      *
      * @param inReportId a <code>long</code> value

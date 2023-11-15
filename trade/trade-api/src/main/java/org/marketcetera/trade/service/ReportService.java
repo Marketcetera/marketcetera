@@ -346,4 +346,11 @@ public interface ReportService
      * @return a <code>CollectionPageResponse&lt;AverageFillPrice&gt;</code> value
      */
     CollectionPageResponse<AverageFillPrice> getAverageFillPrices(PageRequest inPageRequest);
+    /**
+     * Finds the root orderID for the given order ID.
+     *
+     * @param inOrderID an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value or <code>null</code>
+     */
+    OrderID findRootIDForOrderID(OrderID inOrderID);
 }

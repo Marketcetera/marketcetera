@@ -6,18 +6,13 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.RootOrderIdFactory;
 import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.dao.ExecutionReportDao;
+import org.marketcetera.trade.service.ReportService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.ClOrdID;
-import quickfix.field.OrigClOrdID;
 
 /* $License$ */
 
@@ -36,18 +31,18 @@ public class BasicRootOrderIdFactory
      * @see com.marketcetera.ors.history.RootOrderIdFactory#getRootOrderId(quickfix.Message)
      */
     @Override
-    public OrderID getRootOrderId(Message inMessage)
+    public OrderID getRootOrderId(quickfix.Message inMessage)
     {
         try {
             OrderID orderId = null;
-            if(inMessage.isSetField(OrigClOrdID.FIELD)) {
-                orderId = new OrderID(inMessage.getString(OrigClOrdID.FIELD));
+            if(inMessage.isSetField(quickfix.field.OrigClOrdID.FIELD)) {
+                orderId = new OrderID(inMessage.getString(quickfix.field.OrigClOrdID.FIELD));
                 SLF4JLoggerProxy.debug(this,
                                        "Using origOrderID {} for query",  //$NON-NLS-1$
                                        orderId);
             }
-            if(orderId == null && inMessage.isSetField(ClOrdID.FIELD)) {
-                orderId = new OrderID(inMessage.getString(ClOrdID.FIELD));
+            if(orderId == null && inMessage.isSetField(quickfix.field.ClOrdID.FIELD)) {
+                orderId = new OrderID(inMessage.getString(quickfix.field.ClOrdID.FIELD));
                 SLF4JLoggerProxy.debug(this,
                                        "No origOrderID present, using orderID {} for query",  //$NON-NLS-1$
                                        orderId);
@@ -55,7 +50,7 @@ public class BasicRootOrderIdFactory
             if(orderId == null) {
                 return null;
             }
-            OrderID rootId = executionReportDao.findRootIDForOrderID(orderId);
+            OrderID rootId = reportService.findRootIDForOrderID(orderId);
             if(rootId == null) {
                 SLF4JLoggerProxy.debug(this,
                                        "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
@@ -67,7 +62,7 @@ public class BasicRootOrderIdFactory
                                        rootId);
             }
             return rootId;
-        } catch (FieldNotFound e) {
+        } catch (quickfix.FieldNotFound e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
             return null;
@@ -104,7 +99,7 @@ public class BasicRootOrderIdFactory
                                        report.getOriginalOrderID());
                 orderId = report.getOriginalOrderID();
             }
-            OrderID rootId = executionReportDao.findRootIDForOrderID(orderId);
+            OrderID rootId = reportService.findRootIDForOrderID(orderId);
             if(rootId == null) {
                 SLF4JLoggerProxy.debug(this,
                                        "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
@@ -124,7 +119,7 @@ public class BasicRootOrderIdFactory
      * @see com.marketcetera.ors.history.RootOrderIdFactory#receiveOutgoingMessage(quickfix.Message)
      */
     @Override
-    public void receiveOutgoingMessage(Message inMessage)
+    public void receiveOutgoingMessage(quickfix.Message inMessage)
     {
         try {
             String msgType = inMessage.getHeader().getString(quickfix.field.MsgType.FIELD);
@@ -147,13 +142,13 @@ public class BasicRootOrderIdFactory
                         SLF4JLoggerProxy.debug(this,
                                                "No cached root order id for {}, searching the database",
                                                origClOrdId);
-                        cachedRootOrderId = executionReportDao.findRootIDForOrderID(origClOrdId);
+                        cachedRootOrderId = reportService.findRootIDForOrderID(origClOrdId);
                     }
                     if(cachedRootOrderId == null) {
                         SLF4JLoggerProxy.debug(this,
                                                "No cached root order id for {}",
                                                origClOrdId);
-                        cachedRootOrderId = executionReportDao.findRootIDForOrderID(origClOrdId);
+                        cachedRootOrderId = reportService.findRootIDForOrderID(origClOrdId);
                     } else {
                         SLF4JLoggerProxy.debug(this,
                                                "Caching root order id {} for {}",
@@ -164,7 +159,7 @@ public class BasicRootOrderIdFactory
                     }
                     break;
             }
-        } catch (FieldNotFound e) {
+        } catch (quickfix.FieldNotFound e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
         }
@@ -178,24 +173,6 @@ public class BasicRootOrderIdFactory
         rootOrderIdCache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
     }
     /**
-     * Get the executionReportDao value.
-     *
-     * @return an <code>ExecutionReportDao</code> value
-     */
-    public ExecutionReportDao getExecutionReportDao()
-    {
-        return executionReportDao;
-    }
-    /**
-     * Sets the executionReportDao value.
-     *
-     * @param inExecutionReportDao an <code>ExecutionReportDao</code> value
-     */
-    public void setExecutionReportDao(ExecutionReportDao inExecutionReportDao)
-    {
-        executionReportDao = inExecutionReportDao;
-    }
-    /**
      * number of root order ids cache
      */
     private int cacheSize = 10000;
@@ -204,8 +181,8 @@ public class BasicRootOrderIdFactory
      */
     private Cache<OrderID,OrderID> rootOrderIdCache;
     /**
-     * provides datastore access to execution reports
+     * provides access to report services
      */
     @Autowired
-    private ExecutionReportDao executionReportDao;
+    private ReportService reportService;
 }
