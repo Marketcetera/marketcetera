@@ -1,10 +1,5 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.TradeMessage;
-
-import quickfix.Message;
-
 /* $License$ */
 
 /**
@@ -31,14 +26,14 @@ public interface RootOrderIdFactory
     /**
      * Gets the root order id associated with the given message.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      * @return an <code>OrderID</code> value or <code>null</code> if no root order id exists
      */
-    OrderID getRootOrderId(Message inMessage);
+    OrderID getRootOrderId(quickfix.Message inMessage);
     /**
      * Records outgoing messages, if necessary.
      *
-     * @param inMessage a <code>Message</code> value
+     * @param inMessage a <code>quickfix.Message</code> value
      */
-    void receiveOutgoingMessage(Message inMessage);
+    void receiveOutgoingMessage(quickfix.Message inMessage);
 }
