@@ -361,7 +361,7 @@ public class ReportServiceImpl
         SLF4JLoggerProxy.debug(this,
                                "Searching for order status for {}",
                                inOrderId);
-        OrderID rootId = executionReportDao.findRootIDForOrderID(inOrderId);
+        OrderID rootId = findRootIDForOrderID(inOrderId);
         SLF4JLoggerProxy.debug(this,
                                "Root order id for {} is {}",
                                inOrderId,
@@ -399,7 +399,7 @@ public class ReportServiceImpl
         SLF4JLoggerProxy.debug(this,
                                "Searching for the latest execution report for {}",
                                inOrderId);
-        OrderID rootId = executionReportDao.findRootIDForOrderID(inOrderId);
+        OrderID rootId = findRootIDForOrderID(inOrderId);
         SLF4JLoggerProxy.debug(this,
                                "Root order id for {} is {}",
                                inOrderId,
@@ -445,6 +445,36 @@ public class ReportServiceImpl
                                                                           pExecutionReport.getViewerID());
         }
         return Optional.ofNullable(executionReport);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.service.ReportService#findRootIDForOrderID(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public OrderID findRootIDForOrderID(OrderID inOrderId)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Searching for the root order id for {}",
+                               inOrderId);
+        BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.orderId.eq(inOrderId));
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        PageRequest page = PageRequest.of(0,
+                                          1,
+                                          sort);
+        SLF4JLoggerProxy.debug(this,
+                               "Searching for for the root order id for {}",
+                               inOrderId);
+        Page<PersistentExecutionReport> executionReportPage = executionReportDao.findAll(where,
+                                                                                         page);
+        PersistentExecutionReport pExecutionReport = null;
+        if(executionReportPage.hasContent()) {
+            pExecutionReport = executionReportPage.getContent().iterator().next();
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Retrieved {} for {}",
+                               pExecutionReport,
+                               inOrderId);
+        return pExecutionReport == null ? null : pExecutionReport.getRootOrderID();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportsSince(com.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -977,7 +1007,7 @@ public class ReportServiceImpl
     @Override
     public OrderID getRootOrderIdFor(OrderID inOrderId)
     {
-        return executionReportDao.findRootIDForOrderID(inOrderId);
+        return findRootIDForOrderID(inOrderId);
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.brokers.FixSessionListener#sessionDisabled(com.marketcetera.ors.brokers.FixSession)
