@@ -1,7 +1,9 @@
 package org.marketcetera.core;
 
 import java.io.Closeable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.commons.lang.Validate;
 
@@ -37,6 +39,30 @@ public class CloseableLock
         } catch (InterruptedException ignored) {
             // ignore this exception, it almost certainly occurs on shutdown or manual interruption and it's annoying
         }
+    }
+    /**
+     * Tries to lock the wrapped lock only if it is available at the time of the call.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean tryLock()
+    {
+        return lock.tryLock();
+    }
+    /**
+     * Tries to lock the wrapped lock and waits the given amount of time until the lock can be acquired.
+     *
+     * @param inTimeout a <code>long</code> value
+     * @param inTimeUnit a <code>TimeUnit</code> value
+     * @return a <code>boolean</code> value
+     * @throws InterruptedException if the call is interrupted before acquiring the lock
+     */
+    public boolean tryLock(long inTimeout,
+                           TimeUnit inTimeUnit)
+            throws InterruptedException
+    {
+        return lock.tryLock(inTimeout,
+                            inTimeUnit);
     }
     /**
      * Unlocks the wrapped lock.
