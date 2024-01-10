@@ -1,0 +1,17 @@
+alter table metc_exec_reports alter column option_type type smallint;
+alter table metc_order_summaries alter column option_type type smallint;
+alter table metc_order_summaries alter column security_type type smallint;
+alter table metc_order_summaries alter column side type smallint;
+alter table metc_pnl_current_positions alter column option_type type smallint;
+alter table metc_pnl_current_positions alter column security_type type smallint;
+alter table metc_pnl_positions alter column option_type type smallint;
+alter table metc_pnl_positions alter column security_type type smallint;
+alter table metc_profit_and_loss alter column option_type type smallint;
+alter table metc_profit_and_loss alter column security_type type smallint;
+alter table metc_reports alter column hierarchy type smallint;
+alter table metc_reports alter column originator type smallint;
+alter table metc_reports alter column report_type type smallint;
+alter table metc_trades alter column option_type type smallint;
+alter table metc_trades alter column security_type type smallint;
+alter table metc_user_attributes alter column user_attribute_type type smallint;
+alter table metc_user_trades alter column side type smallint;

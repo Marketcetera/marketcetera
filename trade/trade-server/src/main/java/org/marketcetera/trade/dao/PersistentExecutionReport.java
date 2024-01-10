@@ -791,7 +791,7 @@ public class PersistentExecutionReport
     /**
      * option type value, <code>null</code> for non-option types
      */
-    @Column(name="option_type",nullable=true,columnDefinition="int4")
+    @Column(name="option_type",nullable=true)
     private OptionType optionType;
     /**
      * account value, may be <code>null</code>

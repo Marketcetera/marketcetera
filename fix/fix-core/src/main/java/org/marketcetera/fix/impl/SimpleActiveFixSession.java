@@ -3,13 +3,6 @@ package org.marketcetera.fix.impl;
 import java.io.Serializable;
 import java.util.Set;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementWrapper;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.brokers.SessionCustomization;
@@ -21,6 +14,14 @@ import org.marketcetera.fix.FixSessionStatus;
 import org.marketcetera.fix.MutableActiveFixSession;
 
 import com.google.common.collect.Sets;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /* $License$ */
 
@@ -114,7 +115,7 @@ public class SimpleActiveFixSession
     @Override
     public FixSessionStatus getStatus()
     {
-        return fixSessionStatus;
+        return status;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.MutableActiveFixSession#setTargetSequenceNumber(int)
@@ -138,7 +139,7 @@ public class SimpleActiveFixSession
     @Override
     public void setStatus(FixSessionStatus inFixSessionStatus)
     {
-        fixSessionStatus = inFixSessionStatus;
+        status = inFixSessionStatus;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.fix.ActiveFixSession#getClusterData()
@@ -214,10 +215,10 @@ public class SimpleActiveFixSession
     {
         StringBuilder builder = new StringBuilder();
         builder.append("Session: ").append(getFixSession().getName()).append(" (").append(getFixSession().getBrokerId()).append(")");
-        if(fixSessionStatus == null) {
+        if(status == null) {
             builder.append("is unknown on ");
         } else {
-            switch(fixSessionStatus) {
+            switch(status) {
                 case AFFINITY_MISMATCH:
                     builder.append("is not bound on ");
                     builder.append(clusterData);
@@ -276,17 +277,20 @@ public class SimpleActiveFixSession
      * target sequence number value
      */
     @XmlAttribute
+    @Schema(type="integer",example="20")
     private int targetSequenceNumber;
     /**
      * sender sequence number value
      */
     @XmlAttribute
+    @Schema(type="integer",example="30")
     private int senderSequenceNumber;
     /**
      * fix session status value
      */
     @XmlAttribute
-    private FixSessionStatus fixSessionStatus;
+    @Schema(type="string",example="CONNECTED")
+    private FixSessionStatus status;
     /**
      * broker algos value
      */

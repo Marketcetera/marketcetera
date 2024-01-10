@@ -2,6 +2,8 @@ package org.marketcetera.trade.client;
 
 import org.marketcetera.trade.OrderID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /* $License$ */
 
 /**
@@ -81,13 +83,16 @@ public class SendOrderResponse
     /**
      * order id value
      */
+    @Schema(type="string",example="1001005")
     private OrderID orderId;
     /**
      * message value
      */
+    @Schema(type="string",example="error message in case the order cannot be submitted")
     private String message;
     /**
      * indicates if this order was sent properly or not
      */
+    @Schema(type="boolean",example="false")
     private boolean failed;
 }

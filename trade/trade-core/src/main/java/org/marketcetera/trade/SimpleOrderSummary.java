@@ -6,6 +6,8 @@ import java.util.Date;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.BigDecimalUtil;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /* $License$ */
 
 /**
@@ -343,6 +345,7 @@ public class SimpleOrderSummary
     /**
      * order status value
      */
+    @Schema(type="string",example="Filled")
     private OrderStatus orderStatus;
     /**
      * report value
@@ -351,69 +354,86 @@ public class SimpleOrderSummary
     /**
      * root order id value
      */
+    @Schema(type="string",example="10001001")
     private OrderID rootOrderId;
     /**
      * order id value
      */
+    @Schema(type="string",example="10001005")
     private OrderID orderId;
     /**
      * cumulative quantity value
      */
+    @Schema(type="number",example="100.00")
     private BigDecimal cumulativeQuantity;
     /**
      * account value
      */
+    @Schema(type="string",example="broker-assigned-account")
     private String account;
     /**
      * broker id value
      */
+    @Schema(type="string",example="my-broker-id")
     private BrokerID brokerId;
     /**
      * side value
      */
+    @Schema(type="string",example="Buy")
     private Side side;
     /**
      * instrument value
      */
+    @Schema(type="string",example="IBM")
     private Instrument instrument;
     /**
      * average price value
      */
+    @Schema(type="number",example="160.55")
     private BigDecimal averagePrice;
     /**
      * last quantity value
      */
+    @Schema(type="number",example="20.00")
     private BigDecimal lastQuantity;
     /**
      * leaves quantity value
      */
+    @Schema(type="number",example="80.00")
     private BigDecimal leavesQuantity;
     /**
      * order quantity value
      */
+    @Schema(type="number",example="180.00")
     private BigDecimal orderQuantity;
     /**
      * last price value
      */
+    @Schema(type="number",example="160.53")
     private BigDecimal lastPrice;
     /**
      * order price value
      */
+    @Schema(type="number",example="160.58")
     private BigDecimal orderPrice;
     /**
      * sending time value
      */
+    @Schema(type="string",example="20240110T100452.522Z")
     private Date sendingTime;
     /**
      * transact time value
      */
+    @Schema(type="string",example="20240110T100452.522Z")
     private Date transactTime;
     /**
      * actor value
      */
+    @Schema(type="integer",example="1234")
     private User actor;
     /**
      * viewer value
      */
+    @Schema(type="integer",example="1234")
     private User viewer;
 }
