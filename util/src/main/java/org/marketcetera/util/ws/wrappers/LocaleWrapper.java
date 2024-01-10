@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.util.Locale;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.wrappers.MarshalledLocale;
 

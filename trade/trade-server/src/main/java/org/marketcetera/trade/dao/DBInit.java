@@ -3,7 +3,7 @@ package org.marketcetera.trade.dao;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

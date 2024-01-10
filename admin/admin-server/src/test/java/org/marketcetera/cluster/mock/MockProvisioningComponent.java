@@ -2,7 +2,7 @@ package org.marketcetera.cluster.mock;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.admin.provisioning.ProvisioningAgent;
 import org.marketcetera.core.Cacheable;

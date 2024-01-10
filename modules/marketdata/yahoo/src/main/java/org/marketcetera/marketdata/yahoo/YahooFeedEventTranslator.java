@@ -15,7 +15,7 @@ import java.util.Map;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;

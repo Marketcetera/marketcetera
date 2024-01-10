@@ -1,9 +1,9 @@
 package org.marketcetera.quickfix;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.fix.IncomingMessageFactory;
 import org.marketcetera.fix.SessionNameProvider;
 import org.marketcetera.fix.dao.IncomingMessageDao;

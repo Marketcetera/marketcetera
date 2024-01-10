@@ -1,6 +1,6 @@
 package org.marketcetera.util.unicode;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.test.TestCaseBase;

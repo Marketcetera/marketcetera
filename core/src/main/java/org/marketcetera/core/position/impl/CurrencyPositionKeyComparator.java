@@ -1,6 +1,6 @@
 package org.marketcetera.core.position.impl;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.util.Locale;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 

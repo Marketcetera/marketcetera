@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.stateless.ClientServerTestBase;
@@ -14,6 +12,8 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+
+import jakarta.xml.ws.WebServiceException;
 
 /**
  * @author tlerios@marketcetera.com

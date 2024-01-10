@@ -3,7 +3,7 @@ package org.marketcetera.core.notifications;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.core.PlatformServices;

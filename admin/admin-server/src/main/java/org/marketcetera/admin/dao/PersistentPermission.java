@@ -2,9 +2,9 @@ package org.marketcetera.admin.dao;
 
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 import org.marketcetera.admin.MutablePermission;
 import org.marketcetera.admin.Permission;

@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.unicode.DecodingStrategy;
 import org.marketcetera.util.unicode.Signature;

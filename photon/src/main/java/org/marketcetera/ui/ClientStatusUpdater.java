@@ -1,7 +1,7 @@
 package org.marketcetera.ui;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.marketcetera.core.ClientStatusListener;
 import org.marketcetera.ui.service.ServiceManager;

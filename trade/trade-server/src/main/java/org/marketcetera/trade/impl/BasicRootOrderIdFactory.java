@@ -1,6 +1,6 @@
 package org.marketcetera.trade.impl;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;

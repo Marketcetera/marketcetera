@@ -14,12 +14,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Locale;
 
-import javax.xml.bind.JAXBContext;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Before;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NThrowable;
@@ -30,6 +28,8 @@ import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
+
+import jakarta.xml.bind.JAXBContext;
 
 /**
  * @author tlerios@marketcetera.com

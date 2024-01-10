@@ -1,10 +1,10 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlTransient;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import jakarta.xml.bind.annotation.XmlTransient;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.except.I18NThrowable;
 import org.marketcetera.util.misc.ClassVersion;
 

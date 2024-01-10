@@ -1,9 +1,10 @@
 package org.marketcetera.persist;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
+
+import jakarta.annotation.PostConstruct;
 
 /* $License$ */
 

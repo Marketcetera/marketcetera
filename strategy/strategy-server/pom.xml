@@ -47,6 +47,10 @@
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+    </dependency>
     <!-- local test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -103,12 +107,6 @@
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
     </dependency>
-    <!-- other test -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -135,10 +133,6 @@
             <metc.instance>1</metc.instance>
           </systemPropertyVariables>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

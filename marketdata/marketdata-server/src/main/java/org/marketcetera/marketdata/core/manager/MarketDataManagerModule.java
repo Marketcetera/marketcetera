@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.HasInstrument;

@@ -3,7 +3,7 @@
 //
 package org.marketcetera.trade.pnl;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;

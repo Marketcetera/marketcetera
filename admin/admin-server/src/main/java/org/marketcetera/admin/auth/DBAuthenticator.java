@@ -2,7 +2,7 @@ package org.marketcetera.admin.auth;
 
 import static org.marketcetera.admin.Messages.INVALID_PASSWORD;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.marketcetera.admin.Messages;
 import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;

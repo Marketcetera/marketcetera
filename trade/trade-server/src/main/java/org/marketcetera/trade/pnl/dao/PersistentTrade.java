@@ -12,8 +12,8 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
-@javax.persistence.Entity(name="Trade")
-@javax.persistence.Table(name="metc_trades")
+@jakarta.persistence.Entity(name="Trade")
+@jakarta.persistence.Table(name="metc_trades")
 public class PersistentTrade
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.Trade
@@ -180,47 +180,47 @@ public class PersistentTrade
     /**
      * symbol value
      */
-    @javax.persistence.Column(name="symbol",nullable=false)
+    @jakarta.persistence.Column(name="symbol",nullable=false)
     private String symbol;
     /**
      * strike price value, <code>null</code> for non-option types
      */
-    @javax.persistence.Column(name="strike_price",nullable=false,precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE)
+    @jakarta.persistence.Column(name="strike_price",nullable=false,precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE)
     private java.math.BigDecimal strikePrice;
     /**
     * security type value
      */
-    @javax.persistence.Column(name="security_type",nullable=false)
+    @jakarta.persistence.Column(name="security_type",nullable=false)
     private org.marketcetera.trade.SecurityType securityType;
     /**
      * expiry value, <code>null</code> for non-option types
      */
-    @javax.persistence.Column(name="expiry",nullable=true)
+    @jakarta.persistence.Column(name="expiry",nullable=true)
     private String expiry;
     /**
     * option type value, <code>null</code> for non-option types
      */
-    @javax.persistence.Column(name="option_type",nullable=true)
+    @jakarta.persistence.Column(name="option_type",nullable=true)
     private org.marketcetera.trade.OptionType optionType;
     /**
      * exchange execution id that uniquely identifies this trade
      */
-    @javax.persistence.Column(name="execution_id",nullable=true)
+    @jakarta.persistence.Column(name="execution_id",nullable=true)
     private org.marketcetera.trade.OrderID executionId;
     /**
      * price at which trade occurred
      */
-    @javax.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @jakarta.persistence.Column(name="price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
     private java.math.BigDecimal price = java.math.BigDecimal.ZERO;
     /**
      * size of trade
      */
-    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
+    @jakarta.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=true)
     private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
     /**
      * transaction date
      */
-    @javax.persistence.Column(name="transaction_time",nullable=true)
+    @jakarta.persistence.Column(name="transaction_time",nullable=true)
     private java.util.Date transactionTime;
     private static final long serialVersionUID = -1169854614L;
 }

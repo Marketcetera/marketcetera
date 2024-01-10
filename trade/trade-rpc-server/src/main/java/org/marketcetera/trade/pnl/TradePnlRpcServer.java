@@ -34,7 +34,7 @@ public class TradePnlRpcServer<SessionClazz>
     /**
      * Validate and start the object.
      */
-    @javax.annotation.PostConstruct
+    @jakarta.annotation.PostConstruct
     public void start()
             throws Exception
     {

@@ -6,8 +6,8 @@ import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.IncomingPositionSupport;

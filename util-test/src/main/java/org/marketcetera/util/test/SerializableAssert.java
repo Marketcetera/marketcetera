@@ -1,9 +1,9 @@
 package org.marketcetera.util.test;
 
 import java.io.Serializable;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.SerializationException;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Assertions for serialization.

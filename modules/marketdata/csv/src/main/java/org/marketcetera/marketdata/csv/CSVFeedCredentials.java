@@ -4,7 +4,7 @@ import static org.marketcetera.marketdata.csv.Messages.INVALID_EVENT_TRANSLATOR;
 
 import java.io.File;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.util.log.I18NBoundMessage1P;

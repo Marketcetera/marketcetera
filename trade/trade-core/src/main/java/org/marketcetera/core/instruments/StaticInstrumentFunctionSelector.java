@@ -3,7 +3,7 @@ package org.marketcetera.core.instruments;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.trade.Instrument;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import java.util.Map;
 import java.util.HashMap;

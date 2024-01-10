@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.manual;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataStatus;

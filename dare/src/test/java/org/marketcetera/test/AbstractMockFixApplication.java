@@ -6,7 +6,7 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.fix.FixSettingsProviderFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

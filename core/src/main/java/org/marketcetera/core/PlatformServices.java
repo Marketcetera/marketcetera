@@ -13,11 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.symbol.SymbolResolverService;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -29,6 +27,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.hazelcast.core.HazelcastInstanceNotActiveException;
+
+import jakarta.annotation.PostConstruct;
 
 /* $License$ */
 
@@ -125,7 +125,7 @@ public class PlatformServices
         if(ExceptionUtils.getRootCause(inThrowable) instanceof HazelcastInstanceNotActiveException) {
             return true;
         }
-        return ExceptionUtils.getFullStackTrace(inThrowable).contains(hazelcastInstanceIsNotActive);
+        return ExceptionUtils.getStackTrace(inThrowable).contains(hazelcastInstanceIsNotActive);
     }
     /**
      * Get a human-readable message describing the root cause of the given exception.

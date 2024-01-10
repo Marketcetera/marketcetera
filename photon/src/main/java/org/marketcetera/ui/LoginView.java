@@ -2,7 +2,7 @@ package org.marketcetera.ui;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.PlatformServices;

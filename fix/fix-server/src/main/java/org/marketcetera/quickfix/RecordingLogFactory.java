@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import quickfix.Log;
 import quickfix.LogFactory;

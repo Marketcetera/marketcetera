@@ -2,8 +2,8 @@ package org.marketcetera.metrics;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.metrics.dao.PersistentMetricDao;

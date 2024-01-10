@@ -1,7 +1,7 @@
 package org.marketcetera.eventbus;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.marketcetera.core.PlatformServices;
 import org.springframework.beans.factory.annotation.Autowired;

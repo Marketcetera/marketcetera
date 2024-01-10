@@ -9,8 +9,8 @@ import java.util.LinkedList;
 
 import javax.naming.InterruptedNamingException;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
 

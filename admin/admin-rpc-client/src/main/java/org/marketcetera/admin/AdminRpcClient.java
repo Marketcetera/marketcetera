@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceBlockingStub;
 import org.marketcetera.admin.AdminRpcServiceGrpc.AdminRpcServiceStub;

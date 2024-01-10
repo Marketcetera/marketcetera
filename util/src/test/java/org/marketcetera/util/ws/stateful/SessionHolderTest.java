@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.stateful;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;

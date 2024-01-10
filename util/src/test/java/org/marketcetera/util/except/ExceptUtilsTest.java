@@ -10,12 +10,10 @@ import static org.junit.Assert.fail;
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
-import java.rmi.activation.ActivationException;
-import java.rmi.activation.UnknownObjectException;
 
 import javax.naming.InterruptedNamingException;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -281,36 +279,36 @@ public class ExceptUtilsTest
     {
         assertTrue(ExceptUtils.areEqual(null,null));
         equalityHelper
-            (new ActivationException(TEST_MSG_1),
-             new ActivationException(TEST_MSG_1),
+            (new RuntimeException(TEST_MSG_1),
+             new RuntimeException(TEST_MSG_1),
              new Throwable[] {
-                new ActivationException(),
-                new ActivationException(TEST_MSG_2),
-                new UnknownObjectException(TEST_MSG_1),
+                new RuntimeException(),
+                new RuntimeException(TEST_MSG_2),
+                new RuntimeException(TEST_MSG_1),
                 new I18NException(),
                 null
             });
         equalityHelper
             (new I18NException
-             (new ActivationException(TEST_MSG_1),
+             (new RuntimeException(TEST_MSG_1),
               new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
              new I18NException
-             (new ActivationException(TEST_MSG_1),
+             (new RuntimeException(TEST_MSG_1),
               new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
              new Throwable[] {
                 new I18NException
-                (new ActivationException(TEST_MSG_1)),
+                (new RuntimeException(TEST_MSG_1)),
                 new I18NException
-                (new ActivationException(TEST_MSG_1),
+                (new RuntimeException(TEST_MSG_1),
                  TestMessages.BOT_EXCEPTION),
                 new I18NException
-                (new ActivationException(TEST_MSG_2),
+                (new RuntimeException(TEST_MSG_2),
                  new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
                 new I18NException
                 (new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
-                new ActivationException(TEST_MSG_1),
+                new RuntimeException(TEST_MSG_1),
                 null
             });
     }

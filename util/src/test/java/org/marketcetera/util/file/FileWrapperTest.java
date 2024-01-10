@@ -9,7 +9,7 @@ import static org.marketcetera.util.test.UnicodeData.COMBO;
 import java.io.File;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.unicode.DecodingStrategy;

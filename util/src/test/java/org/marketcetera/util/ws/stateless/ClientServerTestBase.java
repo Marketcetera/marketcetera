@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import java.util.Locale;
 
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceException;
 
 import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.junit.Before;
@@ -17,6 +16,8 @@ import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.RemoteExceptionTest;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
+
+import jakarta.xml.ws.WebServiceException;
 
 /**
  * @author tlerios@marketcetera.com

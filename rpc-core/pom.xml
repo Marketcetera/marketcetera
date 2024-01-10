@@ -58,6 +58,11 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    <!-- necessary for Java 9+ for grpc protobuf compiler -->
+    <dependency> 
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>annotations-api</artifactId>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>io.grpc</groupId>
@@ -77,6 +82,10 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -89,9 +98,9 @@
               protobuf-java directly, you will be transitively depending on the
               protobuf-java version that grpc depends on.
           -->
-          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:3.25.1:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.60.1:exe:${os.detected.classifier}</pluginArtifact>
           <inputDirectories>
             <inputDirectory>proto</inputDirectory>
           </inputDirectories>

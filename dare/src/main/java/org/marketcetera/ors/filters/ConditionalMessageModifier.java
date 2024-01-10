@@ -1,6 +1,6 @@
 package org.marketcetera.ors.filters;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.brokers.MessageModifier;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.fix.ServerFixSession;

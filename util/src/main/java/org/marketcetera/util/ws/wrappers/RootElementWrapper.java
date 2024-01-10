@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.wrappers;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -16,6 +16,14 @@
     <!-- compile local -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>admin-api</artifactId>
     </dependency>
     <dependency>
@@ -44,6 +52,12 @@
     <dependency>
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
+      <classifier>jakarta</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <!-- test: marketcetera -->
     <dependency>
@@ -76,12 +90,4 @@
       <artifactId>junit-vintage-engine</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

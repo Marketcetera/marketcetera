@@ -3,7 +3,7 @@ package org.marketcetera.core.position.impl;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.core.BigDecimalUtil;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;

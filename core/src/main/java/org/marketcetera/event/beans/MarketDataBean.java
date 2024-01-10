@@ -4,19 +4,20 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /* $License$ */
 

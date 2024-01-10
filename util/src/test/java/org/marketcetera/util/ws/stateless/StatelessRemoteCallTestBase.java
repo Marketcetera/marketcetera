@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Locale;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Before;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.ActiveLocale;

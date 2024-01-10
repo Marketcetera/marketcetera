@@ -1,7 +1,7 @@
 package org.marketcetera.util.log;
 
 import java.io.Serializable;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

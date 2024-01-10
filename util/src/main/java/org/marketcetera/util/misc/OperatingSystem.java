@@ -1,6 +1,6 @@
 package org.marketcetera.util.misc;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * An enumeration of operating systems. The expected value of the

@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.core.request;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.marketdata.Content;
 

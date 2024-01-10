@@ -6,18 +6,6 @@ import static org.marketcetera.core.PlatformServices.DECIMAL_SCALE;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.persist.EntityBase;
@@ -38,6 +26,17 @@ import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
 
@@ -792,7 +791,7 @@ public class PersistentExecutionReport
     /**
      * option type value, <code>null</code> for non-option types
      */
-    @Column(name="option_type",nullable=true)
+    @Column(name="option_type",nullable=true,columnDefinition="int4")
     private OptionType optionType;
     /**
      * account value, may be <code>null</code>

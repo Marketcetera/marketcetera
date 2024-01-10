@@ -1,6 +1,6 @@
 package org.marketcetera.core.notifications;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

@@ -2,7 +2,7 @@ package org.marketcetera.util.misc;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NInterruptedRuntimeException;
 import org.marketcetera.util.test.TestCaseBase;

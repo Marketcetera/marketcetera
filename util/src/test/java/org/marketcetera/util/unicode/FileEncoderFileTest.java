@@ -5,7 +5,7 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.File;
 import java.io.Reader;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Ignore;
 import org.marketcetera.util.file.CopyBytesUtils;
 import org.marketcetera.util.file.Deleter;

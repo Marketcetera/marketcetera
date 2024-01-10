@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.BatchQueueProcessor;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.fix.IncomingMessage;

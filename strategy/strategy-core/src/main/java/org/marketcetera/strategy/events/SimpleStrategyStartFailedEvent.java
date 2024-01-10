@@ -71,7 +71,7 @@ public class SimpleStrategyStartFailedEvent
      */
     public void setErrorMessage(String inErrorMessage)
     {
-        errorMessage = org.apache.commons.lang.StringUtils.trimToNull(inErrorMessage);
+        errorMessage = org.apache.commons.lang3.StringUtils.trimToNull(inErrorMessage);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

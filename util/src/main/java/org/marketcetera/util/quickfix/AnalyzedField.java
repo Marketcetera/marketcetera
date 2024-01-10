@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -197,7 +197,7 @@ public class AnalyzedField
 
     public String getQFieldValueAsString()
     {
-        return ObjectUtils.toString(getQFieldValue(),null);
+        return ObjectUtils.toString(getQFieldValue(),(String)null);
     }
 
     /**

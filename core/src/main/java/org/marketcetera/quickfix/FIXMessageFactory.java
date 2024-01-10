@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTime;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentToMessage;

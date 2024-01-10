@@ -2,7 +2,6 @@ package org.marketcetera.marketdata.bogus;
 
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.Event;
@@ -34,8 +33,7 @@ public class BogusFeedEventTranslator
     {
         if(!(inData instanceof Event)) {
             throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_EVENT_TYPE,
-                                                                       ObjectUtils.toString(inData,
-                                                                                            null)));
+                                                                       String.valueOf(inData)));
         }
         return Lists.newArrayList((Event)inData);
     }

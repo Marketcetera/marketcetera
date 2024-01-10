@@ -3,17 +3,9 @@ package org.marketcetera.admin.user;
 import static org.marketcetera.admin.Messages.EMPTY_PASSWORD;
 import static org.marketcetera.admin.Messages.SIMPLE_USER_NAME;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.marketcetera.admin.MutableUser;
 import org.marketcetera.admin.User;
 import org.marketcetera.core.ClassVersion;
@@ -21,6 +13,14 @@ import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.ValidationException;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NMessage0P;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 
 /* $License$ */

@@ -1,6 +1,6 @@
 package org.marketcetera.trade.event;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.trade.Order;
 import org.marketcetera.trade.OrderID;
 

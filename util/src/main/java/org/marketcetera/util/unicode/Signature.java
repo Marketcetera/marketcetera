@@ -1,6 +1,6 @@
 package org.marketcetera.util.unicode;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

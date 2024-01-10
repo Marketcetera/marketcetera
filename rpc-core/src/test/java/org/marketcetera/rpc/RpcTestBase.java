@@ -20,7 +20,7 @@ import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionManager;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
 
 import io.grpc.BindableService;
 import io.grpc.StatusRuntimeException;
@@ -53,8 +53,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
         authenticator = new MockAuthenticator();
         authenticator.getUserstore().put("test",
                                          "password");
-        int port = SocketUtils.findAvailableTcpPort(10000,
-                                                    20000);
+        int port = TestSocketUtils.findAvailableTcpPort();
         createService();
         startServer("127.0.0.1",
                     port,

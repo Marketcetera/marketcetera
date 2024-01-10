@@ -2,8 +2,8 @@ package org.marketcetera.util.log;
 
 import java.io.Serializable;
 import java.util.Locale;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

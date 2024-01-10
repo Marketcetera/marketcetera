@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.cluster.service.ClusterListener;

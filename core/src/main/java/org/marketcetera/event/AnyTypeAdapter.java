@@ -40,7 +40,7 @@
 
 package org.marketcetera.event;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * {@link XmlAdapter} useful for mapping interfaces.

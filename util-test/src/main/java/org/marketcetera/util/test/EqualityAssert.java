@@ -1,6 +1,6 @@
 package org.marketcetera.util.test;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import static org.junit.Assert.*;
 

@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -96,6 +96,7 @@ public class SlackNotificationExecutorMethod
                 params = slackNotification.getSlackWebHookParams();
             }
         }
+        // see: https://stackoverflow.com/questions/75242683/i-am-migrating-spring-boot-version-2-7-3-to-spring-boot-3-0-0-so-existing-code-i
         if(url != null) {
             try(CloseableHttpClient httpclient = HttpClients.createDefault()) {
                 HttpPost postRequest = null;
@@ -121,13 +122,12 @@ public class SlackNotificationExecutorMethod
                 List<NameValuePair> nvps = new ArrayList<NameValuePair>(1);
                 nvps.add(new BasicNameValuePair("payload",
                                                 payloadBuilder.toString()));
-                postRequest.setEntity(new UrlEncodedFormEntity(nvps,
-                                                               "UTF-8"));
+                postRequest.setEntity(new UrlEncodedFormEntity(nvps));
                 try(CloseableHttpResponse response = httpclient.execute(postRequest)) {
-                    if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                    if(response.getCode() != HttpStatus.SC_OK) {
                         SLF4JLoggerProxy.warn(this,
                                               "Slack webhook did not succeed: {}",
-                                              response.getStatusLine());
+                                              response.getCode());
                     }
                 }
             }

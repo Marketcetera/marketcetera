@@ -7,7 +7,7 @@ import static org.marketcetera.core.time.TimeFactoryImpl.YEAR;
 import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;

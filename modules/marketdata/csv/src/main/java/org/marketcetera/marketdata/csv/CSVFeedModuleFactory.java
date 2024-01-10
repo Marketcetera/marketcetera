@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.csv;
 
 import static org.marketcetera.marketdata.csv.Messages.PROVIDER_DESCRIPTION;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.FeedStatus;

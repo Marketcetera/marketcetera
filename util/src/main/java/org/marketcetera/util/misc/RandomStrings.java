@@ -394,7 +394,7 @@ public final class RandomStrings
         (int len)
     {
         if (len<=0) {
-            return org.apache.commons.lang.StringUtils.EMPTY;
+            return org.apache.commons.lang3.StringUtils.EMPTY;
         }
         StringBuilder builder=new StringBuilder();
         builder.appendCodePoint(genUCPLetter());

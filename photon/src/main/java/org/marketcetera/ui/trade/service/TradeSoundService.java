@@ -1,6 +1,6 @@
 package org.marketcetera.ui.trade.service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.trade.ExecutionReport;

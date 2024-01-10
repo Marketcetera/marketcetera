@@ -1,14 +1,19 @@
 package org.marketcetera.util.ws.wrappers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.marketcetera.util.test.EqualityAssert.assertEquality;
+
 import java.io.StringReader;
 import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.MarshalException;
+
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.EqualityAssert.*;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.MarshalException;
 
 /**
  * @author tlerios@marketcetera.com

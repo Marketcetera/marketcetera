@@ -2,9 +2,9 @@ package org.marketcetera.admin;
 
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.impl.SimpleUser;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.admin.service.PasswordService;

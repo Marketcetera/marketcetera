@@ -1,6 +1,6 @@
 package org.marketcetera.util.test;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

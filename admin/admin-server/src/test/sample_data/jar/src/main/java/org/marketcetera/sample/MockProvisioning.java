@@ -1,6 +1,6 @@
 package org.marketcetera.sample;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

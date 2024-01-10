@@ -2,7 +2,7 @@ package org.marketcetera.messagehistory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;

@@ -2,8 +2,8 @@ package org.marketcetera.marketdata.rpc.server;
 
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;

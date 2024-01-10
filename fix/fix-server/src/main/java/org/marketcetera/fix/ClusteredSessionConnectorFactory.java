@@ -1,9 +1,9 @@
 package org.marketcetera.fix;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.cluster.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 

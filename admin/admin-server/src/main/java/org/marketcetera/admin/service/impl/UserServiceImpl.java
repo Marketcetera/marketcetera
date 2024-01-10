@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.dao.UserDao;
@@ -38,6 +34,10 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 /* $License$ */
 

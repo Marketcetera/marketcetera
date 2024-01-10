@@ -470,4 +470,4 @@
 @XmlSchema(namespace = "http://marketcetera.org/types/modules")
 package org.marketcetera.module;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;

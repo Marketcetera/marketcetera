@@ -72,7 +72,7 @@ public class SimpleStrategyInstance
     @Override
     public void setName(String inName)
     {
-        name = org.apache.commons.lang.StringUtils.trimToNull(inName);
+        name = org.apache.commons.lang3.StringUtils.trimToNull(inName);
     }
     /**
      * Get the filename value.
@@ -92,7 +92,7 @@ public class SimpleStrategyInstance
     @Override
     public void setFilename(String inFilename)
     {
-        filename = org.apache.commons.lang.StringUtils.trimToNull(inFilename);
+        filename = org.apache.commons.lang3.StringUtils.trimToNull(inFilename);
     }
     /**
      * Get the hash value.
@@ -112,7 +112,7 @@ public class SimpleStrategyInstance
     @Override
     public void setHash(String inHash)
     {
-        hash = org.apache.commons.lang.StringUtils.trimToNull(inHash);
+        hash = org.apache.commons.lang3.StringUtils.trimToNull(inHash);
     }
     /**
      * Get the nonce value.
@@ -132,7 +132,7 @@ public class SimpleStrategyInstance
     @Override
     public void setNonce(String inNonce)
     {
-        nonce = org.apache.commons.lang.StringUtils.trimToNull(inNonce);
+        nonce = org.apache.commons.lang3.StringUtils.trimToNull(inNonce);
     }
     /**
      * Get the started value.

@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.yahoo;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.FeedStatus;

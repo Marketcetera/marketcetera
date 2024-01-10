@@ -3,12 +3,12 @@ package org.marketcetera.algo;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.marketcetera.core.Validator;
 import org.marketcetera.util.misc.ClassVersion;
 

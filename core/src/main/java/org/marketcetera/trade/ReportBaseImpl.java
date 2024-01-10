@@ -2,7 +2,7 @@ package org.marketcetera.trade;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 import org.marketcetera.util.misc.ClassVersion;
 

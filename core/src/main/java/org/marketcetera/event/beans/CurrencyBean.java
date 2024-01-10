@@ -5,7 +5,7 @@ import static org.marketcetera.event.Messages.VALIDATION_NULL_INSTRUMENT;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.CurrencyEvent;
 import org.marketcetera.event.util.EventServices;

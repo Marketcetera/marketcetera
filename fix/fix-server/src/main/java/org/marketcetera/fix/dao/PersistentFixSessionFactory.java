@@ -3,7 +3,7 @@ package org.marketcetera.fix.dao;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.fix.FixSession;
 import org.marketcetera.fix.MutableFixSessionFactory;
 

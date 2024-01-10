@@ -12,9 +12,9 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.commons.lang.SerializationException;
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

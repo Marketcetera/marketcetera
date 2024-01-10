@@ -1,6 +1,6 @@
 package org.marketcetera.event.impl;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.SpreadEvent;

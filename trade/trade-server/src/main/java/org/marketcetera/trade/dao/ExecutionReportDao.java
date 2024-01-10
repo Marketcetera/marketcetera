@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /* $License$ */
@@ -23,7 +24,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 @ClassVersion("$Id$")
 public interface ExecutionReportDao
-        extends PagingAndSortingRepository<PersistentExecutionReport,Long>,QuerydslPredicateExecutor<PersistentExecutionReport>
+        extends CrudRepository<PersistentExecutionReport,Long>,PagingAndSortingRepository<PersistentExecutionReport,Long>,QuerydslPredicateExecutor<PersistentExecutionReport>
 {
     /**
      * Finds the report summary with the given report id.

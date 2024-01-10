@@ -2,7 +2,7 @@ package org.marketcetera.ui.service;
 
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ui.view.ContentView;

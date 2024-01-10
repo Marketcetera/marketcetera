@@ -3,7 +3,7 @@ package org.marketcetera.dataflow.server.rpc;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.client.DataBroadcaster;
 import org.marketcetera.dataflow.client.DataReceiver;

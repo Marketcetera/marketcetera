@@ -2,7 +2,7 @@ package org.marketcetera.core.position.impl;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.util.misc.ClassVersion;

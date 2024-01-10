@@ -31,14 +31,16 @@
     </developer>
   </developers>
   <properties>
-    <mvn.javase.version>11</mvn.javase.version>
-    <mvn.spring.boot.version>2.7.10</mvn.spring.boot.version>
+    <mvn.javase.version>17</mvn.javase.version>
+    <mvn.spring.boot.version>3.2.1</mvn.spring.boot.version>
     <mvn.cxf.version>3.2.1</mvn.cxf.version>
-    <mvn.log4j.version>2.17.1</mvn.log4j.version>
+    <mvn.log4j.version>2.22.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <esper.version>8.8.0</esper.version>
     <mvn.flyway.version>9.15.2</mvn.flyway.version>
+    <querydsl.version>5.0.0</querydsl.version>
+    <hibernate.version>6.4.1.Final</hibernate.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -390,6 +392,12 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>trade-rest-server</artifactId>
+        <version>${project.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>metrics-persist</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -427,6 +435,16 @@
         <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- Compile: Other -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>5.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+          <version>2.0.11</version>
+      </dependency>
       <!-- used to generate Docker-like variable names -->
       <dependency>
         <groupId>info.schnatterer.moby-names-generator</groupId>
@@ -450,14 +468,9 @@
         <version>2.10.13</version>
       </dependency>
       <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
-        <version>3.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger-ui</artifactId>
-        <version>3.0.0</version>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.tensorflow</groupId>
@@ -513,7 +526,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.12.0</version>
+        <version>3.14.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -592,6 +605,11 @@
         <artifactId>jruby</artifactId>
         <version>1.7.8</version>
       </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
       <!-- return old version of Esper until retirement of CEP-Esper module -->
       <dependency>
         <groupId>com.espertech</groupId>
@@ -659,7 +677,14 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.20.3</version>
+        <version>3.25.1</version>
+      </dependency>
+      <!-- necessary for Java 9+ for grpc protobuf compiler -->
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>annotations-api</artifactId>
+        <version>6.0.53</version>
+        <scope>provided</scope>
       </dependency>
       <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
       <dependency>
@@ -704,6 +729,26 @@
         <artifactId>jzlib</artifactId>
         <version>1.1.3</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-core</artifactId>
+        <version>${querydsl.version}</version> 
+        <scope>provided</scope>
+        <classifier>jakarta</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-apt</artifactId>
+        <version>${querydsl.version}</version> 
+        <scope>provided</scope>
+        <classifier>jakarta</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <version>${querydsl.version}</version> 
+        <classifier>jakarta</classifier>
       </dependency>
       <!-- Runtime. -->
       <dependency>
@@ -955,9 +1000,9 @@
                 protobuf-java directly, you will be transitively depending on the
                 protobuf-java version that grpc depends on.
             -->
-            <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+            <protocArtifact>com.google.protobuf:protoc:3.25.1:exe:${os.detected.classifier}</protocArtifact>
             <pluginId>grpc-java</pluginId>
-            <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
+            <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.60.1:exe:${os.detected.classifier}</pluginArtifact>
             <inputDirectories>
               <inputDirectory>proto</inputDirectory>
             </inputDirectories>
@@ -989,25 +1034,6 @@
           <version>1.4.1</version>
         </plugin>
         <plugin>
-          <groupId>com.mysema.maven</groupId>
-          <artifactId>apt-maven-plugin</artifactId>
-          <version>1.1.3</version>
-          <executions>
-            <execution>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>process</goal>
-              </goals>
-              <configuration>
-                <!-- Specifies the directory in which the query types are generated -->
-                <outputDirectory>target/generated-sources/java</outputDirectory>
-                <!-- States that the APT code generator should look for JPA annotations -->
-                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.3.0</version>
@@ -1021,6 +1047,8 @@
               </goals>
               <configuration>
                 <sources>
+                  <source>${project.build.directory}/generated-sources/protobuf/java</source>
+                  <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
                   <source>target/generated-sources/java</source>
                   <source>src/main/java</source>
                 </sources>
@@ -1106,10 +1134,23 @@
         <!-- mvn compile -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.0</version>
+          <version>3.11.0</version>
           <configuration>
             <source>${mvn.javase.version}</source>
             <target>${mvn.javase.version}</target>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-apt</artifactId>
+                <version>${querydsl.version}</version>
+                <classifier>jakarta</classifier>
+              </path>
+              <path>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>3.1.0</version>
+              </path>
+            </annotationProcessorPaths>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->

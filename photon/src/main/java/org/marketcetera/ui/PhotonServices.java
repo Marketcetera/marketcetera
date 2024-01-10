@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Optional;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.girod.javafx.svgimage.SVGLoader;
 import org.joda.time.DateTime;

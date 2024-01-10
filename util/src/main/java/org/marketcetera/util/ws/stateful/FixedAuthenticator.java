@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.stateful;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 

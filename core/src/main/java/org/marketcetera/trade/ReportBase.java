@@ -3,7 +3,7 @@ package org.marketcetera.trade;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 
 

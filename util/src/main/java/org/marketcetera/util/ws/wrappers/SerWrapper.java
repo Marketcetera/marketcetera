@@ -1,9 +1,9 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlTransient;
-import org.apache.commons.lang.SerializationException;
-import org.apache.commons.lang.SerializationUtils;
+import jakarta.xml.bind.annotation.XmlTransient;
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

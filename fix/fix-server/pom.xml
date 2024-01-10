@@ -33,6 +33,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>eventbus-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+    </dependency>
     <!-- local runtime -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -113,10 +117,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

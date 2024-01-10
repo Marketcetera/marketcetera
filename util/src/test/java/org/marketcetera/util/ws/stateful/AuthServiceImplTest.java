@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.stateful;
 
 import org.junit.Test;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;

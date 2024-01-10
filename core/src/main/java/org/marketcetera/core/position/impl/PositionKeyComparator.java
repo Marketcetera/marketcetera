@@ -2,7 +2,7 @@ package org.marketcetera.core.position.impl;
 
 import java.util.Comparator;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;

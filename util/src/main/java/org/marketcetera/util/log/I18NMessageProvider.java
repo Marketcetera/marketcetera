@@ -8,7 +8,7 @@ import java.util.Locale;
 import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.MessageNotFoundException;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 

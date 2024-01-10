@@ -12,10 +12,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.marketcetera.admin.UserFactory;
 import org.marketcetera.admin.service.AuthorizationService;
 import org.marketcetera.core.PlatformServices;

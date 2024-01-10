@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;

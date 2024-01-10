@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.ClusterDataFactory;

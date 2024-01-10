@@ -1,6 +1,6 @@
 package org.marketcetera.symbol;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Currency;

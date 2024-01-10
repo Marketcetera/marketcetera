@@ -1,6 +1,6 @@
 package org.marketcetera.eventbus.guava;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.eventbus.EventBusService;

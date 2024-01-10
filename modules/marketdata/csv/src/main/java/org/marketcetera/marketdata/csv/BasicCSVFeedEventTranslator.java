@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;

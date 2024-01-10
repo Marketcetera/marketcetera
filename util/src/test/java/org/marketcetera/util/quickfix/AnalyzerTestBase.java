@@ -2,7 +2,7 @@ package org.marketcetera.util.quickfix;
 
 import java.util.Locale;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.util.log.ActiveLocale;

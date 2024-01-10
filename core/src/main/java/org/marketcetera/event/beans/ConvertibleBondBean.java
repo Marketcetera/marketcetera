@@ -3,7 +3,7 @@ package org.marketcetera.event.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.ConvertibleBondEvent;
 import org.marketcetera.event.Messages;

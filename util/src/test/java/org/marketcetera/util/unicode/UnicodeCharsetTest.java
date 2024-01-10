@@ -1,7 +1,7 @@
 package org.marketcetera.util.unicode;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 

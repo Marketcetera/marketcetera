@@ -4,7 +4,7 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.brokers.BrokerStatusListener;
 import org.marketcetera.core.ClientStatusListener;

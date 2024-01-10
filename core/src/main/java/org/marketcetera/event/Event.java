@@ -3,9 +3,9 @@ package org.marketcetera.event;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.marketcetera.util.misc.ClassVersion;
+
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /* $License$ */
 

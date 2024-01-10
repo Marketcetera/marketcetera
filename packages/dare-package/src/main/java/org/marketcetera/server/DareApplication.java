@@ -1,10 +1,9 @@
 package org.marketcetera.server;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.jms.ServerSession;
 
 import org.marketcetera.admin.PermissionFactory;
@@ -91,12 +90,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.google.common.collect.Lists;
 
 import io.grpc.BindableService;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 
 /* $License$ */
 
@@ -376,21 +373,37 @@ public class DareApplication
         metricServiceReporter.setReportInterval(metricServiceLogReporterInterval);
         return metricServiceReporter;
     }
-    /**
-     * Create the Swagger API component.
-     *
-     * @return a <code>Docket</code> value
-     */
-    @Bean
-    public Docket api()
-    { 
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/matp/*"))
-                .build()
-                .apiInfo(apiInfo());
-    }
+//    @Bean
+//    public GroupedOpenApi publicApi() {
+//        return GroupedOpenApi.builder()
+//                .group("marketcetera")
+//                .pathsToMatch("/matp/**")
+//                .build();
+//    }
+//    @Bean
+//    public GroupedOpenApi adminApi() {
+//        return GroupedOpenApi.builder()
+//                .group("springshop-admin")
+//                .pathsToMatch("/admin/**")
+//                .addOpenApiMethodFilter(method -> method.isAnnotationPresent(Admin.class))
+//                .build();
+//    }
+//
+//    /**
+//     * Create the Swagger API component.
+//     *
+//     * @return a <code>Docket</code> value
+//     */
+//    @Bean
+//    public GroupedOpenApi api()
+//    { 
+//        return new Docket(DocumentationType.SWAGGER_2)
+//                .select()
+//                .apis(RequestHandlerSelectors.any())
+//                .paths(PathSelectors.ant("/matp/*"))
+//                .build()
+//                .apiInfo(apiInfo());
+//    }
     /**
      * Get the port user proxy for the embedded web server.
      *
@@ -734,25 +747,37 @@ public class DareApplication
     {
         return new PersistentUserFactory();
     }
-    /**
-     * Get the API info (REST Swagger) for DARE.
-     *
-     * @return an <code>ApiInfo</code> value
-     */
-    private ApiInfo apiInfo()
-    {
-        return new ApiInfo(
-          "Marketcetera Automated Trading Engine REST API", 
-          "REST API for MATP", 
-          "API TOS", 
-          "Terms of service", 
-          new Contact("Colin DuPlantis", 
-                      "www.marketcetera.com",
-                      "info@marketcetera.com"), 
-          "License of API",
-          "API license URL",
-          Collections.emptyList());
+    @Bean
+    public OpenAPI matpOpenAPI() {
+        return new OpenAPI()
+                .info(new Info().title("Marketcetera Automated Trading Platform API")
+                .description("matp application")
+                .version("v4.1.1")
+                .license(new License().name("GPLv2").url("https://www.marketcetera.com")))
+                .externalDocs(new ExternalDocumentation()
+                .description("Marketcetera API Documentation")
+                .url("https://repo.marketcetera.org/metc-doc"));
     }
+
+//    /**
+//     * Get the API info (REST Swagger) for DARE.
+//     *
+//     * @return an <code>ApiInfo</code> value
+//     */
+//    private ApiInfo apiInfo()
+//    {
+//        return new ApiInfo(
+//          "Marketcetera Automated Trading Engine REST API", 
+//          "REST API for MATP", 
+//          "API TOS", 
+//          "Terms of service", 
+//          new Contact("Colin DuPlantis", 
+//                      "www.marketcetera.com",
+//                      "info@marketcetera.com"), 
+//          "License of API",
+//          "API license URL",
+//          Collections.emptyList());
+//    }
     /**
      * indicates whether to use SSL or not
      */

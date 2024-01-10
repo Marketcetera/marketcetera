@@ -3,7 +3,7 @@ package org.marketcetera.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /* $License$ */
 
@@ -18,7 +18,7 @@ public class MapAdapter
         extends XmlAdapter<MapElements[],Map<String,String>>
 {
     /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     * @see jakarta.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @Override
     public Map<String,String> unmarshal(MapElements[] inValue)
@@ -32,7 +32,7 @@ public class MapAdapter
         return value;
     }
     /* (non-Javadoc)
-     * @see javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+     * @see jakarta.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @Override
     public MapElements[] marshal(Map<String,String> inValue)
