@@ -17,6 +17,7 @@
   </properties>
   <modules>
     <module>marketdata-api</module>
+    <module>marketdata-rest-server</module>
     <module>marketdata-rpc-client</module>
     <module>marketdata-rpc-core</module>
     <module>marketdata-rpc-server</module>
