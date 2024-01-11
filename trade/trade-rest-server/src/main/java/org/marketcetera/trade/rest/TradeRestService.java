@@ -24,6 +24,8 @@ import org.marketcetera.util.ws.stateful.UsesPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,11 +37,13 @@ import com.google.common.collect.Lists;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import reactor.core.publisher.Flux;
 
 /* $License$ */
 
@@ -196,6 +200,22 @@ public class TradeRestService
                description="Gets an instrument from the string according to the rules established for symbol resolution")
     @RequestMapping(value="/matp/trade/resolveSymbol",method=RequestMethod.GET,produces={"application/json","appliciation/xml"})
     public Instrument resolveSymbol(@RequestParam(name="symbol",required=true)String inSymbol)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     * Subscribe to execution reports.
+     *
+     * @return a <code>Flux&lt;ServerSentEvent&lt;SimpleReportt&gt;&gt;</code> value
+     */
+    @ApiResponses(value={@ApiResponse(responseCode="200",description="Successfully executed an execution report stream request",
+                  content=@io.swagger.v3.oas.annotations.media.Content(mediaType=MediaType.TEXT_EVENT_STREAM_VALUE,
+                                                                       schema=@Schema(implementation=SimpleReport.class))),
+                         @ApiResponse(responseCode="400",description="Invalid parameters",content=@io.swagger.v3.oas.annotations.media.Content)})
+    @RequestMapping(value="/matp/trade/reportsStream",method=RequestMethod.POST,produces={MediaType.TEXT_EVENT_STREAM_VALUE})
+    @Operation(summary="Creates a subscription to server-side-event streamed execution reports",
+               description="Subscribes to execution reports visible to the authenticated user")
+    public Flux<ServerSentEvent<SimpleReport>> requestMarketDataStream()
     {
         throw new UnsupportedOperationException(); // TODO
     }

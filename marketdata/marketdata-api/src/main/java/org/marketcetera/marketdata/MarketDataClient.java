@@ -9,7 +9,6 @@ import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.ClientContext;
 
 /* $License$ */
 

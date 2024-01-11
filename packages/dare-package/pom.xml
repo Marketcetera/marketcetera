@@ -74,6 +74,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-rest-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cluster-rpc-server</artifactId>
     </dependency>
     <dependency>

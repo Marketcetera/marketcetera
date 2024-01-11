@@ -23,19 +23,19 @@ public interface MarketDataEvent
      *
      * @return a <code>String</code> value
      */
-    public String getExchange();
+    String getExchange();
     /**
      * Gets the price of the market data event. 
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getPrice();
+    BigDecimal getPrice();
     /**
      * Gets the size of the market data event.
      *
      * @return a <code>BigDecimal</code> value
      */
-    public BigDecimal getSize();
+    BigDecimal getSize();
     /**
      * Gets the time the event occurred. 
      *
@@ -44,17 +44,5 @@ public interface MarketDataEvent
      *
      * @return a <code>Date</code> value
      */
-    public Date getExchangeTimestamp();
-    /**
-     * Gets the type of the event.
-     *
-     * @return an <code>EventMetaType</code> value
-     */
-    public EventType getEventType();
-    /**
-     * Sets the type of the event.
-     *
-     * @param inEventType an <code>EventMetaType</code> value
-     */
-    public void setEventType(EventType inEventType);
+    Date getExchangeTimestamp();
 }
