@@ -209,11 +209,11 @@
                 <argument>--add-host</argument>
                 <argument>host.docker.internal:host-gateway</argument>
                 <argument>-p</argument>
-                <argument>9000:9000</argument>
+                <argument>19000:9000</argument>
                 <argument>-p</argument>
-                <argument>9010:9010</argument>
+                <argument>19010:9010</argument>
                 <argument>-p</argument>
-                <argument>9020:9020</argument>
+                <argument>19020:9020</argument>
                 <argument>--env-file</argument>
                 <argument>target/local.properties</argument>
                 <argument>-t</argument>

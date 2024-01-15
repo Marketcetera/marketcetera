@@ -219,8 +219,8 @@
             -Dspring.config.location=src/test/cmd_exec/conf/application.properties,target/local.properties
             -Dspring.flyway.locations=classpath:db/migration/${metc.flyway.vendor}/
             -Dmetc.instance=1
-            -Dmetc.rpc.port=9000
-            -Dserver.port=9020
+            -Dmetc.rpc.port=19000
+            -Dserver.port=19020
           </jvmArguments>
         </configuration>
       </plugin>
@@ -387,44 +387,20 @@
                   <value>false</value>
                 </systemProperty>
                 <systemProperty>
-                  <key>metc.port.metc.rpc.port</key>
-                  <value>9000</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.port.metc.sa.rpc.port</key>
-                  <value>9010</value>
-                </systemProperty>
-                <systemProperty>
                   <key>metc.instanceport.server.port</key>
-                  <value>9020</value>
+                  <value>19000</value>
+                </systemProperty>
+                <systemProperty>
+                  <key>metc.port.metc.rpc.port</key>
+                  <value>19010</value>
                 </systemProperty>
                 <systemProperty>
                   <key>metc.port.metc.cluster.port</key>
-                  <value>9040</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.port.metc.stomp.port</key>
-                  <value>9050</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.port.metc.jms.port</key>
-                  <value>9060</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.port.metc.sa.jms.port</key>
-                  <value>9070</value>
+                  <value>19040</value>
                 </systemProperty>
                 <systemProperty>
                   <key>metc.port.metc.acceptor.qf.port</key>
-                  <value>9080</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.port.metc.jms.jmx.port</key>
-                  <value>9090</value>
-                </systemProperty>
-                <systemProperty>
-                  <key>metc.instanceport.com.sun.management.jmxremote.port</key>
-                  <value>9100</value>
+                  <value>19080</value>
                 </systemProperty>
               </systemProperties>
               <classpathScope>test</classpathScope>
