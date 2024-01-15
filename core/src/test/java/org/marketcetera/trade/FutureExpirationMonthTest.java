@@ -33,7 +33,7 @@ public class FutureExpirationMonthTest
                 FutureExpirationMonth.getFutureExpirationMonth(null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -41,7 +41,7 @@ public class FutureExpirationMonthTest
                 FutureExpirationMonth.getFutureExpirationMonth(' ');
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -49,7 +49,7 @@ public class FutureExpirationMonthTest
                 FutureExpirationMonth.getFutureExpirationMonth("");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -57,7 +57,7 @@ public class FutureExpirationMonthTest
                 FutureExpirationMonth.getFutureExpirationMonth(" ");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -65,7 +65,7 @@ public class FutureExpirationMonthTest
                 FutureExpirationMonth.getFutureExpirationMonth('E');
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception

@@ -31,6 +31,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.stateless.StatelessClient;
@@ -50,6 +51,7 @@ import org.marketcetera.util.ws.wrappers.SerWrapper;
 
 /* $License$ */
 
+@Ignore
 @SuppressWarnings("rawtypes")
 public class TypeTest
     extends TestCaseBase

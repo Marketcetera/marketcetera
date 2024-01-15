@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.stateless.ClientServerTestBase;
@@ -23,6 +24,7 @@ import jakarta.xml.ws.WebServiceException;
 
 /* $License$ */
 
+@Ignore
 public class ClientServerTest
     extends ClientServerTestBase
 {

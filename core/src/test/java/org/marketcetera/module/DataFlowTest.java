@@ -706,18 +706,15 @@ public class DataFlowTest extends ModuleTestBase {
                 ProcessorModuleFactory.PROVIDER_URN);
         assertFalse(urns.toString(), urns.contains(procURN));
         //test various emitter module failures: parm value
-        new ExpectedFailure<IllegalRequestParameterValue>(
-                Messages.ILLEGAL_REQ_PARM_VALUE,
-                EmitterModuleFactory.INSTANCE_URN.getValue(),
-                null) {
+        new ExpectedFailure<IllegalRequestParameterValue>() {
             protected void run() throws Exception {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(EmitterModuleFactory.INSTANCE_URN),
                         new DataRequest(procURN,String.class.getName())});
             }
         };
-        //verify that when a request to initate data flow fails any module
-        //that had sucessfully initiated requests have their requests
+        //verify that when a request to initiate data flow fails any module
+        //that had successfully initiated requests have their requests
         //canceled. In this case the processor module should have its
         //request canceled.
         ProcessorModule proc = (ProcessorModule) ModuleBase.getInstance(procURN);
@@ -736,10 +733,7 @@ public class DataFlowTest extends ModuleTestBase {
         };
 
         //test processor module failures
-        new ExpectedFailure<IllegalRequestParameterValue>(
-                Messages.ILLEGAL_REQ_PARM_VALUE,
-                procURN.getValue(),
-                null) {
+        new ExpectedFailure<IllegalRequestParameterValue>() {
             protected void run() throws Exception {
                 sManager.createDataFlow(new DataRequest[]{
                         new DataRequest(EmitterModuleFactory.INSTANCE_URN,

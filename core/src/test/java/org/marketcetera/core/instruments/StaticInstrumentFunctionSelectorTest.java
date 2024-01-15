@@ -34,7 +34,7 @@ public class StaticInstrumentFunctionSelectorTest {
     @SuppressWarnings("rawtypes")
     public void forInstrument() throws Exception {
         final StaticInstrumentFunctionSelector<InstrumentToMessage> selector = InstrumentToMessage.SELECTOR;
-        new ExpectedFailure<IllegalArgumentException>("instrument"){
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 selector.forInstrument(null);
@@ -60,7 +60,7 @@ public class StaticInstrumentFunctionSelectorTest {
     @Test
     @SuppressWarnings("rawtypes")
     public void constructor() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>("class"){
+        new ExpectedFailure<NullPointerException>() {
             @Override
             @SuppressWarnings("unchecked")
             protected void run() throws Exception {

@@ -69,7 +69,7 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
 
     @Test
     public void testNullInstrument() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new PositionKeyImpl<Equity>(null, "abc", "abc");

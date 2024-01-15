@@ -1,8 +1,8 @@
 package org.marketcetera.trade;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -75,7 +75,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option(null, "20091010", BigDecimal.ONE, OptionType.Call);
@@ -85,13 +85,13 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testWhitespaceSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("", "20091010", BigDecimal.ONE, OptionType.Call);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("   ", "20091010", BigDecimal.ONE, OptionType.Call);
@@ -101,7 +101,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullType() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", "20091010", BigDecimal.ONE, null);
@@ -111,7 +111,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullExpiry() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", null, BigDecimal.ONE, OptionType.Call);
@@ -121,13 +121,13 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testWhitespaceExpiry() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", "", BigDecimal.ONE, OptionType.Call);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", " ", BigDecimal.ONE, OptionType.Call);
@@ -137,7 +137,7 @@ public class OptionTest extends InstrumentTestBase<Option> {
 
     @Test
     public void testNullStrikePrice() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Option("ABC", "20091010", null, OptionType.Call);

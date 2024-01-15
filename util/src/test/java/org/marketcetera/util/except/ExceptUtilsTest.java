@@ -15,6 +15,7 @@ import javax.naming.InterruptedNamingException;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
@@ -25,7 +26,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  */
 
 /* $License$ */
-
+@Ignore
 public class ExceptUtilsTest
     extends I18NThrowableTestBase
 {

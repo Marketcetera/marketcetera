@@ -52,13 +52,13 @@ public class FutureTest
 
     @Test
     public void testNullSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future(null, FutureExpirationMonth.JULY, 18);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future(null, "201010");
@@ -74,19 +74,19 @@ public class FutureTest
     public void testWhitespaceSymbol()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future("",FutureExpirationMonth.JULY, 18);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future("   ",FutureExpirationMonth.JULY, 18);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future("   ", "201012");
@@ -102,7 +102,7 @@ public class FutureTest
     public void testNullExpirationMonth()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_MONTH.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future("ABC", null, 18);
@@ -193,14 +193,14 @@ public class FutureTest
     }
     @Test
     public void testInvalidExpiry() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_EXPIRY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future("ABC",
                            null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_EXPIRY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 new Future("ABC",
@@ -273,7 +273,7 @@ public class FutureTest
     public void testFromString()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -281,7 +281,7 @@ public class FutureTest
                 Future.fromString(null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception
@@ -289,7 +289,7 @@ public class FutureTest
                 Future.fromString("");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception

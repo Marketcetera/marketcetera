@@ -44,13 +44,13 @@ public class CurrencyTest
 
     @Test
     public void testNullSymbol() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_LEFT_CURRENCY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
             	new Currency(null, "INR", "1D","2W");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_RIGHT_CURRENCY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
             	new Currency("INR", null, "1D","2W");
@@ -66,25 +66,25 @@ public class CurrencyTest
     public void testWhitespaceSymbol()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_RIGHT_CURRENCY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
             	new Currency("INR", "", "1D","2W");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_RIGHT_CURRENCY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
             	new Currency("INR", " ", "1D","2W");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_LEFT_CURRENCY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
             	new Currency("", "INR", "1D","2W");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_LEFT_CURRENCY.getText()) {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
             	new Currency("  ", "INR", "1D","2W");

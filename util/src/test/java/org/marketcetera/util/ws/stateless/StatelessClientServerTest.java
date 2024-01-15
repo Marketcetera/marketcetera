@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.stateless;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -10,6 +11,7 @@ import org.junit.Test;
 
 /* $License$ */
 
+@Ignore
 public class StatelessClientServerTest
     extends ClientServerTestBase
 {

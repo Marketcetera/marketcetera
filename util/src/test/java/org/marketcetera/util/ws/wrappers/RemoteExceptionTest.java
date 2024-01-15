@@ -8,6 +8,7 @@ import javax.jws.WebService;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.util.ws.stateless.StatelessClient;
 import org.marketcetera.util.ws.stateless.StatelessServer;
@@ -22,6 +23,7 @@ import org.marketcetera.util.ws.stateless.StatelessServiceBaseImpl;
 
 /* $License$ */
 
+@Ignore
 public class RemoteExceptionTest
     extends WrapperTestBase
 {

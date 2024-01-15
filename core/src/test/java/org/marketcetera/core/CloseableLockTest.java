@@ -33,7 +33,7 @@ public class CloseableLockTest
     public void testCreate()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
                     throws Exception

@@ -55,7 +55,7 @@ public class DynamicInstrumentFunctionSelectorTest {
     public void forValue() throws Exception {
         final DynamicInstrumentFunctionSelector<FieldMap,InstrumentFromMessage> selector = InstrumentFromMessage.SELECTOR;
         //null value
-        new ExpectedFailure<IllegalArgumentException>("value"){
+        new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run() throws Exception {
                 selector.forValue(null);
@@ -101,7 +101,7 @@ public class DynamicInstrumentFunctionSelectorTest {
      */
     @Test
     public void constructor() throws Exception {
-        new ExpectedFailure<IllegalArgumentException>("class"){
+        new ExpectedFailure<NullPointerException>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             protected void run() throws Exception {
