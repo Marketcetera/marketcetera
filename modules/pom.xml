@@ -12,7 +12,6 @@
   <packaging>pom</packaging>
   <name>Modules Parent</name>
   <modules>
-    <module>cep</module>
     <module>machine-learning</module>
     <module>marketdata</module>
     <module>misc</module>

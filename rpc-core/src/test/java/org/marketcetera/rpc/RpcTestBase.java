@@ -68,15 +68,17 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
     public void cleanup()
             throws Exception
     {
-        for(RpcClientClazz client : clients) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e);
+        synchronized(clients) {
+            for(RpcClientClazz client : clients) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e);
+                }
             }
+            clients.clear();
         }
-        clients.clear();
         stopServer();
     }
     /**
@@ -354,7 +356,9 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                                                                    inPassword));
         prepareClient(client);
         client.start();
-        clients.add(client);
+        synchronized(clients) {
+            clients.add(client);
+        }
         return client;
     }
     /**

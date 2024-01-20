@@ -37,7 +37,7 @@
     <mvn.log4j.version>2.22.1</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
-    <esper.version>8.8.0</esper.version>
+    <esper.version>8.9.0</esper.version>
     <mvn.flyway.version>9.15.2</mvn.flyway.version>
     <querydsl.version>5.0.0</querydsl.version>
     <hibernate.version>6.4.1.Final</hibernate.version>
@@ -296,11 +296,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>cep-system</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>eventbus-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -449,7 +444,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-          <version>2.0.11</version>
+        <version>2.0.11</version>
       </dependency>
       <!-- used to generate Docker-like variable names -->
       <dependency>
@@ -616,11 +611,15 @@
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
       </dependency>
-      <!-- return old version of Esper until retirement of CEP-Esper module -->
+      <dependency>
+        <groupId>org.codehaus.janino</groupId>
+        <artifactId>janino</artifactId>
+        <version>3.1.6</version>
+      </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
-        <artifactId>esper</artifactId>
-        <version>7.1.0</version>
+        <artifactId>esper-common</artifactId>
+        <version>${esper.version}</version>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
@@ -631,11 +630,6 @@
         <groupId>com.espertech</groupId>
         <artifactId>esper-compiler</artifactId>
         <version>${esper.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.janino</groupId>
-        <artifactId>janino</artifactId>
-        <version>3.1.6</version>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
@@ -942,13 +936,6 @@
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>cep-system</artifactId>
-        <version>${project.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
       <!-- Testing: other. -->
       <dependency>
         <groupId>org.junit.vintage</groupId>
@@ -1243,6 +1230,36 @@
       <id>ide-build</id>
       <build>
         <directory>${project.basedir}/target-ide</directory>
+        <plugins>
+          <plugin>
+            <groupId>org.xolstice.maven.plugins</groupId>
+            <artifactId>protobuf-maven-plugin</artifactId>
+            <configuration>
+              <!--
+                  The version of protoc must match protobuf-java. If you don't depend on
+                  protobuf-java directly, you will be transitively depending on the
+                  protobuf-java version that grpc depends on.
+              -->
+              <protocArtifact>com.google.protobuf:protoc:3.25.1:exe:${os.detected.classifier}</protocArtifact>
+              <pluginId>grpc-java</pluginId>
+              <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.60.1:exe:${os.detected.classifier}</pluginArtifact>
+              <inputDirectories>
+                <inputDirectory>proto</inputDirectory>
+                <outputDirectory>${basedir}/target-ide/generated-sources</outputDirectory>
+              </inputDirectories>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>compile</goal>
+                  <goal>compile-custom</goal>
+                  <goal>test-compile</goal>
+                  <goal>test-compile-custom</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
     <profile>
@@ -1288,7 +1305,7 @@
           </plugin>
         </plugins>
       </build>
-    </profile>    
+    </profile>
   </profiles>
   <modules>
     <module>admin</module>

@@ -373,37 +373,6 @@ public class DareApplication
         metricServiceReporter.setReportInterval(metricServiceLogReporterInterval);
         return metricServiceReporter;
     }
-//    @Bean
-//    public GroupedOpenApi publicApi() {
-//        return GroupedOpenApi.builder()
-//                .group("marketcetera")
-//                .pathsToMatch("/matp/**")
-//                .build();
-//    }
-//    @Bean
-//    public GroupedOpenApi adminApi() {
-//        return GroupedOpenApi.builder()
-//                .group("springshop-admin")
-//                .pathsToMatch("/admin/**")
-//                .addOpenApiMethodFilter(method -> method.isAnnotationPresent(Admin.class))
-//                .build();
-//    }
-//
-//    /**
-//     * Create the Swagger API component.
-//     *
-//     * @return a <code>Docket</code> value
-//     */
-//    @Bean
-//    public GroupedOpenApi api()
-//    { 
-//        return new Docket(DocumentationType.SWAGGER_2)
-//                .select()
-//                .apis(RequestHandlerSelectors.any())
-//                .paths(PathSelectors.ant("/matp/*"))
-//                .build()
-//                .apiInfo(apiInfo());
-//    }
     /**
      * Get the port user proxy for the embedded web server.
      *
@@ -747,8 +716,13 @@ public class DareApplication
     {
         return new PersistentUserFactory();
     }
+    /**
+     * Get the Swagger configuration object.
+     *
+     * @return an <code>OpenAPI</code> value
+     */
     @Bean
-    public OpenAPI matpOpenAPI() {
+    public OpenAPI getMatpOpenAPI() {
         return new OpenAPI()
                 .info(new Info().title("Marketcetera Automated Trading Platform API")
                 .description("matp application")
@@ -758,26 +732,6 @@ public class DareApplication
                 .description("Marketcetera API Documentation")
                 .url("https://repo.marketcetera.org/metc-doc"));
     }
-
-//    /**
-//     * Get the API info (REST Swagger) for DARE.
-//     *
-//     * @return an <code>ApiInfo</code> value
-//     */
-//    private ApiInfo apiInfo()
-//    {
-//        return new ApiInfo(
-//          "Marketcetera Automated Trading Engine REST API", 
-//          "REST API for MATP", 
-//          "API TOS", 
-//          "Terms of service", 
-//          new Contact("Colin DuPlantis", 
-//                      "www.marketcetera.com",
-//                      "info@marketcetera.com"), 
-//          "License of API",
-//          "API license URL",
-//          Collections.emptyList());
-//    }
     /**
      * indicates whether to use SSL or not
      */

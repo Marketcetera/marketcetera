@@ -46,9 +46,7 @@ public class EmitterTest extends ModuleTestBase {
      */
     @Test
     public void invalidRequests() throws Exception {
-        new ExpectedFailure<IllegalRequestParameterValue>(
-                org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
-                CSVEmitterFactory.INSTANCE_URN.toString(), null){
+        new ExpectedFailure<IllegalRequestParameterValue>(){
             protected void run() throws Exception {
                 mManager.createDataFlow(new DataRequest[]{
                         new DataRequest(CSVEmitterFactory.INSTANCE_URN,null)
