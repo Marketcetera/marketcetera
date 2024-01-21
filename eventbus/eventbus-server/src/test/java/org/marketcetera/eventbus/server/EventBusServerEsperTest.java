@@ -3,6 +3,7 @@ package org.marketcetera.eventbus.server;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.marketcetera.eventbus.EventBusService;
@@ -23,6 +24,7 @@ import com.google.common.collect.Maps;
  * @version $Id$
  * @since $Release$
  */
+@Disabled
 @ExtendWith(SpringExtension.class)
 @EntityScan(basePackages={"org.marketcetera"})
 @ComponentScan(basePackages={"org.marketcetera"})

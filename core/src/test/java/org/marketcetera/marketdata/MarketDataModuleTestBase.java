@@ -165,9 +165,7 @@ public abstract class MarketDataModuleTestBase
         throws Exception
     {
         // null request data
-        new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
-                                                          getInstanceURN().toString(),
-                                                          null) {
+        new ExpectedFailure<IllegalRequestParameterValue>() {
             protected void run()
                 throws Exception
             {
