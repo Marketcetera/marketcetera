@@ -102,8 +102,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.Counter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -145,14 +143,7 @@ public class ReportServiceImpl
         metricNames.add(rootOrderIdCacheMissCounterName);
         rootOrderIdLookupCounter = metricService.getMetrics().counter(rootOrderIdLookupCounterName);
         rootOrderIdCacheMissCounter = metricService.getMetrics().counter(rootOrderIdCacheMissCounterName);
-        rootOrderIdsByOrderId = CacheBuilder.newBuilder().expireAfterAccess(rootOrderIdCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<OrderID,OrderID>() {
-            @Override
-            public OrderID load(OrderID inKey)
-                    throws Exception
-            {
-                return retrieveRootOrderIdFromDatabase(inKey);
-            }}
-        );
+        rootOrderIdsByOrderId = CacheBuilder.newBuilder().expireAfterAccess(rootOrderIdCacheTtl,TimeUnit.MILLISECONDS).build();
         Validate.isTrue(missingSeqNumBatchSize > 0,
                         "missingSeqNumBatchSize must be positive");
         SLF4JLoggerProxy.info(this,
@@ -531,10 +522,18 @@ public class ReportServiceImpl
         SLF4JLoggerProxy.debug(this,
                                "Searching for the root order id for {}",
                                inOrderId);
-        OrderID rootOrderId;
+        OrderID rootOrderId = null;
+        rootOrderIdLookupCounter.inc();
         if(cacheRootOrderIds) {
-            rootOrderIdLookupCounter.inc();
-            rootOrderId = rootOrderIdsByOrderId.getUnchecked(inOrderId);
+            rootOrderId = rootOrderIdsByOrderId.getIfPresent(inOrderId);
+            if(rootOrderId == null) {
+                rootOrderIdCacheMissCounter.inc();
+                rootOrderId = retrieveRootOrderIdFromDatabase(inOrderId);
+                if(rootOrderId != null) {
+                    rootOrderIdsByOrderId.put(inOrderId,
+                                              rootOrderId);
+                }
+            }
         } else {
             rootOrderId = retrieveRootOrderIdFromDatabase(inOrderId);
         }
@@ -1254,7 +1253,6 @@ public class ReportServiceImpl
         if(executionReportPage.hasContent()) {
             pExecutionReport = executionReportPage.getContent().iterator().next();
         }
-        rootOrderIdCacheMissCounter.inc();
         return pExecutionReport == null ? null : pExecutionReport.getRootOrderID();
     }
     /**
@@ -1618,7 +1616,7 @@ public class ReportServiceImpl
     /**
      * caches root order ids by order id
      */
-    private LoadingCache<OrderID,OrderID> rootOrderIdsByOrderId;
+    private Cache<OrderID,OrderID> rootOrderIdsByOrderId;
     /**
      * tracks the number of times that root order ids are retrieved, using the cache or not
      */
