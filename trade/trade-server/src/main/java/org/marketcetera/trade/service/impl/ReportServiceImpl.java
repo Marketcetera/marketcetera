@@ -2,6 +2,7 @@ package org.marketcetera.trade.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -38,6 +40,7 @@ import org.marketcetera.fix.IncomingMessage;
 import org.marketcetera.fix.dao.IncomingMessageDao;
 import org.marketcetera.fix.dao.PersistentIncomingMessage;
 import org.marketcetera.fix.dao.QPersistentIncomingMessage;
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -96,8 +99,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.Counter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -133,6 +139,20 @@ public class ReportServiceImpl
         reportIDFactory = new LongIDFactory(idFactory);
         timerService = new Timer();
         cachedSessionStart = CacheBuilder.newBuilder().build();
+        String rootOrderIdLookupCounterName = getClass() + "-rootOrderIdLookupCounter";
+        String rootOrderIdCacheMissCounterName = getClass() + "-rootOrderIdCacheMissCounter";
+        metricNames.add(rootOrderIdLookupCounterName);
+        metricNames.add(rootOrderIdCacheMissCounterName);
+        rootOrderIdLookupCounter = metricService.getMetrics().counter(rootOrderIdLookupCounterName);
+        rootOrderIdCacheMissCounter = metricService.getMetrics().counter(rootOrderIdCacheMissCounterName);
+        rootOrderIdsByOrderId = CacheBuilder.newBuilder().expireAfterAccess(rootOrderIdCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<OrderID,OrderID>() {
+            @Override
+            public OrderID load(OrderID inKey)
+                    throws Exception
+            {
+                return retrieveRootOrderIdFromDatabase(inKey);
+            }}
+        );
         Validate.isTrue(missingSeqNumBatchSize > 0,
                         "missingSeqNumBatchSize must be positive");
         SLF4JLoggerProxy.info(this,
@@ -144,6 +164,12 @@ public class ReportServiceImpl
     @PreDestroy
     public void stop()
     {
+        for(String metricName : metricNames) {
+            try {
+                metricService.getMetrics().remove(metricName);
+            } catch (Exception ignored) {}
+        }
+        metricNames.clear();
         if(timerService != null) {
             try {
                 timerService.cancel();
@@ -505,26 +531,18 @@ public class ReportServiceImpl
         SLF4JLoggerProxy.debug(this,
                                "Searching for the root order id for {}",
                                inOrderId);
-        BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.orderId.eq(inOrderId));
-        Sort sort = Sort.by(Sort.Direction.ASC,
-                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
-        PageRequest page = PageRequest.of(0,
-                                          1,
-                                          sort);
-        SLF4JLoggerProxy.debug(this,
-                               "Searching for for the root order id for {}",
-                               inOrderId);
-        Page<PersistentExecutionReport> executionReportPage = executionReportDao.findAll(where,
-                                                                                         page);
-        PersistentExecutionReport pExecutionReport = null;
-        if(executionReportPage.hasContent()) {
-            pExecutionReport = executionReportPage.getContent().iterator().next();
+        OrderID rootOrderId;
+        if(cacheRootOrderIds) {
+            rootOrderIdLookupCounter.inc();
+            rootOrderId = rootOrderIdsByOrderId.getUnchecked(inOrderId);
+        } else {
+            rootOrderId = retrieveRootOrderIdFromDatabase(inOrderId);
         }
         SLF4JLoggerProxy.debug(this,
                                "Retrieved {} for {}",
-                               pExecutionReport,
+                               rootOrderId,
                                inOrderId);
-        return pExecutionReport == null ? null : pExecutionReport.getRootOrderID();
+        return rootOrderId;
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.ReportService#getReportsSince(com.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -1217,6 +1235,29 @@ public class ReportServiceImpl
         cacheSize = inCacheSize;
     }
     /**
+     * Retrieve the root order id for the given order id from the database.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value or <code>null</code>
+     */
+    private OrderID retrieveRootOrderIdFromDatabase(OrderID inOrderId)
+    {
+        BooleanBuilder where = new BooleanBuilder().and(QPersistentExecutionReport.persistentExecutionReport.orderId.eq(inOrderId));
+        Sort sort = Sort.by(Sort.Direction.ASC,
+                            QPersistentExecutionReport.persistentExecutionReport.sendingTime.getMetadata().getName());
+        PageRequest page = PageRequest.of(0,
+                                          1,
+                                          sort);
+        Page<PersistentExecutionReport> executionReportPage = executionReportDao.findAll(where,
+                                                                                         page);
+        PersistentExecutionReport pExecutionReport = null;
+        if(executionReportPage.hasContent()) {
+            pExecutionReport = executionReportPage.getContent().iterator().next();
+        }
+        rootOrderIdCacheMissCounter.inc();
+        return pExecutionReport == null ? null : pExecutionReport.getRootOrderID();
+    }
+    /**
      * Build the sort statement for a query using the given attributes.
      *
      * @param inPageRequest an <code>org.marketcetera.persist.PageRequest</code> value
@@ -1575,6 +1616,27 @@ public class ReportServiceImpl
      */
     private Timer timerService;
     /**
+     * caches root order ids by order id
+     */
+    private LoadingCache<OrderID,OrderID> rootOrderIdsByOrderId;
+    /**
+     * tracks the number of times that root order ids are retrieved, using the cache or not
+     */
+    private Counter rootOrderIdLookupCounter;
+    /**
+     * tracks the number of times that root order ids are missed in the cache
+     */
+    private Counter rootOrderIdCacheMissCounter;
+    /**
+     * provides access to metrics services
+     */
+    @Autowired
+    private MetricService metricService;
+    /**
+     * tracks metric names
+     */
+    private final Collection<String> metricNames = Lists.newArrayList();
+    /**
      * map of styles specified in configuration
      */
     @Value("#{${metc.persistent.report.aliases}}")
@@ -1584,4 +1646,14 @@ public class ReportServiceImpl
      */
     @Value("#{${metc.persistent.execution.report.aliases}}")
     private Map<String,String> persistentExecutionReportAliases = Maps.newHashMap();
+    /**
+     * TTL in ms for cached root order ids
+     */
+    @Value("${metc.reports.root.order.id.cache.ttl.ms:60000}")
+    private long rootOrderIdCacheTtl;
+    /**
+     * Indicates whether or not to cache root order ids
+     */
+    @Value("${metc.reports.root.order.id.cache:true}")
+    private boolean cacheRootOrderIds;
 }
