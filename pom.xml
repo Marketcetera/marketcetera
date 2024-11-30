@@ -1106,7 +1106,7 @@
         <!-- mvn compile -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.0</version>
+          <version>3.11.0</version>
           <configuration>
             <source>${mvn.javase.version}</source>
             <target>${mvn.javase.version}</target>
