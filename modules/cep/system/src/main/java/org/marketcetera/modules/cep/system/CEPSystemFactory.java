@@ -1,6 +1,7 @@
 package org.marketcetera.modules.cep.system;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleURN;
@@ -35,7 +36,7 @@ public final class CEPSystemFactory extends ModuleFactory {
     }
 
     @Override
-    public CEPSystemProcessor create(Object... inParameters)
+    public Module create(Object... inParameters)
             throws ModuleCreationException {
         return new CEPSystemProcessor((ModuleURN)inParameters[0], true);
     }

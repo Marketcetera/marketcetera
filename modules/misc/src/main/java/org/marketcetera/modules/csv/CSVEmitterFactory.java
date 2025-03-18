@@ -1,6 +1,7 @@
 package org.marketcetera.modules.csv;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleURN;
@@ -34,7 +35,7 @@ public final class CSVEmitterFactory extends ModuleFactory {
     }
 
     @Override
-    public CSVEmitter create(Object... inParameters)
+    public Module create(Object... inParameters)
             throws ModuleCreationException {
         return new CSVEmitter();
     }

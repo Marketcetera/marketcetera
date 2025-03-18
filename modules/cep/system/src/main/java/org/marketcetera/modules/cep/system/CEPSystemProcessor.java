@@ -40,7 +40,7 @@ import java.util.Map;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class CEPSystemProcessor extends Module
+public class CEPSystemProcessor extends org.marketcetera.module.Module
         implements DataReceiver, DataEmitter {
 
     private static final String QUERY_DELIM = "[ \t]+";   //$NON-NLS-1$

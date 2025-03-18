@@ -59,7 +59,7 @@ import org.apache.commons.csv.CSVStrategy;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class CSVEmitter extends Module implements DataEmitter {
+public class CSVEmitter extends org.marketcetera.module.Module implements DataEmitter {
     /**
      * Creates an instance.
      */
@@ -68,13 +68,13 @@ public class CSVEmitter extends Module implements DataEmitter {
     }
 
     @Override
-    protected void preStart() {
+    protected void preStart() throws ModuleException {
         mService = Executors.newCachedThreadPool(
                 new NamedThreadFactory("CSVEmitter-"));  //$NON-NLS-1$
     }
 
     @Override
-    protected void preStop() {
+    protected void preStop() throws ModuleException {
         mService.shutdownNow();
     }
 

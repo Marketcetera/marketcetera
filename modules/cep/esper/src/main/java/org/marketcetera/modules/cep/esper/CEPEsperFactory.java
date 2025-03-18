@@ -1,6 +1,7 @@
 package org.marketcetera.modules.cep.esper;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleURN;
@@ -42,7 +43,7 @@ public final class CEPEsperFactory extends ModuleFactory {
     }
 
     @Override
-    public CEPEsperProcessor create(Object... inParameters)
+    public Module create(Object... inParameters)
             throws ModuleCreationException {
         return new CEPEsperProcessor((ModuleURN)inParameters[0]);
     }

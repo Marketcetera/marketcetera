@@ -20,7 +20,7 @@ import java.util.concurrent.Semaphore;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class BlockingReceiverModule extends Module implements DataReceiver {
+public class BlockingReceiverModule extends org.marketcetera.module.Module implements DataReceiver {
     /**
      * Creates an instance.
      */

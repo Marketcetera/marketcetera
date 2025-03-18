@@ -27,7 +27,7 @@ public class BlockingModuleFactory extends ModuleFactory {
     }
 
     @Override
-    public Module create(Object... inParameters) throws ModuleCreationException {
+    public org.marketcetera.module.Module create(Object... inParameters) throws ModuleCreationException {
         return sLastInstance = new BlockingReceiverModule();
     }
 

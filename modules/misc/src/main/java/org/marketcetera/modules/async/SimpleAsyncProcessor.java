@@ -92,7 +92,7 @@ import javax.management.*;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class SimpleAsyncProcessor extends Module
+public class SimpleAsyncProcessor extends org.marketcetera.module.Module
         implements DataEmitter, DataReceiver, DynamicMBean {
 
     /* Module Framework Methods */
@@ -219,7 +219,7 @@ public class SimpleAsyncProcessor extends Module
     }
 
     @Override
-    protected void preStart() {
+    protected void preStart() throws ModuleException {
         mService = Executors.newCachedThreadPool(
                 new NamedThreadFactory(new StringBuilder(
                         ASYNC_THREAD_NAME_PREFIX).append("-").append(  //$NON-NLS-1$
@@ -227,7 +227,7 @@ public class SimpleAsyncProcessor extends Module
     }
 
     @Override
-    protected void preStop() {
+    protected void preStop() throws ModuleException {
         mService.shutdownNow();
     }
 

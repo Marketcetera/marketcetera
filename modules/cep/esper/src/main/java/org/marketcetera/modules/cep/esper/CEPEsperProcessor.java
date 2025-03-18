@@ -64,7 +64,7 @@ import java.util.*;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class CEPEsperProcessor extends Module
+public class CEPEsperProcessor extends org.marketcetera.module.Module
         implements DataReceiver, DataEmitter, CEPEsperProcessorMXBean {
 
     /** Reference counter that keep track if we get events posted back into us from events that we emit
@@ -253,7 +253,7 @@ public class CEPEsperProcessor extends Module
     }
 
     @Override
-    protected void preStop() {
+    protected void preStop() throws ModuleException {
         mService.destroy();
         mService = null;
     }
