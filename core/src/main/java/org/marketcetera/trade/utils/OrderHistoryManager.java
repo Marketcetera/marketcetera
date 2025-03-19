@@ -16,7 +16,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang3.Validate;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.DateTimeUtils;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.OrderID;
@@ -246,7 +246,7 @@ public class OrderHistoryManager
                    !handledOrders.contains(report.getOrderID())) {
                     latestReportTable.addCell(order.getLatestReport().getOrderID().getValue());
                     latestReportTable.addCell(order.getLatestReport().getOrderStatus().name());
-                    latestReportTable.addCell(DateUtils.dateToString(order.getLatestReport().getSendingTime()));
+                    latestReportTable.addCell(DateTimeUtils.dateToString(order.getLatestReport().getSendingTime()));
                     latestReportTable.addCell(order.getOrderIdChain().toString());
                     latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getSide().name() : none);
                     latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getOrderQuantity()) : none);
@@ -296,7 +296,7 @@ public class OrderHistoryManager
             for(ReportBase report : openOrders.values()) {
                 latestReportTable.addCell(report.getOrderID().getValue());
                 latestReportTable.addCell(report.getOrderStatus().name());
-                latestReportTable.addCell(DateUtils.dateToString(report.getSendingTime()));
+                latestReportTable.addCell(DateTimeUtils.dateToString(report.getSendingTime()));
                 latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getSide().name() : none);
                 latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getOrderQuantity()) : none);
                 latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getInstrument().getSymbol() : none);
