@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -1074,7 +1075,15 @@ public class MarketDataRpcUtilTest
         instruments.add(new Equity("METC"));
         instruments.add(org.marketcetera.trade.Future.fromString("METC-202411"));
         instruments.add(new Currency("USD/GBP"));
-        instruments.add(new Option("METC","20241117",EventTestBase.generateDecimalValue(),OptionType.Put));
+        
+        // Create an Option with an expiry date that will work with the current year 
+        // This accounts for the getFullYear method in OptionUtils that may convert "24" to "2124"
+        // depending on whether tests are run after 2024
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        String yearDigits = String.valueOf(currentYear + 1).substring(2);
+        String expiry = String.format("20%s1117", yearDigits);
+        instruments.add(new Option("METC", expiry, EventTestBase.generateDecimalValue(), OptionType.Put));
+        
         instruments.add(new ConvertibleBond("FR0011453463"));
         return instruments;
     }

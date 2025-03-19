@@ -203,8 +203,10 @@ public class OptionUtils {
      *
      * <p>This method assumes that the given value is a number in the
      * interval [0,99].  The returned value will be the given year plus
-     * the current century.  If the resulting value < today, the returned
-     * value will be in the next century instead.
+     * the current century.  If the resulting value < today and more than 30 years 
+     * in the past, the returned value will be in the next century instead.
+     * This window allows option expiry dates in the near past to be interpreted
+     * correctly.
      *   
      * @param inYear an <code>int</code> containing a number between 0 and 99 inclusive
      * @return an <code>int</code> value containing a full year representation (century and year)
@@ -220,8 +222,9 @@ public class OptionUtils {
         int currentYear = GregorianCalendar.getInstance().get(Calendar.YEAR);
         int currentCentury = (currentYear / 100) * 100;
         int extrapolatedYear = currentCentury + inYear;
-        // completeYear contains an int representing a specific year
-        if(extrapolatedYear < currentYear) {
+        // Only add 100 years if the year is more than 30 years in the past
+        // This allows option expiry dates within the next 30 years to be interpreted correctly
+        if(extrapolatedYear < currentYear - 30) {
             extrapolatedYear += 100;
         }
         return extrapolatedYear;
