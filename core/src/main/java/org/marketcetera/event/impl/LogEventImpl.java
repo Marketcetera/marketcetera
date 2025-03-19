@@ -13,7 +13,7 @@ import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.util.EventServices;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.DateTimeUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -183,7 +183,7 @@ public final class LogEventImpl
     public final String toString()
     {
         return String.format("%s %s event %s", //$NON-NLS-1$
-                             DateUtils.dateToString(getTimestamp()),
+                             DateTimeUtils.dateToString(getTimestamp()),
                              getLevel(),
                              getMessage());
     }

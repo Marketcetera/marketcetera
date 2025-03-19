@@ -90,8 +90,7 @@ public class ProvisioningAgentTest
         String testData = clusterService.getAttribute("StartProvisioning");
         assertNull(testData);
         // deploy provisioning commands from a pre-built JAR in test/resources (source is under src/test/sample_data and can be rebuilt using Maven from there)
-        // Using hardcoded version since the JAR file has a specific version that may not match current Version.pomversion
-        deployFile("/mock-provisioning-4.0.1-SNAPSHOT.jar");
+        deployFile("/mock-provisioning-" + Version.pomversion + ".jar");
         // the mock provisioning commands modified the common cluster data using the common cluster service
         testData = clusterService.getAttribute("MockProvisioning");
         assertNotNull(testData);

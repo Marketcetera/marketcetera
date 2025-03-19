@@ -192,6 +192,23 @@ public class DateTimeUtils {
         }
         return formatter.format(inDate.toInstant());
     }
+    
+    /**
+     * Converts the given <code>Date</code> value to a <code>String</code> representation 
+     * in the given format. This method exists to help bridge the gap between the legacy Joda
+     * DateTimeFormatter and the modern java.time DateTimeFormatter during the migration.
+     * 
+     * @param inDate a <code>Date</code> value
+     * @param formatter a <code>org.joda.time.format.DateTimeFormatter</code> value
+     * @return a <code>String</code> value
+     * @throws NullPointerException if formatter is null
+     */
+    public static String dateToString(Date inDate, org.joda.time.format.DateTimeFormatter formatter) {
+        if (inDate == null) {
+            return null;
+        }
+        return DateUtils.dateToString(inDate, formatter);
+    }
 
     /**
      * Parses the given <code>String</code> to a <code>Date</code> value.

@@ -15,7 +15,7 @@ import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.util.EventServices;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.DateTimeUtils;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -166,7 +166,7 @@ public class DepthOfBookEventImpl
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append("Depth of book for ").append(getInstrument()).append(" at ").append(DateUtils.dateToString(getTimestamp())).append(SystemUtils.LINE_SEPARATOR); //$NON-NLS-1$ //$NON-NLS-2$
+        output.append("Depth of book for ").append(getInstrument()).append(" at ").append(DateTimeUtils.dateToString(getTimestamp())).append(SystemUtils.LINE_SEPARATOR); //$NON-NLS-1$ //$NON-NLS-2$
         output.append(OrderBook.printBook(bids.iterator(),
                                           asks.iterator(),
                                           true));

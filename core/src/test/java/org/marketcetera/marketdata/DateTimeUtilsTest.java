@@ -2,15 +2,16 @@ package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import org.joda.time.format.DateTimeFormat;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 
@@ -136,11 +137,42 @@ public class DateTimeUtilsTest {
         // Test with null date but valid formatter
         assertNull(DateTimeUtils.dateToString(null, DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         
-        // Test with null formatter
+        // Test with null java.time formatter
         new ExpectedFailure<NullPointerException>() {
             protected void run() throws Exception {
-                DateTimeUtils.dateToString(date, null);
+                DateTimeUtils.dateToString(date, (DateTimeFormatter)null);
             }
         };
+        
+        // Test with null joda formatter
+        new ExpectedFailure<NullPointerException>() {
+            protected void run() throws Exception {
+                DateTimeUtils.dateToString(date, (org.joda.time.format.DateTimeFormatter)null);
+            }
+        };
+    }
+    
+    /**
+     * Tests both the java.time and joda-time formatter versions of dateToString.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void testBothFormatterTypes() throws Exception {
+        // Create a test date
+        Instant instant = Instant.parse("2020-01-01T12:30:45Z");
+        Date date = Date.from(instant);
+        
+        // Test with java.time DateTimeFormatter
+        String javaTimeResult = DateTimeUtils.dateToString(date, DateTimeFormatter.ISO_INSTANT);
+        // The ISO formatter will include seconds and possibly fractional seconds, so we'll just check prefix
+        assertTrue(javaTimeResult.startsWith("2020-01-01T12:30:45"));
+        
+        // Test with joda DateTimeFormatter
+        // Create a formatter with the UTC timezone to match java.time ISO_INSTANT
+        org.joda.time.format.DateTimeFormatter jodaFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+                                                                          .withZoneUTC();
+        String jodaResult = DateTimeUtils.dateToString(date, jodaFormatter);
+        assertEquals("2020-01-01 12:30:45", jodaResult);
     }
 }

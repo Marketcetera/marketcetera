@@ -1970,9 +1970,12 @@ public class BasicCSVFeedEventTranslatorTest
     private MarketDataRequest request = MarketDataRequestBuilder.newRequest().withSymbols("GOOG").create();
     /**
      * option to use for testing
+     * 
+     * Using an option with expiry date in the next 10 years to avoid
+     * issues with the 30-year sliding window algorithm in OptionUtils.getFullYear()
      */
     private final Option option = new Option("symbol",
-                                             "21200319",
+                                             "20300319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
 }

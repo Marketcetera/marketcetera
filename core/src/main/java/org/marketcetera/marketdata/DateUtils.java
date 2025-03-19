@@ -18,7 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.5.0
+ * @deprecated This class uses the legacy Joda-Time API. Use {@link DateTimeUtils} instead,
+ *             which uses the modern java.time API introduced in Java 8.
  */
+@Deprecated
 @ClassVersion("$Id$")
 public class DateUtils
 {
@@ -101,7 +104,10 @@ public class DateUtils
      *
      * @param inDate a <code>Date</code> value
      * @return a <code>String</code> value
+     * @deprecated Use {@link DateTimeUtils} instead, which provides similar functionality 
+     *             using the modern java.time API
      */
+    @Deprecated
     public static String dateToString(Date inDate)
     {
         return dateToString(inDate,
@@ -114,7 +120,10 @@ public class DateUtils
      * @param inDate a <code>Date</code> value
      * @param inFormat a <code>DateTimeFormatter</code> value
      * @return a <code>String</code> value
+     * @deprecated Use {@link DateTimeUtils} instead, which provides similar functionality 
+     *             using the modern java.time API
      */
+    @Deprecated
     public static String dateToString(Date inDate,
                                       DateTimeFormatter inFormat)
     {
@@ -147,7 +156,10 @@ public class DateUtils
      *  parsed.
      * @return a <code>Date</code> value 
      * @throws MarketDataRequestException if the given <code>String</code> could not be parsed 
+     * @deprecated Use {@link DateTimeUtils} instead, which provides similar functionality 
+     *             using the modern java.time API
      */
+    @Deprecated
     public static Date stringToDate(String inDateString)
         throws MarketDataRequestException
     {

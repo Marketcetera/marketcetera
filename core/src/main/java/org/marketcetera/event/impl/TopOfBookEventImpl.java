@@ -14,7 +14,7 @@ import org.marketcetera.event.TopOfBookEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.util.EventServices;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.DateTimeUtils;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -184,7 +184,7 @@ public class TopOfBookEventImpl
     {
         return String.format("TopOfBook for %s at %s: %s %s-%s %sx%s %s", //$NON-NLS-1$
                              getInstrument(),
-                             DateUtils.dateToString(getTimestamp()),
+                             DateTimeUtils.dateToString(getTimestamp()),
                              getExchange(bid),
                              getPriceAsString(bid),
                              getPriceAsString(ask),
