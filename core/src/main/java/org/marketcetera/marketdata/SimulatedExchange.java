@@ -64,6 +64,7 @@ import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.StandardType;
+import org.marketcetera.marketdata.DateTimeUtils;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -308,10 +309,10 @@ public class SimulatedExchange
                        .withPreviousClosePrice(previousClosePrice)
                        .withVolume(randomInteger(100000))
                        .withValue(randomInteger(100000))
-                       .withCloseDate(DateUtils.dateToString(new Date(startingTime-(HOURms*8))))
-                       .withPreviousCloseDate(DateUtils.dateToString(new Date(startingTime-(DAYms))))
-                       .withTradeHighTime(DateUtils.dateToString(new Date(startingTime-(HOURms*4))))
-                       .withTradeLowTime(DateUtils.dateToString(new Date(startingTime-(HOURms*4))))
+                       .withCloseDate(DateTimeUtils.dateToString(new Date(startingTime-(HOURms*8))))
+                       .withPreviousCloseDate(DateTimeUtils.dateToString(new Date(startingTime-(DAYms))))
+                       .withTradeHighTime(DateTimeUtils.dateToString(new Date(startingTime-(HOURms*4))))
+                       .withTradeLowTime(DateTimeUtils.dateToString(new Date(startingTime-(HOURms*4))))
                        .withOpenExchange(getCode())
                        .withHighExchange(getCode())
                        .withLowExchange(getCode())
@@ -901,7 +902,7 @@ public class SimulatedExchange
                                "{} beginning tick {} at {}", //$NON-NLS-1$
                                this,
                                iterationCounter.incrementAndGet(),
-                               DateUtils.dateToString(new Date()));
+                               DateTimeUtils.dateToString(new Date()));
         // if the previous tick hasn't completed yet, skip this tick and wait for the next one
         if(readyForTick.getAndSet(false)) {
             // the previous tick has completed, so we can begin this one
@@ -1629,15 +1630,15 @@ public class SimulatedExchange
                 tempDividends.add(builder.withAmount(randomDecimal(10).add(PENNY))
                                   .withEventType(EventType.UPDATE_FINAL)
                                   .withCurrency("USD") //$NON-NLS-1$
-                                  .withDeclareDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                          DateUtils.DAYS))
-                                  .withExecutionDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                            DateUtils.DAYS))
+                                  .withDeclareDate(DateTimeUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                          DateTimeUtils.DAYS))
+                                  .withExecutionDate(DateTimeUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                            DateTimeUtils.DAYS))
                                   .withFrequency(DividendFrequency.QUARTERLY)
-                                  .withPaymentDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                          DateUtils.DAYS))
-                                  .withRecordDate(DateUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
-                                                                         DateUtils.DAYS))
+                                  .withPaymentDate(DateTimeUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                          DateTimeUtils.DAYS))
+                                  .withRecordDate(DateTimeUtils.dateToString(new Date(timestamp - ((randomInteger(60).longValue() + 1) * oneDay)),
+                                                                         DateTimeUtils.DAYS))
                                   .withStatus(DividendStatus.OFFICIAL)
                                   .withType(DividendType.CURRENT).create());
                 // that establishes the current dividend
@@ -1647,8 +1648,8 @@ public class SimulatedExchange
                                       .withEventType(EventType.UPDATE_FINAL)
                                       .withPaymentDate(null)
                                       .withRecordDate(null)
-                                      .withExecutionDate(DateUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
-                                                                                DateUtils.DAYS))
+                                      .withExecutionDate(DateTimeUtils.dateToString(new Date(timestamp + oneQuarter * quarterCounter),
+                                                                                DateTimeUtils.DAYS))
                                       .withStatus(DividendStatus.UNOFFICIAL)
                                       .withType(DividendType.FUTURE).create());
                 }

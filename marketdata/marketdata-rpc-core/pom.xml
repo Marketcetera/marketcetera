@@ -82,18 +82,23 @@
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
         <configuration>
           <!--
               The version of protoc must match protobuf-java. If you don't depend on
               protobuf-java directly, you will be transitively depending on the
               protobuf-java version that grpc depends on.
           -->
-          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:3.20.3:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.53.0:exe:${os.detected.classifier}</pluginArtifact>
           <inputDirectories>
             <inputDirectory>proto</inputDirectory>
           </inputDirectories>
+          <!-- Ensure generated .java files are saved for Eclipse to see -->
+          <clearOutputDirectory>false</clearOutputDirectory>
+          <attachProtoSources>true</attachProtoSources>
+          <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>
         </configuration>
         <executions>
           <execution>
@@ -113,6 +118,15 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
           <argLine>${mvn.test.options}</argLine>
+        </configuration>
+      </plugin>
+      <!-- Configure Eclipse to use target-eclipse instead of target -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
         </configuration>
       </plugin>
     </plugins>

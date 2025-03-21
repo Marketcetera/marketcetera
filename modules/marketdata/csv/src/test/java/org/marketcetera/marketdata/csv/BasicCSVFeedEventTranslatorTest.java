@@ -39,7 +39,7 @@ import org.marketcetera.event.Event;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.DateTimeUtils;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.module.ExpectedFailure;
@@ -871,7 +871,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","this-is-not-a-date" },
                                                                                request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateTimeUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten",dateString },
                                                                                request, 1.0)));
@@ -891,7 +891,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","this-is-not-a-date" },
                                                                                  request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateTimeUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven",dateString },
                                                                                  request, 1.0)));
@@ -963,7 +963,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","this-is-not-a-date" },
                                                                                request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateTimeUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine",dateString },
                                                                                request, 1.0)));
@@ -983,7 +983,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals("this-is-not-a-date",
                      translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight","nine","this-is-not-a-date" },
                                                                                request, 1.0)));
-        String dateString = DateUtils.dateToString(new Date());
+        String dateString = DateTimeUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight","nine",dateString },
                                                                                request, 1.0)));

@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.joda.time.DateTime;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.DateTimeUtils;
+import java.time.ZonedDateTime;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -149,7 +150,7 @@ public class ApplicationVersion
     {
         StringBuilder buildNumber = new StringBuilder();
         buildNumber.append(inProperties.getProperty(BUILD_NUMBER,DEFAULT_BUILD))
-                   .append(' ').append(inProperties.getProperty(REVISION,DEFAULT_REVISION)).append(' ').append(DateUtils.MILLIS_WITH_TZ.print(new DateTime()));
+                   .append(' ').append(inProperties.getProperty(REVISION,DEFAULT_REVISION)).append(' ').append(DateTimeUtils.MILLIS_WITH_TZ.format(ZonedDateTime.now()));
         inProperties.put(BUILD_NUMBER,
                          buildNumber.toString());
     }
