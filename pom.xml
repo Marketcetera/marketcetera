@@ -1098,6 +1098,41 @@
             <appendAssemblyId>false</appendAssemblyId>
           </configuration>
         </plugin>
+        
+        <!-- Eclipse project generation -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.10</version>
+          <configuration>
+            <!-- Use separate output directories for Eclipse to avoid conflicts with Maven -->
+            <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
+            <downloadSources>true</downloadSources>
+            <downloadJavadocs>true</downloadJavadocs>
+            <!-- Keep .settings directory -->
+            <addVersionToProjectName>false</addVersionToProjectName>
+            <!-- Add Protocol Buffer generated sources -->
+            <additionalProjectnatures>
+              <projectnature>org.eclipse.m2e.core.maven2Nature</projectnature>
+            </additionalProjectnatures>
+            <additionalBuildcommands>
+              <buildcommand>org.eclipse.m2e.core.maven2Builder</buildcommand>
+            </additionalBuildcommands>
+            <!-- Configure source directories -->
+            <additionalConfig>
+              <file>
+                <name>.settings/org.eclipse.jdt.core.prefs</name>
+                <content>
+                  <![CDATA[
+org.eclipse.jdt.core.compiler.codegen.targetPlatform=${mvn.javase.version}
+org.eclipse.jdt.core.compiler.compliance=${mvn.javase.version}
+org.eclipse.jdt.core.compiler.source=${mvn.javase.version}
+                  ]]>
+                </content>
+              </file>
+            </additionalConfig>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <!-- **** PLUGINS SECTION **** -->
@@ -1199,6 +1234,100 @@
             </configuration>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    
+    <!-- Profile for Eclipse-specific settings -->
+    <profile>
+      <id>eclipse</id>
+      <properties>
+        <!-- Use a separate output directory for Eclipse to avoid conflicts with Maven builds -->
+        <eclipse.outputDirectory>${project.basedir}/target-eclipse/classes</eclipse.outputDirectory>
+        <eclipse.testOutputDirectory>${project.basedir}/target-eclipse/test-classes</eclipse.testOutputDirectory>
+      </properties>
+      <build>
+        <plugins>
+          <!-- Register protobuf generated sources for Eclipse -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-eclipse-sources</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${project.build.directory}/generated-sources/protobuf/java</source>
+                    <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>add-eclipse-test-sources</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
+                    <source>${project.build.directory}/generated-test-sources/protobuf/grpc-java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- Profile to add m2e lifecycle mappings for protobuf -->
+    <profile>
+      <id>m2e</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <!-- Configure m2e to execute protobuf-maven-plugin during Eclipse build -->
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.xolstice.maven.plugins</groupId>
+                        <artifactId>protobuf-maven-plugin</artifactId>
+                        <versionRange>[0.6.1,)</versionRange>
+                        <goals>
+                          <goal>compile</goal>
+                          <goal>compile-custom</goal>
+                          <goal>test-compile</goal>
+                          <goal>test-compile-custom</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <execute>
+                          <runOnIncremental>true</runOnIncremental>
+                          <runOnConfiguration>true</runOnConfiguration>
+                        </execute>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>    
   </profiles>

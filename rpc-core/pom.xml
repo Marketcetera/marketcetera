@@ -127,6 +127,40 @@
           <argLine>${mvn.test.options}</argLine>
         </configuration>
       </plugin>
+      
+      <!-- Add generated source directories to build path -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-protobuf-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-protobuf-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-test-sources/protobuf/grpc-java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
