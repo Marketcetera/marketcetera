@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.core.rpc;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.marketcetera.core.Messages;
+import org.marketcetera.marketdata.rpc.Messages;
 import org.marketcetera.util.l10n.MessageComparator;
 import org.marketcetera.util.misc.ClassVersion;
 

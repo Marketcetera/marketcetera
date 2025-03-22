@@ -61,13 +61,20 @@
           <protocArtifact>com.google.protobuf:protoc:3.20.3:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.53.0:exe:${os.detected.classifier}</pluginArtifact>
+          <!-- Configure input and output directories -->
           <inputDirectories>
-            <inputDirectory>proto</inputDirectory>
+            <inputDirectory>src/main/proto</inputDirectory>
           </inputDirectories>
+          <testInputDirectories>
+            <testInputDirectory>src/test/proto</testInputDirectory>
+          </testInputDirectories>
           <!-- Ensure generated .java files are saved for Eclipse to see -->
           <clearOutputDirectory>false</clearOutputDirectory>
           <attachProtoSources>true</attachProtoSources>
           <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>
+          <outputTargetDirectory>${project.build.directory}/generated-sources/protobuf</outputTargetDirectory>
+          <testOutputDirectory>${project.build.directory}/generated-test-sources/protobuf/java</testOutputDirectory>
+          <testOutputTargetDirectory>${project.build.directory}/generated-test-sources/protobuf</testOutputTargetDirectory>
         </configuration>
         <executions>
           <execution>
