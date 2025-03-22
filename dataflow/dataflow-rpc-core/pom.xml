@@ -63,7 +63,6 @@
           <testInputDirectories>
             <testInputDirectory>src/test/proto</testInputDirectory>
           </testInputDirectories>
-          <!-- Ensure generated .java files are saved for Eclipse to see -->
           <clearOutputDirectory>false</clearOutputDirectory>
           <attachProtoSources>true</attachProtoSources>
           <outputDirectory>${project.build.directory}/generated-sources/protobuf/java</outputDirectory>
@@ -79,15 +78,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <!-- Configure Eclipse to use target-eclipse instead of target -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <buildOutputDirectory>target-eclipse/classes</buildOutputDirectory>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>true</downloadJavadocs>
-        </configuration>
       </plugin>
     </plugins>
   </build>
