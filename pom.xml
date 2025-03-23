@@ -31,14 +31,14 @@
     </developer>
   </developers>
   <properties>
-    <mvn.javase.version>11</mvn.javase.version>
-    <mvn.spring.boot.version>2.7.10</mvn.spring.boot.version>
-    <mvn.cxf.version>3.2.1</mvn.cxf.version>
-    <mvn.log4j.version>2.17.1</mvn.log4j.version>
+    <mvn.javase.version>17</mvn.javase.version>
+    <mvn.spring.boot.version>2.7.18</mvn.spring.boot.version>
+    <mvn.cxf.version>3.5.5</mvn.cxf.version>
+    <mvn.log4j.version>2.20.0</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <esper.version>8.8.0</esper.version>
-    <mvn.flyway.version>9.15.2</mvn.flyway.version>
+    <mvn.flyway.version>9.22.3</mvn.flyway.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -627,7 +627,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>31.0.1-jre</version>
+        <version>32.1.3-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -897,7 +897,7 @@
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>5.8.2</version>
+        <version>5.10.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -926,10 +926,14 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.6.0</version>
           <configuration>
             <failOnError>false</failOnError>
             <show>private</show>
+            <doclint>none</doclint>
+            <additionalJOption>--no-module-directories</additionalJOption>
+            <detectJavaApiLink>false</detectJavaApiLink>
+            <source>${mvn.javase.version}</source>
           </configuration>
           <executions>
             <execution>
@@ -1047,7 +1051,7 @@
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.2</version>
+          <version>3.3.0</version>
           <executions>
             <execution>
               <id>build-test-jar</id>
@@ -1092,12 +1096,12 @@
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.2.2</version>
           <configuration>
             <disableXmlReport>false</disableXmlReport>
             <forkCount>2.5C</forkCount>
             <reuseForks>false</reuseForks>
-            <argLine>${mvn.test.options}</argLine>
+            <argLine>${mvn.test.options} --add-exports=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED</argLine>
             <systemPropertyVariables>
               <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
             </systemPropertyVariables>
@@ -1106,16 +1110,25 @@
         <!-- mvn compile -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.0</version>
+          <version>3.11.0</version>
           <configuration>
             <source>${mvn.javase.version}</source>
             <target>${mvn.javase.version}</target>
+            <!-- Using Java 17 with module compatibility flags -->
+            <!-- These flags are needed for Java 17 module system compatibility -->
+            <compilerArgs>
+              <arg>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED</arg>
+              <arg>--add-opens=java.base/java.lang=ALL-UNNAMED</arg>
+              <arg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</arg>
+              <arg>--add-opens=java.base/java.io=ALL-UNNAMED</arg>
+              <arg>--add-opens=java.base/java.util=ALL-UNNAMED</arg>
+            </compilerArgs>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.6.0</version>
           <configuration>
             <finalName>${project.artifactId}</finalName>
             <appendAssemblyId>false</appendAssemblyId>
@@ -1140,7 +1153,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -1220,10 +1233,14 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.0</version>
             <configuration>
               <failOnError>false</failOnError>
               <show>private</show>
+              <doclint>none</doclint>
+              <additionalJOption>--no-module-directories</additionalJOption>
+              <detectJavaApiLink>false</detectJavaApiLink>
+              <source>${mvn.javase.version}</source>
             </configuration>
             <executions>
               <execution>
@@ -1299,6 +1316,10 @@
         <configuration>
           <failOnError>false</failOnError>
           <show>private</show>
+          <doclint>none</doclint>
+          <additionalJOption>--no-module-directories</additionalJOption>
+          <detectJavaApiLink>false</detectJavaApiLink>
+          <source>${mvn.javase.version}</source>
         </configuration>
       </plugin>
       <plugin>

@@ -31,7 +31,7 @@ public class RemoteExceptionTest
     private static final String LOCAL_PROXY_SOURCE=
         RemoteExceptionTest.class.getName();
     private static final String JAVA_PROXY_SOURCE=
-        "jdk.internal.reflect.NativeConstructorAccessorImpl";
+        "jdk.internal.reflect.DirectConstructorHandleAccessor";
 
 
     @WebService

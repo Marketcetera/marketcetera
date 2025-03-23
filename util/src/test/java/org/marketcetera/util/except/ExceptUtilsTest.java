@@ -8,10 +8,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InterruptedIOException;
+import java.io.IOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
-import java.rmi.activation.ActivationException;
-import java.rmi.activation.UnknownObjectException;
+import java.rmi.RemoteException;
+import java.rmi.NotBoundException;
 
 import javax.naming.InterruptedNamingException;
 
@@ -281,36 +282,36 @@ public class ExceptUtilsTest
     {
         assertTrue(ExceptUtils.areEqual(null,null));
         equalityHelper
-            (new ActivationException(TEST_MSG_1),
-             new ActivationException(TEST_MSG_1),
+            (new RemoteException(TEST_MSG_1),
+             new RemoteException(TEST_MSG_1),
              new Throwable[] {
-                new ActivationException(),
-                new ActivationException(TEST_MSG_2),
-                new UnknownObjectException(TEST_MSG_1),
+                new RemoteException(),
+                new RemoteException(TEST_MSG_2),
+                new NotBoundException(TEST_MSG_1),
                 new I18NException(),
                 null
             });
         equalityHelper
             (new I18NException
-             (new ActivationException(TEST_MSG_1),
+             (new RemoteException(TEST_MSG_1),
               new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
              new I18NException
-             (new ActivationException(TEST_MSG_1),
+             (new RemoteException(TEST_MSG_1),
               new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
              new Throwable[] {
                 new I18NException
-                (new ActivationException(TEST_MSG_1)),
+                (new RemoteException(TEST_MSG_1)),
                 new I18NException
-                (new ActivationException(TEST_MSG_1),
+                (new RemoteException(TEST_MSG_1),
                  TestMessages.BOT_EXCEPTION),
                 new I18NException
-                (new ActivationException(TEST_MSG_2),
+                (new RemoteException(TEST_MSG_2),
                  new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
                 new I18NException
                 (new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
-                new ActivationException(TEST_MSG_1),
+                new RemoteException(TEST_MSG_1),
                 null
             });
     }
