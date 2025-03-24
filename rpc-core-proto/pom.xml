@@ -13,7 +13,6 @@
   <version>4.1.1</version>
   <name>RPC Core Protocol Definitions</name>
   <description>Contains Protocol Buffers definitions for core RPC services</description>
-  
   <dependencies>
     <dependency>
       <groupId>com.google.protobuf</groupId>
@@ -33,7 +32,6 @@
       <artifactId>javax.annotation-api</artifactId>
     </dependency>
   </dependencies>
-  
   <build>
     <extensions>
       <extension>
@@ -45,7 +43,7 @@
     <sourceDirectory>target/generated-sources/protobuf/java</sourceDirectory>
     <testSourceDirectory>target/generated-test-sources/protobuf/java</testSourceDirectory>
     <plugins>
-          <!-- Define the protobuf plugin for normal build (target directory) -->
+      <!-- Define the protobuf plugin for normal build (target directory) -->
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
@@ -68,39 +66,38 @@
         </executions>
       </plugin>
       <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>build-helper-maven-plugin</artifactId>
-      <version>3.2.0</version>
-      <executions>
-        <!-- Add the gRPC main source directory -->
-        <execution>
-          <id>add-grpc-source</id>
-          <phase>generate-sources</phase>
-          <goals>
-            <goal>add-source</goal>
-          </goals>
-          <configuration>
-            <sources>
-              <source>target/generated-sources/protobuf/grpc</source>
-            </sources>
-          </configuration>
-        </execution>
-        <!-- Add the gRPC test source directory -->
-        <execution>
-          <id>add-grpc-test-source</id>
-          <phase>generate-test-sources</phase>
-          <goals>
-            <goal>add-test-source</goal>
-          </goals>
-          <configuration>
-            <sources>
-              <source>target/generated-test-sources/protobuf/grpc</source>
-            </sources>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin>
-      
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <!-- Add the gRPC main source directory -->
+          <execution>
+            <id>add-grpc-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/protobuf/grpc</source>
+              </sources>
+            </configuration>
+          </execution>
+          <!-- Add the gRPC test source directory -->
+          <execution>
+            <id>add-grpc-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-test-sources/protobuf/grpc</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Create a test JAR for the test proto files -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -113,7 +110,6 @@
           </execution>
         </executions>
       </plugin>
-      
       <!-- Eclipse m2e integration -->
       <plugin>
         <groupId>org.eclipse.m2e</groupId>
@@ -157,12 +153,4 @@
       </plugin>
     </plugins>
   </build>
-  <!--profiles>
-    <profile>
-      <id>ide-build</id>
-      <build>
-        <directory>${project.basedir}/target-ide</directory>
-      </build>
-    </profile>
-  </profiles-->
 </project>
