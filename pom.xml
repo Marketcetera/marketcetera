@@ -1015,15 +1015,23 @@
             <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
             <pluginId>grpc-java</pluginId>
             <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
-            <inputDirectories>
-              <inputDirectory>proto</inputDirectory>
-            </inputDirectories>
+            <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+            <attachProtoSources>true</attachProtoSources>
+            <checkStaleness>true</checkStaleness>
+            <!-- Each proto module will still need to configure additionalProtoPathElements for imports -->
           </configuration>
           <executions>
             <execution>
+              <id>compile-protos</id>
               <goals>
                 <goal>compile</goal>
                 <goal>compile-custom</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>compile-test-protos</id>
+              <phase>generate-test-sources</phase>
+              <goals>
                 <goal>test-compile</goal>
                 <goal>test-compile-custom</goal>
               </goals>
@@ -1034,6 +1042,34 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
           <version>${mvn.spring.boot.version}</version>
+        </plugin>
+        <!-- Eclipse m2e lifecycle mapping for protobuf compilation -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.xolstice.maven.plugins</groupId>
+                    <artifactId>protobuf-maven-plugin</artifactId>
+                    <versionRange>[0,)</versionRange>
+                    <goals>
+                      <goal>compile</goal>
+                      <goal>compile-custom</goal>
+                      <goal>test-compile</goal>
+                      <goal>test-compile-custom</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.flywaydb</groupId>
@@ -1332,6 +1368,17 @@
   </modules>
   <repositories>
     <repository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>internal</id>
       <url>https://repo.marketcetera.org/maven</url>
       <snapshots>
@@ -1354,6 +1401,17 @@
     </repository>
   </repositories>
   <pluginRepositories>
+    <pluginRepository>
+      <id>central</id>
+      <name>Maven Central</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
     <pluginRepository>
       <id>internal</id>
       <url>https://repo.marketcetera.org/maven</url>

@@ -16,10 +16,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>rpc-core-proto</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-rpc-proto</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
@@ -43,33 +45,40 @@
     </dependency>
   </dependencies>
   <build>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.7.1</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
         <version>0.6.1</version>
         <configuration>
-          <protocArtifact>com.google.protobuf:protoc:3.20.3:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.53.0:exe:${os.detected.classifier}</pluginArtifact>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
           <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
           <additionalProtoPathElements>
-            <additionalProtoPathElement>../../rpc-core-proto/src/main/proto</additionalProtoPathElement>
-            <additionalProtoPathElement>../../cluster/cluster-rpc-proto/src/main/proto</additionalProtoPathElement>
+            <additionalProtoPathElement>${project.basedir}/../../rpc-core-proto/src/main/proto</additionalProtoPathElement>
+            <additionalProtoPathElement>${project.basedir}/../../cluster/cluster-rpc-proto/src/main/proto</additionalProtoPathElement>
           </additionalProtoPathElements>
-          <clearOutputDirectory>false</clearOutputDirectory>
+          <attachProtoSources>true</attachProtoSources>
+          <checkStaleness>true</checkStaleness>
         </configuration>
         <executions>
           <execution>
-            <id>compile-main</id>
-            <phase>generate-sources</phase>
+            <id>compile-protos</id>
             <goals>
               <goal>compile</goal>
               <goal>compile-custom</goal>
             </goals>
           </execution>
           <execution>
-            <id>compile-test</id>
+            <id>compile-test-protos</id>
             <phase>generate-test-sources</phase>
             <goals>
               <goal>test-compile</goal>
@@ -80,6 +89,33 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.xolstice.maven.plugins</groupId>
+                  <artifactId>protobuf-maven-plugin</artifactId>
+                  <versionRange>[0,)</versionRange>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>compile-custom</goal>
+                    <goal>test-compile</goal>
+                    <goal>test-compile-custom</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute />
+                </action>
+              </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
