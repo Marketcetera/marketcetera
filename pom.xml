@@ -223,6 +223,18 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>rpc-core-proto</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>rpc-core-proto</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>rpc-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -692,6 +704,11 @@
         <artifactId>grpc-netty-shaded</artifactId>
         <version>1.53.0</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.3.2</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
@@ -1269,6 +1286,7 @@
     <module>modules</module>
     <module>packages</module>
     <module>photon</module>
+    <module>rpc-core-proto</module>
     <module>rpc-core</module>
     <module>strategy</module>
     <module>trade</module>
