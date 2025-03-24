@@ -42,15 +42,67 @@
         <version>1.7.1</version>
       </extension>
     </extensions>
+    <sourceDirectory>target/generated-sources/protobuf/java</sourceDirectory>
+    <testSourceDirectory>target/generated-test-sources/protobuf/java</testSourceDirectory>
     <plugins>
-      <!-- Configure Maven plugin for Protobuf compilation -->
+      <!-- Define the protobuf plugin for normal build (target directory) -->
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
-        <!-- All configuration is inherited from parent POM -->
+        <version>0.6.1</version>
+        <configuration>
+          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
+          <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>compile-custom</goal>
+              <goal>test-compile</goal>
+              <goal>test-compile-custom</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       
-      <!-- Eclipse m2e integration inherited from parent POM -->
+      <!-- Clone compiled sources to src/main/java and src/test/java for Eclipse -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-for-eclipse</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <!-- Create directories if they don't exist -->
+                <mkdir dir="${project.basedir}/src/main/java"/>
+                <mkdir dir="${project.basedir}/src/test/java"/>
+                
+                <!-- Copy generated sources to src/main/java and src/test/java for Eclipse -->
+                <copy todir="${project.basedir}/src/main/java" overwrite="true" failonerror="false">
+                  <fileset dir="${project.build.directory}/generated-sources/protobuf/java"/>
+                </copy>
+                <copy todir="${project.basedir}/src/main/java" overwrite="true" failonerror="false">
+                  <fileset dir="${project.build.directory}/generated-sources/protobuf/grpc-java"/>
+                </copy>
+                <copy todir="${project.basedir}/src/test/java" overwrite="true" failonerror="false">
+                  <fileset dir="${project.build.directory}/generated-test-sources/protobuf/java"/>
+                </copy>
+                <copy todir="${project.basedir}/src/test/java" overwrite="true" failonerror="false">
+                  <fileset dir="${project.build.directory}/generated-test-sources/protobuf/grpc-java"/>
+                </copy>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       
       <!-- Create a test JAR for the test proto files -->
       <plugin>
@@ -63,6 +115,48 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      
+      <!-- Eclipse m2e integration -->
+      <plugin>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.xolstice.maven.plugins</groupId>
+                  <artifactId>protobuf-maven-plugin</artifactId>
+                  <versionRange>[0.6.1,)</versionRange>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>compile-custom</goal>
+                    <goal>test-compile</goal>
+                    <goal>test-compile-custom</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-antrun-plugin</artifactId>
+                  <versionRange>[3.0.0,)</versionRange>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
       </plugin>
     </plugins>
   </build>
