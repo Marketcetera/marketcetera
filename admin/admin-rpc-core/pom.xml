@@ -26,227 +26,22 @@
       <artifactId>cluster-rpc-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rpc-proto</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>admin-rpc-proto</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.xolstice.maven.plugins</groupId>
-        <artifactId>protobuf-maven-plugin</artifactId>
-        <version>0.6.1</version>
-        <configuration>
-          <!--
-              The version of protoc must match protobuf-java. If you don't depend on
-              protobuf-java directly, you will be transitively depending on the
-              protobuf-java version that grpc depends on.
-          -->
-          <protocArtifact>com.google.protobuf:protoc:3.20.3:exe:${os.detected.classifier}</protocArtifact>
-          <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.53.0:exe:${os.detected.classifier}</pluginArtifact>
-          <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
-          <additionalProtoPathElements>
-            <additionalProtoPathElement>../../rpc-core/src/main/proto</additionalProtoPathElement>
-          </additionalProtoPathElements>
-          <clearOutputDirectory>false</clearOutputDirectory>
-        </configuration>
-        <executions>
-          <execution>
-            <id>compile-protoc</id>
-            <goals>
-              <goal>compile</goal>
-              <goal>compile-custom</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>test-compile-protoc</id>
-            <goals>
-              <goal>test-compile</goal>
-              <goal>test-compile-custom</goal>
-            </goals>
-            <configuration>
-              <protoSourceRoot>${project.basedir}/src/test/proto</protoSourceRoot>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-sources/protobuf/java</source>
-                <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-test-source</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
-                <source>${project.build.directory}/generated-test-sources/protobuf/grpc-java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>get-ant-contrib</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>ant-contrib</groupId>
-                  <artifactId>ant-contrib</artifactId>
-                  <version>1.0b3</version>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/ant-contrib</outputDirectory>
-              <stripVersion>true</stripVersion>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>copy-generated-sources-to-eclipse</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <!-- Load ant-contrib tasks -->
-                <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-                  <classpath>
-                    <pathelement location="${project.build.directory}/ant-contrib/ant-contrib.jar" />
-                  </classpath>
-                </taskdef>
-                
-                <property name="target.ide.dir" value="${project.basedir}/target-ide"/>
-                <property name="target.ide.generated.dir" value="${target.ide.dir}/generated"/>
-                <property name="target.ide.generated.java.dir" value="${target.ide.generated.dir}/java"/>
-                <property name="source.generated.java.dir" value="${project.build.directory}/generated-sources"/>
-                <property name="source.generated.test.java.dir" value="${project.build.directory}/generated-test-sources"/>
-                
-                <!-- Create directory structure -->
-                <echo message="Creating directory structure in ${target.ide.dir}"/>
-                <mkdir dir="${target.ide.dir}"/>
-                <mkdir dir="${target.ide.generated.dir}"/>
-                <mkdir dir="${target.ide.generated.java.dir}"/>
-                
-                <!-- Copy main sources if they exist -->
-                <available file="${source.generated.java.dir}/protobuf/java" type="dir" property="main.java.exists"/>
-                <if>
-                  <equals arg1="${main.java.exists}" arg2="true"/>
-                  <then>
-                    <echo message="Copying ${source.generated.java.dir}/protobuf/java to ${target.ide.generated.java.dir}"/>
-                    <copy todir="${target.ide.generated.java.dir}">
-                      <fileset dir="${source.generated.java.dir}/protobuf/java"/>
-                    </copy>
-                  </then>
-                  <else>
-                    <echo message="Source directory ${source.generated.java.dir}/protobuf/java does not exist, skipping"/>
-                  </else>
-                </if>
-                
-                <available file="${source.generated.java.dir}/protobuf/grpc-java" type="dir" property="main.grpc.exists"/>
-                <if>
-                  <equals arg1="${main.grpc.exists}" arg2="true"/>
-                  <then>
-                    <echo message="Copying ${source.generated.java.dir}/protobuf/grpc-java to ${target.ide.generated.java.dir}"/>
-                    <copy todir="${target.ide.generated.java.dir}">
-                      <fileset dir="${source.generated.java.dir}/protobuf/grpc-java"/>
-                    </copy>
-                  </then>
-                  <else>
-                    <echo message="Source directory ${source.generated.java.dir}/protobuf/grpc-java does not exist, skipping"/>
-                  </else>
-                </if>
-                
-                <!-- Copy test sources, but only when profile is active -->
-                <if>
-                  <equals arg1="${eclipse.copy.test.sources}" arg2="true"/>
-                  <then>
-                    <property name="target.ide.generated.test.java.dir" value="${target.ide.generated.dir}/test-java"/>
-                    <mkdir dir="${target.ide.generated.test.java.dir}"/>
-                    
-                    <available file="${source.generated.test.java.dir}/protobuf/java" type="dir" property="test.java.exists"/>
-                    <if>
-                      <equals arg1="${test.java.exists}" arg2="true"/>
-                      <then>
-                        <echo message="Copying ${source.generated.test.java.dir}/protobuf/java to ${target.ide.generated.test.java.dir}"/>
-                        <copy todir="${target.ide.generated.test.java.dir}">
-                          <fileset dir="${source.generated.test.java.dir}/protobuf/java"/>
-                        </copy>
-                      </then>
-                      <else>
-                        <echo message="Source directory ${source.generated.test.java.dir}/protobuf/java does not exist, skipping"/>
-                      </else>
-                    </if>
-                    
-                    <available file="${source.generated.test.java.dir}/protobuf/grpc-java" type="dir" property="test.grpc.exists"/>
-                    <if>
-                      <equals arg1="${test.grpc.exists}" arg2="true"/>
-                      <then>
-                        <echo message="Copying ${source.generated.test.java.dir}/protobuf/grpc-java to ${target.ide.generated.test.java.dir}"/>
-                        <copy todir="${target.ide.generated.test.java.dir}">
-                          <fileset dir="${source.generated.test.java.dir}/protobuf/grpc-java"/>
-                        </copy>
-                      </then>
-                      <else>
-                        <echo message="Source directory ${source.generated.test.java.dir}/protobuf/grpc-java does not exist, skipping"/>
-                      </else>
-                    </if>
-                  </then>
-                </if>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>ant-contrib</groupId>
-            <artifactId>ant-contrib</artifactId>
-            <version>1.0b3</version>
-            <exclusions>
-              <exclusion>
-                <groupId>ant</groupId>
-                <artifactId>ant</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.10.14</version>
-          </dependency>
-        </dependencies>
-      </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -262,42 +57,8 @@
   <profiles>
     <profile>
       <id>ide-build</id>
-      <properties>
-        <eclipse.copy.test.sources>true</eclipse.copy.test.sources>
-      </properties>
       <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-eclipse-source</id>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>add-source</goal>
-                </goals>
-                <configuration>
-                  <sources>
-                    <source>${project.basedir}/target-ide/generated/java</source>
-                  </sources>
-                </configuration>
-              </execution>
-              <execution>
-                <id>add-eclipse-test-source</id>
-                <phase>generate-test-sources</phase>
-                <goals>
-                  <goal>add-test-source</goal>
-                </goals>
-                <configuration>
-                  <sources>
-                    <source>${project.basedir}/target-ide/generated/test-java</source>
-                  </sources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
+        <directory>${project.basedir}/target-ide</directory>
       </build>
     </profile>
   </profiles>
