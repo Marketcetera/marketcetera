@@ -80,6 +80,86 @@
   </dependencies>
   <build>
     <plugins>
+      <!-- This tells m2e to execute the protobuf-maven-plugin goals -->
+      <plugin>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.xolstice.maven.plugins</groupId>
+                  <artifactId>protobuf-maven-plugin</artifactId>
+                  <versionRange>[0,)</versionRange>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>compile-custom</goal>
+                    <goal>test-compile</goal>
+                    <goal>test-compile-custom</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute />
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>build-helper-maven-plugin</artifactId>
+                  <versionRange>[1.0,)</versionRange>
+                  <goals>
+                    <goal>add-source</goal>
+                    <goal>add-test-source</goal>
+                    <goal>add-resource</goal>
+                    <goal>add-test-resource</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute />
+                </action>
+              </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
+      </plugin>
+      <!-- Explicitly add generated sources -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>add-protobuf-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
+                <!-- Only add IDE-specific sources when in Eclipse (Eclipse reads .classpath, not pom.xml for build) -->
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-protobuf-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-test-sources/protobuf/grpc-java</source>
+                <!-- Only add IDE-specific sources when in Eclipse (Eclipse reads .classpath, not pom.xml for build) -->
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
@@ -92,18 +172,38 @@
           <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
-          <inputDirectories>
-            <inputDirectory>proto</inputDirectory>
-          </inputDirectories>
+          <!-- Proto files are in src/main/proto and src/test/proto -->
+          <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+          <testProtoSourceRoot>${project.basedir}/src/test/proto</testProtoSourceRoot>
+          <!-- Add include directories so test protos can find main protos -->
+          <additionalProtoPathElements>
+            <additionalProtoPathElement>${project.basedir}/src/main/proto</additionalProtoPathElement>
+          </additionalProtoPathElements>
+          <checkStaleness>true</checkStaleness>
+          <protocCommand>protoc</protocCommand>
+          <attachProtoSources>false</attachProtoSources>
+          <clearOutputDirectory>false</clearOutputDirectory>
         </configuration>
         <executions>
           <execution>
+            <id>compile-protos</id>
             <goals>
               <goal>compile</goal>
               <goal>compile-custom</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>compile-test-protos</id>
+            <phase>generate-test-sources</phase>
+            <goals>
               <goal>test-compile</goal>
               <goal>test-compile-custom</goal>
             </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/generated-test-sources/protobuf/java</outputDirectory>
+              <outputDirectorySuffix>grpc-java</outputDirectorySuffix>
+              <forceMojoExecution>true</forceMojoExecution>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -116,6 +216,92 @@
           <argLine>${mvn.test.options}</argLine>
         </configuration>
       </plugin>
+      <!-- Copy protobuf-generated sources to target-ide/generated for Eclipse -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-protobuf-generated-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.basedir}/target-ide/generated/java"/>
+                <condition property="main.proto.java.exists">
+                  <available file="${project.build.directory}/generated-sources/protobuf/java" type="dir"/>
+                </condition>
+                <condition property="main.proto.grpc.exists">
+                  <available file="${project.build.directory}/generated-sources/protobuf/grpc-java" type="dir"/>
+                </condition>
+                <antcall target="copy-main-proto-java"/>
+                <antcall target="copy-main-proto-grpc"/>
+              </target>
+              <macrodef name="safe-copy">
+                <attribute name="src"/>
+                <attribute name="dest"/>
+                <sequential>
+                  <copy todir="@{dest}" failonerror="false" verbose="true">
+                    <fileset dir="@{src}"/>
+                  </copy>
+                </sequential>
+              </macrodef>
+              <target name="copy-main-proto-java" if="main.proto.java.exists">
+                <safe-copy src="${project.build.directory}/generated-sources/protobuf/java" 
+                          dest="${project.basedir}/target-ide/generated/java"/>
+              </target>
+              <target name="copy-main-proto-grpc" if="main.proto.grpc.exists">
+                <safe-copy src="${project.build.directory}/generated-sources/protobuf/grpc-java" 
+                          dest="${project.basedir}/target-ide/generated/java"/>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-protobuf-generated-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.basedir}/target-ide/generated-test/java"/>
+                <antcall target="create-test-proto-dirs"/>
+                <condition property="test.proto.java.exists">
+                  <available file="${project.build.directory}/generated-test-sources/protobuf/java" type="dir"/>
+                </condition>
+                <condition property="test.proto.grpc.exists">
+                  <available file="${project.build.directory}/generated-test-sources/protobuf/grpc-java" type="dir"/>
+                </condition>
+                <antcall target="copy-test-proto-java"/>
+                <antcall target="copy-test-proto-grpc"/>
+              </target>
+              <target name="copy-test-proto-java" if="test.proto.java.exists">
+                <safe-copy src="${project.build.directory}/generated-test-sources/protobuf/java" 
+                          dest="${project.basedir}/target-ide/generated-test/java"/>
+              </target>
+              <target name="copy-test-proto-grpc" if="test.proto.grpc.exists">
+                <safe-copy src="${project.build.directory}/generated-test-sources/protobuf/grpc-java" 
+                          dest="${project.basedir}/target-ide/generated-test/java"/>
+              </target>
+              <!-- Force create test sources directories -->
+              <target name="create-test-proto-dirs">
+                <mkdir dir="${project.build.directory}/generated-test-sources/protobuf/java"/>
+                <mkdir dir="${project.build.directory}/generated-test-sources/protobuf/grpc-java"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>ide-build</id>
+      <build>
+        <directory>${project.basedir}/target-ide</directory>
+      </build>
+    </profile>
+  </profiles>
 </project>

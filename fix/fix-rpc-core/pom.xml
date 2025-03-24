@@ -39,27 +39,74 @@
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
         <configuration>
           <!--
               The version of protoc must match protobuf-java. If you don't depend on
               protobuf-java directly, you will be transitively depending on the
               protobuf-java version that grpc depends on.
           -->
-          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:3.20.3:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
-          <inputDirectories>
-            <inputDirectory>proto</inputDirectory>
-          </inputDirectories>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.53.0:exe:${os.detected.classifier}</pluginArtifact>
+          <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+          <additionalProtoPathElements>
+            <additionalProtoPathElement>../../rpc-core/src/main/proto</additionalProtoPathElement>
+            <additionalProtoPathElement>../../cluster/cluster-rpc-core/src/main/proto</additionalProtoPathElement>
+          </additionalProtoPathElements>
+          <clearOutputDirectory>false</clearOutputDirectory>
         </configuration>
         <executions>
           <execution>
+            <id>compile-main</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>compile</goal>
               <goal>compile-custom</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>compile-test</id>
+            <phase>generate-test-sources</phase>
+            <goals>
               <goal>test-compile</goal>
               <goal>test-compile-custom</goal>
             </goals>
+            <configuration>
+              <protoSourceRoot>${project.basedir}/src/test/proto</protoSourceRoot>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-test-source</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-test-sources/protobuf/grpc-java</source>
+              </sources>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -74,4 +121,56 @@
       </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+    <profile>
+      <id>ide-build</id>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
+      <build>
+        <directory>${project.basedir}/target-ide</directory>
+        <plugins>
+          <plugin>
+            <groupId>org.xolstice.maven.plugins</groupId>
+            <artifactId>protobuf-maven-plugin</artifactId>
+            <configuration>
+              <outputDirectory>${project.basedir}/target-ide/generated/java</outputDirectory>
+              <outputTargetDirectory>${project.basedir}/target-ide/generated</outputTargetDirectory>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-eclipse-source</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${project.basedir}/target-ide/generated/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>add-eclipse-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>${project.basedir}/target-ide/generated/test-java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
