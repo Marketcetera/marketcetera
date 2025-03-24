@@ -16,6 +16,7 @@
     <module>fix-api</module>
     <module>fix-core</module>
     <module>fix-rpc-client</module>
+    <module>fix-rpc-proto</module>
     <module>fix-rpc-core</module>
     <module>fix-rpc-server</module>
     <module>fix-server</module>

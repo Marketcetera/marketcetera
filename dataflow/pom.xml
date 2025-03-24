@@ -18,6 +18,7 @@
   <modules>
     <module>dataflow-api</module>
     <module>dataflow-rpc-client</module>
+    <module>dataflow-rpc-proto</module>
     <module>dataflow-rpc-core</module>
     <module>dataflow-rpc-server</module>
     <module>dataflow-core</module>
