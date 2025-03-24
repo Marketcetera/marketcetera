@@ -240,6 +240,18 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-rpc-proto</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cluster-rpc-proto</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>cluster-rpc-core</artifactId>
         <version>${project.version}</version>
       </dependency>
