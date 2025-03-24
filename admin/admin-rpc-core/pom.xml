@@ -53,13 +53,4 @@
       </plugin>
     </plugins>
   </build>
-  
-  <profiles>
-    <profile>
-      <id>ide-build</id>
-      <build>
-        <directory>${project.basedir}/target-ide</directory>
-      </build>
-    </profile>
-  </profiles>
 </project>
