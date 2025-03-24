@@ -62,7 +62,10 @@
         <version>1.7.1</version>
       </extension>
     </extensions>
+    <sourceDirectory>target/generated-sources/protobuf/java</sourceDirectory>
+    <testSourceDirectory>target/generated-test-sources/protobuf/java</testSourceDirectory>
     <plugins>
+      <!-- Define the protobuf plugin for normal build (target directory) -->
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
@@ -72,95 +75,52 @@
           <pluginId>grpc-java</pluginId>
           <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
           <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
-          <additionalProtoPathElements>
-            <additionalProtoPathElement>${project.basedir}/../../rpc-core-proto/src/main/proto</additionalProtoPathElement>
-            <additionalProtoPathElement>${project.basedir}/../../cluster/cluster-rpc-proto/src/main/proto</additionalProtoPathElement>
-            <additionalProtoPathElement>${project.basedir}/../../fix/fix-rpc-proto/src/main/proto</additionalProtoPathElement>
-            <additionalProtoPathElement>${project.basedir}/../../admin/admin-rpc-proto/src/main/proto</additionalProtoPathElement>
-          </additionalProtoPathElements>
-          <attachProtoSources>true</attachProtoSources>
-          <checkStaleness>true</checkStaleness>
         </configuration>
         <executions>
           <execution>
-            <id>compile-protos</id>
             <goals>
               <goal>compile</goal>
               <goal>compile-custom</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>compile-test-protos</id>
-            <phase>generate-test-sources</phase>
-            <goals>
               <goal>test-compile</goal>
               <goal>test-compile-custom</goal>
             </goals>
-            <configuration>
-              <protoSourceRoot>${project.basedir}/src/test/proto</protoSourceRoot>
-            </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.eclipse.m2e</groupId>
-        <artifactId>lifecycle-mapping</artifactId>
-        <version>1.0.0</version>
-        <configuration>
-          <lifecycleMappingMetadata>
-            <pluginExecutions>
-              <pluginExecution>
-                <pluginExecutionFilter>
-                  <groupId>org.xolstice.maven.plugins</groupId>
-                  <artifactId>protobuf-maven-plugin</artifactId>
-                  <versionRange>[0,)</versionRange>
-                  <goals>
-                    <goal>compile</goal>
-                    <goal>compile-custom</goal>
-                    <goal>test-compile</goal>
-                    <goal>test-compile-custom</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <execute />
-                </action>
-              </pluginExecution>
-            </pluginExecutions>
-          </lifecycleMappingMetadata>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
         <executions>
+          <!-- Add the gRPC main source directory -->
           <execution>
-            <id>add-source</id>
+            <id>add-grpc-source</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>add-source</goal>
             </goals>
             <configuration>
               <sources>
-                <source>${project.build.directory}/generated-sources/protobuf/java</source>
-                <source>${project.build.directory}/generated-sources/protobuf/grpc-java</source>
+                <source>target/generated-sources/protobuf/grpc-java</source>
               </sources>
             </configuration>
           </execution>
+          <!-- Add the gRPC test source directory -->
           <execution>
-            <id>add-test-source</id>
+            <id>add-grpc-test-source</id>
             <phase>generate-test-sources</phase>
             <goals>
               <goal>add-test-source</goal>
             </goals>
             <configuration>
               <sources>
-                <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
-                <source>${project.build.directory}/generated-test-sources/protobuf/grpc-java</source>
+                <source>target/generated-test-sources/protobuf/grpc-java</source>
               </sources>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <!-- Create a test JAR for the test proto files -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -172,17 +132,47 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Eclipse m2e integration -->
+      <plugin>
+        <groupId>org.eclipse.m2e</groupId>
+        <artifactId>lifecycle-mapping</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <lifecycleMappingMetadata>
+            <pluginExecutions>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.xolstice.maven.plugins</groupId>
+                  <artifactId>protobuf-maven-plugin</artifactId>
+                  <versionRange>[0.6.1,)</versionRange>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>compile-custom</goal>
+                    <goal>test-compile</goal>
+                    <goal>test-compile-custom</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+              <pluginExecution>
+                <pluginExecutionFilter>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-antrun-plugin</artifactId>
+                  <versionRange>[3.0.0,)</versionRange>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </pluginExecutionFilter>
+                <action>
+                  <execute/>
+                </action>
+              </pluginExecution>
+            </pluginExecutions>
+          </lifecycleMappingMetadata>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>ide-build</id>
-      <properties>
-        <skipTests>true</skipTests>
-      </properties>
-      <build>
-        <directory>${project.basedir}/target-ide</directory>
-      </build>
-    </profile>
-  </profiles>
 </project>
