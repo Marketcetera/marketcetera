@@ -94,6 +94,15 @@ public interface ReportService
      */
     Optional<ExecutionReport> getLatestExecutionReportForOrderChain(OrderID inOrderId);
     /**
+     * Get the execution report for the order represented by the given root order id and order id.
+     * 
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @param inOrderId an <code>OrderID</code> value
+     * @return an <code>Optional&lt;ExecutionReport&gt;</code> value
+     */
+    Optional<ExecutionReport> getExecutionReport(OrderID inRootOrderId,
+                                                 OrderID inOrderId);
+    /**
      * Purges reports before the given date.
      *
      * @param inPurgeDate a <code>Date</code> value
