@@ -3,7 +3,6 @@ package org.marketcetera.core;
 import static com.codahale.metrics.MetricRegistry.name;
 
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -184,22 +183,6 @@ public abstract class QueueProcessor<Clazz>
         addToQueueMetric.mark();
         queueCounterMetric.inc();
         queue.add(inData);
-    }
-    /**
-     * Adds the given object to the front of the processing queue.
-     *
-     * @param inData a <code>Clazz</code> value
-     */
-    @SuppressWarnings("unchecked")
-    protected void addFirst(Clazz inData)
-    {
-        addToQueueMetric.mark();
-        queueCounterMetric.inc();
-        if(queue instanceof Deque) {
-            ((Deque<Clazz>)queue).addFirst(inData);
-        } else {
-            throw new UnsupportedOperationException("Queue type does not all addFirst");
-        }
     }
     /**
      * Adds all the given objects to the processing queue.
