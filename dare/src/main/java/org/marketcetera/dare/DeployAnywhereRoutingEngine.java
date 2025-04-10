@@ -1086,64 +1086,97 @@ public class DeployAnywhereRoutingEngine
         try {
             synchronized(sessionLock) {
                 SLF4JLoggerProxy.info(this,
-                                      "Activating {}",
+                                      "COCO: Activating {}",
                                       getClusterWorkUnitUid());
                 isPrimary = true;
-                int totalInstances = clusterData.getTotalInstances();
-                int instanceId = clusterData.getInstanceNumber();
-                List<FixSession> sessions = fixSessionProvider.findFixSessions(false,
-                                                                               instanceId,
-                                                                               totalInstances);
-                Iterator<FixSession> sessionIterator = sessions.iterator();
-                while(sessionIterator.hasNext()) {
-                    FixSession session = sessionIterator.next();
-                    if(!session.isEnabled()) {
-                        SLF4JLoggerProxy.debug(this,
-                                               "Discarding disabled session {}",
-                                               session);
-                        brokerService.reportBrokerStatusFromAll(session,
-                                                                FixSessionStatus.DISABLED);
-                        sessionIterator.remove();
-                    }
-                }
-                FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
-                // Initiate broker connections.
-//                try {
-//                    jmxExporter = new JmxExporter();
-//                    jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
-//                } catch (JMException e) {
-//                    SLF4JLoggerProxy.warn(this,
-//                                          e);
-//                }
-                synchronized(initiators) {
-                    for(FixSession initiatorSession : sessions) {
-                        quickfix.SessionID initiatorSessionId = new quickfix.SessionID(initiatorSession.getSessionId());
-                        quickfix.SessionSettings initiatorSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(initiatorSession));
-                        quickfix.ThreadedSocketInitiator initiator = new quickfix.ThreadedSocketInitiator(this,
-                                                                                                          fixSettingsProvider.getMessageStoreFactory(initiatorSessionSettings),
-                                                                                                          initiatorSessionSettings,
-                                                                                                          fixSettingsProvider.getLogFactory(initiatorSessionSettings),
-                                                                                                          fixSettingsProvider.getMessageFactory());
-                        initiator.start();
-                        // TODO try/catch?
-                        initiators.put(initiatorSessionId,
-                                       initiator);
-                    }
-                }
-                initializeAcceptor();
-//                // Initiate JMX (for application MBeans).
-//                MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-//                mbeanServer.registerMBean(new ORSAdmin(quickFixSender,
-//                                                       idFactory,
-//                                                       userManager),
-//                                                       new ObjectName(JMX_NAME));
+                // Mark as activated early to break circular dependency
                 activated = true;
+                // Schedule session initialization to happen after activation is complete
+                scheduledService.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            SLF4JLoggerProxy.info(DeployAnywhereRoutingEngine.this,
+                                                 "Starting deferred session initialization");
+                            initializeSessions();
+                            SLF4JLoggerProxy.info(DeployAnywhereRoutingEngine.this,
+                                                 "Completed deferred session initialization");
+                        } catch (Exception e) {
+                            PlatformServices.handleException(DeployAnywhereRoutingEngine.this,
+                                                             "Error during deferred session initialization",
+                                                             e);
+                        }
+                    }
+                },2000,TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
             PlatformServices.handleException(this,
                                              "Unable to activate DARE",
                                              e);
             throw e;
+        }
+    }
+    /**
+     * Initialize FIX sessions after activation is complete.
+     * This method is separated from activate() to break circular dependencies
+     * that can cause deadlocks during initialization.
+     *
+     * @throws Exception if session initialization fails
+     */
+    private void initializeSessions()
+            throws Exception
+    {
+        SLF4JLoggerProxy.info(this,
+                              "COCO: Calling initializeSessions");
+        synchronized(sessionLock) {
+            int totalInstances = clusterData.getTotalInstances();
+            int instanceId = clusterData.getInstanceNumber();
+            List<FixSession> sessions = fixSessionProvider.findFixSessions(false,
+                                                                           instanceId,
+                                                                           totalInstances);
+            Iterator<FixSession> sessionIterator = sessions.iterator();
+            while(sessionIterator.hasNext()) {
+                FixSession session = sessionIterator.next();
+                if(!session.isEnabled()) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Discarding disabled session {}",
+                                           session);
+                    brokerService.reportBrokerStatusFromAll(session,
+                                                            FixSessionStatus.DISABLED);
+                    sessionIterator.remove();
+                }
+            }
+            FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
+            // Initiate broker connections.
+//            try {
+//                jmxExporter = new JmxExporter();
+//                jmxExporter.setRegistrationBehavior(JmxExporter.REGISTRATION_REPLACE_EXISTING);
+//            } catch (JMException e) {
+//                SLF4JLoggerProxy.warn(this,
+//                                      e);
+//            }
+            synchronized(initiators) {
+                for(FixSession initiatorSession : sessions) {
+                    quickfix.SessionID initiatorSessionId = new quickfix.SessionID(initiatorSession.getSessionId());
+                    quickfix.SessionSettings initiatorSessionSettings = brokerService.generateSessionSettings(Lists.newArrayList(initiatorSession));
+                    quickfix.ThreadedSocketInitiator initiator = new quickfix.ThreadedSocketInitiator(this,
+                                                                                                      fixSettingsProvider.getMessageStoreFactory(initiatorSessionSettings),
+                                                                                                      initiatorSessionSettings,
+                                                                                                      fixSettingsProvider.getLogFactory(initiatorSessionSettings),
+                                                                                                      fixSettingsProvider.getMessageFactory());
+                    initiator.start();
+                    // TODO try/catch?
+                    initiators.put(initiatorSessionId,
+                                   initiator);
+                }
+            }
+            initializeAcceptor();
+//            // Initiate JMX (for application MBeans).
+//            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+//            mbeanServer.registerMBean(new ORSAdmin(quickFixSender,
+//                                                   idFactory,
+//                                                   userManager),
+//                                                   new ObjectName(JMX_NAME));
         }
     }
     /**

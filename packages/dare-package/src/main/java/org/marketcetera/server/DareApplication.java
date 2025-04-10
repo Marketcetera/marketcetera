@@ -91,12 +91,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.google.common.collect.Lists;
 
 import io.grpc.BindableService;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.License;
 
 /* $License$ */
 
@@ -377,19 +375,24 @@ public class DareApplication
         return metricServiceReporter;
     }
     /**
-     * Create the Swagger API component.
+     * Create the OpenAPI component.
      *
-     * @return a <code>Docket</code> value
+     * @return an <code>OpenAPI</code> value
      */
     @Bean
-    public Docket api()
-    { 
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/matp/*"))
-                .build()
-                .apiInfo(apiInfo());
+    public OpenAPI marketceteraOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Marketcetera Automated Trading Engine REST API")
+                        .description("REST API for MATP")
+                        .version("4.1.1")
+                        .contact(new Contact()
+                                .name("Colin DuPlantis")
+                                .url("www.marketcetera.com")
+                                .email("info@marketcetera.com"))
+                        .license(new License()
+                                .name("License of API")
+                                .url("API license URL")));
     }
     /**
      * Get the port user proxy for the embedded web server.
@@ -734,25 +737,7 @@ public class DareApplication
     {
         return new PersistentUserFactory();
     }
-    /**
-     * Get the API info (REST Swagger) for DARE.
-     *
-     * @return an <code>ApiInfo</code> value
-     */
-    private ApiInfo apiInfo()
-    {
-        return new ApiInfo(
-          "Marketcetera Automated Trading Engine REST API", 
-          "REST API for MATP", 
-          "API TOS", 
-          "Terms of service", 
-          new Contact("Colin DuPlantis", 
-                      "www.marketcetera.com",
-                      "info@marketcetera.com"), 
-          "License of API",
-          "API license URL",
-          Collections.emptyList());
-    }
+    // apiInfo method removed when migrating to SpringDoc
     /**
      * indicates whether to use SSL or not
      */

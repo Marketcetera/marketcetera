@@ -54,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -68,7 +69,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @since $Release$
  */
 public abstract class AbstractClusterService
-        implements ClusterService,ClusterListener,ApplicationContextAware
+        implements ClusterService, ClusterListener, ApplicationContextAware, 
+                   org.springframework.context.ApplicationListener<org.springframework.context.event.ContextRefreshedEvent>
 {
     /* (non-Javadoc)
      * @see com.marketcetera.matp.service.ClusterListener#memberAdded(com.marketcetera.matp.service.ClusterMember)
@@ -125,7 +127,7 @@ public abstract class AbstractClusterService
         }
     }
     /**
-     * Validate and starts the object.
+     * Validate and performs basic initialization.
      */
     @PostConstruct
     public void start()
@@ -174,9 +176,9 @@ public abstract class AbstractClusterService
         workUnitSpecsEstablished = false;
         register(clusterData);
         SLF4JLoggerProxy.debug(this,
-                               "Starting {}",
+                               "Basic initialization complete for {}",
                                clusterData);
-        scheduleWorkUnitEvaluation();
+        // Work unit evaluation moved to onApplicationEvent
     }
     /**
      * Stops the object.
@@ -199,6 +201,23 @@ public abstract class AbstractClusterService
             throws BeansException
     {
         applicationContext = inApplicationContext;
+    }
+    /**
+     * Handles the ContextRefreshedEvent, which is fired when the Spring ApplicationContext
+     * has been completely initialized. This is the right place to initialize components
+     * that need access to other fully initialized Spring beans.
+     *
+     * @param event a <code>ContextRefreshedEvent</code> value
+     */
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        // Ensure this is for our application context (important in hierarchical context scenarios)
+        if(event.getApplicationContext() == this.applicationContext) {
+            SLF4JLoggerProxy.warn(this,
+                                  "COCO: Application context initialized, scheduling work unit evaluation for {}",
+                                  clusterData);
+            scheduleWorkUnitEvaluation();
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

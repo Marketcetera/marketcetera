@@ -86,13 +86,14 @@
     </dependency>
     <!-- other compile -->
     <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger2</artifactId>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-ui</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.springfox</groupId>
-      <artifactId>springfox-swagger-ui</artifactId>
-    </dependency>
+    <!-- Removing springdoc-openapi-security as it's not needed and would require Spring Security dependencies -->
+    <!-- <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-security</artifactId>
+    </dependency> -->
     <!-- Compile: QuickFIX/J -->
     <dependency>
       <groupId>org.quickfixj</groupId>

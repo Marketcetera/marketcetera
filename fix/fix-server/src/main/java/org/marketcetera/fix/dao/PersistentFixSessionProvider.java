@@ -523,19 +523,50 @@ public class PersistentFixSessionProvider
             SLF4JLoggerProxy.debug(this,
                                    "Calling enable task for {}",
                                    enabledSession);
-             EnableSessionTask enableSessionTask = new EnableSessionTask(enabledSession);
-             Map<Object,Future<Boolean>> results = clusterService.execute(enableSessionTask);
-             // if any of the cluster members throws an exception, the session will not be enabled!
-             for(Map.Entry<Object,Future<Boolean>> entry : results.entrySet()) {
-                 entry.getValue().get();
-                 SLF4JLoggerProxy.debug(this,
+            EnableSessionTask enableSessionTask = new EnableSessionTask(enabledSession);
+            Map<Object,Future<Boolean>> results = clusterService.execute(enableSessionTask);
+            // if any of the cluster members throws an exception, the session will not be enabled!
+            for(Map.Entry<Object,Future<Boolean>> entry : results.entrySet()) {
+                boolean completed = false;
+                int retryCount = 0;
+                final int MAX_RETRIES = 10;
+                while(!completed && retryCount < MAX_RETRIES) {
+                    try {
+                        // Use a short timeout to yield the lock and retry
+                        entry.getValue().get(3, TimeUnit.SECONDS);
+                        completed = true;
+                        SLF4JLoggerProxy.debug(this,
                                         "Enable {} task complete on {}",
                                         enabledSession,
                                         entry.getKey());
-             }
-             SLF4JLoggerProxy.debug(this,
-                                    "Enable {} task completed successfully",
-                                    enabledSession);
+                    } catch(java.util.concurrent.TimeoutException e) {
+                        retryCount++;
+                        SLF4JLoggerProxy.info(this,
+                                        "Enable task for {} timed out on {} after {} seconds, retrying ({}/{})",
+                                        enabledSession,
+                                        entry.getKey(),
+                                        3,
+                                        retryCount,
+                                        MAX_RETRIES);
+                        // Small sleep to give Spring context time to resolve deadlocks
+                        try {
+                            Thread.sleep(500);
+                        } catch(InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw ie;
+                        }
+                    }
+                }
+                
+                if(!completed) {
+                    throw new RuntimeException("Enable task for " + enabledSession + 
+                                            " on " + entry.getKey() + 
+                                            " failed to complete after " + MAX_RETRIES + " retries");
+                }
+            }
+            SLF4JLoggerProxy.debug(this,
+                                "Enable {} task completed successfully",
+                                enabledSession);
         } catch(Exception e) {
             if(!PlatformServices.isShutdown(e)) {
                 SLF4JLoggerProxy.warn(this,

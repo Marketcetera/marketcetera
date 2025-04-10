@@ -498,14 +498,14 @@
         <version>2.10.13</version>
       </dependency>
       <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger2</artifactId>
-        <version>3.0.0</version>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
       </dependency>
       <dependency>
-        <groupId>io.springfox</groupId>
-        <artifactId>springfox-swagger-ui</artifactId>
-        <version>3.0.0</version>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-security</artifactId>
+        <version>1.7.0</version>
       </dependency>
       <dependency>
         <groupId>org.tensorflow</groupId>
@@ -1075,6 +1075,11 @@
           <groupId>org.flywaydb</groupId>
           <artifactId>flyway-maven-plugin</artifactId>
           <version>${mvn.flyway.version}</version>
+          <configuration>
+            <!-- Other flyway configurations -->
+            <!-- Default is true, but children can override when needed -->
+            <cleanDisabled>false</cleanDisabled>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>

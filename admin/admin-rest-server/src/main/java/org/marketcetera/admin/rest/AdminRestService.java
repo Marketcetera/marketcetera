@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /* $License$ */
 
@@ -33,7 +33,7 @@ import io.swagger.annotations.ApiResponses;
 @Configuration
 @EnableAutoConfiguration
 @ConfigurationProperties("admin")
-@Api(value="Admin server operations")
+@Tag(name = "Admin", description = "Admin server operations")
 public class AdminRestService
 {
     /**
@@ -44,10 +44,11 @@ public class AdminRestService
      */
     @ResponseBody
     @RequestMapping(method=RequestMethod.GET,produces={"application/json","application/xml"},value="/admin/getPermissions")
-    @ApiOperation(value="Gets user permissions",response=Set.class,protocols= "http,https",
-                  notes="Get the permissions for the user")
-    @ApiResponses(value={ @ApiResponse(code=200,message="Successfully returned permissions"),
-                          @ApiResponse(code=401,message="Not logged in") })
+    @Operation(summary = "Gets user permissions", description = "Get the permissions for the user")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully returned permissions"),
+        @ApiResponse(responseCode = "401", description = "Not logged in")
+    })
     Set<Permission> findAllPermissionsByUsername(Principal inPrincipal)
     {
         SLF4JLoggerProxy.debug(this,
