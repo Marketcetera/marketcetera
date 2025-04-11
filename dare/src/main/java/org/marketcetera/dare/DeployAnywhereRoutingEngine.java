@@ -1086,7 +1086,8 @@ public class DeployAnywhereRoutingEngine
         try {
             synchronized(sessionLock) {
                 SLF4JLoggerProxy.info(this,
-                                      "COCO: Activating {}",
+                                      "{} activating {}",
+                                      PlatformServices.getServiceName(getClass()),
                                       getClusterWorkUnitUid());
                 isPrimary = true;
                 // Mark as activated early to break circular dependency
@@ -1127,7 +1128,8 @@ public class DeployAnywhereRoutingEngine
             throws Exception
     {
         SLF4JLoggerProxy.info(this,
-                              "COCO: Calling initializeSessions");
+                              "{} initializing FIX sessions",
+                              PlatformServices.getServiceName(getClass()));
         synchronized(sessionLock) {
             int totalInstances = clusterData.getTotalInstances();
             int instanceId = clusterData.getInstanceNumber();

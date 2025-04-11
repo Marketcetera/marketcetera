@@ -43,6 +43,7 @@ import org.marketcetera.cluster.ClusterWorkUnitType;
 import org.marketcetera.cluster.ClusterWorkUnitUid;
 import org.marketcetera.cluster.SimpleClusterWorkUnitDescriptor;
 import org.marketcetera.cluster.SimpleClusterWorkUnitSpec;
+import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
@@ -213,8 +214,9 @@ public abstract class AbstractClusterService
     public void onApplicationEvent(ContextRefreshedEvent event) {
         // Ensure this is for our application context (important in hierarchical context scenarios)
         if(event.getApplicationContext() == this.applicationContext) {
-            SLF4JLoggerProxy.warn(this,
-                                  "COCO: Application context initialized, scheduling work unit evaluation for {}",
+            SLF4JLoggerProxy.info(this,
+                                  "{} application context initialized, scheduling work unit evaluation for {}",
+                                  PlatformServices.getServiceName(getClass()),
                                   clusterData);
             scheduleWorkUnitEvaluation();
         }

@@ -412,7 +412,6 @@ public class MarketDataDetailView
         // TODO need to handle quote actions: ADD vs DEL vs CHANGE
         if(inEvent instanceof QuoteEvent) {
             QuoteEvent quoteEvent = (QuoteEvent)inEvent;
-            System.out.println("COCO: empty event: " + quoteEvent.isEmpty());
             if(quoteEvent.isEmpty()) {
                 if(quoteEvent instanceof BidEvent) {
                     bids.remove(quoteEvent.getLevel());
