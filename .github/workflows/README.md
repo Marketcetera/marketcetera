@@ -6,10 +6,12 @@ This directory contains GitHub Actions workflow configurations for continuous in
 
 The `ci.yml` workflow handles:
 
-- Building the project with Maven
+- Building the project with Maven (using GitHub Actions v2)
 - Running tests
 - Publishing test reports
 - Uploading build artifacts
+
+Note: All GitHub Actions are using version 2 for compatibility reasons.
 
 ### Environment Variables
 

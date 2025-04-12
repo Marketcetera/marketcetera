@@ -11,17 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v2
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
         
     - name: Cache Maven packages
-      uses: actions/cache@v3
+      uses: actions/cache@v2
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -59,13 +59,13 @@ jobs:
       run: .github/workflows/property-resolver.sh -B test --file pom.xml
       
     - name: Publish Test Report
-      uses: mikepenz/action-junit-report@v3
+      uses: mikepenz/action-junit-report@v2
       if: always() # always run even if the previous step fails
       with:
         report_paths: '**/target/surefire-reports/TEST-*.xml'
         
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: packages
         path: |
