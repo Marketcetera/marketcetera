@@ -11,21 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     
     - name: Set up JDK 17
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
         
-    - name: Cache Maven packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+    # Note: With setup-java@v4, the Maven cache is handled automatically
+    # if cache: maven is set, so we don't need a separate cache step
     
     # Set environment variables for both approaches
     - name: Set environment variables
@@ -59,13 +55,13 @@ jobs:
       run: .github/workflows/property-resolver.sh -B test --file pom.xml
       
     - name: Publish Test Report
-      uses: mikepenz/action-junit-report@v2
+      uses: mikepenz/action-junit-report@v4
       if: always() # always run even if the previous step fails
       with:
         report_paths: '**/target/surefire-reports/TEST-*.xml'
         
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: packages
         path: |
@@ -73,3 +69,4 @@ jobs:
           **/target/*.war
           !**/target/*-sources.jar
           !**/target/*-tests.jar
+        retention-days: 30
