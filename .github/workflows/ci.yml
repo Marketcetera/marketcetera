@@ -1,0 +1,75 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main", "master", "develop", "java17-upgrade" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    # Set environment variables for both approaches
+    - name: Set environment variables
+      run: |
+        echo "METC_JDBC_PASSWORD=pw4metc" >> $GITHUB_ENV
+        echo "METC_JDBC_DRIVER=org.h2.Driver" >> $GITHUB_ENV
+        echo "METC_JDBC_URL=jdbc:h2:./target/metc" >> $GITHUB_ENV
+        echo "METC_JDBC_TESTQUERY=select 1" >> $GITHUB_ENV
+        echo "METC_HIBERNATE_DIALECT=org.hibernate.dialect.H2Dialect" >> $GITHUB_ENV
+        echo "METC_FLYWAY_VENDOR=h2" >> $GITHUB_ENV
+        chmod +x .github/workflows/verify-env.sh
+        chmod +x .github/workflows/property-resolver.sh
+    
+    # Verify environment variables are set
+    - name: Verify environment setup
+      run: .github/workflows/verify-env.sh
+        
+    # Build using direct Maven system properties
+    - name: Build with Maven System Properties
+      run: |
+        mvn -B package --file pom.xml \
+          -Dmetc.jdbc.password=${METC_JDBC_PASSWORD} \
+          -Dmetc.jdbc.driver=${METC_JDBC_DRIVER} \
+          -Dmetc.jdbc.url=${METC_JDBC_URL} \
+          -Dmetc.jdbc.testquery=${METC_JDBC_TESTQUERY} \
+          -Dmetc.hibernate.dialect=${METC_HIBERNATE_DIALECT} \
+          -Dmetc.flyway.vendor=${METC_FLYWAY_VENDOR}
+      
+    # Run tests with the property resolver script
+    - name: Run Tests with Property Resolver
+      run: .github/workflows/property-resolver.sh -B test --file pom.xml
+      
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always() # always run even if the previous step fails
+      with:
+        report_paths: '**/target/surefire-reports/TEST-*.xml'
+        
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: packages
+        path: |
+          **/target/*.jar
+          **/target/*.war
+          !**/target/*-sources.jar
+          !**/target/*-tests.jar
