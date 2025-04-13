@@ -12,31 +12,14 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v1
     
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v1
       with:
         java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    
-    # Debug Maven version and environment
-    - name: Debug environment
-      run: |
-        mvn -version
-        java -version
+        distribution: 'adopt'
     
     # Build and test in a single step, no scripts needed
     - name: Build and test with Maven
       run: mvn -B clean package -Dmetc.jdbc.password=pw4metc -Dmetc.jdbc.driver=org.h2.Driver -Dmetc.jdbc.url=jdbc:h2:./target/metc -Dmetc.jdbc.testquery="select 1" -Dmetc.hibernate.dialect=org.hibernate.dialect.H2Dialect -Dmetc.flyway.vendor=h2
-    
-    # Upload artifacts
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: packages
-        path: |
-          **/target/*.jar
-          !**/target/*-sources.jar
-          !**/target/*-tests.jar
