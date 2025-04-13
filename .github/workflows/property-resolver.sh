@@ -32,8 +32,10 @@ MVN_PROPS="-Dmetc.jdbc.password=${METC_JDBC_PASSWORD} \
   -Dmetc.hibernate.dialect=${METC_HIBERNATE_DIALECT} \
   -Dmetc.flyway.vendor=${METC_FLYWAY_VENDOR}"
 
-# Combine with any additional arguments
-MVN_CMD="mvn ${MVN_PROPS} $@"
+# Echo for debugging
+echo "Original arguments: $@"
 
-echo "Executing: ${MVN_CMD}"
-eval ${MVN_CMD}
+# Execute Maven directly with the properties and the original arguments
+# This avoids issues with quoting and argument parsing
+echo "Executing Maven with properties and arguments..."
+mvn ${MVN_PROPS} "$@"
