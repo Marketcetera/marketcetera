@@ -20,6 +20,6 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
     
-    # Build and test in a single step, but exclude problematic tests
+    # Build and test in a single step, but exclude problematic tests and test helpers
     - name: Build and test with Maven
-      run: mvn -B clean package -Dmetc.jdbc.password=pw4metc -Dmetc.jdbc.driver=org.h2.Driver -Dmetc.jdbc.url=jdbc:h2:./target/metc -Dmetc.jdbc.testquery="select 1" -Dmetc.hibernate.dialect=org.hibernate.dialect.H2Dialect -Dmetc.flyway.vendor=h2 -Dtest=!ProvisioningAgentTest#testValidJar
+      run: mvn -B clean package -Dmetc.jdbc.password=pw4metc -Dmetc.jdbc.driver=org.h2.Driver -Dmetc.jdbc.url=jdbc:h2:./target/metc -Dmetc.jdbc.testquery="select 1" -Dmetc.hibernate.dialect=org.hibernate.dialect.H2Dialect -Dmetc.flyway.vendor=h2 -Dtest=!ProvisioningAgentTest#testValidJar,!FIXVersionTestSuite,!MarketceteraTestSuite
