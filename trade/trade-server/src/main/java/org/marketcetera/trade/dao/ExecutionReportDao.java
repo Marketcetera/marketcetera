@@ -1,5 +1,6 @@
 package org.marketcetera.trade.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import org.marketcetera.trade.ExecutionReportSummary;
@@ -60,4 +61,20 @@ public interface ExecutionReportDao
     @Query("select new org.marketcetera.trade.dao.AverageFillQueryResult(e.symbol,e.securityType,e.expiry,e.strikePrice,e.optionType,e.side,sum(e.lastQuantity*e.lastPrice)/sum(e.lastQuantity),sum(e.cumQuantity)) from PersistentExecutionReport e where e.execType in ?1 group by e.symbol,e.securityType,e.expiry,e.strikePrice,e.optionType,e.side")
     Page<AverageFillQueryResult> findAverageFillPrice(Set<ExecutionType> inFillTypes,
                                                       Pageable inPageRequest);
+                                                      
+    /**
+     * Find execution reports by root order id ordered by sending time descending.
+     *
+     * @param inRootOrderId an <code>OrderID</code> value
+     * @return a <code>List&lt;PersistentExecutionReport&gt;</code> value
+     */
+    List<PersistentExecutionReport> findByRootOrderIdOrderBySendingTimeDesc(OrderID inRootOrderId);
+    
+    /**
+     * Find execution reports by order id ordered by sending time ascending.
+     *
+     * @param inOrderId an <code>OrderID</code> value
+     * @return a <code>List&lt;PersistentExecutionReport&gt;</code> value
+     */
+    List<PersistentExecutionReport> findByOrderIdOrderBySendingTimeAsc(OrderID inOrderId);
 }

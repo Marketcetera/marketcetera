@@ -1,6 +1,7 @@
 package org.marketcetera.fix.dao;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.marketcetera.fix.IncomingMessage;
@@ -74,4 +75,15 @@ public interface IncomingMessageDao
     PersistentIncomingMessage findBySessionIdAndMsgSeqNumAndSendingTime(String inSessionId,
                                                                         int inMsgSeqNum,
                                                                         Date inSendingTime);
+    /**
+     * Find by session ID and sending time ordered by page request.
+     *
+     * @param inSessionId a <code>String</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inPageRequest a <code>Pageable</code> value
+     * @return a <code>List&lt;PersistentIncomingMessage&gt;</code> value
+     */
+    List<PersistentIncomingMessage> findBySessionIdAndSendingTimeGreaterThanEqual(String inSessionId, 
+                                                                                 Date inDate, 
+                                                                                 Pageable inPageRequest);
 }

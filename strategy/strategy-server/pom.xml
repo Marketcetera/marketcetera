@@ -61,10 +61,19 @@
       <artifactId>spotbugs-annotations</artifactId>
       <version>4.7.3</version>
     </dependency>
-    <!-- other compile -->
+    <!-- QueryDSL Jakarta dependencies -->
     <dependency>
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
+      <version>${querydsl.version}</version>
+      <classifier>jakarta</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <version>${querydsl.version}</version>
+      <classifier>jakarta</classifier>
+      <scope>provided</scope>
     </dependency>
     <!-- local test -->
     <dependency>
@@ -160,12 +169,48 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
-      <!-- Temporarily disabled QueryDSL APT plugin for Spring Boot 3 migration 
+      <!-- QueryDSL APT plugin for Jakarta -->
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
+        <version>1.1.3</version>
+        <executions>
+          <execution>
+            <id>querydsl-process</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/generated-sources/java</outputDirectory>
+              <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+              <options>
+                <querydsl.entityAccessors>true</querydsl.entityAccessors>
+                <querydsl.packageSuffix>.querydsl</querydsl.packageSuffix>
+              </options>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>${querydsl.version}</version>
+            <classifier>jakarta</classifier>
+          </dependency>
+          <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+          </dependency>
+          <!-- Add javax.persistence explicitly to help with compatibility -->
+          <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
-      -->
     </plugins>
   </build>
 </project>

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.marketcetera.admin.user.PersistentUser;
 import org.marketcetera.trade.Report;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.trade.ReportType;
@@ -82,4 +83,33 @@ public interface PersistentReportDao
     List<Long> findUnhandledIncomingMessageIds(String inSessionId,
                                                Set<String> inMessageTypes,
                                                Date inSince);
+                                               
+    /**
+     * Find reports by sending time greater than or equal to a date and with a specific viewer, ordered by sending time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inViewer a <code>PersistentUser</code> value
+     * @param inPageable a <code>Pageable</code> value
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    List<PersistentReport> findBySendingTimeGreaterThanEqualAndViewerOrderBySendingTimeAsc(Date inDate, PersistentUser inViewer, Pageable inPageable);
+    
+    /**
+     * Find reports by sending time greater than or equal to a date and with viewers in a set, ordered by sending time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inViewers a <code>Set&lt;PersistentUser&gt;</code> value
+     * @param inPageable a <code>Pageable</code> value
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    List<PersistentReport> findBySendingTimeGreaterThanEqualAndViewerInOrderBySendingTimeAsc(Date inDate, Set<PersistentUser> inViewers, Pageable inPageable);
+    
+    /**
+     * Find reports by message sequence number and sending time greater than or equal to a date.
+     *
+     * @param inMsgSeqNum an <code>int</code> value
+     * @param inDate a <code>Date</code> value
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    List<PersistentReport> findByMsgSeqNumAndSendingTimeGreaterThanEqual(int inMsgSeqNum, Date inDate);
 }

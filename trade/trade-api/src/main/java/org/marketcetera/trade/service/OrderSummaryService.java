@@ -118,4 +118,11 @@ public interface OrderSummaryService
      * @return a <code>List&lt;OrderSummary</code> value
      */
     List<OrderSummary> findByRootOrderId(OrderID inOrderId);
+    
+    /**
+     * Get the order status DAO for direct data access.
+     *
+     * @return an <code>Object</code> value representing the OrderSummaryDao
+     */
+    Object getOrderStatusDao();
 }

@@ -67,6 +67,14 @@ This document tracks the migration process from Spring Boot 2.7.x to Spring Boot
 - modules/machine-learning/tensorflow (with QueryDSL functionality temporarily disabled)
 - packages/dare-package
 - photon
+- metrics-log
+- eventbus-api
+- eventbus-core
+- eventbus-guava
+- eventbus-server
+- tools
+- fork/commons-csv
+- fork/commons-i18n
 
 ## Migration Steps
 
@@ -211,25 +219,53 @@ Spring Boot 3 deprecated and removed `org.springframework.util.SocketUtils`. Cre
 
 ### 8. QueryDSL Migration Strategy
 
-QueryDSL needs to be updated to work with Jakarta EE. Some options:
+QueryDSL needs to be updated to work with Jakarta EE, but currently there are challenges with implementing a complete solution:
 
-1. **Temporarily disable QueryDSL**: Comment out the QueryDSL code and use alternative methods
+1. **Current Approach - Stub Implementations**: 
+   
+   We are temporarily disabling QueryDSL functionality and providing stub implementations:
    ```xml
    <plugin>
-     <!-- Temporarily disabled for Spring Boot 3 migration 
+     <!-- Temporarily disabled for Spring Boot 3 migration -->
      <groupId>com.mysema.maven</groupId>
      <artifactId>apt-maven-plugin</artifactId>
-     -->
    </plugin>
    ```
 
-2. **Add both javax and jakarta dependencies**: This can lead to conflicts and confusion.
+   This approach allows the build to succeed with Spring Boot 3.2.4, but with limited QueryDSL functionality.
 
-3. **Wait for official QueryDSL support**: QueryDSL may eventually release a version that works with Jakarta EE.
+2. **Alternative Solutions Explored**:
 
-4. **Use a fork**: There are community-maintained forks of QueryDSL with Jakarta support.
+   a. **Using Infobip QueryDSL Jakarta**: We attempted to use the Infobip fork that supports Jakarta EE:
+      ```xml
+      <dependency>
+        <groupId>com.github.infobip</groupId>
+        <artifactId>querydsl-jpa-jakarta</artifactId>
+        <version>5.0.0_jakarta_1.0.0</version>
+      </dependency>
+      ```
+      However, this required JitPack.io authentication, which wasn't available in our build environment.
 
-For now, we're disabling QueryDSL and providing alternative implementations where needed.
+   b. **Using QueryDSL with Jakarta classifier**: We attempted to use standard QueryDSL with a Jakarta classifier:
+      ```xml
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <version>5.0.0</version>
+        <classifier>jakarta</classifier>
+      </dependency>
+      ```
+      This approach also faced compatibility issues with annotation processing.
+
+3. **Long-term Solutions**:
+
+   a. **Wait for official QueryDSL support**: QueryDSL may eventually release a version that works with Jakarta EE.
+
+   b. **Custom Bridge**: Implement a custom wrapper that bridges between javax.persistence and jakarta.persistence.
+
+   c. **Use a Private Maven Repository**: Set up a private Maven repository with the necessary Jakarta-compatible QueryDSL artifacts.
+
+Until a robust solution is available, we'll continue using stub implementations for QueryDSL-dependent modules.
 
 ```java
 public final class TestSocketUtils {
@@ -362,3 +398,14 @@ public final class TestSocketUtils {
   - Added javax.annotation-api for backward compatibility
   - Added SpotBugs dependency for concurrent annotation replacement
   - Changed javax.xml.bind.JAXBException import to jakarta.xml.bind.JAXBException in OrderTicketView.java
+- Completed migration for metrics modules:
+  - Verified metrics-db module already had Jakarta dependencies and imports
+  - Verified metrics-log module doesn't use any Jakarta APIs, but builds successfully with Spring Boot 3.2.4
+- Completed migration for eventbus modules:
+  - Verified eventbus-api, eventbus-core, eventbus-guava, and eventbus-server modules don't use any Jakarta APIs
+  - All eventbus modules build successfully with Spring Boot 3.2.4 without any changes
+- Completed migration for tools module:
+  - Verified the tools module builds successfully with Spring Boot 3.2.4 without any changes
+- Completed migration for fork modules:
+  - Verified that commons-csv and commons-i18n modules compile successfully with Spring Boot 3.2.4
+  - Noted that javax.sql.DataSource and javax.xml.parsers imports in these modules don't need to be updated since they are part of Java SE
