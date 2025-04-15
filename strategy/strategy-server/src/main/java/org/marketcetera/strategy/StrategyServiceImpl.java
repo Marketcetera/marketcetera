@@ -41,7 +41,6 @@ import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.strategy.dao.PersistentStrategyInstance;
 import org.marketcetera.strategy.dao.PersistentStrategyMessage;
-import org.marketcetera.strategy.dao.QPersistentStrategyMessage;
 import org.marketcetera.strategy.dao.StrategyInstanceDao;
 import org.marketcetera.strategy.dao.StrategyMessageDao;
 import org.marketcetera.strategy.events.SimpleStrategyMessageEvent;
@@ -53,6 +52,7 @@ import org.marketcetera.strategy.events.SimpleStrategyUnloadedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadFailedEvent;
 import org.marketcetera.strategy.events.SimpleStrategyUploadSucceededEvent;
 import org.marketcetera.strategy.events.StrategyEvent;
+import org.marketcetera.strategy.jpa.StrategySpecifications;
 import org.marketcetera.trade.client.DirectTradeClient;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +66,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
@@ -81,7 +82,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
-import com.querydsl.core.BooleanBuilder;
 
 /* $License$ */
 
@@ -140,9 +140,8 @@ public class StrategyServiceImpl
                 SLF4JLoggerProxy.warn(this,
                                       "{} is unreadable, unloading",
                                       fullStrategyPath);
-                BooleanBuilder where = new BooleanBuilder();
-                where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(existingStrategyInstance));
-                strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
+                Specification<PersistentStrategyMessage> spec = StrategySpecifications.equalTo("strategyInstance", existingStrategyInstance);
+                strategyMessageDao.deleteAll(strategyMessageDao.findAll(spec));
                 strategyInstanceDao.delete(existingStrategyInstance);
             }
         }
@@ -195,10 +194,8 @@ public class StrategyServiceImpl
                                                                                org.marketcetera.persist.PageRequest inPageRequest)
     {
         Sort sort = buildSort(inPageRequest,
-                              Sort.by(new Sort.Order(Sort.Direction.DESC,
-                                                     QPersistentStrategyMessage.persistentStrategyMessage.messageTimestamp.getMetadata().getName()),
-                                      new Sort.Order(Sort.Direction.DESC,
-                                                     QPersistentStrategyMessage.persistentStrategyMessage.severity.getMetadata().getName())));
+                              Sort.by(new Sort.Order(Sort.Direction.DESC, "messageTimestamp"),
+                                      new Sort.Order(Sort.Direction.DESC, "severity")));
         SLF4JLoggerProxy.debug(this,
                                "getStrategyMessages sort order is {} renders: {} with strategy name {} and severity {}",
                                inPageRequest.getSortOrder(),
@@ -209,38 +206,46 @@ public class StrategyServiceImpl
                                               inPageRequest.getPageSize(),
                                               sort);
         inStrategyName = StringUtils.trimToNull(inStrategyName);
-        BooleanBuilder where = null;
+        Specification<PersistentStrategyMessage> spec = null;
         if(inStrategyName != null || inSeverity != null) {
-            where = new BooleanBuilder();
             if(inStrategyName != null) {
-                where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.name.eq(inStrategyName));
+                spec = StrategySpecifications.equalTo("strategyInstance.name", inStrategyName);
             }
             if(inSeverity != null) {
-                BooleanBuilder severityBuilder = new BooleanBuilder();
+                Specification<PersistentStrategyMessage> severitySpec = null;
                 switch(inSeverity) {
                     case DEBUG:
-                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.DEBUG));
+                        severitySpec = StrategySpecifications.equalTo("severity", Severity.DEBUG);
+                        severitySpec = StrategySpecifications.or(severitySpec, StrategySpecifications.equalTo("severity", Severity.INFO));
+                        severitySpec = StrategySpecifications.or(severitySpec, StrategySpecifications.equalTo("severity", Severity.WARN));
+                        severitySpec = StrategySpecifications.or(severitySpec, StrategySpecifications.equalTo("severity", Severity.ERROR));
+                        break;
                     case INFO:
-                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.INFO));
+                        severitySpec = StrategySpecifications.equalTo("severity", Severity.INFO);
+                        severitySpec = StrategySpecifications.or(severitySpec, StrategySpecifications.equalTo("severity", Severity.WARN));
+                        severitySpec = StrategySpecifications.or(severitySpec, StrategySpecifications.equalTo("severity", Severity.ERROR));
+                        break;
                     case WARN:
-                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.WARN));
+                        severitySpec = StrategySpecifications.equalTo("severity", Severity.WARN);
+                        severitySpec = StrategySpecifications.or(severitySpec, StrategySpecifications.equalTo("severity", Severity.ERROR));
+                        break;
                     case ERROR:
-                        severityBuilder = severityBuilder.or(QPersistentStrategyMessage.persistentStrategyMessage.severity.eq(Severity.ERROR));
+                        severitySpec = StrategySpecifications.equalTo("severity", Severity.ERROR);
                         break;
                     default:
                         throw new UnsupportedOperationException("Unexpected severity: " + inSeverity);
                 }
-                where = where.and(severityBuilder);
+                spec = spec == null ? severitySpec : StrategySpecifications.and(spec, severitySpec);
             }
         }
         Page<PersistentStrategyMessage> pageResponse;
-        if(where == null) {
+        if(spec == null) {
             pageResponse = strategyMessageDao.findAll(pageRequest);
         } else {
             SLF4JLoggerProxy.debug(this,
                                    "Selecting strategy messages with: {}",
-                                   where);
-            pageResponse = strategyMessageDao.findAll(where,
+                                   spec);
+            pageResponse = strategyMessageDao.findAll(spec,
                                                       pageRequest);
         }
         return new CollectionPageResponse<>(pageResponse);
@@ -602,9 +607,8 @@ public class StrategyServiceImpl
      */
     private void deleteAllMessagesFor(PersistentStrategyInstance inStrategyInstance)
     {
-        BooleanBuilder where = new BooleanBuilder();
-        where = where.and(QPersistentStrategyMessage.persistentStrategyMessage.strategyInstance.eq(inStrategyInstance));
-        strategyMessageDao.deleteAll(strategyMessageDao.findAll(where));
+        Specification<PersistentStrategyMessage> spec = StrategySpecifications.equalTo("strategyInstance", inStrategyInstance);
+        strategyMessageDao.deleteAll(strategyMessageDao.findAll(spec));
     }
     /**
      * Build the sort statement for a query using the given attributes.

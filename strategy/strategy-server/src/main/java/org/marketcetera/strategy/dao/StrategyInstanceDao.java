@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.marketcetera.core.Preserve;
 import org.marketcetera.strategy.StrategyStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /* $License$ */
 
@@ -21,7 +23,7 @@ import org.marketcetera.strategy.StrategyStatus;
  */
 @Preserve
 public interface StrategyInstanceDao
-        extends org.springframework.data.jpa.repository.JpaRepository<PersistentStrategyInstance,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentStrategyInstance>
+        extends JpaRepository<PersistentStrategyInstance,Long>, JpaSpecificationExecutor<PersistentStrategyInstance>
 {
     /**
      * Find the strategy instance with the given name, if it exists.
