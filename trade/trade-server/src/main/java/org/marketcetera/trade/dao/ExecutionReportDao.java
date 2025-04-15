@@ -9,9 +9,9 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.data.repository.PagingAndSortingRepository;
 
 /* $License$ */
 
@@ -24,7 +24,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 @ClassVersion("$Id$")
 public interface ExecutionReportDao
-        extends PagingAndSortingRepository<PersistentExecutionReport,Long>,QuerydslPredicateExecutor<PersistentExecutionReport>
+        extends JpaRepository<PersistentExecutionReport,Long>,JpaSpecificationExecutor<PersistentExecutionReport>
 {
     /**
      * Finds the report summary with the given report id.

@@ -33,9 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-// Removed QueryDSL imports for Jakarta EE compatibility
-// import com.querydsl.core.BooleanBuilder;
-// import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.marketcetera.trade.jpa.ReportSpecifications;
+import org.springframework.data.jpa.domain.Specification;
 
 /* $License$ */
 
@@ -109,8 +108,7 @@ public class OrderSummaryServiceImpl
                                                   Set<OrderStatus> inOrderStatusValues)
     {
         PersistentUser persistentViewer = (PersistentUser)inViewer;
-        // TODO: Re-enable when QueryDSL works with Jakarta EE
-        // Temporarily using a simplified approach without QueryDSL
+        // Using JPA Specification pattern instead of QueryDSL
         Set<User> basicUsers = authzService.getSubjectUsersFor(inViewer,
                                                                TradePermissions.ViewReportAction.name());
         Set<PersistentUser> subjectUsers = Sets.newHashSet();
@@ -124,10 +122,41 @@ public class OrderSummaryServiceImpl
                                           Integer.MAX_VALUE,
                                           sort);
         
-        // Simplified implementation using findAll without predicates
-        Iterable<PersistentOrderSummary> orderStatusIterable = orderStatusDao.findAll(page);
+        // Use the JPA Specification pattern to filter by order status
+        Specification<PersistentOrderSummary> spec = null;
+        
+        // Convert the enum values to strings for the specification
+        if(inOrderStatusValues != null && !inOrderStatusValues.isEmpty()) {
+            Set<String> statusStrings = Sets.newHashSet();
+            for(OrderStatus status : inOrderStatusValues) {
+                statusStrings.add(status.name());
+            }
+            spec = ReportSpecifications.in("orderStatus", statusStrings);
+        }
+        
+        // Add user filtering
+        if(persistentViewer != null) {
+            // Always filter by the user/subject users for simplicity
+            Specification<PersistentOrderSummary> viewerSpec;
+            if(subjectUsers.isEmpty()) {
+                viewerSpec = ReportSpecifications.equalTo("viewer", persistentViewer);
+            } else {
+                viewerSpec = ReportSpecifications.in("viewer", subjectUsers);
+            }
+            spec = spec == null ? viewerSpec : ReportSpecifications.and(spec, viewerSpec);
+        }
+        
+        // Get the results using the specification
+        List<PersistentOrderSummary> orderSummaries;
+        if(spec != null) {
+            orderSummaries = orderStatusDao.findAll(spec, page).getContent();
+        } else {
+            orderSummaries = orderStatusDao.findAll(page).getContent();
+        }
+        
+        // Convert to reports
         List<Report> reports = Lists.newArrayList();
-        for(PersistentOrderSummary orderStatus : orderStatusIterable) {
+        for(PersistentOrderSummary orderStatus : orderSummaries) {
             reports.add(orderStatus.getReport());
         }
         return reports;

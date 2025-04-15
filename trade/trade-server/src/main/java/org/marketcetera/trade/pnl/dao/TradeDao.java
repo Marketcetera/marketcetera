@@ -13,6 +13,6 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 public interface TradeDao
-        extends org.springframework.data.jpa.repository.JpaRepository<PersistentTrade,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentTrade>
+        extends org.springframework.data.jpa.repository.JpaRepository<PersistentTrade,Long>,org.springframework.data.jpa.repository.JpaSpecificationExecutor<PersistentTrade>
 {
 }

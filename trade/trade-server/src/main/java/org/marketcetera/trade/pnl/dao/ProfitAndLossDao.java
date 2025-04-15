@@ -13,6 +13,6 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 public interface ProfitAndLossDao
-        extends org.springframework.data.jpa.repository.JpaRepository<PersistentProfitAndLoss,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentProfitAndLoss>
+        extends org.springframework.data.jpa.repository.JpaRepository<PersistentProfitAndLoss,Long>,org.springframework.data.jpa.repository.JpaSpecificationExecutor<PersistentProfitAndLoss>
 {
 }

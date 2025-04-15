@@ -13,6 +13,6 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 public interface LotDao
-        extends org.springframework.data.jpa.repository.JpaRepository<PersistentLot,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentLot>
+        extends org.springframework.data.jpa.repository.JpaRepository<PersistentLot,Long>,org.springframework.data.jpa.repository.JpaSpecificationExecutor<PersistentLot>
 {
 }

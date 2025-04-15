@@ -13,6 +13,6 @@ package org.marketcetera.trade.pnl.dao;
  * @since $Release$
  */
 public interface PositionDao
-        extends org.springframework.data.jpa.repository.JpaRepository<PersistentPosition,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentPosition>
+        extends org.springframework.data.jpa.repository.JpaRepository<PersistentPosition,Long>,org.springframework.data.jpa.repository.JpaSpecificationExecutor<PersistentPosition>
 {
 }

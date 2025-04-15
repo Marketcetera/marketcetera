@@ -6,7 +6,7 @@ package org.marketcetera.trade.pnl.dao;
 import org.marketcetera.core.Preserve;
 import org.marketcetera.trade.pnl.UserTrade;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /* $License$ */
 
@@ -19,6 +19,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
  */
 @Preserve
 public interface UserTradeDao
-        extends JpaRepository<PersistentUserTrade,Long>,QuerydslPredicateExecutor<PersistentUserTrade>
+        extends JpaRepository<PersistentUserTrade,Long>,JpaSpecificationExecutor<PersistentUserTrade>
 {
 }

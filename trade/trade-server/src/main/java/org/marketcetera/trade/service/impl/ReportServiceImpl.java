@@ -97,10 +97,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.marketcetera.trade.jpa.ReportSpecifications;
+import org.springframework.data.jpa.domain.Specification;
+// QueryDSL imports removed for Jakarta EE compatibility
 
 import quickfix.InvalidMessage;
 import quickfix.SessionID;
@@ -919,15 +918,37 @@ public class ReportServiceImpl
         PersistentReport newReport = new PersistentReport(inReport,
                                                           inReport.getActorID() == null ? null : (PersistentUser)userService.findOne(inReport.getActorID().getValue()),
                                                           inReport.getViewerID() == null ? null : (PersistentUser)userService.findOne(inReport.getViewerID().getValue()));
-        // Check to see if the report already exists by using direct repository methods
+        // Check to see if the report already exists by using JPA Specification pattern
         Date sessionStart = getSessionStart(newReport.getSessionId());
         if(sessionStart == null) {
             sessionStart = new Date(0);
         }
         
-        // Simplified implementation that always returns an empty Optional
-        // This is a temporary solution until we fix the QueryDSL issue
-        Optional<PersistentReport> reportOption = Optional.empty();
+        // Build the specification to find any existing report with the same message details
+        Specification<PersistentReport> spec = null;
+        
+        // Add criteria based on what's available in the report
+        if(newReport.getMsgSeqNum() > 0) {
+            spec = ReportSpecifications.equalTo("msgSeqNum", newReport.getMsgSeqNum());
+            spec = ReportSpecifications.and(spec, ReportSpecifications.greaterThanOrEqualTo("sendingTime", sessionStart));
+        }
+        
+        // Check for session ID - using getMsgType field for now since sessionIdValue isn't available
+        String sessionId = newReport.getSessionId() != null ? newReport.getSessionId().toString() : null;
+        if(sessionId != null) {
+            Specification<PersistentReport> sessionSpec = ReportSpecifications.equalTo("sessionId", sessionId);
+            spec = spec == null ? sessionSpec : ReportSpecifications.and(spec, sessionSpec);
+        }
+        
+        if(newReport.getOrderID() != null) {
+            Specification<PersistentReport> orderIdSpec = ReportSpecifications.equalTo("orderID", newReport.getOrderID());
+            spec = spec == null ? orderIdSpec : ReportSpecifications.and(spec, orderIdSpec);
+        }
+        
+        Optional<PersistentReport> reportOption = spec != null ? 
+                persistentReportDao.findOne(spec) : 
+                Optional.empty();
+                
         PersistentReport report;
         if(reportOption.isPresent()) {
             SLF4JLoggerProxy.debug(this,
@@ -940,15 +961,29 @@ public class ReportServiceImpl
                                           report.getReportID());
             return report;
         }
-        // Simplified implementation that just saves the report
-        // This is a temporary solution until we fix the QueryDSL issue
+        
+        // No existing report found, save the new one
         report = persistentReportDao.save(newReport);
         
-        // Log that we're using a simplified implementation
-        SLF4JLoggerProxy.info(this,
-                           "Using simplified save implementation without execution report/order summary");
-                           
-        // TODO: Re-implement the ExecutionReport and OrderSummary handling once QueryDSL is fixed
+        // Handle additional processing for execution reports and order summaries
+        if(inReport instanceof ExecutionReport) {
+            OrderID rootId = inReport.getOrderID();
+            if(rootId == null) {
+                rootId = inReport.getOriginalOrderID();
+            }
+            rootId = findRootIDForOrderID(rootId);
+            if(rootId == null) {
+                // Use order ID as root ID if we can't find it
+                rootId = inReport.getOrderID();
+            }
+            
+            // Create and save the execution report if this is an execution report
+            ExecutionReport execReport = (ExecutionReport)inReport;
+            PersistentExecutionReport executionReport = new PersistentExecutionReport(execReport, report);
+            executionReport = executionReportDao.save(executionReport);
+            generateOrderSummary(inReport, rootId, report);
+        }
+        
         return report;
     }
     /* (non-Javadoc)
@@ -1280,13 +1315,90 @@ public class ReportServiceImpl
                                                                                       PositionTransformer<I> inTupleTransformer,
                                                                                       String...inSymbols)
     {
-        // Simplified implementation that just returns an empty map for now
-        // This is a temporary solution until we can properly integrate with QueryDSL or implement a direct JPA approach
-        Map<PositionKey<I>,BigDecimal> finalResults = new LinkedHashMap<PositionKey<I>,BigDecimal>();
+        // Create a specification for finding execution reports of the given security type up to the given date
+        PersistentUser persistentUser = (PersistentUser)userService.findOne(inViewer.getUserID().getValue());
+        
+        // Start with security type specification
+        Specification<PersistentExecutionReport> spec = 
+            ReportSpecifications.equalTo("securityType", inSecurityType.name());
+            
+        // Add date criteria
+        spec = ReportSpecifications.and(spec, 
+            ReportSpecifications.lessThanOrEqualTo("sendingTime", inAsOfDate));
+            
+        // Add symbol criteria if specified
+        if(inSymbols != null && inSymbols.length > 0) {
+            Set<String> symbolSet = Sets.newHashSet(inSymbols);
+            spec = ReportSpecifications.and(spec, 
+                ReportSpecifications.in("symbol", symbolSet));
+        }
+        
+        // Add user criteria if needed - depends on your security model
+        if(persistentUser != null) {
+            // If user can't view all reports, limit to their own
+            spec = ReportSpecifications.and(spec, 
+                ReportSpecifications.equalTo("viewer", persistentUser));
+        }
+        
+        // Execute the query with the specification
+        List<PersistentExecutionReport> executionReports = executionReportDao.findAll(spec);
+        
+        // Group by instrument details and calculate positions
+        Map<PositionKey<I>,BigDecimal> finalResults = new LinkedHashMap<>();
+        
+        for(PersistentExecutionReport report : executionReports) {
+            // Only include filled or partially filled orders
+            // Use string comparison for execution types
+            String execType = report.getExecutionType() != null ? report.getExecutionType().name() : null;
+            if(execType != null && 
+               ("FILL".equals(execType) || 
+                "PARTIAL_FILL".equals(execType) || 
+                "TRADE".equals(execType))) {
+                
+                BigDecimal lastQuantity = report.getLastQuantity();
+                if(lastQuantity != null) {
+                    // Create a position key for this report
+                    String symbol = report.getSymbol();
+                    String expiry = report.getExpiry();
+                    BigDecimal strikePrice = report.getStrikePrice();
+                    OptionType optionType = null;
+                    if(report.getOptionType() != null) {
+                        optionType = report.getOptionType();
+                    }
+                    String account = report.getAccount();
+                    Long traderId = report.getActor() != null ? report.getActor().getId() : null;
+                    
+                    PositionKey<I> positionKey = inTupleTransformer.createPositionKey(symbol,
+                                                                                     expiry,
+                                                                                     strikePrice,
+                                                                                     optionType,
+                                                                                     account,
+                                                                                     traderId);
+                    
+                    // Update position for this key
+                    BigDecimal position = finalResults.getOrDefault(positionKey, BigDecimal.ZERO);
+                    
+                    // Buy orders increase position, sell orders decrease it
+                    if(report.getSide() != null) {
+                        if(report.getSide().isBuy()) {
+                            position = position.add(lastQuantity);
+                        } else if(report.getSide().isSell()) {
+                            position = position.subtract(lastQuantity);
+                        }
+                    }
+                    
+                    // Only add non-zero positions
+                    if(position.compareTo(BigDecimal.ZERO) != 0) {
+                        finalResults.put(positionKey, position);
+                    }
+                }
+            }
+        }
+        
         return finalResults;
     }
     /**
-     * Executes a position query for the given instrument.
+     * Executes a position query for the given instrument using JPA Specifications.
      *
      * @param inUser a <code>SimpleUser</code> value
      * @param inDate a <code>Date</code> value
@@ -1299,9 +1411,80 @@ public class ReportServiceImpl
                                                               I inInstrument,
                                                               SymbolMatcher<I> inSymbolMatcher)
     {
-        // Simplified implementation that returns zero for now
-        // This is a temporary solution until we can properly implement a JPA approach
-        return BigDecimal.ZERO;
+        // Build a specification for finding execution reports for this instrument and user up to the given date
+        PersistentUser persistentUser = (PersistentUser)userService.findOne(inUser.getUserID().getValue());
+        
+        // Create a specification for the security type
+        Specification<PersistentExecutionReport> securityTypeSpec = 
+            ReportSpecifications.equalTo("securityType", inInstrument.getSecurityType().name());
+        
+        // Add symbol criteria
+        Specification<PersistentExecutionReport> symbolSpec = 
+            ReportSpecifications.equalTo("symbol", inInstrument.getSymbol());
+        Specification<PersistentExecutionReport> spec = 
+            ReportSpecifications.and(securityTypeSpec, symbolSpec);
+            
+        // Add instrument-specific criteria based on its type
+        switch(inInstrument.getSecurityType()) {
+            case Option:
+                Option option = (Option)inInstrument;
+                spec = ReportSpecifications.and(spec, 
+                    ReportSpecifications.equalTo("expiry", option.getExpiry()));
+                spec = ReportSpecifications.and(spec, 
+                    ReportSpecifications.equalTo("strikePrice", option.getStrikePrice()));
+                spec = ReportSpecifications.and(spec, 
+                    ReportSpecifications.equalTo("optionType", option.getType().name()));
+                break;
+            case Future:
+                Future future = (Future)inInstrument;
+                spec = ReportSpecifications.and(spec, 
+                    ReportSpecifications.equalTo("expiry", future.getExpiryAsString()));
+                break;
+            default:
+                // No additional criteria needed for other types
+                break;
+        }
+        
+        // Add date criteria
+        spec = ReportSpecifications.and(spec, 
+            ReportSpecifications.lessThanOrEqualTo("sendingTime", inDate));
+            
+        // Add user criteria if needed - depends on your security model
+        if(persistentUser != null) {
+            // Always filter by the user for simplicity (we can adjust permissions later)
+            spec = ReportSpecifications.and(spec, 
+                ReportSpecifications.equalTo("viewer", persistentUser));
+        }
+        
+        // Execute the query with the specification
+        List<PersistentExecutionReport> executionReports = executionReportDao.findAll(spec);
+        
+        // Calculate the position
+        BigDecimal position = BigDecimal.ZERO;
+        for(PersistentExecutionReport report : executionReports) {
+            // Only include filled or partially filled orders
+            // Use string comparison for execution types
+            String execType = report.getExecutionType() != null ? report.getExecutionType().name() : null;
+            if(execType != null && 
+               ("FILL".equals(execType) || 
+                "PARTIAL_FILL".equals(execType) || 
+                "TRADE".equals(execType))) {
+                
+                BigDecimal lastQuantity = report.getLastQuantity();
+                if(lastQuantity != null) {
+                    // Buy orders increase position, sell orders decrease it
+                    if(report.getSide() != null) {
+                        if(report.getSide().isBuy()) {
+                            position = position.add(lastQuantity);
+                        } else if(report.getSide().isSell()) {
+                            position = position.subtract(lastQuantity);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return position;
     }
     /**
      * Translates a position tuple to a position key.

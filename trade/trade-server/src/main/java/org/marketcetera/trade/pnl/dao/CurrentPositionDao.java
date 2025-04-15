@@ -20,7 +20,7 @@ import org.springframework.data.domain.Pageable;
  */
 @Preserve
 public interface CurrentPositionDao
-        extends org.springframework.data.jpa.repository.JpaRepository<PersistentCurrentPosition,Long>,org.springframework.data.querydsl.QuerydslPredicateExecutor<PersistentCurrentPosition>
+        extends org.springframework.data.jpa.repository.JpaRepository<PersistentCurrentPosition,Long>,org.springframework.data.jpa.repository.JpaSpecificationExecutor<PersistentCurrentPosition>
 {
     /**
      * Find all current positions for a given user.
