@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.GuardedBy;
+import jakarta.annotation.PostConstruct;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.brokers.BrokerSelector;
@@ -145,7 +145,7 @@ public class BasicSelector
     /**
      * current default broker
      */
-    @GuardedBy("defaultBrokerLock")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Guarded by $1")
     private volatile BrokerID defaultBroker;
     /**
      * provides access to FIX sessions

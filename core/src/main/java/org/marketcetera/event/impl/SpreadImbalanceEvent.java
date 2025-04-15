@@ -1,10 +1,10 @@
 package org.marketcetera.event.impl;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.SpreadEvent;
 import org.marketcetera.event.beans.SpreadBean;
@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="SpreadImbalance")
 @ClassVersion("$Id$")

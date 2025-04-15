@@ -87,13 +87,40 @@
     <!-- other compile -->
     <dependency>
       <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-ui</artifactId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     </dependency>
     <!-- Removing springdoc-openapi-security as it's not needed and would require Spring Security dependencies -->
     <!-- <dependency>
       <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-security</artifactId>
+      <artifactId>springdoc-openapi-starter-webmvc-security</artifactId>
     </dependency> -->
+    <!-- Jakarta dependencies -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
+    </dependency>
+    <!-- For compatibility with generated code -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <!-- For concurrent annotations -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+    </dependency>
     <!-- Compile: QuickFIX/J -->
     <dependency>
       <groupId>org.quickfixj</groupId>

@@ -1,6 +1,6 @@
 package org.marketcetera.trade.event;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.trade.TradeMessage;
 
@@ -13,7 +13,7 @@ import org.marketcetera.trade.TradeMessage;
  * @version $Id$
  * @since $Release$
  */
-@Immutable
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Immutable")
 public class SimpleIncomingTradeMessage
         implements IncomingTradeMessage
 {

@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.junit.After;
 import org.junit.Before;
@@ -2097,7 +2097,7 @@ public class SimulatedExchangeTest
      * @version $Id$
      * @since 1.5.0
      */
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     private static class TopOfBookSubscriber
         implements Subscriber
     {
@@ -2140,17 +2140,17 @@ public class SimulatedExchangeTest
         /**
          * the events received
          */
-        @GuardedBy("this")
+        @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
         private final List<TopOfBook> tops = new ArrayList<TopOfBook>();
         /**
          * the latest ask received, may be <code>null</code> 
          */
-        @GuardedBy("this")
+        @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
         private final Map<Instrument,AskEvent> lastAsks = new HashMap<Instrument,AskEvent>();
         /**
          * the latest bid received, may be <code>null</code>
          */
-        @GuardedBy("this")
+        @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
         private final Map<Instrument,BidEvent> lastBids = new HashMap<Instrument,BidEvent>();
     }
    /**

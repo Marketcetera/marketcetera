@@ -42,6 +42,25 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>trade-server</artifactId>
     </dependency>
+    <!-- Jakarta EE dependencies -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <!-- SpotBugs for concurrent annotations replacement -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>4.7.3</version>
+    </dependency>
     <!-- other compile -->
     <dependency>
       <groupId>com.querydsl</groupId>
@@ -141,10 +160,12 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+      <!-- Temporarily disabled QueryDSL APT plugin for Spring Boot 3 migration 
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
       </plugin>
+      -->
     </plugins>
   </build>
 </project>

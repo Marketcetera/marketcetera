@@ -1,7 +1,7 @@
 package org.marketcetera.event.util;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.OptionMarketstatEvent;
@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public class MarketstatEventCache
 {
@@ -181,7 +181,7 @@ public class MarketstatEventCache
     /**
      * the event builder used to cache the values
      */
-    @GuardedBy("this")
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
     private final MarketstatEventBuilder builder;
     /**
      * the instrument for this cache

@@ -78,10 +78,12 @@
   </dependencies>
   <build>
     <plugins>
+      <!-- Temporarily disabled for Spring Boot 3 migration
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
       </plugin>
+      -->
     </plugins>
   </build>
 </project>

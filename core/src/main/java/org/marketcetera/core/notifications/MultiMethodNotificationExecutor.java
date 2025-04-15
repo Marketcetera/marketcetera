@@ -3,8 +3,8 @@ package org.marketcetera.core.notifications;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.NotThreadSafe;
+import jakarta.annotation.PostConstruct;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -18,7 +18,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @version $Id$
  * @since $Release$
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 public class MultiMethodNotificationExecutor
         extends AbstractNotificationExecutor
         implements NotificationExecutor

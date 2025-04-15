@@ -1,12 +1,16 @@
 package org.marketcetera.persist;
 
-import org.hibernate.dialect.MySQL5Dialect;
+import java.sql.Types;
+
+import org.hibernate.dialect.DatabaseVersion;
+import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.type.SqlTypes;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Provides a customized MySQL5 dialect to work around some Hibernate 4 bugs.
+ * Provides a customized MySQL5 dialect to work around some Hibernate issues.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,24 +18,18 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class MarketceteraMySQL5Dialect
-        extends MySQL5Dialect
+        extends MySQLDialect
 {
     /**
      * Create a new MarketceteraMysql5Dialect instance.
      */
     public MarketceteraMySQL5Dialect()
     {
-        super();
-        // this is a bug in Hibernate4 that prevents Hibernate from validating its own generated DDL
-        // a boolean field will be rendered as a "bit", which is acceptable, but the schema validation
-        //  expects to see it as a "boolean". This fix explicitly matches the two up.
-        // this appears to cover the issue: https://hibernate.atlassian.net/browse/HHH-468.
-        // it is marked as fixed, but the problem is still evident in H4.
-        registerColumnType(java.sql.Types.BOOLEAN,
-                           "bit");
-        // in order to allow MySQL to store milliseconds in timestamps, this mod is required. note that
-        //  this will work only with MySQL versions 5.6.4 or later
-        registerColumnType(java.sql.Types.TIMESTAMP,
-                           "timestamp(3)");
+        // Set minimum MySQL version to 5.7 for consistent behavior
+        super(DatabaseVersion.make(5, 7));
+        
+        // In Hibernate 6, we need to use getSqlTypeDescriptorRegistry().addDescriptor 
+        // instead of the old registerColumnType method
+        // However, we're just going to rely on MySQL's default mappings in Hibernate 6
     }
 }

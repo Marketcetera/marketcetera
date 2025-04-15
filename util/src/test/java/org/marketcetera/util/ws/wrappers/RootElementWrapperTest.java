@@ -2,8 +2,8 @@ package org.marketcetera.util.ws.wrappers;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.MarshalException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.MarshalException;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 

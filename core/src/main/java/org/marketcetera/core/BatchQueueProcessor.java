@@ -5,7 +5,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 
-import javax.annotation.concurrent.GuardedBy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /* $License$ */
 
@@ -119,6 +119,6 @@ public abstract class BatchQueueProcessor<Clazz>
     /**
      * work queue of events to process
      */
-    @GuardedBy("queueLock")
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
     private final Deque<Clazz> objectQueue = new LinkedList<>();
 }

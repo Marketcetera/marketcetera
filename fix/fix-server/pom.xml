@@ -33,6 +33,23 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>eventbus-api</artifactId>
     </dependency>
+    <!-- Jakarta dependencies -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+    </dependency>
     <!-- local runtime -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -101,6 +118,26 @@
       <artifactId>querydsl-jpa</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- JUnit Jupiter API for testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- JUnit Jupiter Engine for testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- JUnit vintage engine for backward compatibility with JUnit 4 tests -->
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -119,10 +156,12 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Temporarily disabled QueryDSL APT plugin for Spring Boot 3 migration 
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
       </plugin>
+      -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -139,6 +178,18 @@
             <metc.hibernate.dialect>${metc.hibernate.dialect}</metc.hibernate.dialect>
           </systemPropertyVariables>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.2</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.10.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

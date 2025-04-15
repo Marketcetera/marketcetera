@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.SortedMap;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
@@ -1343,7 +1343,7 @@ public class OrderTicketView
     /**
      * contains currently available brokers
      */
-    @GuardedBy("availableBrokers")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Guarded by $1")
     private final SortedMap<BrokerID,ActiveFixSession> availableBrokers = Maps.newTreeMap();
     /**
      * token to indicate that the broker should be auto-selected

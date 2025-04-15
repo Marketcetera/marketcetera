@@ -6,11 +6,11 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.module.DataCoupling;
@@ -418,17 +418,17 @@ public abstract class DataFlowRpcUtil
     /**
      * context used to serialize and unserialize messages as necessary
      */
-    @GuardedBy("contextLock")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Protected by contextLock")
     private static JAXBContext context;
     /**
      * marshals messages
      */
-    @GuardedBy("contextLock")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Protected by contextLock")
     private static Marshaller marshaller;
     /**
      * unmarshals messages
      */
-    @GuardedBy("contextLock")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Protected by contextLock")
     private static Unmarshaller unmarshaller;
     /**
      * Initialize static members

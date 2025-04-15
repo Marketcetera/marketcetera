@@ -10,10 +10,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
  * @version $Id$
  * @since $Release$
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 public class DirectoryWatcherImpl
         implements DirectoryWatcher
 {
@@ -209,12 +209,12 @@ public class DirectoryWatcherImpl
     /**
      * watch each of these directories for changes 
      */
-    @GuardedBy("directoriesToWatch") 
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION") 
     private final List<File> directoriesToWatch;
     /**
      * inform these subscribers when something changes in one of the directories
      */
-    @GuardedBy("subscriberList") 
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION") 
     private final List<DirectoryWatcherSubscriber> subscriberList;
     /**
      * executor responsible for executing the jobs to watch the directories

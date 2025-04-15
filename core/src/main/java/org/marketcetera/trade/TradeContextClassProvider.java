@@ -1,6 +1,6 @@
 package org.marketcetera.trade;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -14,7 +14,7 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * @version $Id$
  * @since 2.4.0
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 @ClassVersion("$Id$")
 public class TradeContextClassProvider
         implements ContextClassProvider

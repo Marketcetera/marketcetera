@@ -3,8 +3,8 @@ package org.marketcetera.ui.service;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.ui.service.ServerConnectionService.ServerConnectionData;

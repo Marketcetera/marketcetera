@@ -1,7 +1,7 @@
 package org.marketcetera.fix;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.NotThreadSafe;
+import jakarta.annotation.PostConstruct;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.cluster.service.ClusterService;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id$
  * @since 1.0.1
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Not thread safe")
 public class ClusteredSessionConnectorFactory
         implements SessionConnectorFactory
 {

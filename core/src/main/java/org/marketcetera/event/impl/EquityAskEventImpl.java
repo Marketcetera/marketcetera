@@ -1,9 +1,9 @@
 package org.marketcetera.event.impl;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.EquityEvent;
@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @XmlRootElement(name="equityAsk")
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")

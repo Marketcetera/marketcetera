@@ -29,6 +29,29 @@
       <groupId>org.tensorflow</groupId>
       <artifactId>tensorflow</artifactId>
     </dependency>
+    <!-- Jakarta dependencies -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <!-- For compatibility with generated code -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <!-- For concurrent annotations -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+    </dependency>
     <!-- runtime -->
     <dependency>
       <groupId>com.querydsl</groupId>
@@ -36,8 +59,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
       <scope>runtime</scope>
     </dependency>
     <!-- test -->
@@ -144,10 +167,13 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>
+      <!-- Disabled QueryDSL APT plugin as it doesn't support Jakarta Persistence -->
+      <!--
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
       </plugin>
+      -->
     </plugins>
   </build>
 </project>

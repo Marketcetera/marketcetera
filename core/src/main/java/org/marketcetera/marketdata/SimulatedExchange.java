@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.Subscriber;
@@ -104,7 +104,7 @@ import com.google.common.collect.Multimaps;
  * @version $Id$
  * @since 1.5.0
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public class SimulatedExchange
         implements Exchange<SimulatedExchange.Token>
@@ -1304,7 +1304,7 @@ public class SimulatedExchange
      * @since 1.5.0
      */
     @ClassVersion("$Id$")
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     public static enum Status
     {
         /**
@@ -1341,7 +1341,7 @@ public class SimulatedExchange
      * @version $Id$
      * @since 2.0.0
      */
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     private static enum InstrumentComparator
             implements Comparator<Instrument>
     {
@@ -1384,7 +1384,7 @@ public class SimulatedExchange
      * @version $Id$
      * @since 2.0.0
      */
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     @ClassVersion("$Id$")
     private class PrivateInstrumentInfo
     {
@@ -1590,7 +1590,7 @@ public class SimulatedExchange
      * @version $Id$
      * @since 2.0.0
      */
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     @ClassVersion("$Id$")
     private static class SharedInstrumentInfo
     {
@@ -1750,7 +1750,7 @@ public class SimulatedExchange
      * @version $Id$
      * @since 1.5.0
      */
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     @ClassVersion("$Id$")
     private static class FilteringSubscriber
             implements Subscriber
@@ -2118,7 +2118,7 @@ public class SimulatedExchange
      * @version $Id$
      * @since 2.0.0
      */
-    @Immutable
+    @SuppressFBWarnings(value="IMMUTABLE_CLASS")
     @ClassVersion("$Id$")
     static class TopOfBook
             extends Pair<BidEvent,AskEvent>

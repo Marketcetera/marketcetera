@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.core.CoreException;
@@ -42,7 +42,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.1.4
  */
-@ThreadSafe
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Thread safe")
 @ClassVersion("$Id$")
 public enum YahooFeedEventTranslator
         implements EventTranslator

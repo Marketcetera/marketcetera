@@ -1,7 +1,7 @@
 package org.marketcetera.test;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.marketcetera.fix.FixSettingsProvider;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

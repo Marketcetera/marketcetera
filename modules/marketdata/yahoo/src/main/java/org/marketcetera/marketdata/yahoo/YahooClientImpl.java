@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.concurrent.GuardedBy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -230,7 +230,7 @@ class YahooClientImpl
     /**
      * the active Yahoo requests
      */
-    @GuardedBy("requests")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Guarded by $1")
     private final Set<YahooRequest> requests = new HashSet<YahooRequest>();
     /**
      * the counter used to keep track of the number of requests

@@ -144,4 +144,4 @@
 @XmlSchema(namespace="http://marketcetera.org/types/util")
 package org.marketcetera.util.ws.stateful;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;

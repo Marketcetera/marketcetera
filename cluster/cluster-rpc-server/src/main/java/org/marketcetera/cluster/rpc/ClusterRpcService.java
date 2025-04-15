@@ -1,6 +1,6 @@
 package org.marketcetera.cluster.rpc;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.admin.AdminPermissions;

@@ -1,6 +1,6 @@
 package org.marketcetera.rpc;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.rpc.client.RpcClient;
@@ -20,7 +20,6 @@ import org.marketcetera.rpc.server.AbstractRpcService;
 import org.marketcetera.rpc.server.RpcServer;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.stateful.SessionManager;
-import org.springframework.util.SocketUtils;
 
 import io.grpc.BindableService;
 import io.grpc.StatusRuntimeException;
@@ -45,7 +44,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Before
+    @BeforeEach
     public void setup()
             throws Exception
     {
@@ -53,7 +52,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
         authenticator = new MockAuthenticator();
         authenticator.getUserstore().put("test",
                                          "password");
-        int port = SocketUtils.findAvailableTcpPort(10000,
+        int port = TestSocketUtils.findAvailableTcpPort(10000,
                                                     20000);
         createService();
         startServer("127.0.0.1",
@@ -65,7 +64,7 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
      *
      * @throws Exception if an unexpected error occurs
      */
-    @After
+    @AfterEach
     public void cleanup()
             throws Exception
     {
@@ -299,14 +298,14 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
 //            });
 //        } catch (AssertionError e) {
 //            synchronized(multipleClients) {
-//                assertTrue("Expected no clients, got: " + multipleClients,
-//                          multipleClients.isEmpty());
+//                assertTrue(multipleClients.isEmpty(),
+//                          "Expected no clients, got: " + multipleClients);
 //            }
 //            throw e;
 //        }
         synchronized(exceptions) {
-            assertTrue("Expected no exceptions, got: " + exceptions,
-                       exceptions.isEmpty());
+            assertTrue(exceptions.isEmpty(), 
+                       "Expected no exceptions, got: " + exceptions);
         }
     }
     /**

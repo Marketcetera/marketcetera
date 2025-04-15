@@ -104,6 +104,7 @@
       <artifactId>JUnitParams</artifactId>
     </dependency>
   </dependencies>
+  <!--
   <build>
     <plugins>
       <plugin>
@@ -112,4 +113,7 @@
       </plugin>
     </plugins>
   </build>
+  -->
+  <!-- Temporarily disabled QueryDSL for Spring Boot 3 migration -->
+  
 </project>

@@ -4,8 +4,8 @@ import static org.marketcetera.event.Messages.VALIDATION_NULL_INSTRUMENT;
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.CurrencyEvent;
 import org.marketcetera.event.util.EventServices;
@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Stores the attributes necessary for {@link CurrencyEvent}.
  *
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @XmlRootElement(name="currency")
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id: CurrencyBean.java")

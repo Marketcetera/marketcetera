@@ -12,8 +12,8 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
-@javax.persistence.Entity(name="Lot")
-@javax.persistence.Table(name="metc_pnl_lots")
+@jakarta.persistence.Entity(name="Lot")
+@jakarta.persistence.Table(name="metc_pnl_lots")
 public class PersistentLot
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.Lot
@@ -241,50 +241,50 @@ public class PersistentLot
     /**
      * user which owns lot
      */
-    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="user_id",nullable=false)
+    @jakarta.persistence.ManyToOne(fetch=jakarta.persistence.FetchType.EAGER,optional=false)
+    @jakarta.persistence.JoinColumn(name="user_id",nullable=false)
     private org.marketcetera.admin.user.PersistentUser user;
     /**
      * trade which consumes lot, may be <code>null</code>
      */
-    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="trade_id",nullable=false)
+    @jakarta.persistence.ManyToOne(fetch=jakarta.persistence.FetchType.EAGER,optional=false)
+    @jakarta.persistence.JoinColumn(name="trade_id",nullable=false)
     private PersistentTrade trade;
     /**
      * position to which this lot contributes
      */
-    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="position_id",nullable=false)
+    @jakarta.persistence.ManyToOne(fetch=jakarta.persistence.FetchType.EAGER,optional=false)
+    @jakarta.persistence.JoinColumn(name="position_id",nullable=false)
     private PersistentPosition position;
     /**
      * size of lot
      */
-    @javax.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal quantity = java.math.BigDecimal.ZERO;
     /**
      * quantity of this lot that has been allocated to account for a sell trade
      */
-    @javax.persistence.Column(name="allocated_quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="allocated_quantity",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal allocatedQuantity = java.math.BigDecimal.ZERO;
     /**
      * date lot was created
      */
-    @javax.persistence.Column(name="effective_date",nullable=false)
+    @jakarta.persistence.Column(name="effective_date",nullable=false)
     private java.util.Date effectiveDate;
     /**
      * basis price value
      */
-    @javax.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="basis_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal basisPrice = java.math.BigDecimal.ZERO;
     /**
      * realized gain from this lot
      */
-    @javax.persistence.Column(name="gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal gain = java.math.BigDecimal.ZERO;
     /**
      * trade price value of this lot
      */
-    @javax.persistence.Column(name="trade_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="trade_price",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal tradePrice = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = 682666976L;
 }

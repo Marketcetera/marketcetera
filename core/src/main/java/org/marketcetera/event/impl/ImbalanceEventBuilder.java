@@ -10,7 +10,7 @@ import static org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.AuctionType;
 import org.marketcetera.event.EventType;
@@ -52,7 +52,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.4.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public abstract class ImbalanceEventBuilder
         implements EventBuilder<ImbalanceEvent>, OptionEventBuilder<ImbalanceEventBuilder>, FutureEventBuilder<ImbalanceEventBuilder>, CurrencyEventBuilder<ImbalanceEventBuilder>, ConvertibleBondEventBuilder<ImbalanceEventBuilder>, SpreadEventBuilder<ImbalanceEventBuilder>

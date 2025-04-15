@@ -12,8 +12,8 @@ package org.marketcetera.strategy.dao;
  * @version $Id$
  * @since $Release$
  */
-@javax.persistence.Entity(name="StrategyInstance")
-@javax.persistence.Table(name="metc_strategy_instances")
+@jakarta.persistence.Entity(name="StrategyInstance")
+@jakarta.persistence.Table(name="metc_strategy_instances")
 public class PersistentStrategyInstance
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.strategy.StrategyInstance,org.marketcetera.admin.HasUser
@@ -197,39 +197,39 @@ public class PersistentStrategyInstance
     /**
      * user which owns this strategy
      */
-    @javax.persistence.ManyToOne
-    @javax.persistence.JoinColumn(name="user_id",nullable=true)
+    @jakarta.persistence.ManyToOne
+    @jakarta.persistence.JoinColumn(name="user_id",nullable=true)
     private org.marketcetera.admin.user.PersistentUser user;
     /**
      * uniquely describes the strategy
      */
-    @javax.persistence.Column(name="name",nullable=true,unique=false)
+    @jakarta.persistence.Column(name="name",nullable=true,unique=false)
     private String name;
     /**
      * indicates the server-local file which contains the strategy
      */
-    @javax.persistence.Column(name="filename",nullable=true,unique=false)
+    @jakarta.persistence.Column(name="filename",nullable=true,unique=false)
     private String filename;
     /**
      * indicates the strategy hash value
      */
-    @javax.persistence.Column(name="hash",nullable=true,unique=false)
+    @jakarta.persistence.Column(name="hash",nullable=true,unique=false)
     private String hash;
     /**
      * uniquely identifies a strategy upload request
      */
-    @javax.persistence.Column(name="nonce",nullable=true,unique=false)
+    @jakarta.persistence.Column(name="nonce",nullable=true,unique=false)
     private String nonce;
     /**
      * date strategy was started
      */
-    @javax.persistence.Column(name="started",nullable=true,unique=false)
+    @jakarta.persistence.Column(name="started",nullable=true,unique=false)
     private java.util.Date started;
     /**
      * describes the state of a loaded strategy
      */
-    @javax.persistence.Enumerated(javax.persistence.EnumType.STRING)
-    @javax.persistence.Column(name="status",nullable=true,unique=false)
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @jakarta.persistence.Column(name="status",nullable=true,unique=false)
     private org.marketcetera.strategy.StrategyStatus status;
     private static final long serialVersionUID = 1020230886L;
 }

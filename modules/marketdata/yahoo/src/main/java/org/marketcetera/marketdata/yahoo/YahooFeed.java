@@ -11,7 +11,7 @@ import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.concurrent.GuardedBy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.*;
@@ -219,7 +219,7 @@ class YahooFeed
     /**
      * stores the active requests
      */
-    @GuardedBy("requests")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Guarded by $1")
     private final Map<String,YahooRequest> requests = new HashMap<String,YahooRequest>();
     /**
      * counter used to count requests

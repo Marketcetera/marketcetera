@@ -50,6 +50,12 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
+    
+    <!-- Required for SpotBugs annotations -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+    </dependency>
 
     <!-- Testing. -->
     <dependency>

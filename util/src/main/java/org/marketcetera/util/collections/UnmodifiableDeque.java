@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $
  * @since 2.1.4
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $")
 public class UnmodifiableDeque<T>
         implements Deque<T>
@@ -350,7 +350,7 @@ public class UnmodifiableDeque<T>
      * @version $Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $
      * @since 2.1.4
      */
-    @ThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     @ClassVersion("$Id: UnmodifiableDeque.java 16154 2012-07-14 16:34:05Z colin $")
     private class UnmodifiableIterator
             implements Iterator<T>

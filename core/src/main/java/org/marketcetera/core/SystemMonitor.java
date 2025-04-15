@@ -7,7 +7,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javax.management.MBeanServerConnection;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -24,7 +24,7 @@ import com.sun.management.OperatingSystemMXBean;
  * @version $Id$
  * @since 1.3.1
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 public class SystemMonitor
         implements Lifecycle, Runnable
 {

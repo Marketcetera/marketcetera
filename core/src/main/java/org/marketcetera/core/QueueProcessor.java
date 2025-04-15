@@ -9,9 +9,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.concurrent.ThreadSafe;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.metrics.MetricService;
 import org.marketcetera.util.misc.ClassVersion;
@@ -31,7 +31,7 @@ import com.codahale.metrics.MetricRegistry;
  * @version $Id$
  * @since 2.4.0
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public abstract class QueueProcessor<Clazz>
         implements Runnable, Lifecycle

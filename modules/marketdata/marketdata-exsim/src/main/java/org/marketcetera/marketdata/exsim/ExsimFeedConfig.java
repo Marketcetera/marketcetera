@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.exsim;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.CoreException;
 import org.springframework.beans.factory.annotation.Value;

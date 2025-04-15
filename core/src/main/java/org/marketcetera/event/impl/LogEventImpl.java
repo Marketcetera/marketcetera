@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
@@ -47,7 +47,7 @@ import org.marketcetera.util.ws.wrappers.RemoteProperties;
  * @version $Id$
  * @since 2.0.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public final class LogEventImpl
         implements LogEvent, HasEventBean

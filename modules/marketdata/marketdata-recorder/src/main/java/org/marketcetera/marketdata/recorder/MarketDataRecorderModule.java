@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -70,7 +70,7 @@ import com.codahale.metrics.MetricRegistry;
  * @version $Id$
  * @since $Release$
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Not thread safe")
 @AutowiredModule
 public class MarketDataRecorderModule
         extends AbstractDataReemitterModule

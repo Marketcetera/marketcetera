@@ -4,9 +4,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.annotation.PostConstruct;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 

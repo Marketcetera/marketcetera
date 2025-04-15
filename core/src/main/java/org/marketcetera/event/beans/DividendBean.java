@@ -2,8 +2,8 @@ package org.marketcetera.event.beans;
 
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.*;
 import org.marketcetera.event.util.EventServices;
@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @XmlRootElement(name="dividend")
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")

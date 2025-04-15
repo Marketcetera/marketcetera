@@ -34,11 +34,7 @@ public class HibernateMessageStoreFactory
     @Override
     public MessageStore create(SessionID inSessionId)
     {
-        try {
-            return new HibernateMessageStore(inSessionId);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new HibernateMessageStore(inSessionId);
     }
     /**
      * session settings for all sessions

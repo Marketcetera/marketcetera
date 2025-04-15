@@ -2,7 +2,7 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /* $License$ */
 /**

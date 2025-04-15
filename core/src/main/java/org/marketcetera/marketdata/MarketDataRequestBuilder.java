@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -31,7 +31,7 @@ import com.google.common.collect.Maps;
  * @version $Id$
  * @since 2.1.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public class MarketDataRequestBuilder
 {

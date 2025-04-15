@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -28,7 +28,7 @@ import org.marketcetera.log.CustomAppender.CustomAppenderManager;
  * @version $Id$
  * @since $Release$
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @Plugin(name="CustomAppender",category="Core",elementType ="appender",printObject=true)
 public class CustomAppender
         extends AbstractOutputStreamAppender<CustomAppenderManager>

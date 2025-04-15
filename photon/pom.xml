@@ -129,6 +129,29 @@
       <groupId>info.schnatterer.moby-names-generator</groupId>
       <artifactId>moby-names-generator</artifactId>
     </dependency>
+    <!-- Jakarta dependencies -->
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <!-- For compatibility with generated code -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <!-- For concurrent annotations -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+    </dependency>
     <!--dependency>
       <groupId>io.fair-acc</groupId>
       <artifactId>chartfx</artifactId>

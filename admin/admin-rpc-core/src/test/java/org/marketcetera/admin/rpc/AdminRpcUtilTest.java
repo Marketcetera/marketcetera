@@ -1,8 +1,8 @@
 package org.marketcetera.admin.rpc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.marketcetera.admin.AdminRpc;
 import org.marketcetera.admin.Permission;
 import org.marketcetera.admin.PermissionFactory;
@@ -599,8 +599,8 @@ public class AdminRpcUtilTest
                                                                                                                Function.identity()));
         for(Map.Entry<String,Permission> entry : permissions.entrySet()) {
             AdminRpc.Permission rpcPermission = rpcPermissions.get(entry.getKey());
-            assertNotNull("No RPC permission named '" + entry.getKey() + "'",
-                          rpcPermission);
+            assertNotNull(rpcPermission,
+                          "No RPC permission named '" + entry.getKey() + "'");
             verifyRpcPermission(entry.getValue(),
                                 rpcPermission);
         }
@@ -622,8 +622,8 @@ public class AdminRpcUtilTest
                                                                                                    Function.identity()));
         for(Map.Entry<String,Permission> entry : permissions.entrySet()) {
             AdminRpc.Permission rpcPermission = rpcPermissions.get(entry.getKey());
-            assertNotNull("No RPC permission named '" + entry.getKey() + "'",
-                          rpcPermission);
+            assertNotNull(rpcPermission,
+                          "No RPC permission named '" + entry.getKey() + "'");
             verifyRpcPermission(entry.getValue(),
                                 rpcPermission);
         }
@@ -645,8 +645,8 @@ public class AdminRpcUtilTest
                                                                                                          Function.identity()));
         for(Map.Entry<String,Permission> entry : actualPermissions.entrySet()) {
             Permission expectedPermission = expectedPermissions.get(entry.getKey());
-            assertNotNull("No expected permission named '" + entry.getKey() + "'",
-                          expectedPermission);
+            assertNotNull(expectedPermission,
+                          "No expected permission named '" + entry.getKey() + "'");
             verifyModelPermission(entry.getValue(),
                                   expectedPermission);
         }
@@ -668,8 +668,8 @@ public class AdminRpcUtilTest
                                                                                              Function.identity()));
         for(Map.Entry<String,User> entry : users.entrySet()) {
             AdminRpc.User rpcUser = rpcUsers.get(entry.getKey());
-            assertNotNull("No RPC user named '" + entry.getKey() + "'",
-                          rpcUser);
+            assertNotNull(rpcUser,
+                          "No RPC user named '" + entry.getKey() + "'");
             verifyRpcUser(entry.getValue(),
                           rpcUser);
         }
@@ -691,8 +691,8 @@ public class AdminRpcUtilTest
                                                                                  Function.identity()));
         for(Map.Entry<String,User> entry : users.entrySet()) {
             AdminRpc.User rpcUser = rpcUsers.get(entry.getKey());
-            assertNotNull("No RPC user named '" + entry.getKey() + "'",
-                          rpcUser);
+            assertNotNull(rpcUser,
+                          "No RPC user named '" + entry.getKey() + "'");
             verifyRpcUser(entry.getValue(),
                           rpcUser);
         }
@@ -714,8 +714,8 @@ public class AdminRpcUtilTest
                                                                                        Function.identity()));
         for(Map.Entry<String,User> entry : actualUsers.entrySet()) {
             User expectedUser = expectedUsers.get(entry.getKey());
-            assertNotNull("No expected user named '" + entry.getKey() + "'",
-                          expectedUser);
+            assertNotNull(expectedUser,
+                          "No expected user named '" + entry.getKey() + "'");
             verifyModelUser(entry.getValue(),
                             expectedUser);
         }

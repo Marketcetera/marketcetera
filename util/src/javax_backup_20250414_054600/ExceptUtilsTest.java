@@ -1,0 +1,318 @@
+package org.marketcetera.util.except;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.InterruptedIOException;
+import java.io.IOException;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.FileLockInterruptionException;
+import java.rmi.RemoteException;
+import java.rmi.NotBoundException;
+
+import javax.naming.InterruptedNamingException;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id: ExceptUtilsTest.java 16994 2015-03-09 21:18:25Z colin $
+ */
+
+/* $License$ */
+
+public class ExceptUtilsTest
+    extends I18NThrowableTestBase
+{
+    private static final String TEST_CATEGORY=
+        ExceptUtils.class.getName();
+
+    private static void interruptHelper
+        (Exception ex,
+         boolean interrupted)
+    {
+        assertEquals(interrupted,ExceptUtils.interrupt(ex));
+        assertEquals(interrupted,Thread.interrupted());
+    }
+
+    private void swallowHelper
+        (Exception ex,
+         boolean interrupted)
+    {
+        assertEquals(interrupted,ExceptUtils.swallow
+                     (ex,TEST_CATEGORY,new I18NBoundMessage1P
+                      (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+        assertEquals(interrupted,Thread.interrupted());
+
+        assertEquals(interrupted,ExceptUtils.swallow(ex));
+        assertEquals(interrupted,Thread.interrupted());
+    }
+
+    private static void wrapHelper
+        (Exception ex,
+         boolean interruption)
+    {
+        I18NException out=ExceptUtils.wrap
+            (ex,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+
+        assertEquals
+            (out.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             out.getI18NBoundMessage());
+        assertEquals(ex,out.getCause());
+        assertTrue(out instanceof I18NException);
+        assertEquals(interruption,out instanceof I18NInterruptedException);
+        assertEquals(interruption,Thread.interrupted());
+
+        out=ExceptUtils.wrap(ex);
+        assertEquals(ex,out.getCause());
+        assertTrue(out instanceof I18NException);
+        assertEquals(interruption,out instanceof I18NInterruptedException);
+        assertEquals(interruption,Thread.interrupted());
+
+        I18NRuntimeException outR=ExceptUtils.wrapRuntime
+            (ex,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+        assertEquals
+            (outR.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             outR.getI18NBoundMessage());
+        assertEquals(ex,outR.getCause());
+        assertTrue(outR instanceof I18NRuntimeException);
+        assertEquals(interruption,
+                     outR instanceof I18NInterruptedRuntimeException);
+        assertEquals(interruption,Thread.interrupted());
+
+        outR=ExceptUtils.wrapRuntime(ex);
+        assertEquals(ex,outR.getCause());
+        assertTrue(outR instanceof I18NRuntimeException);
+        assertEquals(interruption,
+                     outR instanceof I18NInterruptedRuntimeException);
+        assertEquals(interruption,Thread.interrupted());
+    }
+
+    private static void equalityHelper
+        (Throwable t1,
+         Throwable t2,
+         Throwable[] diffs)
+    {
+        assertTrue(ExceptUtils.areEqual(t1,t1));
+
+        assertTrue(ExceptUtils.areEqual(t1,t2));
+        assertTrue(ExceptUtils.areEqual(t2,t1));
+        assertNotSame(t1,t2);
+
+        for (Throwable t:diffs) {
+            assertFalse(ExceptUtils.areEqual(t1,t));
+            assertFalse(ExceptUtils.areEqual(t,t1));
+        }
+
+        assertFalse(ExceptUtils.areEqual(t1,null));
+        assertFalse(ExceptUtils.areEqual(t1,NumberUtils.INTEGER_ZERO));
+
+        assertEquals(ExceptUtils.getHashCode(t1),ExceptUtils.getHashCode(t2));
+    }
+
+
+    @Before
+    public void setupExceptUtilsTest()
+    {
+    }
+
+
+    @Test
+    public void interruptionEmptyNoThrow()
+        throws Exception
+    {
+        ExceptUtils.checkInterruption();
+    }
+
+    @Test
+    public void interruptionEmptyThrow()
+    {
+        Thread.currentThread().interrupt();
+        try {
+            ExceptUtils.checkInterruption();
+            fail();
+        } catch (InterruptedException ex) {
+            assertTrue(Thread.interrupted());
+            assertEquals("Thread execution was interrupted",ex.getMessage());
+            assertNull(ex.getCause());
+        }
+    }
+
+    @Test
+    public void interruptionNestedNoThrow()
+        throws Exception
+    {
+        ExceptUtils.checkInterruption
+            (new CloneNotSupportedException());
+    }
+
+    @Test
+    public void interruptionNestedThrow()
+    {
+        CloneNotSupportedException nested=new CloneNotSupportedException();
+        Thread.currentThread().interrupt();
+        try {
+            ExceptUtils.checkInterruption(nested);
+            fail();
+        } catch (InterruptedException ex) {
+            assertTrue(Thread.interrupted());
+            assertEquals("Thread execution was interrupted",ex.getMessage());
+            assertEquals(nested,ex.getCause());
+        }
+    }
+
+    @Test
+    public void interruptionMessageNoThrow()
+        throws Exception
+    {
+        ExceptUtils.checkInterruption(TEST_MSG_1);
+    }
+
+    @Test
+    public void interruptionMessageThrow()
+    {
+        Thread.currentThread().interrupt();
+        try {
+            ExceptUtils.checkInterruption(TEST_MSG_1);
+            fail();
+        } catch (InterruptedException ex) {
+            assertTrue(Thread.interrupted());
+            assertEquals(TEST_MSG_1,ex.getMessage());
+            assertNull(ex.getCause());
+        }
+    }
+
+    @Test
+    public void interruptionMessageNestedNoThrow()
+        throws Exception
+    {
+        ExceptUtils.checkInterruption
+            (new CloneNotSupportedException(),TEST_MSG_1);
+    }
+
+    @Test
+    public void interruptionMessageNestedThrow()
+    {
+        CloneNotSupportedException nested=new CloneNotSupportedException();
+        Thread.currentThread().interrupt();
+        try {
+            ExceptUtils.checkInterruption(nested,TEST_MSG_1);
+            fail();
+        } catch (InterruptedException ex) {
+            assertTrue(Thread.interrupted());
+            assertEquals(TEST_MSG_1,ex.getMessage());
+            assertEquals(nested,ex.getCause());
+        }
+    }
+
+    @Test
+    public void interruptException()
+    {
+        assertFalse(ExceptUtils.isInterruptException
+                    (new CloneNotSupportedException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new InterruptedException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new InterruptedIOException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new ClosedByInterruptException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new FileLockInterruptionException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new InterruptedNamingException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new I18NInterruptedException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new I18NInterruptedRuntimeException()));
+    }
+
+    @Test
+    public void interrupt()
+    {
+        interruptHelper(new CloneNotSupportedException(),false);
+        interruptHelper(new InterruptedException(),true);
+        interruptHelper(new InterruptedIOException(),true);
+        interruptHelper(new ClosedByInterruptException(),true);
+        interruptHelper(new FileLockInterruptionException(),true);
+        interruptHelper(new InterruptedNamingException(),true);
+        interruptHelper(new I18NInterruptedException(),true);
+        interruptHelper(new I18NInterruptedRuntimeException(),true);
+    }
+
+    @Test
+    public void swallow()
+    {
+        swallowHelper(new CloneNotSupportedException(),false);
+        swallowHelper(new InterruptedException(),true);
+        swallowHelper(new InterruptedIOException(),true);
+        swallowHelper(new ClosedByInterruptException(),true);
+        swallowHelper(new FileLockInterruptionException(),true);
+        swallowHelper(new InterruptedNamingException(),true);
+        swallowHelper(new I18NInterruptedException(),true);
+        swallowHelper(new I18NInterruptedRuntimeException(),true);
+    }
+
+    @Test
+    public void wrap()
+    {
+        wrapHelper(new CloneNotSupportedException(),false);
+        wrapHelper(new InterruptedException(),true);
+        wrapHelper(new InterruptedIOException(),true);
+        wrapHelper(new ClosedByInterruptException(),true);
+        wrapHelper(new FileLockInterruptionException(),true);
+        wrapHelper(new InterruptedNamingException(),true);
+        wrapHelper(new I18NInterruptedException(),true);
+        wrapHelper(new I18NInterruptedRuntimeException(),true);
+    }
+
+    @Test
+    public void equality()
+    {
+        assertTrue(ExceptUtils.areEqual(null,null));
+        equalityHelper
+            (new RemoteException(TEST_MSG_1),
+             new RemoteException(TEST_MSG_1),
+             new Throwable[] {
+                new RemoteException(),
+                new RemoteException(TEST_MSG_2),
+                new NotBoundException(TEST_MSG_1),
+                new I18NException(),
+                null
+            });
+        equalityHelper
+            (new I18NException
+             (new RemoteException(TEST_MSG_1),
+              new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+             new I18NException
+             (new RemoteException(TEST_MSG_1),
+              new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+             new Throwable[] {
+                new I18NException
+                (new RemoteException(TEST_MSG_1)),
+                new I18NException
+                (new RemoteException(TEST_MSG_1),
+                 TestMessages.BOT_EXCEPTION),
+                new I18NException
+                (new RemoteException(TEST_MSG_2),
+                 new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+                new I18NException
+                (new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+                new RemoteException(TEST_MSG_1),
+                null
+            });
+    }
+}

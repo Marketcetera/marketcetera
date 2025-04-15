@@ -9,7 +9,7 @@ import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -53,7 +53,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
         implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>,CurrencyEventBuilder<QuoteEventBuilder<E>>, ConvertibleBondEventBuilder<QuoteEventBuilder<E>>

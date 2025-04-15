@@ -2,7 +2,7 @@ package org.marketcetera.event.impl;
 
 import java.util.Date;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.Event;
 import org.marketcetera.event.beans.EventBean;
@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public abstract class AbstractEventBuilderImpl<E extends Event>
         implements EventBuilder<E>

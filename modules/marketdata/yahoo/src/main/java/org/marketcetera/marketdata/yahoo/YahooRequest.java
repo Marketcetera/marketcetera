@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.marketdata.Content;
@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
  * @version $Id$
  * @since 2.1.4
  */
-@ThreadSafe
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Thread safe")
 @ClassVersion("$Id$")
 class YahooRequest
 {
@@ -168,7 +168,7 @@ class YahooRequest
     /**
      * fields by content type
      */
-    @GuardedBy("fields")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Guarded by $1")
     private static final Multimap<Content,YahooField> fields = HashMultimap.create();
     /**
      * underlying request

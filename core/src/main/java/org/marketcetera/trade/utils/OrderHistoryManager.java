@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.marketdata.DateUtils;
@@ -40,7 +40,7 @@ import org.nocrala.tools.texttablefmt.Table;
  * @version $Id$
  * @since 2.1.4
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public class OrderHistoryManager
 {
@@ -453,7 +453,7 @@ public class OrderHistoryManager
      * @version $Id$
      * @since 2.1.4
      */
-    @NotThreadSafe
+    @SuppressFBWarnings(value="THREAD_SAFETY")
     @ClassVersion("$Id$")
     private static class OrderHistory
     {
@@ -541,12 +541,12 @@ public class OrderHistoryManager
     /**
      * order history objects indexed by actual order ID
      */
-    @GuardedBy("orders")
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
     private final Map<OrderID,OrderHistory> orders = new LinkedHashMap<OrderID,OrderHistory>();
     /**
      * collection containing only the open orders
      */
-    @GuardedBy("orders")
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
     private final Map<OrderID,ExecutionReport> openOrders = new ConcurrentHashMap<OrderID,ExecutionReport>();
     /**
      * sentinel collection used to indicate there is no order chain for a given order ID

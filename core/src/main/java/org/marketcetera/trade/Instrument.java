@@ -2,8 +2,8 @@ package org.marketcetera.trade;
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 @XmlSeeAlso({ Equity.class,Option.class,Future.class,Currency.class,ConvertibleBond.class })
 @ClassVersion("$Id$")
 public abstract class Instrument

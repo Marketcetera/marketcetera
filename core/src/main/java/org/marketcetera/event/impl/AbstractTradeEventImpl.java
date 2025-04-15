@@ -3,8 +3,8 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.XmlElement;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @ClassVersion("$Id$")
 public abstract class AbstractTradeEventImpl
         implements TradeEvent, HasEventBean

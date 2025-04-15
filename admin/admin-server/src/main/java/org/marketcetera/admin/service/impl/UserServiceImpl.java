@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.admin.User;
@@ -17,7 +17,10 @@ import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
-import org.marketcetera.admin.user.QPersistentUser;
+// import org.marketcetera.admin.user.QPersistentUser; // TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
+// TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
+//import com.querydsl.core.types.dsl.BooleanExpression;
+//import com.querydsl.jpa.impl.JPAQuery;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.SortDirection;
@@ -36,8 +39,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+// TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
+//import com.querydsl.core.types.dsl.BooleanExpression;
+//import com.querydsl.jpa.impl.JPAQuery;
 
 /* $License$ */
 
@@ -60,31 +64,29 @@ public class UserServiceImpl
     public List<? extends User> listUsers(String inNameFilter,
                                           Boolean inActiveFilter)
     {
-        JPAQuery<PersistentUser> jpaQuery = new JPAQuery<>(entityManager);
-        QPersistentUser simpleUser = QPersistentUser.persistentUser;
+        // TEMPORARILY ADAPTED FOR SPRING BOOT 3 MIGRATION - using Spring Data JPA instead of QueryDSL
         inNameFilter = StringUtils.trimToNull(inNameFilter);
-        BooleanExpression wherePredicate = null;
-        if(inNameFilter != null) {
-            // prepare name filter, check for presence of wildcards
-            if(inNameFilter.contains("*") || inNameFilter.contains("?")) {
-                inNameFilter = inNameFilter.replaceAll("\\*","%").replaceAll("\\?","_");
-                wherePredicate = simpleUser.name.like(inNameFilter);
+        
+        // Use userDao to fetch users
+        if (inNameFilter == null && inActiveFilter == null) {
+            return userDao.findAll();
+        } else if (inNameFilter != null && inActiveFilter == null) {
+            if (inNameFilter.contains("*") || inNameFilter.contains("?")) {
+                String likePattern = inNameFilter.replaceAll("\\*", "%").replaceAll("\\?", "_");
+                return userDao.findByNameLike(likePattern);
             } else {
-                wherePredicate = simpleUser.name.eq(inNameFilter);
+                return userDao.findByNameAsList(inNameFilter);
+            }
+        } else if (inNameFilter == null && inActiveFilter != null) {
+            return userDao.findByActive(inActiveFilter);
+        } else {
+            if (inNameFilter.contains("*") || inNameFilter.contains("?")) {
+                String likePattern = inNameFilter.replaceAll("\\*", "%").replaceAll("\\?", "_");
+                return userDao.findByNameLikeAndActive(likePattern, inActiveFilter);
+            } else {
+                return userDao.findByNameAndActive(inNameFilter, inActiveFilter);
             }
         }
-        if(inActiveFilter != null) {
-            if(wherePredicate == null) {
-                wherePredicate = simpleUser.active.eq(inActiveFilter);
-            } else {
-                wherePredicate = wherePredicate.and(simpleUser.active.eq(inActiveFilter));
-            }
-        }
-        jpaQuery = jpaQuery.from(simpleUser);
-        if(wherePredicate != null) {
-            jpaQuery = jpaQuery.where(wherePredicate);
-        }
-        return jpaQuery.fetchAll().fetch();
     }
     /* (non-Javadoc)
      * @see com.marketcetera.ors.dao.UserService#findByName(java.lang.String)
@@ -226,8 +228,8 @@ public class UserServiceImpl
         List<User> users = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                             QPersistentUser.persistentUser.name.getMetadata().getName()));
+            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
@@ -311,12 +313,10 @@ public class UserServiceImpl
     {
         if(userAliases == null) {
             userAliases = Maps.newHashMap();
-            userAliases.put("name",
-                            QPersistentUser.persistentUser.name.getMetadata().getName());
-            userAliases.put("description",
-                            QPersistentUser.persistentUser.description.getMetadata().getName());
-            userAliases.put("active",
-                            QPersistentUser.persistentUser.active.getMetadata().getName());
+            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL references)
+            userAliases.put("name", "name");
+            userAliases.put("description", "description");
+            userAliases.put("active", "active");
         }
         usersByUserId = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<UserID,PersistentUser>() {
             @Override

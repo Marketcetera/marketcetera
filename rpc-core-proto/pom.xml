@@ -28,8 +28,15 @@
     </dependency>
     <!-- Required for @Generated annotation used by gRPC -->
     <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <!-- Still needed for the generated code -->
+    <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
@@ -49,19 +56,23 @@
         <artifactId>protobuf-maven-plugin</artifactId>
         <version>0.6.1</version>
         <configuration>
-          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:3.20.3:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.53.0:exe:${os.detected.classifier}</pluginArtifact>
           <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
         </configuration>
         <executions>
           <execution>
+            <id>compile-protos</id>
             <goals>
               <goal>compile</goal>
               <goal>compile-custom</goal>
               <goal>test-compile</goal>
               <goal>test-compile-custom</goal>
             </goals>
+            <configuration>
+              <clearOutputDirectory>true</clearOutputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>

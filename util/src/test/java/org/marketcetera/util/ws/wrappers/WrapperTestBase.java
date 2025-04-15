@@ -14,7 +14,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Locale;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;

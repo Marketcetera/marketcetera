@@ -3,11 +3,11 @@ package org.marketcetera.tensorflow.dao;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 import org.marketcetera.core.CloseableLock;
 import org.marketcetera.persist.NDEntityBase;
@@ -70,7 +70,7 @@ public class PersistentGraphContainer
     /**
      * non-persistence <code>Graph</code> representation
      */
-    @GuardedBy("graphLock")
+    @SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Guarded by $1")
     private transient Graph graph;
     /**
      * persistence graph data value

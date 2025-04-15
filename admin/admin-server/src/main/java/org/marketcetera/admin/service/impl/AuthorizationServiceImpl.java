@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.admin.NotAuthorizedException;
@@ -24,8 +24,8 @@ import org.marketcetera.admin.dao.PersistentRole;
 import org.marketcetera.admin.dao.PersistentRoleDao;
 import org.marketcetera.admin.dao.PersistentSupervisorPermission;
 import org.marketcetera.admin.dao.PersistentSupervisorPermissionDao;
-import org.marketcetera.admin.dao.QPersistentPermission;
-import org.marketcetera.admin.dao.QPersistentRole;
+// import org.marketcetera.admin.dao.QPersistentPermission; // TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
+// import org.marketcetera.admin.dao.QPersistentRole; // TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
 import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.provisioning.AdminConfiguration;
 import org.marketcetera.admin.service.AuthorizationService;
@@ -213,8 +213,8 @@ public class AuthorizationServiceImpl
     public List<Permission> findAllPermissions()
     {
         List<Permission> permissions = new ArrayList<>();
-        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                           QPersistentPermission.persistentPermission.name.getMetadata().getName()));
+        // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         permissions.addAll(permissionDao.findAll(sort));
         return permissions;
     }
@@ -227,8 +227,8 @@ public class AuthorizationServiceImpl
         List<Permission> permissions = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                             QPersistentPermission.persistentPermission.name.getMetadata().getName()));
+            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
@@ -273,8 +273,8 @@ public class AuthorizationServiceImpl
     public List<Role> findAllRoles()
     {
         List<Role> roles = new ArrayList<>();
-        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                           QPersistentRole.persistentRole.name.getMetadata().getName()));
+        // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         roles.addAll(roleDao.findAll(sort));
         return roles;
     }
@@ -287,8 +287,8 @@ public class AuthorizationServiceImpl
         List<Role> roles = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC,
-                                             QPersistentRole.persistentRole.name.getMetadata().getName()));
+            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+            jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
                 Sort.Direction jpaSortDirection = sort.getDirection()==SortDirection.ASCENDING?Sort.Direction.ASC:Sort.Direction.DESC;
@@ -485,17 +485,15 @@ public class AuthorizationServiceImpl
         provision();
         if(roleAliases == null) {
             roleAliases = Maps.newHashMap();
-            roleAliases.put("name",
-                            QPersistentRole.persistentRole.name.getMetadata().getName());
-            roleAliases.put("description",
-                            QPersistentRole.persistentRole.description.getMetadata().getName());
+            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL references)
+            roleAliases.put("name", "name");
+            roleAliases.put("description", "description");
         }
         if(permissionAliases == null) {
             permissionAliases = Maps.newHashMap();
-            permissionAliases.put("name",
-                                  QPersistentPermission.persistentPermission.name.getMetadata().getName());
-            permissionAliases.put("description",
-                                  QPersistentPermission.persistentPermission.description.getMetadata().getName());
+            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL references)
+            permissionAliases.put("name", "name");
+            permissionAliases.put("description", "description");
         }
         permissionMapsByUsername = CacheBuilder.newBuilder().expireAfterWrite(userPermissionCacheTtl,TimeUnit.MILLISECONDS).build(new CacheLoader<String,LoadingCache<String,Boolean>>() {
             @Override

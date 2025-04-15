@@ -1,6 +1,6 @@
 package org.marketcetera.trade;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /* $License$ */
 
@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
  * @version $Id$
  * @since $Release$
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 public class Spread
         extends Instrument
 {

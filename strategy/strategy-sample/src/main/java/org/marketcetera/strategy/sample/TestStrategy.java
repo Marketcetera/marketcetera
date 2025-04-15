@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.event.Event;

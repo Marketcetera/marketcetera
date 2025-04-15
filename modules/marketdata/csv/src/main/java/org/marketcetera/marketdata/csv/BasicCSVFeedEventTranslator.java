@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.ApplicationContainer;
@@ -103,7 +103,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @version $Id$
  * @since 2.1.0
  */
-@Immutable
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Immutable")
 public class BasicCSVFeedEventTranslator
         extends CSVFeedEventTranslator
 {

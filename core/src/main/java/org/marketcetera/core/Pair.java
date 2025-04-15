@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /* $License$ */
 
@@ -12,7 +12,7 @@ import javax.annotation.concurrent.Immutable;
  * @version $Id$
  * @since 0.5.0
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 @ClassVersion("$Id$")
 public class Pair<T1, T2>
 {

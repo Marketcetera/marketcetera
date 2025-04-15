@@ -1,6 +1,6 @@
 package org.marketcetera.event.util;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.Event;
 import org.marketcetera.event.beans.HasEventBean;
@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 @ClassVersion("$Id$")
 public final class EventServices
 {

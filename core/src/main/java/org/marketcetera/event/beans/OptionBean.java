@@ -3,11 +3,11 @@ package org.marketcetera.event.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public final class OptionBean

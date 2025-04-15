@@ -3,7 +3,7 @@ package org.marketcetera.fix.provisioning;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.fix.SessionRestoreArbiter;
@@ -22,7 +22,7 @@ import quickfix.SessionID;
  * @version $Id$
  * @since $Release$
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Not thread safe")
 public class PerSessionRestoreArbiter
         implements SessionRestoreArbiter
 {

@@ -2,8 +2,8 @@ package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.*;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.HasOption;
 import org.marketcetera.event.MarketstatEvent;
@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ThreadSafe
+@SuppressFBWarnings(value="THREAD_SAFETY")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="optionMarketstat")
 @ClassVersion("$Id$")

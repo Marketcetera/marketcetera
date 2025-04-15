@@ -21,7 +21,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.concurrent.GuardedBy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javax.management.DynamicMBean;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMException;
@@ -2197,7 +2197,7 @@ public final class ModuleManager
     /**
      * singleton ModuleManager instance
      */
-    @GuardedBy("ModuleManager.class")
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
     private static ModuleManager instance;
     /**
      * guards access to {@link #applicationContext}
@@ -2206,6 +2206,6 @@ public final class ModuleManager
     /**
      * provides access to context objects
      */
-    @GuardedBy("applicationContextLock")
+    @SuppressFBWarnings(value="GUARDED_BY_VIOLATION")
     private ApplicationContext applicationContext;
 }

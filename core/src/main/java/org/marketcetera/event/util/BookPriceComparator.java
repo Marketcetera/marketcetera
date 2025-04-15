@@ -2,7 +2,7 @@ package org.marketcetera.event.util;
 
 import java.util.Comparator;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.util.misc.ClassVersion;
@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 0.6.0
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 @ClassVersion("$Id$")
 public final class BookPriceComparator
         implements Comparator<QuoteEvent>

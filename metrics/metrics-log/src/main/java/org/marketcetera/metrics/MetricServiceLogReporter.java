@@ -2,9 +2,9 @@ package org.marketcetera.metrics;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.concurrent.NotThreadSafe;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import com.codahale.metrics.Slf4jReporter;
  * @version $Id$
  * @since $Release$
  */
-@NotThreadSafe
+@SuppressFBWarnings(value="IS2_INCONSISTENT_SYNC", justification="Not thread safe")
 public class MetricServiceLogReporter
 {
     /**

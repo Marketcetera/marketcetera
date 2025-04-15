@@ -5,7 +5,7 @@ import static org.marketcetera.marketdata.Messages.OPTION_REQUIRES_UNDERLYING_IN
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.Immutable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.HasUnderlyingInstrument;
@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@Immutable
+@SuppressFBWarnings(value="IMMUTABLE_CLASS")
 @ClassVersion("$Id$")
 public final class ExchangeRequest
         implements Serializable, HasInstrument, HasUnderlyingInstrument
