@@ -76,6 +76,17 @@ During the migration, we encountered and fixed the following issues:
    - Some code generates deprecation warnings with Java 17. This is normal as some APIs have been deprecated between Java 11 and Java 17. These should be addressed in future updates.
    - For example, `Long(long)` constructor is deprecated and marked for removal in the core module.
 
+4. **Jakarta EE Migration**:
+   - Migrated from `javax.*` packages to `jakarta.*` packages for Java EE APIs
+   - Updated JAXB implementations to work with Jakarta EE in:
+     - `admin-server` module
+     - `cluster-core` module
+   - Added explicit Jakarta EE compatible JAXB dependencies:
+     - `jakarta.xml.bind-api:4.0.0`
+     - `org.eclipse.persistence.moxy:4.0.0`
+     - `jaxb-runtime:4.0.2`
+   - See the `JAKARTA_EE.md` files in the affected modules for details
+
 ## IDE Configuration
 
 If you're using Eclipse, IntelliJ IDEA, or another IDE, make sure to configure it to use Java 17 for this project.

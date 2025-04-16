@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<Configuration status="WARN">
   <Appenders>
     <Console name="STDOUT" target="SYSTEM_OUT">
       <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
     </Console>
   </Appenders>
   <Loggers>
-    <Root level="warn">
+    <!-- CXF and Jetty can be noisy -->
+    <Logger name="org.apache.cxf" level="WARN"/>
+    <Logger name="org.eclipse.jetty" level="WARN"/>
+    
+    <!-- Marketcetera services -->
+    <Logger name="org.marketcetera" level="INFO"/>
+    
+    <Root level="WARN">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    <logger name="org.marketcetera" level="info"/>
   </Loggers>
 </Configuration>

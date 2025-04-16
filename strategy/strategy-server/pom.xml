@@ -212,12 +212,8 @@
             <artifactId>jakarta.persistence-api</artifactId>
             <version>3.1.0</version>
           </dependency>
-          <!-- Add javax.persistence explicitly to help with compatibility -->
-          <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>javax.persistence-api</artifactId>
-            <version>2.2</version>
-          </dependency>
+          <!-- Jakarta EE persistence is now exclusively used -->
+          <!-- javax.persistence dependency has been removed as part of complete Jakarta EE migration -->
         </dependencies>
       </plugin>
     </plugins>

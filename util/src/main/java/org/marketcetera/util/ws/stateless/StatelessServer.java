@@ -72,24 +72,49 @@ public class StatelessServer
     public <T extends StatelessServiceBase> ServiceInterface publish(T impl,
                                                                      Class<T> iface)
     {
-        factory = new JaxWsServerFactoryBean();
-        Map<String,Object> props = factory.getProperties();
-        if(props == null) {
-            props = new HashMap<String,Object>();
+        try {
+            // Create and configure the server factory
+            factory = new JaxWsServerFactoryBean();
+            Map<String,Object> props = factory.getProperties();
+            if(props == null) {
+                props = new HashMap<String,Object>();
+            }
+            
+            // Add Jakarta EE compatibility properties
+            props.put("org.apache.cxf.stax.allowInsecureParser", "1");
+            
+            if(contextClassProvider != null) {
+                SLF4JLoggerProxy.debug(this,
+                                      "Using additional context: {}", //$NON-NLS-1$
+                                      contextClassProvider);
+                props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
+                          contextClassProvider.getContextClasses());
+            }
+            
+            factory.setProperties(props); 
+            factory.setServiceClass(iface);
+            factory.setAddress(getConnectionUrl(iface));
+            factory.setServiceBean(impl);
+            
+            // Apply Jakarta compatibility settings
+            try {
+                // Try to use the compatibility helper if available
+                Class<?> helperClass = Class.forName("org.marketcetera.util.ws.compatibility.JakartaCxfHelper");
+                java.lang.reflect.Method configMethod = helperClass.getMethod("configureServerFactory", 
+                        JaxWsServerFactoryBean.class, boolean.class);
+                configMethod.invoke(null, factory, false);
+                SLF4JLoggerProxy.debug(this, "Applied Jakarta EE compatibility settings to server");
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                // Jakarta compatibility helper not available, proceed without it
+                SLF4JLoggerProxy.debug(this, "Jakarta compatibility helper not available");
+            }
+            
+            server = factory.create();
+            return new ServiceInterface(server);
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this, e, "Error publishing service: {}", e.getMessage());
+            throw new RuntimeException("Error publishing service", e);
         }
-        if(contextClassProvider != null) {
-            SLF4JLoggerProxy.debug(this,
-                                   "Using additional context: {}", //$NON-NLS-1$
-                                   contextClassProvider);
-            props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
-                      contextClassProvider.getContextClasses());
-        }
-        factory.setProperties(props); 
-        factory.setServiceClass(iface);
-        factory.setAddress(getConnectionUrl(iface));
-        factory.setServiceBean(impl);
-        server = factory.create();
-        return new ServiceInterface(server);
     }
     /**
      * Shuts down the receiver.

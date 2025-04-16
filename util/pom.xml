@@ -17,17 +17,62 @@
       <groupId>org.quickfixj</groupId>
       <artifactId>quickfixj-all</artifactId>
     </dependency>
+    <!-- JAX-WS with Jakarta EE 9+ support -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>4.0.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>jakarta.xml.ws</groupId>
+          <artifactId>jakarta.xml.ws-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
+      <version>4.0.3</version>
     </dependency>
+    <!-- Jakarta EE APIs -->
+    <dependency>
+      <groupId>jakarta.xml.ws</groupId>
+      <artifactId>jakarta.xml.ws-api</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.jws</groupId>
+      <artifactId>jakarta.jws-api</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    
+    <!-- JAXWS implementation -->
+    <dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <version>4.0.1</version>
+    </dependency>
+    
+    <!-- Logging and utilities -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <version>2.0.12</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -76,31 +121,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
-      <version>4.0.1</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.spotbugs</groupId>
       <artifactId>spotbugs-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.jws</groupId>
-      <artifactId>jakarta.jws-api</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.xml.ws</groupId>
-      <artifactId>jakarta.xml.ws-api</artifactId>
-      <version>4.0.0</version>
     </dependency>
     <!-- Runtime. -->
     <dependency>
@@ -124,19 +146,77 @@
       <artifactId>asm</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <!-- Logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-      <scope>runtime</scope>
+      <artifactId>log4j-slf4j2-impl</artifactId>
+      <version>2.20.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.20.0</version>
     </dependency>
     <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
+    <!-- CXF with Jetty for testing -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
+      <version>4.0.3</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-server</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-security</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <!-- Jetty dependencies compatible with Jakarta Servlet 5.0 -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>11.0.18</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>11.0.18</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-http</artifactId>
+      <version>11.0.18</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-io</artifactId>
+      <version>11.0.18</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-security</artifactId>
+      <version>11.0.18</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -158,6 +238,38 @@
     </plugins>
   </build>
   <profiles>
+    <!-- Jakarta EE compatible test profile -->
+    <profile>
+      <id>jakarta-compatible</id>
+      <properties>
+        <org.apache.cxf.stax.allowInsecureParser>1</org.apache.cxf.stax.allowInsecureParser>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <disableXmlReport>false</disableXmlReport>
+              <forkCount>1</forkCount>
+              <reuseForks>false</reuseForks>
+              <argLine>-Dorg.apache.cxf.stax.allowInsecureParser=1 ${mvn.test.options}</argLine>
+              <systemPropertyVariables>
+                <org.marketcetera.appDir>src/test/sample_data</org.marketcetera.appDir>
+                <org.apache.cxf.stax.allowInsecureParser>1</org.apache.cxf.stax.allowInsecureParser>
+              </systemPropertyVariables>
+              <includes>
+                <include>org/marketcetera/util/ws/compatibility/*Test.java</include>
+                <include>org/marketcetera/util/ws/stateless/StatelessClientServerBasicTest.java</include>
+                <include>org/marketcetera/util/ws/stateful/ClientServerBasicTest.java</include>
+                <include>org/marketcetera/util/ws/stateful/ClientServerTest.java</include>
+                <include>org/marketcetera/util/ws/tags/*Test.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
     <!-- Command-line execution: test. -->
     <profile>
       <id>ws.server</id>

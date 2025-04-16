@@ -32,7 +32,10 @@ public class ClientServerTestBase
     protected static final AppId TEST_APP=
         new AppId("testApp");
     protected static final int TEST_BAD_PORT=
-        -1;
+        -1; // Don't use with Jakarta EE - use TEST_UNUSED_PORT instead
+        
+    protected static final int TEST_UNUSED_PORT=
+        65535; // Use this for testing bad connections with Jakarta EE
     private static final Exception TEST_EXCEPTION=
         new IllegalArgumentException();
 

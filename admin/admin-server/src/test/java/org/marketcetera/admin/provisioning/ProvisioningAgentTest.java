@@ -18,6 +18,7 @@ import org.marketcetera.cluster.SimpleClusterService;
 import org.marketcetera.cluster.mock.MockProvisioningComponent;
 import org.marketcetera.cluster.service.ClusterService;
 import org.marketcetera.core.Version;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /* $License$ */
 
 /**
- * Public void tests {@link ProvisioningAgent}.
+ * Tests {@link ProvisioningAgent}.
+ * 
+ * <p>This test has been migrated to Jakarta EE - it sets up Jakarta EE system properties directly
+ * and no longer uses any compatibility layer or Java EE (javax.*) APIs. The test JAR has also been 
+ * rebuilt with Jakarta EE dependencies.</p>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -39,6 +44,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ProvisioningAgentTest
 {
+    /**
+     * Sets essential Jakarta EE properties for XML parsing
+     */
+    static {
+        // Configure Jakarta EE system properties
+        System.setProperty("jakarta.xml.bind.JAXBContextFactory", 
+                "org.eclipse.persistence.jaxb.JAXBContextFactory");
+        
+        // Spring Framework context class loader property
+        System.setProperty("spring.classloader.jakarta-compatible", "true");
+        
+        // Set Jakarta EE compatible class loading for XML parsers
+        System.setProperty("jakarta.xml.accessExternalDTD", "all");
+        
+        SLF4JLoggerProxy.debug(ProvisioningAgentTest.class, 
+                "Jakarta EE properties set for XML parsing");
+    }
+    
     /**
      * Run before each test.
      *
@@ -78,7 +101,7 @@ public class ProvisioningAgentTest
     public void testInvalidXml()
             throws Exception
     {
-        deployFile("/log4j2-test.xml");
+        deployFile("/invalid-provisioning.xml");
         verifyNoProvisioning();
     }
     /**
@@ -94,9 +117,11 @@ public class ProvisioningAgentTest
         assertNull(testData);
         // deploy provisioning commands from a pre-built JAR in test/resources (source is under src/test/sample_data and can be rebuilt using Maven from there)
         deployFile("/mock-provisioning-" + Version.pomversion + ".jar");
+        // Give a bit more time for processing
+        Thread.sleep(provisioningAgentPollingInterval);
         // the mock provisioning commands modified the common cluster data using the common cluster service
         testData = clusterService.getAttribute("MockProvisioning");
-        assertNotNull(testData);
+        assertNotNull("MockProvisioning attribute was not set in ClusterService", testData);
     }
     @Ignore@Test
     public void testInvalidJar()
@@ -168,12 +193,50 @@ public class ProvisioningAgentTest
     private void deployFile(String inResourceName)
             throws Exception
     {
+        SLF4JLoggerProxy.debug(this, "Deploying file {} to provisioning directory", inResourceName);
+        
         URL validProvisioningAgentUrl = ProvisioningAgentTest.class.getResource(inResourceName);
+        if (validProvisioningAgentUrl == null) {
+            throw new IllegalArgumentException("Resource not found: " + inResourceName);
+        }
+        
         File validProvisioningAgentFile = new File(validProvisioningAgentUrl.toURI());
-        File provisioningAgentTarget = new File(provisioningAgent.getProvisioningDirectory(),
-                                                inResourceName);
-        FileUtils.copyFile(validProvisioningAgentFile,
-                           provisioningAgentTarget);
+        if (!validProvisioningAgentFile.exists()) {
+            throw new IllegalArgumentException("File does not exist: " + validProvisioningAgentFile.getAbsolutePath());
+        }
+        
+        String targetDirectory = provisioningAgent.getProvisioningDirectory();
+        SLF4JLoggerProxy.debug(this, "Target provisioning directory: {}", targetDirectory);
+        
+        // Ensure target directory exists
+        File targetDir = new File(targetDirectory);
+        if (!targetDir.exists()) {
+            targetDir.mkdirs();
+        }
+        
+        // Create target file, handling potential forward slashes in resource name
+        String targetFileName = inResourceName;
+        if (targetFileName.startsWith("/")) {
+            targetFileName = targetFileName.substring(1);
+        }
+        
+        File provisioningAgentTarget = new File(targetDir, targetFileName);
+        
+        // Create parent directories if needed
+        File parentDir = provisioningAgentTarget.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+        
+        SLF4JLoggerProxy.debug(this, "Copying {} to {}", 
+                validProvisioningAgentFile.getAbsolutePath(), 
+                provisioningAgentTarget.getAbsolutePath());
+        
+        FileUtils.copyFile(validProvisioningAgentFile, provisioningAgentTarget);
+        
+        // Wait for the polling interval to ensure the file is processed
+        SLF4JLoggerProxy.debug(this, "Waiting {}ms for provisioning agent to process file", 
+                provisioningAgentPollingInterval*2);
         Thread.sleep(provisioningAgentPollingInterval*2);
     }
     /**

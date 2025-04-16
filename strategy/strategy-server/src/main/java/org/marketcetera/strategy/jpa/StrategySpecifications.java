@@ -5,6 +5,9 @@ import jakarta.persistence.criteria.Path;
 import java.util.Collection;
 import java.util.Date;
 
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+
 /**
  * Specification utility class for building dynamic queries to replace QueryDSL BooleanBuilder.
  * 
@@ -134,8 +137,8 @@ public class StrategySpecifications {
             if (values == null || values.isEmpty()) {
                 return cb.conjunction(); // always true
             }
-            Path<?> path = root.get(attribute);
-            return path.in(values);
+            Path<?> path = (Path<?>)root.get(attribute);
+            return (Predicate)path.in(values);
         };
     }
     
@@ -147,13 +150,14 @@ public class StrategySpecifications {
      * @param values the collection of values to compare against
      * @return a specification that tests if the attribute is not in the given collection of values
      */
+    @SuppressWarnings("unchecked")
     public static <T> Specification<T> notIn(String attribute, Collection<?> values) {
         return (root, query, cb) -> {
             if (values == null || values.isEmpty()) {
                 return cb.conjunction(); // always true
             }
-            Path<?> path = root.get(attribute);
-            return cb.not(path.in(values));
+            Path<?> path = (Path<?>)root.get(attribute);
+            return cb.not((Expression<Boolean>) path.in(values));
         };
     }
     

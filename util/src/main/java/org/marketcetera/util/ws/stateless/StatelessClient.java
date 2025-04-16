@@ -157,27 +157,55 @@ public class StatelessClient
     @SuppressWarnings("unchecked")
     public <T extends StatelessServiceBase> T getService(Class<T> inInterface)
     {
-        JaxWsProxyFactoryBean f = new JaxWsProxyFactoryBean();
-        f.setServiceClass(inInterface);
-        f.setAddress(getConnectionUrl(inInterface));
-        Map<String,Object> props = f.getProperties(); 
-        if (props == null) {
-            props = new HashMap<String,Object>();
+        try {
+            // Create and configure the client factory
+            JaxWsProxyFactoryBean f = new JaxWsProxyFactoryBean();
+            f.setServiceClass(inInterface);
+            f.setAddress(getConnectionUrl(inInterface));
+            
+            Map<String,Object> props = f.getProperties(); 
+            if (props == null) {
+                props = new HashMap<String,Object>();
+            }
+            
+            // Add Jakarta EE compatibility properties
+            props.put("org.apache.cxf.stax.allowInsecureParser", "1");
+            
+            if(contextClassProvider != null) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Using additional context: {}", //$NON-NLS-1$
+                                       contextClassProvider);
+                props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
+                          contextClassProvider.getContextClasses());
+            }
+            f.setProperties(props);
+            
+            // Apply Jakarta compatibility settings
+            try {
+                // Try to use the compatibility helper if available
+                Class<?> helperClass = Class.forName("org.marketcetera.util.ws.compatibility.JakartaCxfHelper");
+                java.lang.reflect.Method configMethod = helperClass.getMethod("configureClientFactory", 
+                        JaxWsProxyFactoryBean.class, boolean.class);
+                configMethod.invoke(null, f, false);
+                SLF4JLoggerProxy.debug(this, "Applied Jakarta EE compatibility settings to client");
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                // Jakarta compatibility helper not available, proceed without it
+                SLF4JLoggerProxy.debug(this, "Jakarta compatibility helper not available");
+            }
+            
+            T service = (T)(f.create());
+            
+            // Configure HTTP client policy
+            HTTPConduit http = (HTTPConduit)ClientProxy.getClient(service).getConduit();
+            HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+            httpClientPolicy.setConnectionTimeout(0);
+            httpClientPolicy.setReceiveTimeout(0);
+            http.setClient(httpClientPolicy);
+            
+            return service;
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this, e, "Error creating service client: {}", e.getMessage());
+            throw new RuntimeException("Error creating service client", e);
         }
-        if(contextClassProvider != null) {
-            SLF4JLoggerProxy.debug(this,
-                                   "Using additional context: {}", //$NON-NLS-1$
-                                   contextClassProvider);
-            props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
-                      contextClassProvider.getContextClasses());
-        }
-        f.setProperties(props); 
-        T service=(T)(f.create());
-        HTTPConduit http=(HTTPConduit)ClientProxy.getClient(service).getConduit();
-        HTTPClientPolicy httpClientPolicy=new HTTPClientPolicy();
-        httpClientPolicy.setConnectionTimeout(0);
-        httpClientPolicy.setReceiveTimeout(0);
-        http.setClient(httpClientPolicy);
-        return service;
     }
 }

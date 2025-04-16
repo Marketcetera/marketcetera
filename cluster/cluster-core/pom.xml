@@ -19,6 +19,22 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cluster-api</artifactId>
     </dependency>
+    <!-- Jakarta EE JAXB dependencies -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.moxy</artifactId>
+      <version>4.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>4.0.2</version>
+    </dependency>
     <!-- test: marketcetera -->
     <dependency>
       <groupId>${project.groupId}</groupId>
