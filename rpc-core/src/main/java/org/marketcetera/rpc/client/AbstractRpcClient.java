@@ -414,45 +414,71 @@ public abstract class AbstractRpcClient<BlockingStubClazz extends AbstractStub<B
     private void reconnect()
     {
         if(stopped.get()) {
+            SLF4JLoggerProxy.debug(this, "{} not reconnecting because client is stopped", getAppId());
             return;
         }
-        while(!alive.get()) {
+        
+        // Add max reconnect attempts to prevent infinite loop
+        int reconnectAttempts = 0;
+        int maxReconnectAttempts = 15; // Reasonable number of retries
+        long baseReconnectDelay = parameters.getHeartbeatInterval();
+        long maxReconnectDelay = 30000; // Max 30 seconds between attempts
+        
+        while(!alive.get() && reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
             try {
                 SLF4JLoggerProxy.info(this,
-                                      "{} trying to reconnect",
-                                      getAppId());
+                                     "{} trying to reconnect (attempt {}/{})",
+                                     getAppId(),
+                                     reconnectAttempts,
+                                     maxReconnectAttempts);
                 stopService();
+                SLF4JLoggerProxy.debug(this, "{} stopped service, now starting service", getAppId());
                 startService();
+                SLF4JLoggerProxy.debug(this, "{} started service, now logging in", getAppId());
                 doLogin();
+                SLF4JLoggerProxy.debug(this, "{} logged in, now scheduling heartbeat", getAppId());
                 scheduleHeartbeat();
+                SLF4JLoggerProxy.debug(this, "{} scheduled heartbeat", getAppId());
             } catch (Exception e) {
                 alive.set(false);
                 String message = ExceptionUtils.getRootCauseMessage(e);
                 if(SLF4JLoggerProxy.isDebugEnabled(this)) {
                     SLF4JLoggerProxy.warn(this,
                                           e,
+                                          "Error during reconnect attempt {}/{}: {}",
+                                          reconnectAttempts,
+                                          maxReconnectAttempts,
                                           message);
                 } else {
                     SLF4JLoggerProxy.warn(this,
+                                          "Error during reconnect attempt {}/{}: {}",
+                                          reconnectAttempts,
+                                          maxReconnectAttempts,
                                           message);
                 }
                 try {
-                    Thread.sleep(parameters.getHeartbeatInterval());
+                    // Apply exponential backoff with maximum delay
+                    long delay = Math.min(baseReconnectDelay * (long)Math.pow(1.5, reconnectAttempts-1), maxReconnectDelay);
+                    SLF4JLoggerProxy.info(this, "{} waiting {}ms before next reconnect attempt", getAppId(), delay);
+                    Thread.sleep(delay);
                 } catch (InterruptedException e1) {
+                    SLF4JLoggerProxy.debug(this, "{} reconnect sleep interrupted", getAppId());
                     break;
                 }
             }
         }
-        SLF4JLoggerProxy.info(this,
-                              "{} reconnected",
-                              getAppId());
-        try {
-            onStatusChange(true);
-        } catch (Exception e) {
-            String message = PlatformServices.getMessage(e);
-            PlatformServices.handleException(this,
-                                             message,
-                                             e);
+        
+        if (alive.get()) {
+            SLF4JLoggerProxy.info(this, "{} successfully reconnected after {} attempts", getAppId(), reconnectAttempts);
+            try {
+                onStatusChange(true);
+            } catch (Exception e) {
+                String message = PlatformServices.getMessage(e);
+                PlatformServices.handleException(this, message, e);
+            }
+        } else {
+            SLF4JLoggerProxy.error(this, "{} failed to reconnect after {} attempts", getAppId(), reconnectAttempts);
         }
     }
     /**

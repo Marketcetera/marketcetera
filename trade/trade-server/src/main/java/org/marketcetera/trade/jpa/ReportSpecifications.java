@@ -1,11 +1,12 @@
 package org.marketcetera.trade.jpa;
 
-import org.springframework.data.jpa.domain.Specification;
-import jakarta.persistence.criteria.Path;
 import java.util.Collection;
 import java.util.Date;
 
+import org.springframework.data.jpa.domain.Specification;
+
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
 /**
@@ -31,6 +32,10 @@ public class ReportSpecifications {
             if (value == null) {
                 return cb.isNull(root.get(attribute));
             }
+            // Special handling for enum values to avoid ClassCastException in Jakarta EE
+            if (value instanceof Enum) {
+                return cb.equal(root.get(attribute), value.toString());
+            }
             return cb.equal(root.get(attribute), value);
         };
     }
@@ -47,6 +52,10 @@ public class ReportSpecifications {
         return (root, query, cb) -> {
             if (value == null) {
                 return cb.isNotNull(root.get(attribute));
+            }
+            // Special handling for enum values to avoid ClassCastException in Jakarta EE
+            if (value instanceof Enum) {
+                return cb.notEqual(root.get(attribute), value.toString());
             }
             return cb.notEqual(root.get(attribute), value);
         };

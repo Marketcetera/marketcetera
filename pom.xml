@@ -1173,37 +1173,7 @@
           <artifactId>maven-replacer-plugin</artifactId>
           <version>1.4.1</version>
         </plugin>
-        <!-- QueryDSL annotation processor -->
-        <plugin>
-          <groupId>com.mysema.maven</groupId>
-          <artifactId>apt-maven-plugin</artifactId>
-          <version>1.1.3</version>
-          <executions>
-            <execution>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>process</goal>
-              </goals>
-              <configuration>
-                <outputDirectory>target/generated-sources/java</outputDirectory>
-                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-              </configuration>
-            </execution>
-          </executions>
-          <dependencies>
-            <dependency>
-              <groupId>com.querydsl</groupId>
-              <artifactId>querydsl-apt</artifactId>
-              <version>${querydsl.version}</version>
-              <classifier>jakarta</classifier>
-            </dependency>
-            <dependency>
-              <groupId>jakarta.persistence</groupId>
-              <artifactId>jakarta.persistence-api</artifactId>
-              <version>3.1.0</version>
-            </dependency>
-          </dependencies>
-        </plugin>
+        <!-- Previous QueryDSL plugin replaced by maven-compiler-plugin configuration below -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
@@ -1306,36 +1276,7 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
-        <!-- QueryDSL annotation processor -->
-        <plugin>
-          <groupId>com.github.infobip</groupId>
-          <artifactId>apt-maven-plugin-jakarta</artifactId>
-          <version>${querydsl.jakarta.version}</version>
-          <executions>
-            <execution>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>process</goal>
-              </goals>
-              <configuration>
-                <outputDirectory>target/generated-sources/java</outputDirectory>
-                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-              </configuration>
-            </execution>
-          </executions>
-          <dependencies>
-            <dependency>
-              <groupId>com.github.infobip</groupId>
-              <artifactId>querydsl-apt-jakarta</artifactId>
-              <version>${querydsl.jakarta.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>jakarta.persistence</groupId>
-              <artifactId>jakarta.persistence-api</artifactId>
-              <version>3.1.0</version>
-            </dependency>
-          </dependencies>
-        </plugin>
+        <!-- Removed apt-maven-plugin-jakarta in favor of maven-compiler-plugin configuration above -->
         <!-- mvn test -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -1365,6 +1306,9 @@
               <arg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</arg>
               <arg>--add-opens=java.base/java.io=ALL-UNNAMED</arg>
               <arg>--add-opens=java.base/java.util=ALL-UNNAMED</arg>
+              <!-- QueryDSL annotation processor arguments -->
+              <arg>-Aquerydsl.entityAccessors=true</arg>
+              <arg>-Aquerydsl.packageSuffix=</arg>
             </compilerArgs>
             <!-- Annotation processor configuration for QueryDSL Jakarta -->
             <annotationProcessorPaths>
@@ -1380,6 +1324,9 @@
                 <version>3.1.0</version>
               </path>
             </annotationProcessorPaths>
+            <annotationProcessors>
+              <annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
+            </annotationProcessors>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->

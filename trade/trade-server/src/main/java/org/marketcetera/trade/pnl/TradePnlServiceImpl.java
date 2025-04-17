@@ -1,36 +1,125 @@
 package org.marketcetera.trade.pnl;
 
-import org.springframework.stereotype.Service;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import jakarta.annotation.PostConstruct;
+
+import org.marketcetera.admin.service.UserService;
+import org.marketcetera.admin.user.PersistentUser;
+import org.marketcetera.core.PlatformServices;
+import org.marketcetera.core.Preserve;
+import org.marketcetera.eventbus.EventBusService;
 import org.marketcetera.persist.CollectionPageResponse;
-import org.marketcetera.persist.PageRequest;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.pnl.dao.CurrentPositionDao;
+import org.marketcetera.trade.pnl.dao.ProfitAndLossDao;
+import org.marketcetera.trade.pnl.event.PositionChangedEvent;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.eventbus.Subscribe;
+
+/* $License$ */
 
 /**
- * Stub class temporarily created for Spring Boot 3 migration.
- * Original implementation required QueryDSL, which isn't compatible with Jakarta EE.
- * 
- * See TradePnlServiceImpl.java.disabled for the original implementation.
+ * Provides TradePnlServiceImpl services.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
  */
-@Service
-public class TradePnlServiceImpl 
+@Preserve
+@Component
+public class TradePnlServiceImpl
         implements TradePnlService
 {
-    public TradePnlServiceImpl()
+    /**
+     * Requests positions for a user.
+     *
+     * @param inUserID a <code>UserID</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;CurrentPosition&gt;</code> value
+     */
+    @Override
+    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+    public CollectionPageResponse<CurrentPosition> getCurrentPositions(UserID inUserID,
+                                                                     org.marketcetera.persist.PageRequest inPageRequest)
     {
-        SLF4JLoggerProxy.warn(this, "This is a stub implementation for Spring Boot 3 migration");
+        // Using standard JPA Sort without QueryDSL reference for now
+        // Will update when Q classes are generated
+        Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "symbol"));
+        Pageable pageRequest = PageRequest.of(inPageRequest.getPageNumber(),
+                                            inPageRequest.getPageSize(),
+                                            sort);
+        PersistentUser user = (PersistentUser)userService.findByUserId(inUserID);
+        if(user == null) {
+            throw new IllegalArgumentException("No user for user id '" + inUserID + "'");
+        }
+        Page<CurrentPosition> pageResponse = currentPositionDao.findByUser(user,
+                                                                         pageRequest);
+        return new CollectionPageResponse<>(pageResponse);
     }
-
+    /**
+     * Requests profit and loss for a user and an instrument.
+     *
+     * @param inUserID a <code>UserID</code> value
+     * @param inInstrument a <code>Instrument</code> value
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>CollectionPageResponse&lt;ProfitAndLoss&gt;</code> value
+     */
     @Override
-    public CollectionPageResponse<CurrentPosition> getCurrentPositions(UserID inUserID, PageRequest inPageRequest) {
-        SLF4JLoggerProxy.warn(this, "Stub implementation - getCurrentPositions not implemented");
-        return new CollectionPageResponse<>();
+    @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+    public CollectionPageResponse<ProfitAndLoss> getProfitAndLoss(UserID inUserID,
+                                                                Instrument inInstrument,
+                                                                org.marketcetera.persist.PageRequest inPageRequest)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
-
-    @Override
-    public CollectionPageResponse<ProfitAndLoss> getProfitAndLoss(UserID inUserID, Instrument inInstrument, PageRequest inPageRequest) {
-        SLF4JLoggerProxy.warn(this, "Stub implementation - getProfitAndLoss not implemented");
-        return new CollectionPageResponse<>();
+    /**
+     * Accept incoming PositionChangedEvent values.
+     *
+     * @param inPositionChangedEvent a <code>PositionChangedEvent</code> value
+     */
+    @Subscribe
+    public void accept(PositionChangedEvent inPositionChangedEvent)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
+    /**
+     * Validate and start the object.
+     */
+    @PostConstruct
+    public void start()
+    {
+        SLF4JLoggerProxy.info(this,
+                            "Starting {}",
+                            PlatformServices.getServiceName(getClass()));
+        eventBusService.register(this);
+    }
+    /**
+     * provides access to event services
+     */
+    @Autowired
+    private EventBusService eventBusService;
+    /**
+     * provides access to user services
+     */
+    @Autowired
+    private UserService userService;
+    /**
+     * provides data store access to current positions
+     */
+    @Autowired
+    private CurrentPositionDao currentPositionDao;
+    /**
+     * provides data store access to profit and loss values
+     */
+    @Autowired
+    private ProfitAndLossDao profitAndLossDao;
 }

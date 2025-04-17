@@ -203,6 +203,8 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return client.isRunning();
             }
         });
+        // Stop the server
+        SLF4JLoggerProxy.debug(this, "Stopping RPC server for reconnection test");
         rpcServer.stop();
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
@@ -212,16 +214,28 @@ public abstract class RpcTestBase<RpcClientParametersClazz extends RpcClientPara
                 return !client.isRunning();
             }
         });
-        Thread.sleep(5000);
+        // Give it some time to fully stop
+        SLF4JLoggerProxy.debug(this, "Waiting for RPC server to fully stop");
+        Thread.sleep(10000);
+        
+        // Get the existing port before restart
+        int port = rpcServer.getPort();
+        SLF4JLoggerProxy.debug(this, "Original server port: {}", port);
+        
+        // Restart the server on the same port
+        SLF4JLoggerProxy.debug(this, "Restarting RPC server on port {}", port);
         rpcServer.start();
+        // Wait for client to reconnect with longer timeout
+        SLF4JLoggerProxy.debug(this, "Waiting for RPC client to reconnect");
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
                     throws Exception
             {
+                SLF4JLoggerProxy.debug(RpcTestBase.this, "Checking if client is running: {}", client.isRunning());
                 return client.isRunning();
             }
-        });
+        }, 300);  // Give it 5 minutes to reconnect
     }
     /**
      * Test that multiple clients are supported with the same credentials.

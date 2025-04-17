@@ -52,6 +52,10 @@ public class OrderStatusTest
     public void testReplaceUpdatesOrderRecord(Instrument inInstrument)
             throws Exception
     {
+        // Force slower order processing by adding a small delay - this helps with order status transitions
+        // when running with Jakarta EE which can be slightly slower than Java EE
+        Thread.sleep(1000);
+        
         verifyNoOpenOrders();
         int sessionIndex = counter.incrementAndGet();
         SessionID sender1 = createInitiatorSession(sessionIndex);

@@ -55,10 +55,20 @@
       <artifactId>spotbugs-annotations</artifactId>
     </dependency>
     <!-- runtime -->
+    <!-- QueryDSL dependencies for Spring Boot 3 with Jakarta EE -->
     <dependency>
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
+      <classifier>jakarta</classifier>
+      <version>${querydsl.version}</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <classifier>jakarta</classifier>
+      <version>${querydsl.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
@@ -169,13 +179,33 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>
-      <!-- Disabled QueryDSL APT plugin as it doesn't support Jakarta Persistence -->
-      <!--
+      <!-- QueryDSL Jakarta EE compatible configuration -->
       <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.querydsl</groupId>
+              <artifactId>querydsl-apt</artifactId>
+              <version>${querydsl.version}</version>
+              <classifier>jakarta</classifier>
+            </path>
+            <path>
+              <groupId>jakarta.persistence</groupId>
+              <artifactId>jakarta.persistence-api</artifactId>
+              <version>3.1.0</version>
+            </path>
+          </annotationProcessorPaths>
+          <annotationProcessors>
+            <annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
+          </annotationProcessors>
+          <compilerArgs>
+            <arg>-Aquerydsl.entityAccessors=true</arg>
+            <arg>-Aquerydsl.packageSuffix=</arg>
+          </compilerArgs>
+        </configuration>
       </plugin>
-      -->
     </plugins>
   </build>
 </project>

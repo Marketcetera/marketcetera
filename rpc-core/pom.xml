@@ -116,6 +116,11 @@
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
           <argLine>${mvn.test.options}</argLine>
+          <systemPropertyVariables>
+            <!-- Enable Jakarta EE mode -->
+            <spring.classloader.jakarta-compatible>true</spring.classloader.jakarta-compatible>
+            <jakarta.xml.bind.JAXBContextFactory>org.eclipse.persistence.jaxb.JAXBContextFactory</jakarta.xml.bind.JAXBContextFactory>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>

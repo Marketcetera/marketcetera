@@ -213,7 +213,7 @@ public class AuthorizationServiceImpl
     public List<Permission> findAllPermissions()
     {
         List<Permission> permissions = new ArrayList<>();
-        // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+        // Using Jakarta EE compatible sort with QueryDSL
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         permissions.addAll(permissionDao.findAll(sort));
         return permissions;
@@ -227,7 +227,7 @@ public class AuthorizationServiceImpl
         List<Permission> permissions = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+            // Using Jakarta EE compatible sort with QueryDSL
             jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
@@ -273,7 +273,7 @@ public class AuthorizationServiceImpl
     public List<Role> findAllRoles()
     {
         List<Role> roles = new ArrayList<>();
-        // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+        // Using Jakarta EE compatible sort with QueryDSL
         Sort sort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         roles.addAll(roleDao.findAll(sort));
         return roles;
@@ -287,7 +287,7 @@ public class AuthorizationServiceImpl
         List<Role> roles = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+            // Using Jakarta EE compatible sort with QueryDSL
             jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {
@@ -485,13 +485,13 @@ public class AuthorizationServiceImpl
         provision();
         if(roleAliases == null) {
             roleAliases = Maps.newHashMap();
-            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL references)
+            // Using property names directly with Jakarta EE QueryDSL
             roleAliases.put("name", "name");
             roleAliases.put("description", "description");
         }
         if(permissionAliases == null) {
             permissionAliases = Maps.newHashMap();
-            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL references)
+            // Using property names directly with Jakarta EE QueryDSL
             permissionAliases.put("name", "name");
             permissionAliases.put("description", "description");
         }

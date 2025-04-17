@@ -41,9 +41,19 @@
       <artifactId>spring-orm</artifactId>
       <scope>compile</scope>
     </dependency>
+    <!-- QueryDSL dependencies for Spring Boot 3 with Jakarta EE -->
     <dependency>
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-jpa</artifactId>
+      <classifier>jakarta</classifier>
+      <version>5.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <classifier>jakarta</classifier>
+      <version>5.0.0</version>
+      <scope>provided</scope>
     </dependency>
     <!-- test: marketcetera -->
     <dependency>
@@ -75,35 +85,53 @@
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
     </dependency>
-    <!-- Jakarta EE JAXB dependencies for testing - use latest Jakarta-compatible versions -->
+    <!-- Jakarta EE JAXB dependencies - use latest Jakarta-compatible versions -->
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
       <version>4.0.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.moxy</artifactId>
       <version>4.0.0</version>
-      <scope>test</scope>
     </dependency>
     <!-- Ensure we have the implementation -->
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>
       <version>4.0.2</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
     <plugins>
-      <!-- Temporarily disabled for Spring Boot 3 migration
+      <!-- Updated for Jakarta EE and Spring Boot 3 -->
       <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.querydsl</groupId>
+              <artifactId>querydsl-apt</artifactId>
+              <version>5.0.0</version>
+              <classifier>jakarta</classifier>
+            </path>
+            <path>
+              <groupId>jakarta.persistence</groupId>
+              <artifactId>jakarta.persistence-api</artifactId>
+              <version>3.1.0</version>
+            </path>
+          </annotationProcessorPaths>
+          <annotationProcessors>
+            <annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
+          </annotationProcessors>
+          <compilerArgs>
+            <arg>-Aquerydsl.entityAccessors=true</arg>
+            <arg>-Aquerydsl.packageSuffix=</arg>
+          </compilerArgs>
+        </configuration>
       </plugin>
-      -->
     </plugins>
   </build>
 </project>

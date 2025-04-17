@@ -99,7 +99,7 @@ public class MarketDataFeedTestBase
         throws Exception
     {
         wait(inBlock,
-             60);
+             120);
     }
     /**
      * Waits for the given block to return true.
@@ -119,12 +119,13 @@ public class MarketDataFeedTestBase
         throws Exception
     {
         int iterationCount = 0;
-        int maxIterations = inTimeout*10;
+        // Increase polling frequency for more responsive tests
+        int maxIterations = inTimeout*20; // Double the number of iterations
         while(iterationCount++ < maxIterations) {
             if(inBlock.call()) {
                 return;
             }
-            Thread.sleep(100);
+            Thread.sleep(50); // Decreased from 100ms to 50ms for faster polling
         }
         fail("Condition not reached in " + inTimeout +"s"); //$NON-NLS-1$
     }

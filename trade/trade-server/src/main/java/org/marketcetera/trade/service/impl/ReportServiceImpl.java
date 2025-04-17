@@ -933,10 +933,10 @@ public class ReportServiceImpl
             spec = ReportSpecifications.and(spec, ReportSpecifications.greaterThanOrEqualTo("sendingTime", sessionStart));
         }
         
-        // Check for session ID - using getMsgType field for now since sessionIdValue isn't available
+        // Check for session ID 
         String sessionId = newReport.getSessionId() != null ? newReport.getSessionId().toString() : null;
         if(sessionId != null) {
-            Specification<PersistentReport> sessionSpec = ReportSpecifications.equalTo("sessionId", sessionId);
+            Specification<PersistentReport> sessionSpec = ReportSpecifications.equalTo("sessionIdValue", sessionId);
             spec = spec == null ? sessionSpec : ReportSpecifications.and(spec, sessionSpec);
         }
         
@@ -980,6 +980,8 @@ public class ReportServiceImpl
             // Create and save the execution report if this is an execution report
             ExecutionReport execReport = (ExecutionReport)inReport;
             PersistentExecutionReport executionReport = new PersistentExecutionReport(execReport, report);
+            // Set the root order ID before saving
+            executionReport.setRootOrderID(rootId);
             executionReport = executionReportDao.save(executionReport);
             generateOrderSummary(inReport, rootId, report);
         }
@@ -1320,7 +1322,7 @@ public class ReportServiceImpl
         
         // Start with security type specification
         Specification<PersistentExecutionReport> spec = 
-            ReportSpecifications.equalTo("securityType", inSecurityType.name());
+            ReportSpecifications.equalTo("securityType", inSecurityType);
             
         // Add date criteria
         spec = ReportSpecifications.and(spec, 

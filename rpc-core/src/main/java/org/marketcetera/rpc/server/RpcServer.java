@@ -104,52 +104,91 @@ public class RpcServer
     public synchronized void start()
             throws Exception
     {
+        // If server is already running, don't start it again
+        if (alive.get() && server != null) {
+            SLF4JLoggerProxy.info(this, "Server {} is already running, not starting again", description);
+            return;
+        }
+        
         Validate.notNull(hostname);
         Validate.isTrue(port > 0 && port < 65536);
-        // TODO bind to host?
-        ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
-        if(useSsl()) {
-            Validate.notNull(publicKey);
-            Validate.notNull(privateKey);
-            Validate.isTrue(publicKey.exists());
-            Validate.isTrue(privateKey.exists());
-            Validate.isTrue(publicKey.canRead());
-            Validate.isTrue(privateKey.canRead());
-            serverBuilder = serverBuilder.useTransportSecurity(publicKey,
-                                                               privateKey);
+        
+        try {
+            // TODO bind to host?
+            ServerBuilder<?> serverBuilder = ServerBuilder.forPort(port);
+            if(useSsl()) {
+                Validate.notNull(publicKey);
+                Validate.notNull(privateKey);
+                Validate.isTrue(publicKey.exists());
+                Validate.isTrue(privateKey.exists());
+                Validate.isTrue(publicKey.canRead());
+                Validate.isTrue(privateKey.canRead());
+                serverBuilder = serverBuilder.useTransportSecurity(publicKey, privateKey);
+            }
+            
+            for(BindableService serverServiceDefinition : serverServiceDefinitions) {
+                serverBuilder.addService(serverServiceDefinition);
+            }
+            
+            server = serverBuilder.build();
+            
+            Messages.SERVER_STARTING.info(this,
+                                         description,
+                                         hostname,
+                                         String.valueOf(port));
+            
+            server.start();
+            
+            // Wait a short time to make sure server has started properly
+            Thread.sleep(500);
+            
+            ports.add(new PortDescriptor(port, description));
+            alive.set(true);
+            
+            SLF4JLoggerProxy.info(this, "Server {} started successfully on {}:{}", 
+                                 description, hostname, port);
+        } catch (Exception e) {
+            alive.set(false);
+            server = null;
+            SLF4JLoggerProxy.error(this, e, "Failed to start server {} on {}:{}", 
+                                  description, hostname, port);
+            throw e;
         }
-        for(BindableService serverServiceDefinition : serverServiceDefinitions) {
-            serverBuilder.addService(serverServiceDefinition);
-        }
-        server = serverBuilder.build();
-        Messages.SERVER_STARTING.info(this,
-                                      description,
-                                      hostname,
-                                      String.valueOf(port));
-        server.start();
-        ports.add(new PortDescriptor(port,
-                                     description));
-        alive.set(true);
     }
+    
     /**
      * Stop the service.
      */
     @PreDestroy
     public synchronized void stop()
     {
+        if (!alive.get() || server == null) {
+            SLF4JLoggerProxy.info(this, "Server {} is not running, nothing to stop", description);
+            alive.set(false);
+            return;
+        }
+        
         try {
-            Messages.SERVER_STOPPING.info(this,
-                                          description);
-            if(server != null) {
+            Messages.SERVER_STOPPING.info(this, description);
+            try {
+                // First try graceful shutdown with a timeout
+                server.shutdown();
+                if (!server.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                    SLF4JLoggerProxy.warn(this, "Server {} did not shut down gracefully, forcing shutdown", description);
+                    server.shutdownNow();
+                }
+                SLF4JLoggerProxy.info(this, "Server {} stopped successfully", description);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this, e, "Error while stopping server {}", description);
+                // Try force shutdown as a last resort
                 try {
                     server.shutdownNow();
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e);
+                } catch (Exception e2) {
+                    SLF4JLoggerProxy.error(this, e2, "Failed to force shutdown server {}", description);
                 }
-                server = null;
             }
         } finally {
+            server = null;
             alive.set(false);
         }
     }

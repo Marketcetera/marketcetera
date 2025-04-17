@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-//import org.springframework.data.querydsl.QuerydslPredicateExecutor; // TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 /* $License$ */
 
@@ -20,7 +20,7 @@ import org.springframework.data.jpa.repository.Query;
  */
 @ClassVersion("$Id$")
 public interface UserDao
-        extends JpaRepository<PersistentUser,Long> // QuerydslPredicateExecutor temporarily removed for Spring Boot 3 migration
+        extends JpaRepository<PersistentUser,Long>,QuerydslPredicateExecutor<PersistentUser>
 {
     /**
      * Finds the user with the given username.

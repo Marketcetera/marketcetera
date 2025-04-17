@@ -12,6 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.cluster.ClusterData;
 import org.marketcetera.cluster.ClusterWorkUnitDescriptor;
+import org.marketcetera.cluster.ClusterWorkUnitType;
+import org.marketcetera.cluster.MutableClusterData;
 import org.marketcetera.cluster.SimpleClusterWorkUnitDescriptor;
 import org.marketcetera.cluster.SimpleClusterWorkUnitSpec;
 
@@ -66,7 +68,7 @@ public class JaxbClusterTest {
         MockClusterData clusterData = new MockClusterData();
         Set<ClusterWorkUnitDescriptor> workUnits = new HashSet<>();
         workUnits.add(new SimpleClusterWorkUnitDescriptor(
-                new SimpleClusterWorkUnitSpec("testId", "testUid"), 
+                new SimpleClusterWorkUnitSpec(ClusterWorkUnitType.SINGLETON, "testId", "testUid"), 
                 "testMemberUuid"));
         
         SimpleClusterMetaData metaData = new SimpleClusterMetaData(clusterData, workUnits);
@@ -112,6 +114,12 @@ public class JaxbClusterTest {
         @Override
         public String getUuid() {
             return "testUuid";
+        }
+        
+        @Override
+        public MutableClusterData getMutableView() {
+            // Return null for test purposes since we don't use this method in the test
+            return null;
         }
     }
 }

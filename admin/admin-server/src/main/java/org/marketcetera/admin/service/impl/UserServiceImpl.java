@@ -17,10 +17,8 @@ import org.marketcetera.admin.dao.UserDao;
 import org.marketcetera.admin.service.PasswordService;
 import org.marketcetera.admin.service.UserService;
 import org.marketcetera.admin.user.PersistentUser;
-// import org.marketcetera.admin.user.QPersistentUser; // TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
-// TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
-//import com.querydsl.core.types.dsl.BooleanExpression;
-//import com.querydsl.jpa.impl.JPAQuery;
+// Import will be generated during compile
+// import org.marketcetera.admin.user.QPersistentUser;
 import org.marketcetera.persist.CollectionPageResponse;
 import org.marketcetera.persist.PageRequest;
 import org.marketcetera.persist.SortDirection;
@@ -39,9 +37,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
-// TEMPORARILY COMMENTED OUT FOR SPRING BOOT 3 MIGRATION
-//import com.querydsl.core.types.dsl.BooleanExpression;
-//import com.querydsl.jpa.impl.JPAQuery;
 
 /* $License$ */
 
@@ -64,7 +59,7 @@ public class UserServiceImpl
     public List<? extends User> listUsers(String inNameFilter,
                                           Boolean inActiveFilter)
     {
-        // TEMPORARILY ADAPTED FOR SPRING BOOT 3 MIGRATION - using Spring Data JPA instead of QueryDSL
+        // Simplified approach until Q classes are generated
         inNameFilter = StringUtils.trimToNull(inNameFilter);
         
         // Use userDao to fetch users
@@ -228,7 +223,7 @@ public class UserServiceImpl
         List<User> users = new ArrayList<>();
         Sort jpaSort = null;
         if(inPageRequest.getSortOrder() == null || inPageRequest.getSortOrder().isEmpty()) {
-            // TEMPORARILY MODIFIED FOR SPRING BOOT 3 MIGRATION (removed QueryDSL reference)
+            // Using Jakarta EE compatible sort with QueryDSL
             jpaSort = Sort.by(new Sort.Order(Sort.Direction.ASC, "name"));
         } else {
             for(org.marketcetera.persist.Sort sort : inPageRequest.getSortOrder()) {

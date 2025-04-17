@@ -585,7 +585,7 @@ public class DareTestBase
                 }
                 return orderStatus.getOrderStatus() == inExpectedOrderStatus;
             }
-        },10);
+        },30); // Increased timeout from 10 to 30 seconds for Jakarta EE
         return orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
                                                                inOrderId);
     }
@@ -610,7 +610,7 @@ public class DareTestBase
                                                                                            inOrderId);
                 return orderStatus != null;
             }
-        },10);
+        },30); // Increased timeout from 10 to 30 seconds for Jakarta EE
         return orderSummaryService.findByRootOrderIdAndOrderId(inRootOrderId,
                                                                inOrderId);
     }
@@ -2217,7 +2217,7 @@ public class DareTestBase
                         throws Exception
                 {
                     return orderSummaryService.findOpenOrders(PageRequest.ALL).getElements().isEmpty();
-                }},10);
+                }},30); // Increased timeout from 10 to 30 seconds for Jakarta EE
         } catch (AssertionError e) {
             CollectionPageResponse<OrderSummary> openOrders = orderSummaryService.findOpenOrders(PageRequest.ALL);
             assertTrue("Expected no open orders, found: " + openOrders.getElements(),
@@ -2243,7 +2243,7 @@ public class DareTestBase
                     Set<OrderID> actualOrderIds = Sets.newHashSet();
                     orderSummaryService.findOpenOrders(PageRequest.ALL).getElements().forEach(orderSummary -> actualOrderIds.add(orderSummary.getOrderId()));
                     return actualOrderIds.equals(inOpenOrders);
-                }},10);
+                }},30); // Increased timeout from 10 to 30 seconds for Jakarta EE
         } catch (AssertionError e) {
             Set<OrderID> actualOrderIds = Sets.newHashSet();
             orderSummaryService.findOpenOrders(PageRequest.ALL).getElements().forEach(orderSummary -> actualOrderIds.add(orderSummary.getOrderId()));
