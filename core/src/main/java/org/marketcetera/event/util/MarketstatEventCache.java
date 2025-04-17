@@ -1,7 +1,7 @@
 package org.marketcetera.event.util;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import net.jcip.annotations.GuardedBy;
+import net.jcip.annotations.ThreadSafe;
 
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.OptionMarketstatEvent;

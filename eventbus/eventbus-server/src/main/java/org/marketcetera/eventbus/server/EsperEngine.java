@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.marketcetera.eventbus.EsperEvent;
 import org.marketcetera.eventbus.HasEsperEvent;

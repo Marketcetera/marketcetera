@@ -3,7 +3,7 @@ package org.marketcetera.admin.provisioning;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

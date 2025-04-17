@@ -2,7 +2,7 @@ package org.marketcetera.event.util;
 
 import java.util.Comparator;
 
-import javax.annotation.concurrent.Immutable;
+import net.jcip.annotations.Immutable;
 
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.util.misc.ClassVersion;

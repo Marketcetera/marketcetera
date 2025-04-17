@@ -2,7 +2,7 @@ package org.marketcetera.symbol;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.trade.Instrument;

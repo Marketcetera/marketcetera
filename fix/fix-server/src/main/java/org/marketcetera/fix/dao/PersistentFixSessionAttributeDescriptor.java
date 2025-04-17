@@ -1,8 +1,8 @@
 package org.marketcetera.fix.dao;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import org.marketcetera.fix.FixSessionAttributeDescriptor;
 import org.marketcetera.persist.EntityBase;
@@ -144,27 +144,27 @@ public class PersistentFixSessionAttributeDescriptor
     /**
      * default value
      */
-    @Column(name="default_value",nullable=true)
+    @Column(name="default_value",nullable = true)
     private String defaultValue;
     /**
      * description value
      */
-    @Column(name="description",nullable=true,length=1024)
+    @Column(name="description",nullable=true,length = 1024)
     private String description;
     /**
      * pattern value
      */
-    @Column(name="pattern",nullable=true)
+    @Column(name="pattern",nullable = true)
     private String pattern;
     /**
      * required value
      */
-    @Column(name="required",nullable=false)
+    @Column(name="required",nullable = false)
     private boolean required;
     /**
      * advice value
      */
-    @Column(name="advice",nullable=true)
+    @Column(name="advice",nullable = true)
     private String advice;
     private static final long serialVersionUID = 8354324947365412641L;
 }

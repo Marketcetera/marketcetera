@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.marketcetera.util.test.EqualityAssert.assertEquality;
 
-import javax.jws.WebService;
+import jakarta.jws.WebService;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

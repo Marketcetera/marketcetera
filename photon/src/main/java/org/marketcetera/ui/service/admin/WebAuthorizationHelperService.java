@@ -3,7 +3,7 @@ package org.marketcetera.ui.service.admin;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.admin.Permission;
 import org.marketcetera.ui.service.AuthorizationHelperService;

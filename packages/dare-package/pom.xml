@@ -87,7 +87,8 @@
     <!-- other compile -->
     <dependency>
       <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-ui</artifactId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.4.0</version>
     </dependency>
     <!-- Removing springdoc-openapi-security as it's not needed and would require Spring Security dependencies -->
     <!-- <dependency>

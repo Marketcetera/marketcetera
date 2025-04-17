@@ -5,7 +5,7 @@ import static org.marketcetera.marketdata.Messages.OPTION_REQUIRES_UNDERLYING_IN
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.Immutable;
+import net.jcip.annotations.Immutable;
 
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.HasUnderlyingInstrument;

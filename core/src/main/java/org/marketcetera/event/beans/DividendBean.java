@@ -2,8 +2,8 @@ package org.marketcetera.event.beans;
 
 import java.math.BigDecimal;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.*;
+import net.jcip.annotations.NotThreadSafe;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.*;
 import org.marketcetera.event.util.EventServices;

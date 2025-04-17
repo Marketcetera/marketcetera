@@ -3,8 +3,8 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.XmlElement;
+import net.jcip.annotations.ThreadSafe;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.QuoteAction;

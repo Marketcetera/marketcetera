@@ -3,7 +3,7 @@ package org.marketcetera.fix.acceptor;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.brokers.service.BrokerService;

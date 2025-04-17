@@ -1,6 +1,6 @@
 package org.marketcetera.trade.event.connector;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.eventbus.EventBusService;

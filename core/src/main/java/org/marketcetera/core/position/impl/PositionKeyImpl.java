@@ -1,7 +1,7 @@
 package org.marketcetera.core.position.impl;
 
-import javax.annotation.Nullable;
-import javax.xml.bind.annotation.*;
+import jakarta.annotation.Nullable;
+import jakarta.xml.bind.annotation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;

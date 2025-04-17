@@ -32,9 +32,10 @@
   </developers>
   <properties>
     <mvn.javase.version>17</mvn.javase.version>
-    <mvn.spring.boot.version>2.7.18</mvn.spring.boot.version>
-    <mvn.cxf.version>3.5.5</mvn.cxf.version>
-    <mvn.log4j.version>2.20.0</mvn.log4j.version>
+    <mvn.spring.boot.version>3.2.5</mvn.spring.boot.version>
+    <mvn.cxf.version>4.0.4</mvn.cxf.version>
+    <mvn.log4j.version>2.22.0</mvn.log4j.version>
+    <querydsl.version>5.0.0</querydsl.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <esper.version>8.8.0</esper.version>
@@ -497,15 +498,16 @@
         <artifactId>joda-time</artifactId>
         <version>2.10.13</version>
       </dependency>
+      <!-- SpringDoc OpenAPI for Spring Boot 3 -->
       <dependency>
         <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-ui</artifactId>
-        <version>1.7.0</version>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-security</artifactId>
-        <version>1.7.0</version>
+        <artifactId>springdoc-openapi-starter-common</artifactId>
+        <version>2.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.tensorflow</groupId>
@@ -965,6 +967,67 @@
         <version>3.2</version>
         <scope>test</scope>
       </dependency>
+      
+      <!-- QueryDSL dependencies for Jakarta EE -->
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-apt</artifactId>
+        <version>${querydsl.version}</version>
+        <classifier>jakarta</classifier>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <version>${querydsl.version}</version>
+        <classifier>jakarta</classifier>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-core</artifactId>
+        <version>${querydsl.version}</version>
+      </dependency>
+      
+      <!-- Jakarta EE dependencies -->
+      <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>2.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>6.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.transaction</groupId>
+        <artifactId>jakarta.transaction-api</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+      
+      <!-- JCIP Annotations to replace jakarta.annotation.concurrent -->
+      <dependency>
+        <groupId>net.jcip</groupId>
+        <artifactId>jcip-annotations</artifactId>
+        <version>1.0</version>
+      </dependency>
+      
+      <!-- Apache HttpClient 5.x -->
+      <dependency>
+        <groupId>org.apache.httpcomponents.client5</groupId>
+        <artifactId>httpclient5</artifactId>
+        <version>5.2.3</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
@@ -1086,25 +1149,7 @@
           <artifactId>maven-replacer-plugin</artifactId>
           <version>1.4.1</version>
         </plugin>
-        <plugin>
-          <groupId>com.mysema.maven</groupId>
-          <artifactId>apt-maven-plugin</artifactId>
-          <version>1.1.3</version>
-          <executions>
-            <execution>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>process</goal>
-              </goals>
-              <configuration>
-                <!-- Specifies the directory in which the query types are generated -->
-                <outputDirectory>target/generated-sources/java</outputDirectory>
-                <!-- States that the APT code generator should look for JPA annotations -->
-                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
+        <!-- QueryDSL annotation processor is configured in the maven-compiler-plugin below -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
@@ -1216,7 +1261,27 @@
               <arg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</arg>
               <arg>--add-opens=java.base/java.io=ALL-UNNAMED</arg>
               <arg>--add-opens=java.base/java.util=ALL-UNNAMED</arg>
+              <!-- QueryDSL annotation processor arguments -->
+              <arg>-Aquerydsl.entityAccessors=true</arg>
+              <arg>-Aquerydsl.packageSuffix=</arg>
             </compilerArgs>
+            <!-- QueryDSL annotation processor configuration for Jakarta EE -->
+            <annotationProcessorPaths>
+              <path>
+                <groupId>com.querydsl</groupId>
+                <artifactId>querydsl-apt</artifactId>
+                <version>${querydsl.version}</version>
+                <classifier>jakarta</classifier>
+              </path>
+              <path>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>3.1.0</version>
+              </path>
+            </annotationProcessorPaths>
+            <annotationProcessors>
+              <annotationProcessor>com.querydsl.apt.jpa.JPAAnnotationProcessor</annotationProcessor>
+            </annotationProcessors>
           </configuration>
         </plugin>
         <!-- mvn assembly:* -->

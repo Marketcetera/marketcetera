@@ -3,11 +3,11 @@ package org.marketcetera.fix.dao;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.joda.time.DateTime;
 import org.marketcetera.fix.IncomingMessage;
@@ -222,42 +222,42 @@ public class PersistentIncomingMessage
      */
     @Id
     @GeneratedValue
-    @Column(name="id",nullable=false)
+    @Column(name="id",nullable = false)
     private long id;
     /**
      * session id value
      */
-    @Column(name="fix_session",nullable=false)
+    @Column(name="fix_session",nullable = false)
     private String sessionId;
     /**
      * FIX message value
      */
-    @Column(name="message",length=4000,nullable=false)
+    @Column(name="message",length=4000,nullable = false)
     private String message;
     /**
      * message sequence number of the most recent message
      */
-    @Column(name="msg_seq_num",nullable=false)
+    @Column(name="msg_seq_num",nullable = false)
     private int msgSeqNum;
     /**
      * sending time value
      */
-    @Column(name="sending_time",nullable=false)
+    @Column(name="sending_time",nullable = false)
     private Date sendingTime;
     /**
      * msg type of the most recent message
      */
-    @Column(name="msg_type",nullable=false)
+    @Column(name="msg_type",nullable = false)
     private String msgType;
     /**
      * exec id of the incoming message, if present
      */
-    @Column(name="execid",nullable=true)
+    @Column(name="execid",nullable = true)
     private String execId;
     /**
      * cl ord id of the incoming message, if present
      */
-    @Column(name="clordid",nullable=true)
+    @Column(name="clordid",nullable = true)
     private String clOrdId;
     private static final long serialVersionUID = 2818985153287642587L;
 }

@@ -117,4 +117,4 @@
 @XmlSchema (namespace = "http://marketcetera.org/types/trade")
 package org.marketcetera.trade;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;

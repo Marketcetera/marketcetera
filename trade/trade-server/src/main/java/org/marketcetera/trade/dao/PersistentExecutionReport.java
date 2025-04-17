@@ -6,17 +6,17 @@ import static org.marketcetera.core.PlatformServices.DECIMAL_SCALE;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.user.PersistentUser;
@@ -694,77 +694,77 @@ public class PersistentExecutionReport
      * root order ID value
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="root_order_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="root_order_id",nullable = false))})
     private OrderID rootOrderId;
     /**
      * order ID value
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable = false))})
     private OrderID orderId;
     /**
      * original order ID value, may be <code>null</code>
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="orig_order_id",nullable=true))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="orig_order_id",nullable = true))})
     private OrderID origOrderID;
     /**
      * symbol value
      */
-    @Column(name="symbol",nullable=false)
+    @Column(name="symbol",nullable = false)
     private String symbol;
     /**
      * strike price value, <code>null</code> for non-option types
      */
-    @Column(name="strike_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    @Column(name="strike_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = true)
     private BigDecimal strikePrice;
     /**
      * side value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="side",nullable=false)
+    @Column(name="side",nullable = false)
     private Side side;
     /**
      * cumulative quantity value
      */
-    @Column(name="cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal cumQuantity;
     /**
      * effective cumulative quantity value, which is the cumulative quantity adjusted for side
      */
-    @Column(name="eff_cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="eff_cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal effectiveCumQuantity;
     /**
      * average price value
      */
-    @Column(name="avg_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="avg_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal avgPrice;
     /**
      * last quantity value, may be <code>null</code>
      */
-    @Column(name="last_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    @Column(name="last_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = true)
     private BigDecimal lastQuantity;
     /**
      * last price value, may be <code>null</code>
      */
-    @Column(name="last_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    @Column(name="last_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = true)
     private BigDecimal lastPrice;
     /**
      * order status value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="ord_status",nullable=false)
+    @Column(name="ord_status",nullable = false)
     private OrderStatus orderStatus;
     /**
      * execution type value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="exec_type",nullable=false)
+    @Column(name="exec_type",nullable = false)
     private ExecutionType execType;
     /**
      * sending time value
      */
-    @Column(name="send_time",nullable=false)
+    @Column(name="send_time",nullable = false)
     private Date sendingTime;
     /**
      * viewer value
@@ -782,60 +782,60 @@ public class PersistentExecutionReport
      * security type value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="security_type",nullable=false)
+    @Column(name="security_type",nullable = false)
     private SecurityType securityType;
     /**
      * expiry value, <code>null</code> for non-option types
      */
-    @Column(name="expiry",nullable=true)
+    @Column(name="expiry",nullable = true)
     private String expiry;
     /**
      * option type value, <code>null</code> for non-option types
      */
-    @Column(name="option_type",nullable=true)
+    @Column(name="option_type",nullable = true)
     private OptionType optionType;
     /**
      * account value, may be <code>null</code>
      */
-    @Column(name="account",nullable=true)
+    @Column(name="account",nullable = true)
     private String account;
     /**
      * execution id value
      */
-    @Column(name="exec_id",nullable=false)
+    @Column(name="exec_id",nullable = false)
     private String executionId;
     /**
      * broker order id value
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_order_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_order_id",nullable = false))})
     private OrderID brokerOrderId;
     /**
      * leaves quantity value
      */
-    @Column(name="leaves_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="leaves_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal leavesQuantity;
     /**
      * leaves quantity value
      */
-    @Column(name="order_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="order_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal orderQuantity;
     /**
      * order type value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="order_type",nullable=true)
+    @Column(name="order_type",nullable = true)
     private OrderType orderType;
     /**
      * price value
      */
-    @Column(name="price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    @Column(name="price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = true)
     private BigDecimal price;
     /**
      * time-in-force value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="tif",nullable=true)
+    @Column(name="tif",nullable = true)
     private TimeInForce timeInForce;
     /**
      * linked report value

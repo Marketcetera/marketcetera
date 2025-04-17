@@ -2,7 +2,7 @@ package org.marketcetera.core.notifications;
 
 import java.util.Set;
 
-import javax.mail.Authenticator;
+import jakarta.mail.Authenticator;
 
 /* $License$ */
 

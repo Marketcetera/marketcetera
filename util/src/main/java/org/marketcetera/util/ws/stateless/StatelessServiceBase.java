@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.stateless;
 
-import javax.jws.WebService;
+import jakarta.jws.WebService;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**

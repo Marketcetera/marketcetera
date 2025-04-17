@@ -1,7 +1,7 @@
 package org.marketcetera.fix;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.NotThreadSafe;
+import jakarta.annotation.PostConstruct;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.cluster.service.ClusterService;

@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;

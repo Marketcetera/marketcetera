@@ -1,6 +1,6 @@
 package org.marketcetera.trade;
 
-import javax.annotation.concurrent.Immutable;
+import net.jcip.annotations.Immutable;
 
 /* $License$ */
 

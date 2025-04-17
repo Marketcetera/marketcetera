@@ -3,11 +3,11 @@ package org.marketcetera.metrics.dao;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 
 import org.marketcetera.persist.EntityBase;
 
@@ -496,128 +496,128 @@ public class PersistentMetric
     /**
      * metric name value
      */
-    @Column(name="name",nullable=false)
+    @Column(name="name",nullable = false)
     private String name;
     /**
      * metric timestamp value
      */
-    @Column(name="metric_timestamp",nullable=false)
+    @Column(name="metric_timestamp",nullable = false)
     private Date timestamp;
     /**
      * metric type value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="type",nullable=false)
+    @Column(name="type",nullable = false)
     private MetricType type;
     /**
      * metric count value
      */
-    @Column(name="count",nullable=true)
+    @Column(name="count",nullable = true)
     private long count;
     /**
      * metric gauge value
      */
-    @Column(name="value",nullable=true)
+    @Column(name="value",nullable = true)
     private String value;
     /**
      * metric mean value
      */
-    @Column(name="mean",nullable=true)
+    @Column(name="mean",nullable = true)
     private BigDecimal mean;
     /**
      * metric m1 value
      */
-    @Column(name="m1",nullable=true)
+    @Column(name="m1",nullable = true)
     private BigDecimal m1;
     /**
      * metric m5 value
      */
-    @Column(name="m5",nullable=true)
+    @Column(name="m5",nullable = true)
     private BigDecimal m5;
     /**
      * metric m15 value
      */
-    @Column(name="m15",nullable=true)
+    @Column(name="m15",nullable = true)
     private BigDecimal m15;
     /**
      * metric min value
      */
-    @Column(name="min",nullable=true)
+    @Column(name="min",nullable = true)
     private BigDecimal min;
     /**
      * metric max value
      */
-    @Column(name="max",nullable=true)
+    @Column(name="max",nullable = true)
     private BigDecimal max;
     /**
      * metric standard deviation value
      */
-    @Column(name="std_dev",nullable=true)
+    @Column(name="std_dev",nullable = true)
     private BigDecimal stdDev;
     /**
      * metric median value
      */
-    @Column(name="median",nullable=true)
+    @Column(name="median",nullable = true)
     private BigDecimal median;
     /**
      * metric p75 value
      */
-    @Column(name="p75",nullable=true)
+    @Column(name="p75",nullable = true)
     private BigDecimal p75;
     /**
      * metric p95 value
      */
-    @Column(name="p95",nullable=true)
+    @Column(name="p95",nullable = true)
     private BigDecimal p95;
     /**
      * metric p98 value
      */
-    @Column(name="p98",nullable=true)
+    @Column(name="p98",nullable = true)
     private BigDecimal p98;
     /**
      * metric p99 value
      */
-    @Column(name="p99",nullable=true)
+    @Column(name="p99",nullable = true)
     private BigDecimal p99;
     /**
      * metric p999 value
      */
-    @Column(name="p999",nullable=true)
+    @Column(name="p999",nullable = true)
     private BigDecimal p999;
     /**
      * metric mean rate value
      */
-    @Column(name="mean_rate",nullable=true)
+    @Column(name="mean_rate",nullable = true)
     private BigDecimal meanRate;
     /**
      * metric rate unit value
      */
-    @Column(name="rate_unit",nullable=true)
+    @Column(name="rate_unit",nullable = true)
     private String rateUnit;
     /**
      * metric duration unit value
      */
-    @Column(name="duration_unit",nullable=true)
+    @Column(name="duration_unit",nullable = true)
     private String durationUnit;
     /**
      * metric hour value
      */
-    @Column(name="hour",nullable=false)
+    @Column(name="hour",nullable = false)
     private int hour;
     /**
      * metric minute value
      */
-    @Column(name="minute",nullable=false)
+    @Column(name="minute",nullable = false)
     private int minute;
     /**
      * metric second value
      */
-    @Column(name="second",nullable=false)
+    @Column(name="second",nullable = false)
     private int second;
     /**
      * metric millis value
      */
-    @Column(name="millis",nullable=false)
+    @Column(name="millis",nullable = false)
     private int millis;
     private static final long serialVersionUID = 4678276112801771280L;
 }

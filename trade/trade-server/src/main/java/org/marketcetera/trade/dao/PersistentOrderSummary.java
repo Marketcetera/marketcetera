@@ -6,17 +6,17 @@ import static org.marketcetera.core.PlatformServices.DECIMAL_SCALE;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.user.PersistentUser;
@@ -457,99 +457,99 @@ public class PersistentOrderSummary
      * root order ID value
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="root_order_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="root_order_id",nullable = false))})
     private OrderID rootOrderId;
     /**
      * order ID value
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable = false))})
     private OrderID orderId;
     /**
      * order status value
      */
     @Enumerated(EnumType.STRING)
-    @Column(name="ord_status",nullable=false)
+    @Column(name="ord_status",nullable = false)
     private org.marketcetera.trade.OrderStatus orderStatus;
     /**
      * cumulative quantity value
      */
-    @Column(name="cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal cumulativeQuantity;
     /**
      * average price value
      */
-    @Column(name="avg_px",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="avg_px",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal averagePrice;
     /**
      * leaves qty value
      */
-    @Column(name="leaves_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="leaves_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal leavesQuantity;
     /**
      * last qty value
      */
-    @Column(name="last_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="last_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal lastQuantity;
     /**
      * last px value
      */
-    @Column(name="last_px",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="last_px",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal lastPrice;
     /**
      * order px value
      */
-    @Column(name="order_px",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    @Column(name="order_px",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = true)
     private BigDecimal orderPrice;
     /**
      * last qty value
      */
-    @Column(name="order_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    @Column(name="order_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = false)
     private BigDecimal orderQuantity;
     /**
      * security type value
      */
-    @Column(name="security_type",nullable=false)
+    @Column(name="security_type",nullable = false)
     private SecurityType securityType;
     /**
      * expiry value, <code>null</code> for non-option types
      */
-    @Column(name="expiry",nullable=true)
+    @Column(name="expiry",nullable = true)
     private String expiry;
     /**
      * option type value, <code>null</code> for non-option types
      */
-    @Column(name="option_type",nullable=true)
+    @Column(name="option_type",nullable = true)
     private OptionType optionType;
     /**
      * account value, may be <code>null</code>
      */
-    @Column(name="account",nullable=true)
+    @Column(name="account",nullable = true)
     private String account;
     /**
      * symbol value
      */
-    @Column(name="symbol",nullable=false)
+    @Column(name="symbol",nullable = false)
     private String symbol;
     /**
      * strike price value, <code>null</code> for non-option types
      */
-    @Column(name="strike_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    @Column(name="strike_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable = true)
     private BigDecimal strikePrice;
     /**
      * side value
      */
-    @Column(name="side",nullable=false)
+    @Column(name="side",nullable = false)
     private Side side;
     /**
      * sending time value
      */
-    @Column(name="sending_time",nullable=false)
+    @Column(name="sending_time",nullable = false)
     private Date sendingTime;
     /**
      * execution time value
      */
-    @Column(name="execution_time",nullable=true)
+    @Column(name="execution_time",nullable = true)
     private Date transactTime;
     /**
      * broker ID value

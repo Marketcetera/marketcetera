@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import net.jcip.annotations.NotThreadSafe;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;

@@ -9,7 +9,7 @@ import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;

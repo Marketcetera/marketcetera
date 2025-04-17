@@ -10,7 +10,7 @@ import static org.marketcetera.event.Messages.VALIDATION_SPREAD_REQUIRED;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.marketcetera.event.AuctionType;
 import org.marketcetera.event.EventType;

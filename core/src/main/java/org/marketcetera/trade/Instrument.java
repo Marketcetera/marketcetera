@@ -2,8 +2,8 @@ package org.marketcetera.trade;
 
 import java.io.Serializable;
 
-import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import net.jcip.annotations.Immutable;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;

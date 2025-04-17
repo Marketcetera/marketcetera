@@ -3,20 +3,20 @@ package org.marketcetera.fix.dao;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -293,55 +293,55 @@ public class PersistentFixSession
      * isAcceptor value
      */
     @XmlAttribute
-    @Column(name="acceptor",nullable=false)
+    @Column(name="acceptor",nullable = false)
     private boolean isAcceptor;
     /**
      * isEnabled value
      */
     @XmlAttribute
-    @Column(name="enabled",nullable=false)
+    @Column(name="enabled",nullable = false)
     private boolean isEnabled;
     /**
      * isDeleted value
      */
     @XmlAttribute
-    @Column(name="deleted",nullable=false)
+    @Column(name="deleted",nullable = false)
     private boolean isDeleted = false;
     /**
      * port value
      */
     @XmlAttribute
-    @Column(name="port",nullable=false)
+    @Column(name="port",nullable = false)
     private int port;
     /**
      * host value
      */
     @XmlAttribute
-    @Column(name="host",nullable=false)
+    @Column(name="host",nullable = false)
     private String host;
     /**
      * affinity value
      */
     @XmlAttribute
-    @Column(name="affinity",nullable=false)
+    @Column(name="affinity",nullable = false)
     private int affinity;
     /**
      * broker ID value
      */
     @XmlAttribute
-    @Column(name="broker_id",nullable=false)
+    @Column(name="broker_id",nullable = false)
     private String brokerId;
     /**
      * mapped broker ID value
      */
     @XmlAttribute
-    @Column(name="mapped_broker_id",nullable=true)
+    @Column(name="mapped_broker_id",nullable = true)
     private String mappedBrokerId;
     /**
      * session ID value
      */
     @XmlAttribute
-    @Column(name="session_id",nullable=false)
+    @Column(name="session_id",nullable = false)
     private String sessionId;
     /**
      * session attributes

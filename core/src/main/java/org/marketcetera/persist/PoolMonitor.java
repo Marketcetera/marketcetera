@@ -4,15 +4,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.mchange.v2.c3p0.PooledDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 /* $License$ */
 
@@ -32,19 +31,16 @@ public class PoolMonitor
     public void start()
     {
         Validate.notNull(pool);
-        final String dataSourceName = pool.getDataSourceName();
+        final String dataSourceName = pool.getPoolName();
         monitorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("DatabasePoolMonitor").build());
         monitorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run()
             {
                 try {
-                    int numBusy = pool.getNumBusyConnectionsAllUsers();
-                    int numConnections = pool.getNumConnectionsAllUsers();
-                    if(pool instanceof ComboPooledDataSource) {
-                        numConnections = ((ComboPooledDataSource)pool).getMaxPoolSize();
-                    }
-                    int numIdle = pool.getNumIdleConnectionsAllUsers();
+                    int numBusy = pool.getHikariPoolMXBean().getActiveConnections();
+                    int numConnections = pool.getMaximumPoolSize();
+                    int numIdle = pool.getHikariPoolMXBean().getIdleConnections();
                     Messages.POOL_MONITOR_STATS.info(PoolMonitor.this,
                                                      dataSourceName,
                                                      numIdle,
@@ -68,18 +64,18 @@ public class PoolMonitor
     /**
      * Get the pool value.
      *
-     * @return a <code>PooledDataSource</code> value
+     * @return a <code>HikariDataSource</code> value
      */
-    public PooledDataSource getPool()
+    public HikariDataSource getPool()
     {
         return pool;
     }
     /**
      * Sets the pool value.
      *
-     * @param inPool a <code>PooledDataSource</code> value
+     * @param inPool a <code>HikariDataSource</code> value
      */
-    public void setPool(PooledDataSource inPool)
+    public void setPool(HikariDataSource inPool)
     {
         pool = inPool;
     }
@@ -104,7 +100,7 @@ public class PoolMonitor
     /**
      * pool source to monitor
      */
-    private PooledDataSource pool;
+    private HikariDataSource pool;
     /**
      * interval at which to monitor (in  ms)
      */

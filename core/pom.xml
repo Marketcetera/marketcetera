@@ -54,6 +54,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
+      <version>6.2.13.Final</version>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
@@ -104,15 +105,16 @@
     <dependency>
       <groupId>com.hazelcast</groupId>
       <artifactId>hazelcast</artifactId>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-c3p0</artifactId>
+      <version>6.2.13.Final</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -124,8 +126,9 @@
       <artifactId>jnr-process</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>5.2.3</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
@@ -185,6 +188,15 @@
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
+      <version>3.1.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -238,9 +250,9 @@
           </replacements>
         </configuration>
       </plugin>
+      <!-- QueryDSL annotation processor is configured in parent pom -->
       <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
+        <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

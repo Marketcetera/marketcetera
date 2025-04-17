@@ -1,16 +1,16 @@
 package org.marketcetera.trade.dao;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.admin.user.PersistentUser;
@@ -204,17 +204,17 @@ public class PersistentOutgoingMessage
      * broker id value
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id",nullable = false))})
     private BrokerID brokerId;
     /**
      * sender comp id value
      */
-    @Column(name="sender_comp_id",nullable=false)
+    @Column(name="sender_comp_id",nullable = false)
     private String senderCompId;
     /**
      * target comp id value
      */
-    @Column(name="target_comp_id",nullable=false)
+    @Column(name="target_comp_id",nullable = false)
     private String targetCompId;
     /**
      * raw FIX message value
@@ -225,12 +225,12 @@ public class PersistentOutgoingMessage
     /**
      * session ID value
      */
-    @Column(name="session_id",nullable=false)
+    @Column(name="session_id",nullable = false)
     private String sessionIdValue;
     /**
      * message type value
      */
-    @Column(name="message_type",nullable=false)
+    @Column(name="message_type",nullable = false)
     private String messageType;
     /**
      * MsgSeqNum value
@@ -241,12 +241,12 @@ public class PersistentOutgoingMessage
      * actor value
      */
     @ManyToOne
-    @JoinColumn(name="actor_id",nullable=false)
+    @JoinColumn(name="actor_id",nullable = false)
     private PersistentUser actor; 
     /**
      * order Id value
      */
-    @Column(name="order_id",nullable=true)
+    @Column(name="order_id",nullable = true)
     private String orderId;
     private static final long serialVersionUID = 6645547576221081314L;
 }

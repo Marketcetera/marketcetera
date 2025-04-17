@@ -3,8 +3,8 @@ package org.marketcetera.core.notifications;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.NotThreadSafe;
+import jakarta.annotation.PostConstruct;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

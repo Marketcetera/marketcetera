@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.jws.WebService;
+import jakarta.jws.WebService;
 
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessServiceBase;

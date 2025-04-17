@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -122,12 +121,12 @@ public class SlackNotificationExecutorMethod
                 nvps.add(new BasicNameValuePair("payload",
                                                 payloadBuilder.toString()));
                 postRequest.setEntity(new UrlEncodedFormEntity(nvps,
-                                                               "UTF-8"));
-                try(CloseableHttpResponse response = httpclient.execute(postRequest)) {
-                    if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                                                               java.nio.charset.StandardCharsets.UTF_8));
+                try(var response = httpclient.execute(postRequest)) {
+                    if(response.getCode() != HttpStatus.SC_OK) {
                         SLF4JLoggerProxy.warn(this,
                                               "Slack webhook did not succeed: {}",
-                                              response.getStatusLine());
+                                              response.getReasonPhrase());
                     }
                 }
             }

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.GuardedBy;
+import jakarta.annotation.PostConstruct;
+import net.jcip.annotations.GuardedBy;
 
 import org.apache.commons.lang3.Validate;
 import org.marketcetera.brokers.BrokerSelector;

@@ -7,7 +7,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.concurrent.ThreadSafe;
+import net.jcip.annotations.ThreadSafe;
 import javax.management.MBeanServerConnection;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;

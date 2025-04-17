@@ -2,9 +2,9 @@ package org.marketcetera.fix.store;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import org.joda.time.DateTime;
 
@@ -91,17 +91,17 @@ public class MessageStoreSession
     /**
      * time session was actually created
      */
-    @Column(name="creation_time",nullable=false)
+    @Column(name="creation_time",nullable = false)
     private Date creationTime;
     /**
      * target sequence number value
      */
-    @Column(name="target_seq_num",nullable=false)
+    @Column(name="target_seq_num",nullable = false)
     private int targetSeqNum;
     /**
      * sender sequence number vlue
      */
-    @Column(name="sender_seq_num",nullable=false)
+    @Column(name="sender_seq_num",nullable = false)
     private int senderSeqNum;
     private static final long serialVersionUID = -5336560074189778942L;
 }

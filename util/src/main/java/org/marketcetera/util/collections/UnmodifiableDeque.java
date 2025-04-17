@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 
-import javax.annotation.concurrent.NotThreadSafe;
-import javax.annotation.concurrent.ThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
+import net.jcip.annotations.ThreadSafe;
 
 import org.marketcetera.util.misc.ClassVersion;
 

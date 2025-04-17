@@ -1,10 +1,10 @@
 package org.marketcetera.admin.dao;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import org.marketcetera.admin.MutableUserAttribute;
 import org.marketcetera.admin.User;
@@ -131,12 +131,12 @@ public class PersistentUserAttribute
     /**
      * attribute type value
      */
-    @Column(name="user_attribute_type",nullable=false)
+    @Column(name="user_attribute_type",nullable = false)
     private UserAttributeType userAttributeType;
     /**
      * attribute value
      */
-    @Column(name="attribute",nullable=false,length=262144)
+    @Column(name="attribute",nullable=false,length = 262144)
     private String attribute;
     private static final long serialVersionUID = 4409150813670715607L;
 }

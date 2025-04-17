@@ -3,7 +3,7 @@ package org.marketcetera.fix.provisioning;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.concurrent.NotThreadSafe;
+import net.jcip.annotations.NotThreadSafe;
 
 import org.marketcetera.brokers.service.BrokerService;
 import org.marketcetera.fix.SessionRestoreArbiter;

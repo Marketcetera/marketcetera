@@ -3,13 +3,13 @@ package org.marketcetera.admin.user;
 import static org.marketcetera.admin.Messages.EMPTY_PASSWORD;
 import static org.marketcetera.admin.Messages.SIMPLE_USER_NAME;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -230,22 +230,22 @@ public class PersistentUser
     /**
      * indicates if this user is a super user
      */
-    @Column(name="is_superuser",nullable=false)
+    @Column(name="is_superuser",nullable = false)
     private boolean superuser = false;
     /**
      * indicates if this user is currently active
      */
-    @Column(name="is_active",nullable=false)
+    @Column(name="is_active",nullable = false)
     private boolean active = true;
     /**
      * the user data associated with this used - may be <code>null</code>
      */
-    @Column(name="user_data",nullable=true,length=8096)
+    @Column(name="user_data",nullable=true,length = 8096)
     private String userData;
     /**
      * hashed password value
      */
-    @Column(name="password",nullable=false)
+    @Column(name="password",nullable = false)
     private String hashedPassword = null;
     private static final long serialVersionUID = -244334398553751199L;
 }

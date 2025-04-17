@@ -3,7 +3,7 @@ package org.marketcetera.algo;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.CompareToBuilder;

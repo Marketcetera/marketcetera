@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;

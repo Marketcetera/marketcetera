@@ -1,6 +1,6 @@
 package org.marketcetera.ui.service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.stereotype.Component;

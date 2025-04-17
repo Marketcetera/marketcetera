@@ -3,7 +3,7 @@ package org.marketcetera.util.ws.stateless;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
-import javax.jws.WebService;
+import jakarta.jws.WebService;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.PortDescriptor;

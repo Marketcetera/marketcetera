@@ -2,12 +2,11 @@ package org.marketcetera.core.notifications;
 
 import java.io.IOException;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.json.JSONObject;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -160,11 +159,11 @@ public class PagerDutyNotificationExecutorMethod
                                        "Pager duty payload is {}",
                                        payloadBuilder);
                 postRequest.setEntity(new StringEntity(payloadBuilder.toString()));
-                try(CloseableHttpResponse response = httpclient.execute(postRequest)) {
-                    if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                try(var response = httpclient.execute(postRequest)) {
+                    if(response.getCode() != HttpStatus.SC_OK) {
                         SLF4JLoggerProxy.warn(this,
                                               "Pager duty did not succeed: {}",
-                                              response.getStatusLine());
+                                              response.getReasonPhrase());
                     }
                 }
             }

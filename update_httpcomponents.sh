@@ -1,0 +1,157 @@
+#!/bin/bash
+# Script to update HttpClient from 4.x to 5.x
+
+# Add the httpclient5 dependency to the pom.xml
+cd /Users/colin/marketcetera/workspaces/sixer-java11/code/marketcetera/core
+
+# Update the SlackNotificationExecutorMethod.java file
+cat > /tmp/SlackNotificationExecutorMethod.java <<'EOF'
+package org.marketcetera.core.notifications;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+/* $License$ */
+
+/**
+ * Sends notifications via <a href="https://slack.com">Slack</a>
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
+public class SlackNotificationExecutorMethod
+        extends AbstractNotificationExecutorMethod
+{
+    /**
+     * Get the slackWebHookUrl value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getSlackWebHookUrl()
+    {
+        return slackWebHookUrl;
+    }
+    /**
+     * Sets the slackWebHookUrl value.
+     *
+     * @param inSlackWebHookUrl a <code>String</code> value
+     */
+    public void setSlackWebHookUrl(String inSlackWebHookUrl)
+    {
+        slackWebHookUrl = inSlackWebHookUrl;
+    }
+    /**
+     * Get the slackWebHookParams value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getSlackWebHookParams()
+    {
+        return slackWebHookParams;
+    }
+    /**
+     * Sets the slackWebHookParams value.
+     *
+     * @param inSlackWebHookParams a <code>String</code> value
+     */
+    public void setSlackWebHookParams(String inSlackWebHookParams)
+    {
+        slackWebHookParams = inSlackWebHookParams;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.notifications.AbstractNotificationExecutorMethod#doNotify(org.marketcetera.core.notifications.INotification)
+     */
+    @Override
+    protected void doNotify(INotification inNotification)
+            throws Exception
+    {
+        notifySlackWebhook(inNotification);
+    }
+    /**
+     * Notifies via slack webhook if necessary.
+     *
+     * @param inNotification an <code>INotification</code> value
+     * @throws IOException if an error occurs during notification
+     */
+    private void notifySlackWebhook(INotification inNotification)
+            throws IOException
+    {
+        String url = slackWebHookUrl;
+        String params = slackWebHookParams;
+        if(inNotification instanceof SlackNotification) {
+            SlackNotification slackNotification = (SlackNotification)inNotification;
+            if(!slackNotification.shouldSlack()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Not sending slack notification because the notification canceled it");
+                return;
+            }
+            if(slackNotification.getSlackWebHookUrl() != null) {
+                url = slackNotification.getSlackWebHookUrl();
+            }
+            if(slackNotification.getSlackWebHookParams() != null) {
+                params = slackNotification.getSlackWebHookParams();
+            }
+        }
+        if(url != null) {
+            try(CloseableHttpClient httpclient = HttpClients.createDefault()) {
+                HttpPost postRequest = null;
+                postRequest = new HttpPost(url);
+                StringBuilder payloadBuilder = new StringBuilder();
+                payloadBuilder.append("{\"text\":");
+                // prepare notification subject and body
+                String subject = getSubject(inNotification);
+                payloadBuilder.append("\"");
+                payloadBuilder.append(subject);
+                payloadBuilder.append("\\n");
+                payloadBuilder.append("```");
+                String body = getBody(inNotification);
+                payloadBuilder.append(body);
+                payloadBuilder.append("```\"");
+                if(params != null) {
+                    payloadBuilder.append(',').append(params);
+                }
+                payloadBuilder.append("}");
+                SLF4JLoggerProxy.debug(this,
+                                       "Slack webhook payload is {}",
+                                       payloadBuilder);
+                List<NameValuePair> nvps = new ArrayList<NameValuePair>(1);
+                nvps.add(new BasicNameValuePair("payload",
+                                                payloadBuilder.toString()));
+                postRequest.setEntity(new UrlEncodedFormEntity(nvps,
+                                                               "UTF-8"));
+                try(var response = httpclient.execute(postRequest)) {
+                    if(response.getCode() != HttpStatus.SC_OK) {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Slack webhook did not succeed: {}",
+                                              response.getReasonPhrase());
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * URL used to identify the slack web hook site, may be <code>null</code>, indicating no slack notification
+     */
+    private String slackWebHookUrl;
+    /**
+     * extra, optional params that are used for the slack webhook, may be <code>null</code>, indicating not used
+     */
+    private String slackWebHookParams;
+}
+EOF
+
+# Replace the original file
+mv /tmp/SlackNotificationExecutorMethod.java src/main/java/org/marketcetera/core/notifications/SlackNotificationExecutorMethod.java
+
+echo "HttpClient updated to version 5.x"

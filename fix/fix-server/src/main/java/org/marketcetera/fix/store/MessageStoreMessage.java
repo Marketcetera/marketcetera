@@ -1,8 +1,8 @@
 package org.marketcetera.fix.store;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /* $License$ */
 
@@ -57,7 +57,7 @@ public class MessageStoreMessage
     /**
      * message sequence number value
      */
-    @Column(name="msg_seq_num",nullable=false)
+    @Column(name="msg_seq_num",nullable = false)
     private int msgSeqNum;
     /**
      * message value

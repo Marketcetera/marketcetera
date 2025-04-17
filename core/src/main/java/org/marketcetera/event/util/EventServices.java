@@ -1,6 +1,6 @@
 package org.marketcetera.event.util;
 
-import javax.annotation.concurrent.Immutable;
+import net.jcip.annotations.Immutable;
 
 import org.marketcetera.event.Event;
 import org.marketcetera.event.beans.HasEventBean;

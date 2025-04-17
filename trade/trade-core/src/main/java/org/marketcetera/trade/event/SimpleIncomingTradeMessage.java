@@ -1,6 +1,6 @@
 package org.marketcetera.trade.event;
 
-import javax.annotation.concurrent.Immutable;
+import net.jcip.annotations.Immutable;
 
 import org.marketcetera.trade.TradeMessage;
 

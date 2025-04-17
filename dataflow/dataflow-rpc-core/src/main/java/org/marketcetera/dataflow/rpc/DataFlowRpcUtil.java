@@ -6,11 +6,11 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import net.jcip.annotations.GuardedBy;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.module.DataCoupling;
