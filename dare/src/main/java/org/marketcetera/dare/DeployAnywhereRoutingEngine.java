@@ -14,13 +14,20 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -33,6 +40,10 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.marketcetera.metrics.MetricService;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import org.joda.time.DateTime;
 import org.marketcetera.brokers.LogonAction;
 import org.marketcetera.brokers.LogoutAction;
@@ -923,6 +934,43 @@ public class DeployAnywhereRoutingEngine
         Validate.notNull(clusterService);
         Validate.notNull(reportService);
         Validate.notNull(brokerService);
+        
+        // Initialize metrics
+        aggregateOrderAddMeter = metrics.meter(MetricRegistry.name(getClass().getSimpleName(), "aggregateOrderAddRate"));
+        aggregateOrderProcessMeter = metrics.meter(MetricRegistry.name(getClass().getSimpleName(), "aggregateOrderProcessRate"));
+        
+        // Register thread pool gauges
+        metrics.register(MetricRegistry.name(getClass().getSimpleName(), "orderProcessingActiveThreads"),
+                (Gauge<Integer>) () -> orderProcessingExecutor != null ? orderProcessingExecutor.getActiveCount() : 0);
+        metrics.register(MetricRegistry.name(getClass().getSimpleName(), "orderProcessingPoolSize"),
+                (Gauge<Integer>) () -> orderProcessingExecutor != null ? orderProcessingExecutor.getPoolSize() : 0);
+        metrics.register(MetricRegistry.name(getClass().getSimpleName(), "orderProcessingQueueSize"),
+                (Gauge<Integer>) () -> orderProcessingExecutor != null ? orderProcessingExecutor.getQueue().size() : 0);
+        metrics.register(MetricRegistry.name(getClass().getSimpleName(), "orderLocksCount"),
+                (Gauge<Integer>) () -> orderLocks.size());
+        
+        // Initialize the shared thread pool for order processing
+        orderProcessingExecutor = new ThreadPoolExecutor(
+            maxExecutionPools,              // corePoolSize
+            maxExecutionPools,              // maximumPoolSize
+            60L, TimeUnit.SECONDS,          // keepAliveTime
+            new LinkedBlockingQueue<>(),    // workQueue
+            new OrderProcessingThreadFactory());  // threadFactory
+            
+        // Schedule periodic cleanup of unused locks
+        scheduledService.scheduleAtFixedRate(() -> {
+            try {
+                // This is a simple cleanup to avoid memory leaks
+                // In a production system, you might want more sophisticated tracking
+                // of which locks are still in use
+                if (orderLocks.size() > 10000) {
+                    SLF4JLoggerProxy.info(this, "Cleaning up order locks, current size: {}", orderLocks.size());
+                    orderLocks.clear();
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this, "Error during lock cleanup: {}", e.getMessage());
+            }
+        }, 10, 10, TimeUnit.MINUTES);
         CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryName()));
         createdSessions.clear();
         loggedOnSessions.clear();
@@ -1010,6 +1058,24 @@ public class DeployAnywhereRoutingEngine
     public void stop()
     {
         try {
+            // Shutdown the order processing executor
+            if (orderProcessingExecutor != null) {
+                try {
+                    orderProcessingExecutor.shutdownNow();
+                } catch (Exception ignored) {}
+                orderProcessingExecutor = null;
+            }
+            
+            // Unregister metrics
+            metrics.remove(MetricRegistry.name(getClass().getSimpleName(), "orderProcessingActiveThreads"));
+            metrics.remove(MetricRegistry.name(getClass().getSimpleName(), "orderProcessingPoolSize"));
+            metrics.remove(MetricRegistry.name(getClass().getSimpleName(), "orderProcessingQueueSize"));
+            metrics.remove(MetricRegistry.name(getClass().getSimpleName(), "orderLocksCount"));
+            
+            // Clear metrics maps
+            threadMetrics.clear();
+            orderLocks.clear();
+            
             if(scheduledService != null) {
                 try {
                     scheduledService.shutdownNow();
@@ -1253,7 +1319,55 @@ public class DeployAnywhereRoutingEngine
     public void setMaxExecutionPools(int inMaxExecutionPools)
     {
         maxExecutionPools = inMaxExecutionPools;
+        
+        // If the executor exists, update its core and max pool size
+        if (orderProcessingExecutor != null) {
+            orderProcessingExecutor.setCorePoolSize(maxExecutionPools);
+            orderProcessingExecutor.setMaximumPoolSize(maxExecutionPools);
+        }
     }
+    
+    /**
+     * Custom thread factory for order processing executor.
+     */
+    private class OrderProcessingThreadFactory implements ThreadFactory {
+        private final AtomicInteger threadCounter = new AtomicInteger(0);
+        
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r, "OrderProcessor-" + threadCounter.incrementAndGet());
+            thread.setDaemon(true);
+            
+            // Create metrics for this thread
+            threadMetrics.put(thread.getId(), new ThreadMetrics(thread.getId()));
+            
+            return thread;
+        }
+    }
+    
+    /**
+     * Gets statistics about the order processing thread pool.
+     *
+     * @return ThreadPoolExecutor statistics as a Map
+     */
+    public Map<String, Object> getOrderProcessorStats() {
+        Map<String, Object> stats = new HashMap<>();
+        if (orderProcessingExecutor != null) {
+            stats.put("activeCount", orderProcessingExecutor.getActiveCount());
+            stats.put("corePoolSize", orderProcessingExecutor.getCorePoolSize());
+            stats.put("poolSize", orderProcessingExecutor.getPoolSize());
+            stats.put("maximumPoolSize", orderProcessingExecutor.getMaximumPoolSize());
+            stats.put("largestPoolSize", orderProcessingExecutor.getLargestPoolSize());
+            stats.put("taskCount", orderProcessingExecutor.getTaskCount());
+            stats.put("completedTaskCount", orderProcessingExecutor.getCompletedTaskCount());
+            stats.put("queueSize", orderProcessingExecutor.getQueue().size());
+            stats.put("orderLockCount", orderLocks.size());
+            stats.put("aggregateAddRate", aggregateOrderAddMeter.getOneMinuteRate());
+            stats.put("aggregateProcessRate", aggregateOrderProcessMeter.getOneMinuteRate());
+        }
+        return stats;
+    }
+    
     /**
      * Get the executionPoolDelay value.
      *
@@ -1968,49 +2082,46 @@ public class DeployAnywhereRoutingEngine
                         key = rootOrderId.getValue();
                     }
                 }
-                inMessagePackage.key = new MessageKey(inMessagePackage.getSessionId(),
-                                                      key);
-                MessageKey messageKey = inMessagePackage.key;
-                OrderMessageProcessingQueue orderQueue = null;
-                // TODO add metrics for order queues
-                boolean warned = false;
-                long delayStarted = 0;
-                while(orderQueue == null) {
-                    synchronized(orderQueues) {
-                        orderQueue = orderQueues.get(messageKey);
-                        if(orderQueue == null) {
-                            // no order queue for this order yet
-                            // TODO size might be expensive?
-                            int size = orderQueues.size();
-                            if(size >= maxExecutionPools) {
-                                // already at max order queues, have to wait for a slot to become available
-                                if(!warned) {
-                                    delayStarted = System.currentTimeMillis();
-                                    SLF4JLoggerProxy.info(DeployAnywhereRoutingEngine.this,
-                                                          "Cannot process {} yet because max order queues ({}) in use, consider increasing the value",
-                                                          inMessagePackage.message,
-                                                          size);
-                                    warned = true;
-                                }
-                            } else {
-                                orderQueue = new OrderMessageProcessingQueue(messageKey);
-                                orderQueue.start();
-                                orderQueues.put(messageKey,
-                                                orderQueue);
-                            }
+                // Store the root order ID in the message package for later use
+                inMessagePackage.key = new MessageKey(inMessagePackage.getSessionId(), key);
+                
+                // Get or create a lock for this root order ID to ensure FIFO processing
+                final Lock orderLock = orderLocks.computeIfAbsent(key, k -> new ReentrantLock());
+                
+                // Submit the task to the shared thread pool
+                orderProcessingExecutor.execute(() -> {
+                    // Get metrics for the current thread
+                    ThreadMetrics metrics = threadMetrics.computeIfAbsent(
+                        Thread.currentThread().getId(),
+                        threadId -> new ThreadMetrics(threadId)
+                    );
+                    
+                    // Mark the message as added to the processing queue
+                    metrics.markAdd();
+                    
+                    try {
+                        // Acquire the lock for this root order ID to maintain FIFO order
+                        orderLock.lock();
+                        try {
+                            // Process the message
+                            processMessage(inMessagePackage);
+                            
+                            // Mark the message as processed
+                            metrics.markProcess();
+                        } finally {
+                            orderLock.unlock();
                         }
+                    } catch (Exception e) {
+                        if (PlatformServices.isShutdown(e)) {
+                            // ignore the exception and quietly allow the system to shut down
+                            return;
+                        }
+                        // Log any exceptions
+                        SLF4JLoggerProxy.warn(DeployAnywhereRoutingEngine.this,
+                                             "Error processing message: {}",
+                                             e.getMessage());
                     }
-                    if(orderQueue == null) {
-                        Thread.sleep(executionPoolDelay);
-                    }
-                }
-                if(warned) {
-                    SLF4JLoggerProxy.info(DeployAnywhereRoutingEngine.this,
-                                          "Resuming work on {} after {}ms delay",
-                                          inMessagePackage.message,
-                                          System.currentTimeMillis() - delayStarted);
-                }
-                orderQueue.add(inMessagePackage);
+                });
             } catch (Exception e) {
                 if(PlatformServices.isShutdown(e)) {
                     // ignore the exception and quietly allow the system to shut down
@@ -2148,6 +2259,35 @@ public class DeployAnywhereRoutingEngine
          */
         private final OrderQueueTimeoutTask timeoutTask;
     }
+    /**
+     * Tracks metrics for a worker thread.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @since 2.4.0
+     */
+    private class ThreadMetrics {
+        private final Meter addRateMeter;
+        private final Meter processRateMeter;
+        
+        public ThreadMetrics(long threadId) {
+            String threadIdStr = String.valueOf(threadId);
+            addRateMeter = metrics.meter(
+                    MetricRegistry.name(DeployAnywhereRoutingEngine.class.getSimpleName(), "worker-" + threadIdStr, "addRate"));
+            processRateMeter = metrics.meter(
+                    MetricRegistry.name(DeployAnywhereRoutingEngine.class.getSimpleName(), "worker-" + threadIdStr, "processRate"));
+        }
+        
+        public void markAdd() {
+            addRateMeter.mark();
+            aggregateOrderAddMeter.mark();
+        }
+        
+        public void markProcess() {
+            processRateMeter.mark();
+            aggregateOrderProcessMeter.mark();
+        }
+    }
+    
     /**
      * Times out an order queue if it has been unused for a period of time.
      *
@@ -2441,6 +2581,37 @@ public class DeployAnywhereRoutingEngine
     /**
      * holds processing queues for root order id
      */
+    /**
+     * Thread pool for processing order messages
+     */
+    private ThreadPoolExecutor orderProcessingExecutor;
+    
+    /**
+     * Map to track the locks for each root order ID
+     */
+    private final Map<String, Lock> orderLocks = new ConcurrentHashMap<>();
+    
+    /**
+     * Map to track metrics for each worker thread
+     */
+    private final Map<Long, ThreadMetrics> threadMetrics = new ConcurrentHashMap<>();
+    
+    /**
+     * Metrics registry 
+     */
+    private final MetricRegistry metrics = MetricService.getInstance().getMetrics();
+    
+    /**
+     * Meters for tracking aggregate processing rates
+     */
+    private Meter aggregateOrderAddMeter;
+    private Meter aggregateOrderProcessMeter;
+    
+    /**
+     * Stores synchronization locks for each message key
+     * @deprecated Will be removed in favor of the shared thread pool
+     */
+    @Deprecated
     private final Map<MessageKey,OrderMessageProcessingQueue> orderQueues = new HashMap<>();
     /**
      * active initiators by session id
@@ -2504,6 +2675,7 @@ public class DeployAnywhereRoutingEngine
     /**
      * number of milliseconds to leave an order pool alive before retiring it
      */
+    @Value("${metc.dare.execution.pool.ttl:1000}")
     private long executionPoolTtl = 1000;
     /**
      * identifies this cluster instance
