@@ -40,8 +40,8 @@
         <version>1.7.1</version>
       </extension>
     </extensions>
-    <sourceDirectory>target/generated-sources/protobuf/java</sourceDirectory>
-    <testSourceDirectory>target/generated-test-sources/protobuf/java</testSourceDirectory>
+    <sourceDirectory>${project.build.directory}/generated-sources/protobuf/java</sourceDirectory>
+    <testSourceDirectory>${project.build.directory}/generated-test-sources/protobuf/java</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
@@ -88,29 +88,43 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>3.2.0</version>
         <executions>
-          <!-- Add the gRPC main source directory -->
+          <!-- generated protobuf messages -->
           <execution>
-            <id>add-grpc-source</id>
+            <id>add-proto-sources</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>add-source</goal>
             </goals>
             <configuration>
               <sources>
-                <source>target/generated-sources/protobuf/grpc</source>
+                <source>${project.build.directory}/generated-sources/protobuf/java</source>
               </sources>
             </configuration>
           </execution>
-          <!-- Add the gRPC test source directory -->
+          <!-- generated grpc stubs -->
           <execution>
-            <id>add-grpc-test-source</id>
+            <id>add-grpc-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/grpc-java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <!-- generated test protobuf + grpc stubs -->
+          <execution>
+            <id>add-test-generated-sources</id>
             <phase>generate-test-sources</phase>
             <goals>
               <goal>add-test-source</goal>
             </goals>
             <configuration>
               <sources>
-                <source>target/generated-test-sources/protobuf/grpc</source>
+                <source>${project.build.directory}/generated-test-sources/protobuf/java</source>
+                <source>${project.build.directory}/generated-test-sources/grpc-java</source>
               </sources>
             </configuration>
           </execution>

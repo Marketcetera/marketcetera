@@ -55,11 +55,11 @@
       </dependency>
       <!-- import gRPC’s own BOM to align all grpc-* artifacts -->
       <dependency>
-	<groupId>io.grpc</groupId>
-	<artifactId>grpc-bom</artifactId>
-	<version>${grpc.version}</version>
-	<type>pom</type>
-	<scope>import</scope>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${grpc.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <!-- Compile: local modules -->
       <dependency>
@@ -1008,37 +1008,37 @@
           <version>3.12.1</version>
         </plugin>
         <!-- protoc compiler integration -->
-	<plugin>
-	  <groupId>org.xolstice.maven.plugins</groupId>
-	  <artifactId>protobuf-maven-plugin</artifactId>
-	  <version>0.6.1</version>
-	  <configuration>
-	    <protocArtifact>com.google.protobuf:protoc:${mvn.protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
-	  </configuration>
-	  <executions>
-	    <!-- 1) Generate the message classes -->
-	    <execution>
-	      <id>generate-proto</id>
-	      <goals>
-		<goal>compile</goal>
-	      </goals>
-	    </execution>
-	    <!-- 2) Generate the gRPC stubs, with skip-Generated flag -->
-	    <execution>
-	      <id>generate-grpc-stubs</id>
-	      <goals>
-		<goal>compile-custom</goal>
-	      </goals>
-	      <configuration>
-		<pluginId>grpc-java</pluginId>
-		<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
-		<!-- THIS is the magic flag, no colon, exactly as gRPC 1.63.0+ expects: -->
-		<pluginParameter>JakartaMode=omit</pluginParameter>
-		<outputDirectory>${project.build.directory}/generated-sources/grpc-java</outputDirectory>
-	      </configuration>
-	    </execution>
-	  </executions>
-	</plugin>
+        <plugin>
+          <groupId>org.xolstice.maven.plugins</groupId>
+          <artifactId>protobuf-maven-plugin</artifactId>
+          <version>0.6.1</version>
+          <configuration>
+            <protocArtifact>com.google.protobuf:protoc:${mvn.protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+          </configuration>
+          <executions>
+            <!-- 1) Generate the message classes -->
+            <execution>
+              <id>generate-proto</id>
+              <goals>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+            <!-- 2) Generate the gRPC stubs, with skip-Generated flag -->
+            <execution>
+              <id>generate-grpc-stubs</id>
+              <goals>
+                <goal>compile-custom</goal>
+              </goals>
+              <configuration>
+                <pluginId>grpc-java</pluginId>
+                <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+                <!-- THIS is the magic flag, no colon, exactly as gRPC 1.63.0+ expects: -->
+                <pluginParameter>JakartaMode=omit</pluginParameter>
+                <outputDirectory>${project.build.directory}/generated-sources/grpc-java</outputDirectory>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
@@ -1128,15 +1128,22 @@
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.3.0</version>
           <executions>
+            <!-- add the QueryDSL annotation output directory as a source root -->
             <execution>
-              <id>add-generated-sources</id>
-              <goals><goal>add-source</goal></goals>
+              <id>add-annotation-sources</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>add-source</goal>
+              </goals>
               <configuration>
                 <sources>
-                  <source>target/generated-sources/java</source>
+                  <!-- this will resolve to target/generated-sources/annotations in CLI builds
+                       and to target-ide/generated-sources/annotations when ide-build is active -->
+                  <source>${project.build.directory}/generated-sources/annotations</source>
                 </sources>
               </configuration>
             </execution>
+            <!-- (you can also add your other generated dirs here if you like) -->
           </executions>
         </plugin>
         <plugin>

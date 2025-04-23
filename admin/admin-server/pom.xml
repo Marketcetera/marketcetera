@@ -89,4 +89,36 @@
       <artifactId>junit-vintage-engine</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <!-- ensure the annotation processor runs during "generate-sources" -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <!-- point it at the JPA annotation processor -->
+          <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>add-generated-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>target/generated-sources/annotations</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
