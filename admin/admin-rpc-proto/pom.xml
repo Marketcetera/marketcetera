@@ -44,8 +44,8 @@
         <version>1.7.1</version>
       </extension>
     </extensions>
-    <sourceDirectory>target/generated-sources/protobuf/java</sourceDirectory>
-    <testSourceDirectory>target/generated-test-sources/protobuf/java</testSourceDirectory>
+    <sourceDirectory>${project.build.directory}/generated-sources/protobuf/java</sourceDirectory>
+    <testSourceDirectory>${project.build.directory}/generated-test-sources/protobuf/java</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
@@ -101,7 +101,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>target/generated-sources/protobuf/grpc-java</source>
+                <source>${project.build.directory}/generated-sources/grpc-java</source>
               </sources>
             </configuration>
           </execution>
@@ -114,7 +114,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>target/generated-test-sources/protobuf/grpc-java</source>
+                <source>${project.build.directory}/generated-test-sources/grpc-java</source>
               </sources>
             </configuration>
           </execution>
