@@ -12,8 +12,8 @@ package org.marketcetera.trade.pnl.dao;
  * @version $Id$
  * @since $Release$
  */
-@javax.persistence.Entity(name="Position")
-@javax.persistence.Table(name="metc_pnl_positions")
+@jakarta.persistence.Entity(name="Position")
+@jakarta.persistence.Table(name="metc_pnl_positions")
 public class PersistentPosition
         extends org.marketcetera.persist.EntityBase
         implements org.marketcetera.trade.pnl.Position
@@ -224,58 +224,58 @@ public class PersistentPosition
     /**
      * symbol value
      */
-    @javax.persistence.Column(name="symbol",nullable=false)
+    @jakarta.persistence.Column(name="symbol",nullable=false)
     private String symbol;
     /**
      * strike price value, <code>null</code> for non-option types
      */
-    @javax.persistence.Column(name="strike_price",nullable=false,precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE)
+    @jakarta.persistence.Column(name="strike_price",nullable=false,precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE)
     private java.math.BigDecimal strikePrice;
     /**
     * security type value
      */
-    @javax.persistence.Column(name="security_type",nullable=false)
+    @jakarta.persistence.Column(name="security_type",nullable=false)
     private org.marketcetera.trade.SecurityType securityType;
     /**
      * expiry value, <code>null</code> for non-option types
      */
-    @javax.persistence.Column(name="expiry",nullable=true)
+    @jakarta.persistence.Column(name="expiry",nullable=true)
     private String expiry;
     /**
     * option type value, <code>null</code> for non-option types
      */
-    @javax.persistence.Column(name="option_type",nullable=true)
+    @jakarta.persistence.Column(name="option_type",nullable=true)
     private org.marketcetera.trade.OptionType optionType;
     /**
      * user which owns lot
      */
-    @javax.persistence.ManyToOne(fetch=javax.persistence.FetchType.EAGER,optional=false)
-    @javax.persistence.JoinColumn(name="user_id",nullable=false)
+    @jakarta.persistence.ManyToOne(fetch=jakarta.persistence.FetchType.EAGER,optional=false)
+    @jakarta.persistence.JoinColumn(name="user_id",nullable=false)
     private org.marketcetera.admin.user.PersistentUser user;
     /**
      * position value
      */
-    @javax.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="position",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal position = java.math.BigDecimal.ZERO;
     /**
      * date as of which position is effective
      */
-    @javax.persistence.Column(name="effective_date",nullable=false)
+    @jakarta.persistence.Column(name="effective_date",nullable=false)
     private java.util.Date effectiveDate;
     /**
      * weighted average cost to attain this position
      */
-    @javax.persistence.Column(name="weighted_average_cost",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="weighted_average_cost",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal weightedAverageCost = java.math.BigDecimal.ZERO;
     /**
      * realized gain value
      */
-    @javax.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="realized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal realizedGain = java.math.BigDecimal.ZERO;
     /**
      * unrealized gain value
      */
-    @javax.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
+    @jakarta.persistence.Column(name="unrealized_gain",precision=org.marketcetera.core.PlatformServices.DECIMAL_PRECISION,scale=org.marketcetera.core.PlatformServices.DECIMAL_SCALE,nullable=false)
     private java.math.BigDecimal unrealizedGain = java.math.BigDecimal.ZERO;
     private static final long serialVersionUID = 1028526536L;
 }

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.management.JMException;
+import javax.management.JMException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;

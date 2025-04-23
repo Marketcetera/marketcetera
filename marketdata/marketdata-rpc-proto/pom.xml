@@ -62,25 +62,43 @@
     <sourceDirectory>target/generated-sources/protobuf/java</sourceDirectory>
     <testSourceDirectory>target/generated-test-sources/protobuf/java</testSourceDirectory>
     <plugins>
-      <!-- Define the protobuf plugin for normal build (target directory) -->
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
         <version>0.6.1</version>
+        <!-- top-level config: Protoc only -->
         <configuration>
-          <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
-          <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
-          <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+          <protocArtifact>com.google.protobuf:protoc:${mvn.protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
         </configuration>
         <executions>
+          <!-- 1) Message classes -->
           <execution>
+            <id>generate-proto</id>
             <goals>
               <goal>compile</goal>
-              <goal>compile-custom</goal>
               <goal>test-compile</goal>
+            </goals>
+            <configuration>
+              <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+            </configuration>
+          </execution>
+          <!-- 2) gRPC stubs with no javax.annotation.Generated -->
+          <execution>
+            <id>generate-grpc</id>
+            <goals>
+              <goal>compile-custom</goal>
               <goal>test-compile-custom</goal>
             </goals>
+            <configuration>
+              <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
+              <!-- which plugin to run -->
+              <pluginId>grpc-java</pluginId>
+              <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+              <!-- magic to suppress javax.annotation.Generated -->
+              <pluginParameter>@generated=omit</pluginParameter>
+              <!-- where to dump the stubs -->
+              <outputDirectory>${project.build.directory}/generated-sources/grpc-java</outputDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>

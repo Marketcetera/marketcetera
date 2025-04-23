@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import jakarta.management.JMX;
-import jakarta.management.MBeanServer;
-import jakarta.management.MalformedObjectNameException;
-import jakarta.management.ObjectName;
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.marketdata.MarketDataModuleMXBean;

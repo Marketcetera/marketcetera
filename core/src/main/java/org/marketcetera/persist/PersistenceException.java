@@ -7,7 +7,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /* $License$ */
 /**
  * Exception base class for persistence related exceptions.
- * All {@link javax.persistence.PersistenceException} subclasses are mapped
+ * All {@link jakarta.persistence.PersistenceException} subclasses are mapped
  * to their equivalent {@link org.marketcetera.persist.PersistenceException}
  * subclasses. However only a subset of them get thrown within the Persistence
  * Infrastructure, given how we use JPA. Each of the mapped subclass

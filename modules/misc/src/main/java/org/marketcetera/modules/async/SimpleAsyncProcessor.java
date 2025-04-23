@@ -11,13 +11,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import jakarta.management.Attribute;
-import jakarta.management.AttributeList;
-import jakarta.management.AttributeNotFoundException;
-import jakarta.management.DynamicMBean;
-import jakarta.management.MBeanAttributeInfo;
-import jakarta.management.MBeanInfo;
-import jakarta.management.ReflectionException;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.ReflectionException;
 
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;

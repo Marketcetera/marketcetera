@@ -40,6 +40,8 @@
     <esper.version>8.8.0</esper.version>
     <mvn.flyway.version>9.22.3</mvn.flyway.version>
     <querydsl.version>5.1.0</querydsl.version>
+    <mvn.protobuf.version>3.21.7</mvn.protobuf.version>
+    <grpc.version>1.72.0</grpc.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -50,6 +52,14 @@
         <version>${mvn.spring.boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <!-- import gRPC’s own BOM to align all grpc-* artifacts -->
+      <dependency>
+	<groupId>io.grpc</groupId>
+	<artifactId>grpc-bom</artifactId>
+	<version>${grpc.version}</version>
+	<type>pom</type>
+	<scope>import</scope>
       </dependency>
       <!-- Compile: local modules -->
       <dependency>
@@ -734,39 +744,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>3.20.3</version>
-      </dependency>
-      <!-- do not change versions of grpc and netty with reading this: https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-core</artifactId>
-        <version>1.53.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-netty</artifactId>
-        <version>1.53.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-tcnative-boringssl-static</artifactId>
-        <version>2.0.54.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-protobuf</artifactId>
-        <version>1.53.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-stub</artifactId>
-        <version>1.53.0</version>
-      </dependency>
-      <dependency>
-        <groupId>io.grpc</groupId>
-        <artifactId>grpc-netty-shaded</artifactId>
-        <version>1.53.0</version>
-        <scope>runtime</scope>
+        <version>${mvn.protobuf.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.annotation</groupId>
@@ -1029,42 +1007,38 @@
           <artifactId>maven-site-plugin</artifactId>
           <version>3.12.1</version>
         </plugin>
-        <plugin>
-          <groupId>org.xolstice.maven.plugins</groupId>
-          <artifactId>protobuf-maven-plugin</artifactId>
-          <version>0.6.1</version>
-          <configuration>
-            <!--
-                The version of protoc must match protobuf-java. If you don't depend on
-                protobuf-java directly, you will be transitively depending on the
-                protobuf-java version that grpc depends on.
-            -->
-            <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
-            <pluginId>grpc-java</pluginId>
-            <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.0.0:exe:${os.detected.classifier}</pluginArtifact>
-            <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>
-            <attachProtoSources>true</attachProtoSources>
-            <checkStaleness>true</checkStaleness>
-            <!-- Each proto module will still need to configure additionalProtoPathElements for imports -->
-          </configuration>
-          <executions>
-            <execution>
-              <id>compile-protos</id>
-              <goals>
-                <goal>compile</goal>
-                <goal>compile-custom</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>compile-test-protos</id>
-              <phase>generate-test-sources</phase>
-              <goals>
-                <goal>test-compile</goal>
-                <goal>test-compile-custom</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
+        <!-- protoc compiler integration -->
+	<plugin>
+	  <groupId>org.xolstice.maven.plugins</groupId>
+	  <artifactId>protobuf-maven-plugin</artifactId>
+	  <version>0.6.1</version>
+	  <configuration>
+	    <protocArtifact>com.google.protobuf:protoc:${mvn.protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+	  </configuration>
+	  <executions>
+	    <!-- 1) Generate the message classes -->
+	    <execution>
+	      <id>generate-proto</id>
+	      <goals>
+		<goal>compile</goal>
+	      </goals>
+	    </execution>
+	    <!-- 2) Generate the gRPC stubs, with skip-Generated flag -->
+	    <execution>
+	      <id>generate-grpc-stubs</id>
+	      <goals>
+		<goal>compile-custom</goal>
+	      </goals>
+	      <configuration>
+		<pluginId>grpc-java</pluginId>
+		<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+		<!-- THIS is the magic flag, no colon, exactly as gRPC 1.63.0+ expects: -->
+		<pluginParameter>JakartaMode=omit</pluginParameter>
+		<outputDirectory>${project.build.directory}/generated-sources/grpc-java</outputDirectory>
+	      </configuration>
+	    </execution>
+	  </executions>
+	</plugin>
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
