@@ -6,8 +6,8 @@ import static org.junit.Assert.fail;
 
 import java.util.Locale;
 
-import javax.jws.WebService;
-import javax.xml.ws.WebServiceException;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.WebServiceException;
 
 import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.junit.Before;

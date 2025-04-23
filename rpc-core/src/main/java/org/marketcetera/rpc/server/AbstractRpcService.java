@@ -2,7 +2,7 @@ package org.marketcetera.rpc.server;
 
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;

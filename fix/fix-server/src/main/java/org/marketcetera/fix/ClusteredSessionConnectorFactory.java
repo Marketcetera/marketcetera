@@ -1,6 +1,6 @@
 package org.marketcetera.fix;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang.Validate;

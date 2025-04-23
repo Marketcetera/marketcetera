@@ -2,7 +2,7 @@ package org.marketcetera.dataflow.service;
 
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.core.PlatformServices;
 import org.marketcetera.dataflow.client.DataBroadcaster;

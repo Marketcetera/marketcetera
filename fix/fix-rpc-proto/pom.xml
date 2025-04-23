@@ -39,9 +39,10 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
+    <!-- Required for @Generated annotation used by gRPC -->
+     <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
   </dependencies>
   <build>

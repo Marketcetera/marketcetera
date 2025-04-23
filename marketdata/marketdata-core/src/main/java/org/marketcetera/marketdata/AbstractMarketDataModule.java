@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.management.AttributeChangeNotification;
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanNotificationInfo;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationEmitter;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
+import jakarta.management.AttributeChangeNotification;
+import jakarta.management.ListenerNotFoundException;
+import jakarta.management.MBeanNotificationInfo;
+import jakarta.management.NotificationBroadcasterSupport;
+import jakarta.management.NotificationEmitter;
+import jakarta.management.NotificationFilter;
+import jakarta.management.NotificationListener;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;

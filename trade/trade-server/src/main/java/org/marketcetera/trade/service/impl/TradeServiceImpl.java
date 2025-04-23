@@ -3,7 +3,7 @@ package org.marketcetera.trade.service.impl;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.admin.User;
 import org.marketcetera.brokers.BrokerSelector;

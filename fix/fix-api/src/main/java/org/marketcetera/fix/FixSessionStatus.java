@@ -3,7 +3,7 @@ package org.marketcetera.fix;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.StringUtils;
 

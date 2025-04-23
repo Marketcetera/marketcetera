@@ -1,7 +1,7 @@
 package org.marketcetera.admin.service.impl;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.admin.User;

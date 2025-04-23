@@ -8,7 +8,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.marketcetera.ui.PhotonServices;
 import org.marketcetera.ui.service.AuthorizationHelperService;

@@ -1,6 +1,6 @@
 package org.marketcetera.persist;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.Validate;

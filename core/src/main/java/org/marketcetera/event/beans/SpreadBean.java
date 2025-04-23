@@ -5,10 +5,10 @@ import static org.marketcetera.event.Messages.VALIDATION_NULL_INSTRUMENT;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.SpreadEvent;
 import org.marketcetera.event.util.EventServices;

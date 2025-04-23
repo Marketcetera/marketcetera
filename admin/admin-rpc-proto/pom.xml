@@ -32,8 +32,8 @@
     </dependency>
     <!-- Required for @Generated annotation used by gRPC -->
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
   </dependencies>
   <build>

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.management.ObjectName;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.management.ObjectName;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.assertj.core.util.Lists;

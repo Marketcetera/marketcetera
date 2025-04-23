@@ -5,7 +5,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
 import java.util.Arrays;

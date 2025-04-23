@@ -25,15 +25,19 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+    <!-- Q‑type runtime API -->
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+    </dependency>
+    <!-- triggers the annotation processor -->
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <scope>provided</scope>
+      <classifier>jakarta</classifier>
+    </dependency>
     <!-- runtime -->
     <!-- test -->
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

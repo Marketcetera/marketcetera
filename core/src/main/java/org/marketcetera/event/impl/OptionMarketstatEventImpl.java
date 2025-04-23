@@ -3,7 +3,7 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.marketcetera.event.HasOption;
 import org.marketcetera.event.MarketstatEvent;

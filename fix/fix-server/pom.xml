@@ -120,10 +120,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <disableXmlReport>false</disableXmlReport>

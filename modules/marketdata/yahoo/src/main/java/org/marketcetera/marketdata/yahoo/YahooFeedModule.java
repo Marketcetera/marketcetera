@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.yahoo;
 
-import javax.management.AttributeChangeNotification;
+import jakarta.management.AttributeChangeNotification;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;

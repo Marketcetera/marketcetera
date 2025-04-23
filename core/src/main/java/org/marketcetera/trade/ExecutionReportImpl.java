@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 import quickfix.Message;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /* $License$ */
 /**

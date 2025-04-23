@@ -2,7 +2,7 @@ package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.trade.*;

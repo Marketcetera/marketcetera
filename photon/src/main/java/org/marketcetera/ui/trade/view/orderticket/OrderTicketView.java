@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.SortedMap;
 
 import javax.annotation.concurrent.GuardedBy;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.marketcetera.algo.BrokerAlgoSpec;
