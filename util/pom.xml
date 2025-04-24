@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-      <groupId>org.marketcetera</groupId>
-      <artifactId>public-parent</artifactId>
-      <version>4.1.1</version>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>4.1.1</version>
   </parent>
   <artifactId>util</artifactId>
   <packaging>jar</packaging>
@@ -109,6 +109,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -169,12 +173,12 @@
             <configuration>
               <mainClass>org.marketcetera.util.ws.sample.SampleClient</mainClass>
               <!--
-                - -Dexec.args="-user user -password password -argument World"
-                - Try 'badPassword' for password.
-                - Try 'World', 'I18NException', 'AssertionError',
-                -  'IllegalArgumentException' for argument.
-                - Try non-default locale '-language fr -country CA'.
-                -->
+                  - -Dexec.args="-user user -password password -argument World"
+                  - Try 'badPassword' for password.
+                  - Try 'World', 'I18NException', 'AssertionError',
+                  -  'IllegalArgumentException' for argument.
+                  - Try non-default locale '-language fr -country CA'.
+              -->
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>
