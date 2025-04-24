@@ -57,10 +57,6 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.querydsl.core.BooleanBuilder;
 
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-
 /* $License$ */
 
 /**
@@ -92,7 +88,7 @@ public class PersistentFixSessionProvider
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-    public FixSession findFixSessionBySessionId(SessionID inSessionId)
+    public FixSession findFixSessionBySessionId(quickfix.SessionID inSessionId)
     {
         try {
             return fixSessionsBySessionId.getUnchecked(inSessionId);
@@ -304,7 +300,7 @@ public class PersistentFixSessionProvider
                 Validate.isTrue(findFixSessionByName(inFixSession.getName()) == null,
                                 "Session with name \"" + inFixSession.getName() + "\" already exists");
                 // check for duplicate session id
-                Validate.isTrue(findFixSessionBySessionId(new SessionID(inFixSession.getSessionId())) == null,
+                Validate.isTrue(findFixSessionBySessionId(new quickfix.SessionID(inFixSession.getSessionId())) == null,
                                 "Session with session ID \"" + inFixSession.getSessionId() + "\" already exists");
                 // check for duplicate broker id
                 Validate.isTrue(findFixSessionByBrokerId(new BrokerID(inFixSession.getBrokerId())) == null,
@@ -353,7 +349,7 @@ public class PersistentFixSessionProvider
      */
     @Override
     @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public void delete(SessionID inSessionId)
+    public void delete(quickfix.SessionID inSessionId)
     {
         SLF4JLoggerProxy.debug(this,
                                "Deleting {}",
@@ -374,7 +370,7 @@ public class PersistentFixSessionProvider
      * @see org.marketcetera.brokers.service.FixSessionProvider#disableSession(quickfix.SessionID)
      */
     @Override
-    public void disableSession(SessionID inSessionId)
+    public void disableSession(quickfix.SessionID inSessionId)
     {
         SLF4JLoggerProxy.debug(this,
                                "Disabling {}",
@@ -462,7 +458,7 @@ public class PersistentFixSessionProvider
      * @see org.marketcetera.brokers.service.FixSessionProvider#enableSession(quickfix.SessionID)
      */
     @Override
-    public void enableSession(SessionID inSessionId)
+    public void enableSession(quickfix.SessionID inSessionId)
     {
         SLF4JLoggerProxy.debug(this,
                                "Enabling {}",
@@ -575,7 +571,7 @@ public class PersistentFixSessionProvider
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-    public void stopSession(SessionID inSessionId)
+    public void stopSession(quickfix.SessionID inSessionId)
     {
         SLF4JLoggerProxy.debug(this,
                                "Stopping {}",
@@ -616,7 +612,7 @@ public class PersistentFixSessionProvider
      */
     @Override
     @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
-    public void startSession(SessionID inSessionId)
+    public void startSession(quickfix.SessionID inSessionId)
     {
         SLF4JLoggerProxy.debug(this,
                                "Starting {}",
@@ -719,8 +715,8 @@ public class PersistentFixSessionProvider
                         fixSession.setMappedBrokerId(fixSessionDescriptor.getMappedBrokerId());
                     }
                     fixSession.setDescription(fixSessionDescriptor.getDescription());
-                    String connectionType = sessionSettings.get(SessionFactory.SETTING_CONNECTION_TYPE);
-                    fixSession.setIsAcceptor(SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
+                    String connectionType = sessionSettings.get(quickfix.SessionFactory.SETTING_CONNECTION_TYPE);
+                    fixSession.setIsAcceptor(quickfix.SessionFactory.ACCEPTOR_CONNECTION_TYPE.equals(connectionType));
                     fixSession.setIsEnabled(fixSessionDescriptor.isEnabled());
                     if(fixSession.isAcceptor()) {
                         fixSession.setHost(fixSettingsProvider.getAcceptorHost());
@@ -730,16 +726,16 @@ public class PersistentFixSessionProvider
                         fixSession.setPort(fixSessionDescriptor.getPort());
                     }
                     fixSession.setName(fixSessionName);
-                    SessionID sessionId = new SessionID(sessionSettings.get(SessionSettings.BEGINSTRING),
-                                                        sessionSettings.get(SessionSettings.SENDERCOMPID),
-                                                        sessionSettings.get(SessionSettings.TARGETCOMPID));
+                    quickfix.SessionID sessionId = new quickfix.SessionID(sessionSettings.get(quickfix.SessionSettings.BEGINSTRING),
+                                                                          sessionSettings.get(quickfix.SessionSettings.SENDERCOMPID),
+                                                                          sessionSettings.get(quickfix.SessionSettings.TARGETCOMPID));
                     fixSession.setSessionId(sessionId.toString());
                     fixSession.getSessionSettings().putAll(sessionSettings);
                     save(fixSession);
                     fixSessionsByName.put(fixSession.getName(),
                                           fixSession);
                     if(fixSessionDescriptor.isEnabled()) {
-                        enableSession(new SessionID(fixSession.getSessionId()));
+                        enableSession(new quickfix.SessionID(fixSession.getSessionId()));
                     }
                     SLF4JLoggerProxy.info(this,
                                           "Created: {}",
@@ -788,9 +784,9 @@ public class PersistentFixSessionProvider
     /**
      * stores fix sessions by session id
      */
-    private final LoadingCache<SessionID,FixSession> fixSessionsBySessionId = CacheBuilder.newBuilder().build(new CacheLoader<SessionID,FixSession>() {
+    private final LoadingCache<quickfix.SessionID,FixSession> fixSessionsBySessionId = CacheBuilder.newBuilder().build(new CacheLoader<quickfix.SessionID,FixSession>() {
         @Override
-        public FixSession load(SessionID inKey)
+        public FixSession load(quickfix.SessionID inKey)
                 throws Exception
         {
             return fixSessionDao.findBySessionIdAndIsDeletedFalse(inKey.toString());

@@ -33,13 +33,12 @@
   <properties>
     <mvn.javase.version>17</mvn.javase.version>
     <mvn.spring.boot.version>3.4.4</mvn.spring.boot.version>
-    <mvn.cxf.version>3.5.5</mvn.cxf.version>
     <mvn.log4j.version>2.20.0</mvn.log4j.version>
     <mvn.test.options>-Xmx2048m -Xms128m</mvn.test.options>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS Z</maven.build.timestamp.format>
     <esper.version>8.8.0</esper.version>
     <mvn.flyway.version>9.22.3</mvn.flyway.version>
-    <querydsl.version>5.1.0</querydsl.version>
+    <querydsl.version>5.0.0</querydsl.version>
     <mvn.protobuf.version>3.21.7</mvn.protobuf.version>
     <grpc.version>1.72.0</grpc.version>
   </properties>
@@ -60,6 +59,21 @@
         <version>${grpc.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <!-- bring in the Querydsl Bill of Materials -->
+      <dependency>
+	<groupId>com.querydsl</groupId>
+	<artifactId>querydsl-bom</artifactId>
+	<version>${querydsl.version}</version>
+	<type>pom</type>
+	<scope>import</scope>
+      </dependency>
+      <!-- this needs to be included only until Spring JPA 3.5.x is available which should switch from javax to jakarta -->
+      <dependency>
+        <groupId>javax.persistence</groupId>
+        <artifactId>javax.persistence-api</artifactId>
+        <version>2.2</version>
+        <scope>provided</scope>
       </dependency>
       <!-- Compile: local modules -->
       <dependency>
@@ -458,32 +472,10 @@
         <artifactId>quickfixj-all</artifactId>
         <version>2.3.2-bd</version>
       </dependency>
-      <!-- Compile: CXF -->
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>${mvn.cxf.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-          <!-- exclude jaxb-impl because it's included with Java 7 -->
-          <exclusion>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.creditanalytics</groupId>
         <artifactId>creditanalytics</artifactId>
         <version>2.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-transports-http</artifactId>
-        <version>${mvn.cxf.version}</version>
       </dependency>
       <!-- compile: querydsl -->
       <!-- Querydsl runtime API -->
@@ -632,14 +624,14 @@
       </dependency>
       <!-- Binding for Log4J -->
       <dependency>
-	<groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-slf4j2-impl</artifactId>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j2-impl</artifactId>
         <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-core</artifactId>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
         <version>${mvn.log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
@@ -794,22 +786,9 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-transports-http-jetty</artifactId>
-        <version>${mvn.cxf.version}</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <!-- Exclude slf4j-jdk14, let application choose slf4j binding. -->
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-          </exclusion>
-          <!-- exclude jaxb-impl because it's included with Java 7 -->
-          <exclusion>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-          </exclusion>
-        </exclusions>
+	<groupId>commons-logging</groupId>
+	<artifactId>commons-logging</artifactId>
+	<scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
