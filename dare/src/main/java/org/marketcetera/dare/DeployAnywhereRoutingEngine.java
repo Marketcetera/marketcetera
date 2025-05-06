@@ -14,10 +14,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,7 +32,6 @@ import javax.annotation.PreDestroy;
 import javax.management.JMException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -72,6 +76,7 @@ import org.marketcetera.fix.event.FixSessionStoppedEvent;
 import org.marketcetera.fix.event.SimpleFixSessionAvailableEvent;
 import org.marketcetera.fix.event.SimpleFixSessionUnavailableEvent;
 import org.marketcetera.fix.provisioning.FixSessionRestoreExecutor;
+import org.marketcetera.metrics.MetricService;
 import org.marketcetera.ors.Messages;
 import org.marketcetera.ors.PrioritizedMessageSessionRestorePayload;
 import org.marketcetera.ors.filters.MessageFilter;
@@ -104,6 +109,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -1017,11 +1026,6 @@ public class DeployAnywhereRoutingEngine
                 scheduledService = null;
             }
             isRunning.set(false);
-            for(OrderMessageProcessingQueue orderQueue : orderQueues.values()) {
-                try {
-                    orderQueue.stop();
-                } catch (Exception ignored) {}
-            }
             for(SessionMessageProcessingQueue sessionQueue : sessionQueues.values()) {
                 try {
                     sessionQueue.stop();
@@ -1099,6 +1103,7 @@ public class DeployAnywhereRoutingEngine
                         sessionIterator.remove();
                     }
                 }
+                orderProcessingService = new OrderProcessingService();
                 FixSettingsProvider fixSettingsProvider = fixSettingsProviderFactory.create();
                 // Initiate broker connections.
 //                try {
@@ -1971,46 +1976,7 @@ public class DeployAnywhereRoutingEngine
                 inMessagePackage.key = new MessageKey(inMessagePackage.getSessionId(),
                                                       key);
                 MessageKey messageKey = inMessagePackage.key;
-                OrderMessageProcessingQueue orderQueue = null;
-                // TODO add metrics for order queues
-                boolean warned = false;
-                long delayStarted = 0;
-                while(orderQueue == null) {
-                    synchronized(orderQueues) {
-                        orderQueue = orderQueues.get(messageKey);
-                        if(orderQueue == null) {
-                            // no order queue for this order yet
-                            // TODO size might be expensive?
-                            int size = orderQueues.size();
-                            if(size >= maxExecutionPools) {
-                                // already at max order queues, have to wait for a slot to become available
-                                if(!warned) {
-                                    delayStarted = System.currentTimeMillis();
-                                    SLF4JLoggerProxy.info(DeployAnywhereRoutingEngine.this,
-                                                          "Cannot process {} yet because max order queues ({}) in use, consider increasing the value",
-                                                          inMessagePackage.message,
-                                                          size);
-                                    warned = true;
-                                }
-                            } else {
-                                orderQueue = new OrderMessageProcessingQueue(messageKey);
-                                orderQueue.start();
-                                orderQueues.put(messageKey,
-                                                orderQueue);
-                            }
-                        }
-                    }
-                    if(orderQueue == null) {
-                        Thread.sleep(executionPoolDelay);
-                    }
-                }
-                if(warned) {
-                    SLF4JLoggerProxy.info(DeployAnywhereRoutingEngine.this,
-                                          "Resuming work on {} after {}ms delay",
-                                          inMessagePackage.message,
-                                          System.currentTimeMillis() - delayStarted);
-                }
-                orderQueue.add(inMessagePackage);
+                orderProcessingService.submit(inMessagePackage);
             } catch (Exception e) {
                 if(PlatformServices.isShutdown(e)) {
                     // ignore the exception and quietly allow the system to shut down
@@ -2062,165 +2028,6 @@ public class DeployAnywhereRoutingEngine
          * keeps track of the effective queue count for this session, including all order queues
          */
         private final Counter effectiveQueueCounter = new Counter();
-    }
-    /**
-     * Processes executions for a given order.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17799 2018-11-21 15:06:07Z colin $
-     * @since $Release$
-     */
-    private class OrderMessageProcessingQueue
-            extends QueueProcessor<MessagePackage>
-    {
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString()
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.append("OrderMessageProcessingQueue [").append(key).append("] ");
-            return builder.toString();
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.core.QueueProcessor#add(java.lang.Object)
-         */
-        @Override
-        protected void add(MessagePackage inData)
-        {
-            super.add(inData);
-            timestamp = System.currentTimeMillis();
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.core.QueueProcessor#processData(java.lang.Object)
-         */
-        @Override
-        protected void processData(MessagePackage inData)
-                throws Exception
-        {
-            try {
-                timestamp = System.currentTimeMillis();
-                workingOnOrder.set(true);
-                processMessage(inData);
-            } finally {
-                timestamp = System.currentTimeMillis();
-                workingOnOrder.set(false);
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.core.QueueProcessor#size()
-         */
-        @Override
-        protected int size()
-        {
-            return super.size();
-        }
-        /**
-         * Create a new OrderMessageProcessingQueue instance.
-         *
-         * @param inKey a <code>MessageKey</code> value
-         */
-        private OrderMessageProcessingQueue(MessageKey inKey)
-        {
-            super(StringUtils.trim("OrderMessageProcessingQueue-"+inKey));
-            key = inKey;
-            timeoutTask = new OrderQueueTimeoutTask(this);
-            scheduledService.schedule(timeoutTask,
-                                      executionPoolTtl,
-                                      TimeUnit.MILLISECONDS);
-            timestamp = System.currentTimeMillis();
-        }
-        /**
-         * indicates if this order is currently being worked on or not
-         */
-        private final AtomicBoolean workingOnOrder = new AtomicBoolean(false);
-        /**
-         * holds the last time this order queue was touched
-         */
-        private volatile long timestamp;
-        /**
-         * key of this queue
-         */
-        private final MessageKey key;
-        /**
-         * task used to time out this queue
-         */
-        private final OrderQueueTimeoutTask timeoutTask;
-    }
-    /**
-     * Times out an order queue if it has been unused for a period of time.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: QuickFIXApplication.java 17799 2018-11-21 15:06:07Z colin $
-     * @since $Release$
-     */
-    private class OrderQueueTimeoutTask
-            implements Runnable
-    {
-        /* (non-Javadoc)
-         * @see java.lang.Runnable#run()
-         */
-        @Override
-        public void run()
-        {
-            try {
-                long currentTime = System.currentTimeMillis();
-                SLF4JLoggerProxy.debug(DeployAnywhereRoutingEngine.this,
-                                       "Testing {} for timeout at {}",
-                                       queue,
-                                       currentTime);
-                // TODO how sure are we that a new order couldn't be added? maybe synchronize on queue instead?
-                synchronized(orderQueues) {
-                    long timestamp = queue.timestamp;
-                    if(!queue.workingOnOrder.get() && currentTime > timestamp+executionPoolTtl) {
-                        if(queue.size() != 0) {
-                            SLF4JLoggerProxy.debug(DeployAnywhereRoutingEngine.this,
-                                                   "Not timing out {} because size {} is not zero",
-                                                   queue,
-                                                   queue.size());
-                        } else {
-                            SLF4JLoggerProxy.debug(DeployAnywhereRoutingEngine.this,
-                                                   "Timing out {} of size {}",
-                                                   queue,
-                                                   queue.size());
-                            orderQueues.remove(queue.key);
-                            queue.stop();
-                            return;
-                        }
-                    }
-                }
-                scheduledService.schedule(queue.timeoutTask,
-                                          executionPoolTtl,
-                                          TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                if(SLF4JLoggerProxy.isDebugEnabled(this)) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e,
-                                          "{} on execution process: {}",
-                                          queue.key,
-                                          ExceptionUtils.getRootCauseMessage(e));
-                } else {
-                    SLF4JLoggerProxy.warn(this,
-                                          "{} on execution process: {}",
-                                          queue.key,
-                                          ExceptionUtils.getRootCauseMessage(e));
-                }
-            }
-        }
-        /**
-         * Create a new OrderQueueTimeoutTask instance.
-         *
-         * @param inOrderMessageProcessingQueue an <code>OrderMessageProcessingQueue</code> value
-         */
-        private OrderQueueTimeoutTask(OrderMessageProcessingQueue inOrderMessageProcessingQueue)
-        {
-            queue = inOrderMessageProcessingQueue;
-        }
-        /**
-         * queue for processing orders
-         */
-        private final OrderMessageProcessingQueue queue;
     }
     /**
      * Indicates the type of message.
@@ -2347,6 +2154,24 @@ public class DeployAnywhereRoutingEngine
             return priority;
         }
         /**
+         * Set the nano time when the message was enqueued.
+         *
+         * @param inNanoTime a <code>long</code> value
+         */
+        private void setEnqueuedAt(long inNanoTime)
+        {
+            enqueuedAtNanos = inNanoTime;
+        }
+        /**
+         * Get the nano time when the message was enqueued.
+         *
+         * @return a <code>long</code> value
+         */
+        private long getEnqueuedAt()
+        {
+            return enqueuedAtNanos;
+        }
+        /**
          * key value
          */
         private MessageKey key;
@@ -2379,6 +2204,7 @@ public class DeployAnywhereRoutingEngine
          */
         private static final AtomicLong counter = new AtomicLong(0);
         private static final long serialVersionUID = 5052044328496633612L;
+        private long enqueuedAtNanos;
     }
     /**
      * Uniquely identifies a family of orders.
@@ -2402,6 +2228,203 @@ public class DeployAnywhereRoutingEngine
             super(inSessionId,
                   inKeyValue);
         }
+    }
+    /**
+     * Provides a service to process order messages.
+     * 
+     * <p>Messages are guaranteed to be processed in FIFO order within a single order chain. Messages from 
+     * different order chains may be processed in any order.</p>
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class OrderProcessingService
+    {
+        /**
+         * Create a new OrderProcessingService instance.
+         */
+        public OrderProcessingService()
+        {
+            pool = new ThreadPoolExecutor(maxExecutionPools,            // corePoolSize
+                                          maxExecutionPools,            // maximumPoolSize
+                                          0L,
+                                          TimeUnit.MILLISECONDS,
+                                          new LinkedBlockingQueue<>(),
+                                          new ThreadFactoryBuilder().setNameFormat("dareOrderPool-%d").build());
+            String metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                                    "orderQueue",
+                                                    "waitTime");
+            metricNames.add(metricName);
+            waitTimer = metricsService.getMetrics().timer(metricName);
+            // tracks the number of messages per order
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "orderQueue",
+                                             "messagesPerOrder");
+            metricNames.add(metricName);
+            messagesPerOrder = metricsService.getMetrics().histogram(metricName);
+            // tracks the busy size, which is the number of queues in use
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "orderQueue",
+                                             "busySize");
+            metricNames.add(metricName);
+            metricsService.getMetrics().register(metricName,
+                                                 (Gauge<Integer>)(() -> {
+                                                     int count = 0;
+                                                     for (AtomicBoolean flag : busy.values()) {
+                                                         if (flag.get()) {
+                                                             count++;
+                                                         }
+                                                     }
+                                                     return count;
+                                                 }));
+            // gauge: how many threads are currently active
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "poolActiveCount");
+            metricNames.add(metricName);
+            metricsService.getMetrics().register(metricName,
+                                                 (Gauge<Integer>) pool::getActiveCount);
+            // gauge: tracks the number of tasks waiting to be queued
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "poolQueueSize");
+            metricNames.add(metricName);
+            metricsService.getMetrics().register(metricName,
+                                                 (Gauge<Integer>) () -> pool.getQueue().size());
+            // tracks the number of exceptions received while processing messages, should be zero
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "processingExceptions");
+            metricNames.add(metricName);
+            processingExceptions = metricsService.getMetrics().counter(metricName);
+            // tracks the number of times a message needs to rescheduled
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "drainReschedules");
+            metricNames.add(metricName);
+            drainReschedules = metricsService.getMetrics().counter(metricName);
+            // tracks the processing latency for messages
+            metricName = MetricRegistry.name(OrderProcessingService.class.getSimpleName(),
+                                             "processingLatency");
+            metricNames.add(metricName);
+            processingLatency = metricsService.getMetrics().timer(metricName);
+        }
+        /**
+         * Submit the message package to the work queues.
+         *
+         * @param inPackage a <code>MessagePackage</code> value
+         */
+        private void submit(MessagePackage inPackage)
+        {
+            String key = inPackage.key.toString();
+            // stamp this package with the enqueue time
+            inPackage.setEnqueuedAt(System.nanoTime());
+            // 1) Enqueue first, unconditionally
+            ConcurrentLinkedQueue<MessagePackage> currentRootOrderIdQueue = queues.computeIfAbsent(key,
+                                                                                                   k -> new ConcurrentLinkedQueue<>());
+            currentRootOrderIdQueue.offer(inPackage);
+            // 2) Then try to start a drain if nobody else is
+            AtomicBoolean inProgress = busy.computeIfAbsent(key,
+                                                            k -> new AtomicBoolean(false));
+            if(inProgress.compareAndSet(false,true)) {
+                // compute how long the *first* element waited
+                MessagePackage head = currentRootOrderIdQueue.peek();
+                if(head != null) {
+                    long waitNanos = System.nanoTime() - head.getEnqueuedAt();
+                    waitTimer.update(waitNanos,
+                                     TimeUnit.NANOSECONDS);
+                }
+                pool.submit(() -> {
+                    final Timer.Context ctx = processingLatency.time();
+                    try {
+                        processQueue(key);
+                    } finally {
+                        ctx.stop();
+                    }
+                });
+            }
+        }
+        /**
+         * Process the queue for the given key.
+         *
+         * @param inKey a <code>String</code> value
+         */
+        private void processQueue(String inKey)
+        {
+            long drained = 0; // count how many we actually process for this queue
+            try {
+                // Grab the queue snapshot; bail out if somehow it's gone
+                ConcurrentLinkedQueue<MessagePackage> rootOrderProcessingQueue = queues.get(inKey);
+                if(rootOrderProcessingQueue == null) {
+                    return;
+                }
+                MessagePackage messagePackage;
+                while((messagePackage = rootOrderProcessingQueue.poll()) != null) {
+                    try {
+                        DeployAnywhereRoutingEngine.this.processMessage(messagePackage);
+                        drained += 1; // increment once per message
+                    } catch (Exception e) {
+                        // log and keep draining
+                        processingExceptions.inc();
+                        SLF4JLoggerProxy.error(this,
+                                               e,
+                                               "Error processing {}",
+                                               messagePackage);
+                    }
+                }
+            } finally {
+                // record “batch size” for this root-order drain
+                messagesPerOrder.update(drained);
+                // Mark this key as no longer “busy”
+                AtomicBoolean inProgress = busy.get(inKey);
+                if(inProgress == null) {
+                    return; // raced removal already
+                }
+                inProgress.set(false);
+                // If new messages snuck in, re-schedule
+                ConcurrentLinkedQueue<MessagePackage> rootOrderProcessingQueue = queues.get(inKey);
+                if(rootOrderProcessingQueue != null && !rootOrderProcessingQueue.isEmpty() && inProgress.compareAndSet(false,true)) {
+                    // increment the rescheduled counter
+                    drainReschedules.inc();
+                    pool.submit(() -> processQueue(inKey));
+                } else {
+                    // true cleanup: remove only if it's still the same empty queue
+                    queues.remove(inKey,
+                                  rootOrderProcessingQueue);
+                    busy.remove(inKey,
+                                inProgress);
+                }
+            }
+        }
+        /**
+         * holds queues for a given order chain keyed by order chain key
+         */
+        private final ConcurrentMap<String,ConcurrentLinkedQueue<MessagePackage>> queues = new ConcurrentHashMap<>();
+        /**
+         * holds busy indicators by order change key
+         */
+        private final ConcurrentMap<String,AtomicBoolean> busy = new ConcurrentHashMap<>();
+        /**
+         * executor pool
+         */
+        private final ThreadPoolExecutor pool;
+        /**
+         * wait timer metric
+         */
+        private final Timer waitTimer;
+        /**
+         * messages per order metric
+         */
+        private final Histogram messagesPerOrder;
+        /**
+         * processing exceptions metric
+         */
+        private final Counter processingExceptions;
+        /**
+         * drain rescheduled metric
+         */
+        private final Counter drainReschedules;
+        /**
+         * processing latency metric
+         */
+        private final Timer processingLatency;
     }
     /**
      * indicates the "normal" message types we handle
@@ -2438,10 +2461,6 @@ public class DeployAnywhereRoutingEngine
      * session queues by session ID
      */
     private final Map<quickfix.SessionID,SessionMessageProcessingQueue> sessionQueues = new HashMap<>();
-    /**
-     * holds processing queues for root order id
-     */
-    private final Map<MessageKey,OrderMessageProcessingQueue> orderQueues = new HashMap<>();
     /**
      * active initiators by session id
      */
@@ -2482,6 +2501,14 @@ public class DeployAnywhereRoutingEngine
      * supported messages value
      */
     private MessageFilter supportedMessages;
+    /**
+     * holds the names of active metrics
+     */
+    private final Set<String> metricNames = Sets.newHashSet();
+    /**
+     * processes order messages
+     */
+    private OrderProcessingService orderProcessingService;
     /**
      * maximum number of order pools to have active at once
      */
@@ -2533,6 +2560,11 @@ public class DeployAnywhereRoutingEngine
      * task used to update status of sessions to backup, initially
      */
     private Runnable backupStatusTask;
+    /**
+     * provides access to metrics service
+     */
+    @Autowired
+    private MetricService metricsService;
     /**
      * provides access to cluster services
      */
